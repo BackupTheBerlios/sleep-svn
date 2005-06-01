@@ -1,9 +1,0 @@
-Value: Juice
-Value: aOtCH
-Value: Apple
-Value: Bleh
-Value: bYoTCH
-Value: For
-Value: KiDDiEZ
-Value: Rocks
-Value: SlOTCH
