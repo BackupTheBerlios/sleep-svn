@@ -1,0 +1,71 @@
+package sleep.engine.types;
+
+import sleep.runtime.*;
+import java.util.*;
+
+public class ArrayContainer implements ScalarArray
+{
+   protected Stack values;
+
+   public ArrayContainer()
+   {
+      values = new Stack();
+   }
+
+   /** initial values must be a collection of Scalar's */
+   public ArrayContainer(Collection initialValues)
+   {
+      values = new Stack(initialValues);
+   }
+
+   public Scalar pop()
+   {
+      return (Scalar)values.pop();
+   }
+
+   public Scalar push(Scalar value)
+   {
+      values.push(value);
+      return value;
+   }
+
+   public int size()
+   {
+      return values.size();
+   }
+
+   public Scalar getAt(int index)
+   {
+      try
+      {
+         Scalar temp = (Scalar)values.get(index);
+
+         if (temp == null)
+         {
+           temp = SleepUtils.getEmptyScalar();
+           values.set(index, temp);
+         }
+
+         return temp;
+      } catch (Exception ex) { ex.printStackTrace(); }
+      return null;
+   }
+
+   public Scalar setAt(int index, Scalar value)
+   {
+      values.ensureCapacity(index + 1);
+
+      return (Scalar)values.set(index, value);
+   }
+
+   public Iterator scalarIterator()
+   {
+      return values.iterator();
+   }
+
+   public Scalar add(Scalar value)
+   {
+      values.add(value);
+      return value;
+   }
+}
