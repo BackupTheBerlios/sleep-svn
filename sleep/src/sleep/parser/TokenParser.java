@@ -663,7 +663,7 @@ public class TokenParser implements ParserConstants
          // assignment statement check...
          else if ((check = findPrecedentOperators(myToken, data, x, "=", 1)) != x) // checking for a assignment :)
          {
-            if (Checkers.isExpression(strings[0]))
+            if (Checkers.isExpression(strings[x]))
             {
                myToken.setType(EXPR_ASSIGNMENT_T);
             }

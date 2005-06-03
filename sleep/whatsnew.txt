@@ -1,3 +1,7 @@
+2.0-b8 in progress
+======
+- fixed a bug parsing tuple assignments in certain cases.
+
 2.0-b7
 ======
 - array index operator can now be applied to HOES expressions i.e.
