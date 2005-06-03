@@ -1,6 +1,7 @@
 2.0-b8 in progress
 ======
 - fixed a bug parsing tuple assignments in certain cases.
+- added a &subarray(@array, n, [m]) function for extracting an array slice
 
 2.0-b7
 ======

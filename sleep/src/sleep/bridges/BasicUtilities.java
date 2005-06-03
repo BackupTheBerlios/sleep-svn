@@ -59,6 +59,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&pop",   this);      // &pop(@array) = $scalar
         temp.put("&add",   this);      // &pop(@array) = $scalar
         temp.put("&clear", this);
+        temp.put("&subarray", this);
         temp.put("&copy",  new copy());
         temp.put("&map",    new map());
 
@@ -504,6 +505,23 @@ public class BasicUtilities implements Function, Loadable, Predicate
           else
           {
              value.setValue(SleepUtils.getEmptyScalar());
+          }
+       }
+       else if (n.equals("&subarray"))
+       {
+          if (value.getArray() != null)
+          {
+             int begin = BridgeUtilities.getInt(l, 0);
+             int end   = BridgeUtilities.getInt(l, value.getArray().size());
+
+             Scalar rv = SleepUtils.getArrayScalar();
+             while (begin < end)
+             {
+                rv.getArray().push(value.getArray().getAt(begin));
+                begin++;
+             }
+
+             return rv;
           }
        }
        else if (n.equals("&remove"))
