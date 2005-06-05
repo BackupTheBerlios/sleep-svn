@@ -117,7 +117,7 @@ public class BridgeUtilities
    }
 
 
-   /** grab a sleep array, if the stack is empty a scalar array with no elements will be returned. if the grabbed array is a readonly array, a copy is returned. */
+   /** grab a sleep array, if the grabbed array is a readonly array, a copy is returned.  if the stack is empty an array with no elements will be returned. */
    public static ScalarArray getWorkableArray(Stack arguments)
    {
       if (arguments.isEmpty())
