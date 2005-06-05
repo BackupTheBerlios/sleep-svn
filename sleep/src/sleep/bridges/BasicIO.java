@@ -288,95 +288,111 @@ public class BasicIO implements Loadable
              }
              catch (Exception ex) { }
           }
-          else
+          else if (pattern.value == 'z' || pattern.value == 'Z')
           {
-          for (int z = 0; z != pattern.count; z++)
-          {
-             Scalar value = null;
- 
-             if (pattern.value == 'S')
-             {
-                StringBuffer temps = new StringBuffer();
-                int tempval;
-
-                try
-                {
-                   tempval = in.readUnsignedByte();
-                   while (tempval != 0 && z < pattern.count)
-                   {
-                      temps.append((char)tempval);
-                      tempval = in.readUnsignedByte();
-                      z++;
-                   } 
-                }
-                catch (Exception fex) 
-                { 
-                   if (control != null) control.close();
-                   temp.getArray().push(SleepUtils.getScalar(temps.toString()));       
-                   return temp;
-                }
- 
-                value = SleepUtils.getScalar(temps.toString()); // reads in a full on string :)
-                z = pattern.count - 1; // make the loop stop on the next iteration
-             }
+             StringBuffer temps = new StringBuffer();
+             int tempval;
 
              try
              {
-                switch (pattern.value)
+                tempval = in.readUnsignedByte();
+             
+                int z = 0;
+
+                for (; tempval != 0 && z < pattern.count; z++)
                 {
-                   case 'R':
-                     in.reset();
-                     break; 
-                   case 'c':
-                     value = SleepUtils.getScalar(in.readChar() + ""); // turns the char into a string
-                     break;
-                   case 'C':
-                     value = SleepUtils.getScalar(((char)in.readUnsignedByte()) + ""); // turns the char into a string
-                     break;
-                   case 'b':
-                     value = SleepUtils.getScalar((int)in.readByte()); // turns the byte into an int
-                     break;
-                   case 'B':
-                     value = SleepUtils.getScalar((int)in.readUnsignedByte()); // turns the byte into an int
-                     break;
-                   case 'h':
-                     value = SleepUtils.getScalar((int)in.readShort()); // turns the byte into an int
-                     break;
-                   case 'H':
-                     value = SleepUtils.getScalar((int)in.readUnsignedShort()); // turns the byte into an int
-                     break;
-                   case 'i':
-                     value = SleepUtils.getScalar(in.readInt()); // turns the byte into an int
-                     break;
-                   case 'f':
-                     value = SleepUtils.getScalar(in.readFloat()); // turns the byte into an int
-                     break;
-                   case 'd':
-                     value = SleepUtils.getScalar(in.readDouble()); // turns the byte into an int
-                     break;
-                   case 'l':
-                     value = SleepUtils.getScalar(in.readLong()); // turns the byte into an int
-                     break;
-                   case 's':
-                     value = SleepUtils.getScalar(in.readUTF()); // turns the byte into an int
-                     break;
-                   case 'S':
-                     break;
-                   default:
-                     env.getScriptInstance().fireWarning("Erroneous file pattern character: " + pattern.value, -1);
+                   temps.append((char)tempval);
+                   tempval = in.readUnsignedByte();
+                } 
+
+                if (pattern.value == 'Z' && z < pattern.count)
+                {
+                   in.skip((pattern.count - z) - 1);
                 }
              }
-             catch (Exception ex) 
+             catch (Exception fex) 
              { 
                 if (control != null) control.close();
-                if (value != null)   
-                   temp.getArray().push(value);       
+                temp.getArray().push(SleepUtils.getScalar(temps.toString()));       
                 return temp;
              }
-
-             if (value != null)   
-                temp.getArray().push(value);       
+ 
+             temp.getArray().push( SleepUtils.getScalar(temps.toString()) ); // reads in a full on string :)
           }
+          else
+          {
+             for (int z = 0; z != pattern.count; z++) // pattern.count is the integer specified "AFTER" the letter
+             {
+                Scalar value = null;
+ 
+                try
+                {
+                   switch (pattern.value)
+                   {
+                      case 'R':
+                        in.reset();
+                        break;
+                      case 'c':
+                        value = SleepUtils.getScalar(in.readChar() + ""); // turns the char into a string
+                        break;
+                      case 'C':
+                        value = SleepUtils.getScalar(((char)in.readUnsignedByte()) + ""); // turns the char into a string
+                        break;
+                      case 'b':
+                        value = SleepUtils.getScalar((int)in.readByte()); // turns the byte into an int
+                        break;
+                      case 'B':
+                        value = SleepUtils.getScalar((int)in.readUnsignedByte()); // turns the byte into an int
+                        break;
+                      case 's':
+                        value = SleepUtils.getScalar((int)in.readShort()); // turns the byte into an int
+                        break;
+                      case 'S':
+                        value = SleepUtils.getScalar((int)in.readUnsignedShort()); // turns the byte into an int
+                        break;
+                      case 'i':
+                        value = SleepUtils.getScalar(in.readInt()); // turns the byte into an int
+                        break;
+                      case 'I':
+                        int ch1 = in.read();
+                        int ch2 = in.read();
+                        int ch3 = in.read();
+                        int ch4 = in.read();
+
+                        if ((ch1 | ch2 | ch3 | ch4) < 0)
+                             throw new EOFException();
+
+                        long templ = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
+
+                        value = SleepUtils.getScalar(templ); // turns the byte into an int
+                        break;
+                      case 'f':
+                        value = SleepUtils.getScalar(in.readFloat()); // turns the byte into an int
+                        break;
+                      case 'd':
+                        value = SleepUtils.getScalar(in.readDouble()); // turns the byte into an int
+                        break;
+                      case 'l':
+                        value = SleepUtils.getScalar(in.readLong()); // turns the byte into an int
+                        break;
+                      case 'u':
+                        value = SleepUtils.getScalar(in.readUTF()); // turns the byte into an int
+                        break;
+                      default:
+                        env.getScriptInstance().fireWarning("Erroneous file pattern character: " + pattern.value, -1);
+                   }
+                }
+                catch (Exception ex) 
+                { 
+                   if (control != null) control.close();
+                   if (value != null)   
+                      temp.getArray().push(value);       
+                   return temp;
+                }
+ 
+                if (value != null)   
+                   temp.getArray().push(value);       
+             }
           }
 
           pattern = pattern.next;
@@ -402,69 +418,90 @@ public class BasicIO implements Loadable
 
        while (pattern != null)
        {
-          for (int z = 0; z != pattern.count && !arguments.isEmpty(); z++)
+          if (pattern.value == 'z' || pattern.value == 'Z')
           {
-             Scalar temp = null;
-
-             if (pattern.value != 'x')
-             {
-                temp = BridgeUtilities.getScalar(arguments);
-             }
-
              try
              {
-                switch (pattern.value)
+                char[] tempchars = BridgeUtilities.getString(arguments, "").toCharArray();
+
+                for (int y = 0; y < tempchars.length; y++)
                 {
-                   case 'x':
-                     out.writeByte(0);
-                     break;
-                   case 'c':
-                     out.writeChar(temp.toString().charAt(0));
-                     break;
-                   case 'C':
-                     out.writeByte((byte)temp.toString().charAt(0));
-                     break;
-                   case 'b':
-                   case 'B':
-                     out.writeByte(temp.intValue());
-                     break;
-                   case 'h':
-                   case 'H':
-                     out.writeShort(temp.intValue());
-                     break;
-                   case 'i':
-                     out.writeInt(temp.intValue());
-                     break;
-                   case 'f':
-                     out.writeFloat((float)temp.doubleValue());
-                     break;
-                   case 'd':
-                     out.writeDouble(temp.doubleValue());
-                     break;
-                   case 'l':
-                     out.writeLong(temp.longValue());
-                     break;
-                   case 's':
-                     out.writeUTF(temp.toString());
-                     break;
-                   case 'S':
-                     char[] tempchars = temp.toString().toCharArray();
+                   out.writeByte((byte)tempchars[y]);
+                }
 
-                     for (int y = 0; y < tempchars.length; y++)
-                     {
-                        out.writeByte((byte)tempchars[y]);
-                     }
-
-                     out.writeByte(0); // string null terminator.
-
-                     break;
-                   default:
+                out.writeByte(0); // output the null terminator
+   
+                if (pattern.value == 'Z')
+                {
+                   // the +1 for the start of this loop is to account for the outputted null character
+                   for (int z = tempchars.length + 1; z < pattern.count; z++)
+                   {
+                      out.writeByte(0); // in the case of Z, keep padding the field length with nulls.
+                   }
                 }
              }
-             catch (Exception ex) 
-             { 
+             catch (Exception ex)
+             {
                 if (control != null) control.close();
                 return;
+             }
+          }
+          else
+          {
+             for (int z = 0; z != pattern.count && !arguments.isEmpty(); z++)
+             {
+                Scalar temp = null;
+
+                if (pattern.value != 'x')
+                {
+                   temp = BridgeUtilities.getScalar(arguments);
+                }
+
+                try
+                {
+                   switch (pattern.value)
+                   {
+                      case 'x':
+                        out.writeByte(0);
+                        break;
+                      case 'c':
+                        out.writeChar(temp.toString().charAt(0));
+                        break;
+                      case 'C':
+                        out.writeByte((byte)temp.toString().charAt(0));
+                        break;
+                      case 'b':
+                      case 'B':
+                        out.writeByte(temp.intValue());
+                        break;
+                      case 's':
+                      case 'S':
+                        out.writeShort(temp.intValue());
+                        break;
+                      case 'i':
+                      case 'I':
+                        out.writeInt(temp.intValue());
+                        break;
+                      case 'f':
+                        out.writeFloat((float)temp.doubleValue());
+                        break;
+                      case 'd':
+                        out.writeDouble(temp.doubleValue());
+                        break;
+                      case 'l':
+                        out.writeLong(temp.longValue());
+                        break;
+                      case 'u':
+                        out.writeUTF(temp.toString());
+                        break;
+                      default:
+                   }
+                }
+                catch (Exception ex) 
+                { 
+                   if (control != null) control.close();
+                   return;
+                }
              }
           }
 

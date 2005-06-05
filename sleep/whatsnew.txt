@@ -2,6 +2,14 @@
 ======
 - fixed a bug parsing tuple assignments in certain cases.
 - added a &subarray(@array, n, [m]) function for extracting an array slice
+- reworked the pack/unpack format strings to make them more useful, noteable
+  changes include:
+  s/S | are for short/unsigned short respectively
+  I   | will now read in an unsigned integer
+  z/Z | are for reading/writing ascii characters, Z will make sure the 
+      | specified field length is used to its fullest.
+  u   | is for reading a UTF-8 format string
+- 
 
 2.0-b7
 ======

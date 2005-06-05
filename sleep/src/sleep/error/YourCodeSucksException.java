@@ -50,11 +50,13 @@ public class YourCodeSucksException extends RuntimeException
 {
     LinkedList allErrors;
 
+    /** Initialize the exception (sleep parser) */
     public YourCodeSucksException(LinkedList myErrors)
     {
        allErrors = myErrors;
     }
 
+    /** Returns a minimal string representation of the errors within this exception */
     public String getMessage()
     {
        StringBuffer buf = new StringBuffer(allErrors.size() + " error(s): ");
@@ -74,6 +76,7 @@ public class YourCodeSucksException extends RuntimeException
        return buf.toString();
     }
 
+    /** Returns a string representation of the errors within this exception */
     public String toString()
     {
        return "YourCodeSucksException: " + getMessage();
