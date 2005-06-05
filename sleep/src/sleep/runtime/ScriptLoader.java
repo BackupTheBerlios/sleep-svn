@@ -192,8 +192,12 @@ public class ScriptLoader
       }
 
       // add script to our loaded scripts data structure
-      loadedScripts.add(si);
-      scripts.put(name, si);
+ 
+      if (! name.equals("<interact mode>"))
+      {
+         loadedScripts.add(si);
+         scripts.put(name, si);
+      }
    }
 
    /** Load a serialized version of the script iff a serialized version exists, and its modification time is greater than the 

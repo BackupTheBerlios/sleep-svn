@@ -9,7 +9,7 @@
   z/Z | are for reading/writing ascii characters, Z will make sure the 
       | specified field length is used to its fullest.
   u   | is for reading a UTF-8 format string
-- 
+- rewrote sleep's interactive console to hopefully be a little more useful
 
 2.0-b7
 ======

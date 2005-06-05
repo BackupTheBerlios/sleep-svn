@@ -43,7 +43,7 @@ foreach $var (@files)
 
          if ($ARGV[0] eq "-dump")
          {
-            print "\njava -classpath . sleep.console.TextConsole load ../tests/$var\n";
+            print "\njava -classpath . sleep.console.TextConsole ../tests/$var\n";
             print "\n".$script_value."\n";
          }
       }  

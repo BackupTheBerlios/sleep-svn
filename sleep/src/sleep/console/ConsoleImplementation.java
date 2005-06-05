@@ -13,10 +13,9 @@ import sleep.runtime.*;
 import sleep.bridges.*;
 
 /**
- * The ConsoleImplementation is the "engine" behind the sleep console.  To use the sleep console in your application use 
- * the following steps:
- * <br>
- * <br>1. Instantiate the console implementation
+ * <p>The ConsoleImplementation is the "engine" behind the sleep console.  To use the sleep console in your application use 
+ * the following steps:</p>
+ * 1. Instantiate the console implementation
  * <br>
  * <br><code>ConsoleImplementation console;</code>
  * <br><code>console = new ConsoleImplementation(environment, variables, loader);</code>
@@ -29,37 +28,31 @@ import sleep.bridges.*;
  * <br>
  * <br><code>console.rppl(); // starts the console</code>
  * 
+ * <p>When embedding the console reusing the object of an already quitted console is not
+ * only allowed but it is also recommended.  When a user quits the console with the quit command
+ * the console proxy is set to a dummy console that does not output anything.  To restart
+ * a quitted console just set the appropriate proxy again and call the <code>rppl()</code> method.</P>
+ *
  * @see sleep.console.ConsoleProxy
  * @see sleep.runtime.ScriptLoader
  * @see sleep.interfaces.Variable
  */
-public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable
+public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, ConsoleProxy
 {
-   public static final int DEFAULT    =  0;
-   public static final int INPUT_CODE =  1;
-   public static final int QUIT       = -1;
-   public static final int INTERACT   =  2;
-
-   /** the mode the console is currently in, DEFAULT, INPUT_CODE, or QUIT */
-   protected int mode                 = QUIT; 
-
    /** the *active* script... */
-   protected ScriptInstance script; 
+   private ScriptInstance script; 
 
    /** the user installed console proxy, defining all input/output for the console */
-   protected ConsoleProxy myProxy; 
+   private ConsoleProxy myProxy; 
 
    /** the script environment with all of the installed functions, predicates, and environments */
-   protected Hashtable        sharedEnvironment; 
+   private Hashtable        sharedEnvironment; 
 
    /** the shared variable container for all scripts, assuming variables are being shared */
-   protected Variable         sharedVariables; 
+   private Variable         sharedVariables; 
 
    /** the script loader */
-   protected ScriptLoader     scriptLoader; 
-
-   /** current code loaded into the console so far */
-   protected StringBuffer     code; 
+   private ScriptLoader     loader; 
 
    /** Creates an implementation of the sleep console.  The implementation created by this constructor is isolated from your 
        applications environment.  Any scripts loaded via this console will have only the default bridges.  */
@@ -70,6 +63,11 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable
 
    /** Creates an implementation of the sleep console that shares what your application is already using.  Any of the 
      * parameters can be null. 
+     *
+     * <p><font color="red"><b>Warning!</b></font> If you choose to use the Sleep console in your application with this constructor,
+     * be aware that even if you don't specify a set of variables or an environment for scripts to share that they will all end up 
+     * sharing something as the sleep console will create and install its own environment or variables if you don't specify 
+     * something.</p>
      *
      * @param _sharedEnvironment the environment contains all of the bridges (functions, predicates, and environments)
      * @param _sharedVariables the Variable class is a container for Scalar variables with global, local, and script specific scope
@@ -88,10 +86,13 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable
 
       sharedEnvironment = _sharedEnvironment;
       sharedVariables   = _sharedVariables;
-      scriptLoader      = _loader;
-      scriptLoader.addSpecificBridge(this);
+      loader            = _loader;
+      loader.addSpecificBridge(this);
+
+      setProxy(this);
    }
 
+   /** Returns the current console proxy being used */
    public ConsoleProxy getProxy()
    {
       return myProxy;
@@ -103,287 +104,295 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable
       myProxy = p;
    }
 
-   public void append(String text)
-   {
-      code.append(text);
-   }
+   /** Dummy implementation, does nothing really. */
+   public void consolePrint(String m) { }
 
-   public String getCode()
-   {
-      return code.toString();
-   }
+   /** Dummy implementation, always returns null. */
+   public String consoleReadln() { return null; }
 
-   public void clear()
-   {
-      code = new StringBuffer();
-   }
+   /** Dummy implementation, does nothing. */
+   public void consolePrintln(Object m) { }
 
-   public int getMode() 
-   {
-      return mode;
-   }
-
-   public boolean canContinue()
-   {
-      return (getMode() != QUIT);
-   }
-
-   protected int lineCount = 0;
-   protected boolean showLines = true;
-
-   public void setMode(int m)
-   {
-      mode = m;
-      lineCount = 1;
-   }
-
-   public void prompt()
-   {
-      switch (getMode())
-      {
-         case DEFAULT:
-           getProxy().consolePrint("Enter Command> ");
-           break;
-         case INPUT_CODE:
-         case INTERACT:
-           showLineCount();
-           break;
-         default:
-           getProxy().consolePrint("? ");
-      }
-   }
-
-   public void quickExecute(String command)
-   {
-      setMode(QUIT);
-      handleCommand(command);
-   }
-
-   public void handleCommand(String inputstr)
-   {
-      if (inputstr == null)
-      {
-         setMode(QUIT);
-         return;
-      }
-
-      String tempa[] = inputstr.split(" ");
-      String command = tempa[0];
-      String parms   = "";
-
-      if (tempa.length == 2)
-         parms = tempa[1];
-
-      if (command.equals("load") && parms.length() > 0)
-      {
-         try
-         {
-            script = scriptLoader.loadScript(parms, sharedEnvironment);
-            
-            long timed = System.currentTimeMillis();
-            script.runScript();
-            timed = System.currentTimeMillis() - timed; 
-
-            if (getMode() != QUIT)
-               getProxy().consolePrintln("Executed script " + script.getName() + " in " + timed + "ms");
-         }
-         catch (YourCodeSucksException sucksEx)
-         {
-            processScriptErrors(sucksEx);
-         }
-         catch (Exception ex)
-         {
-            getProxy().consolePrintln(ex.toString());
-            ex.printStackTrace();
-         }
-      }
-      else if (command.equals("serialize"))
-      {
-         try
-         {
-            script = scriptLoader.loadScript(parms, sharedEnvironment);
-            scriptLoader.saveSerialized(script);
-            getProxy().consolePrintln("Serialized script to " + parms + ".bin");
-         }
-         catch (YourCodeSucksException sucksEx2)
-         {
-            processScriptErrors(sucksEx2);
-         }
-         catch (Exception ex)
-         {
-            getProxy().consolePrintln(ex.toString());
-            ex.printStackTrace();
-         }
-      }
-      else if (command.equals("bload"))
-      {
-         try
-         {
-            for (int x = 0; x < 1; x++)
-            {
-            long timed = System.currentTimeMillis();
-            script = scriptLoader.loadScript(parms, sharedEnvironment);
-            getProxy().consolePrintln("Non-serialized loaded in: " + (System.currentTimeMillis() - timed) + "ms");
-
-            timed = System.currentTimeMillis();
-            scriptLoader.saveSerialized(script);
-            getProxy().consolePrintln("Serialization took: " + (System.currentTimeMillis() - timed) + "ms");
-
-            timed = System.currentTimeMillis();
-            File tempf = new File(parms + ".bin");
-            script = scriptLoader.loadSerialized(tempf.getName(), new FileInputStream(tempf), sharedEnvironment);
-            getProxy().consolePrintln("Serialized loaded in: " + (System.currentTimeMillis() - timed) + "ms");
-            getProxy().consolePrintln("---");
-            }
-         }
-         catch (YourCodeSucksException sucksEx2)
-         {
-            processScriptErrors(sucksEx2);
-         }
-         catch (Exception ex)
-         {
-            getProxy().consolePrintln(ex.toString());
-            ex.printStackTrace();
-         }
-      }
-      else if (command.equals("unload"))
-      {
-         scriptLoader.unloadScript(parms);
-      }
-      else if (command.equals("help"))
-      {
-         getProxy().consolePrintln("clear dump help interact load tree run - not up to date :)");
-      }
-      else if (command.equals("interact"))
-      {
-         getProxy().consolePrintln("Keep entering code hit ^D when your done, use . to parse and run code in buffer");
-         setMode(INTERACT);
-         clear();
-      }
-      else if (command.equals("clear"))
-      {
-         sharedEnvironment.clear();
-         sharedVariables   = new DefaultVariable();
-      }
-      else if (command.equals("env"))
-      {
-         Enumeration en = script.getScriptEnvironment().getEnvironment().keys();
-         while (en.hasMoreElements())
-         {
-            String key = (String)en.nextElement();
-            getProxy().consolePrintln(key + " = " + script.getScriptEnvironment().getEnvironment().get(key).toString());
-         }
-      }
-      else if (command.equals("run"))
-      {
-         script.runScript();
-      }
-      else if (command.equals("load"))
-      {
-         getProxy().consolePrintln("Keep entering code hit ^D when your done");
-         setMode(INPUT_CODE);
-         showLineCount();
-         clear();
-      }
-      else if (command.equals("tree"))
-      {
-         getProxy().consolePrintln(script.getRunnableBlock());  
-      }
-      else if (command.equals("quit") || command.equals("done"))
-      {
-         getProxy().consolePrintln("Good bye!");
-         setMode(QUIT);
-      }
-      else if (!command.equals(""))
-      {
-         getProxy().consolePrintln("Unknown command! Type 'help' if you need it.");
-      }
-   }
-
-   private void showLineCount()
-   {
-       getProxy().consolePrint(lineCount+": ");
-       lineCount++;
-   }
+   private boolean interact = true; // are we in interact mode?
 
    /** starts the console */
    public void rppl() throws IOException
    {
-       setMode(DEFAULT);
- 
+       getProxy().consolePrintln(">> Welcome to the Sleep Scripting Language");
+
+       interact = false;
+
+       String input;
        StringBuffer code = new StringBuffer();
-       String text;
 
-       while (canContinue())
+       while (true)
        {
-          prompt();
-          text = getProxy().consoleReadln();
+          if (!interact)
+             getProxy().consolePrint("> ");
 
-          switch (getMode())
+          input = getProxy().consoleReadln();
+
+          if (interact)
           {
-             case DEFAULT: 
-                handleCommand(text);
-                break;
-             case INTERACT:
-                if (text != null && !text.equals("."))
-                {
-                   append(text);                
-                   append("\n");
-                }
-                else
-                {
-                  try
-                  {
-                     script = scriptLoader.loadScript("input", getCode(), sharedEnvironment);
-                     script.runScript();
-                  }
-                  catch (YourCodeSucksException yex)
-                  {
-                     processScriptErrors(yex);
-                  }
-                  catch (Exception ex)
-                  {
-                     ex.printStackTrace();
-                  }
-
-                  lineCount = 1;
-                  clear();
-                }
-
-              
-
-                if (text == null)
-                {
-                   setMode(DEFAULT);
-                }
-                break;
-             case INPUT_CODE:
-                if (text != null)
-                {
-                   append(text);                
-                   append("\n");
-                   showLineCount();
-                }
-                else
-                {
-                  try
-                  {
-                     script = scriptLoader.loadScript("input", getCode(), sharedEnvironment);
-                  }
-                  catch (YourCodeSucksException yex)
-                  {
-                     processScriptErrors(yex);
-                  }
-                  catch (Exception ex)
-                  {
-                     ex.printStackTrace();
-                  }
-
-                  setMode(DEFAULT);
-                }
-                break;
-             default:
+             if (input == null || input.equals("done"))
+             {
+                interact = false;
+             }
+             else if (input.equals("."))
+             { 
+                eval(code.toString());
+                code = new StringBuffer();                                
+             }
+             else
+             {
+                code.append(input + "\n");
+             }
           }
+          else if (input != null)
+          {
+             String command, args, filter;
+             if (input.indexOf(' ') > -1)
+             {
+                command = input.substring(0, input.indexOf(' '));
+                args    = input.substring(command.length() + 1, input.length());
+             }
+             else
+             {
+                command = input;
+                args    = null;
+             }
+
+             if (command.equals("env"))
+             {
+                if (args != null && args.indexOf(' ') > -1)
+                {
+                   filter = args.substring(args.indexOf(' ') + 1, args.length());
+                   args   = args.substring(0, args.indexOf(' '));
+                }
+                else
+                {
+                   filter = null;
+                }
+
+                env(args, filter);
+             }
+             else if (command.equals("help"))
+             {
+                help();
+             }
+             else if (command.equals("interact"))
+             {
+                interact();
+             }
+             else if (command.equals("list"))
+             {
+                list();
+             }
+             else if (command.equals("load") && args != null)
+             {
+                load(args);
+             }
+             else if (command.equals("tree") && (args != null || script != null))
+             {
+                tree(args);
+             }
+             else if (command.equals("unload") && args != null)
+             {
+                unload(args);
+             }
+             else if (command.equals("x") && args != null)
+             {
+                eval("println(" + args + ");");
+             }
+             else if (command.equals("quit") || command.equals("exit") || command.equals("done"))
+             {
+                getProxy().consolePrintln("Good bye!");
+                setProxy(this);
+                break;
+             }
+             else if (command.trim().length() > 0)
+             {
+                getProxy().consolePrintln("Command '"+command+"' not understood.  Type 'help' if you need it");
+             } 
+          }
+          else
+          {
+             getProxy().consolePrintln("Good bye!");
+             setProxy(this);
+             break;
+          }
+      }
+
+      interact = true;
+   }
+
+   private void help()
+   {
+       getProxy().consolePrintln("env [functions/other] [regex filter]");
+       getProxy().consolePrintln("   dumps the shared environment, filters output with specified regex");
+       getProxy().consolePrintln("help");
+       getProxy().consolePrintln("   displays this message");
+       getProxy().consolePrintln("interact");
+       getProxy().consolePrintln("   enters the console into interactive mode.");
+       getProxy().consolePrintln("list");
+       getProxy().consolePrintln("   lists all of the currently loaded scripts");
+       getProxy().consolePrintln("load <file>");
+       getProxy().consolePrintln("   loads a script file into the script loader");
+       getProxy().consolePrintln("unload <file>");
+       getProxy().consolePrintln("   unloads a script file from the script loader");
+       getProxy().consolePrintln("tree [key]");
+       getProxy().consolePrintln("   displays the Abstract Syntax Tree for the specified key");
+       getProxy().consolePrintln("quit");
+       getProxy().consolePrintln("   stops the console");
+       getProxy().consolePrintln("x <expression>");
+       getProxy().consolePrintln("   evaluates a sleep expression and displays the value");
+
+   }
+
+   private void load(String file)
+   {
+       try
+       {
+          ScriptInstance script = loader.loadScript(file, sharedEnvironment);
+          script.runScript();
+       }
+       catch (YourCodeSucksException yex)
+       {
+          processScriptErrors(yex);
+       }
+       catch (Exception ex)
+       {
+          getProxy().consolePrintln("Could not load script " + file + ": " + ex.getMessage());
+       }
+   }
+
+   private String getFullScript(String name)
+   {
+       if (loader.getScriptsByKey().containsKey(name))
+       {
+          return name;
+       }
+
+       Iterator i = loader.getScripts().iterator();
+       while (i.hasNext())
+       {
+          ScriptInstance script = (ScriptInstance)i.next();
+          File temp = new File(script.getName());
+ 
+          if (temp.getName().equals(name))
+          {
+             return temp.getAbsolutePath();
+          }
+       }
+
+       return name;
+   }
+
+   private void unload(String file)
+   {
+       try
+       {
+          loader.unloadScript(getFullScript(file));
+       }
+       catch (Exception ex)
+       {
+          getProxy().consolePrintln("Could not unloaded script " + file + ": " + ex.getMessage());
+       }
+   }
+
+   private void list()
+   {
+       Iterator i = loader.getScripts().iterator();
+       while (i.hasNext())
+       {
+          ScriptInstance temp = (ScriptInstance)i.next();
+          getProxy().consolePrintln(temp.getName());
+       }
+   }
+
+   private void env(String type, String filter)
+   {
+       Iterator i = sharedEnvironment.keySet().iterator();
+       while (i.hasNext())
+       {
+          Object temp = i.next();
+          
+          if ( (type == null) || 
+               (type.equals("functions") && temp.toString().charAt(0) == '&') ||
+               (type.equals("other") && temp.toString().charAt(0) != '&') 
+             )
+          {
+             if (filter == null || java.util.regex.Pattern.matches(".*?" + filter + ".*", sharedEnvironment.get(temp).toString()))
+             {
+                getProxy().consolePrintln(align(temp.toString(), 20) + " => " + sharedEnvironment.get(temp));
+             }
+          }
+       }
+   }
+
+   private String align(String text, int to)
+   {
+       StringBuffer temp = new StringBuffer(text);
+       while (temp.length() < to)
+       {
+          temp.append(" ");
+       }
+
+       return temp.toString();
+   }
+
+   private void tree(String item)
+   {
+       if (item == null)
+       {
+          getProxy().consolePrintln(script.getRunnableBlock().toString());
+       }
+       else if (item.charAt(0) == '&' || item.charAt(0) == '$')
+       {
+          if (sharedEnvironment != null && sharedEnvironment.get(item) instanceof SleepClosure)
+          {
+             SleepClosure temp = (SleepClosure)sharedEnvironment.get(item);
+             getProxy().consolePrintln(temp.getRunnableCode());
+          }
+          else
+          {
+             getProxy().consolePrintln("Could not find code block "+item+" to print tree of");
+          }
+       }
+       else
+       {
+          HashMap temp = loader.getScriptsByKey();
+
+          if (temp.get(getFullScript(item)) != null)
+          {
+             getProxy().consolePrintln(((ScriptInstance)temp.get(getFullScript(item))).getRunnableBlock());
+          }
+          else
+          {
+             getProxy().consolePrintln("Could not find script "+item+" to print tree of");
+          }
+       }
+   }
+
+   private void interact()
+   {
+       interact = true;
+       getProxy().consolePrintln(">> Welcome to interactive mode.");
+       getProxy().consolePrintln("Type your code and then '.' on a line by itself to execute the code.");
+       getProxy().consolePrintln("Type Ctrl+D or 'done' on a line by itself to leave interactive mode.");
+   }
+
+   private void eval (String expression)
+   {
+       try
+       {
+          Block parsed = SleepUtils.ParseCode(expression.toString());
+          script = loader.loadScript("<interact mode>", parsed, sharedEnvironment);
+          script.runScript();
+       }
+       catch (YourCodeSucksException yex)
+       {
+          processScriptErrors(yex);
        }
    }
 
@@ -410,11 +419,8 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable
 
    public boolean scriptLoaded(ScriptInstance script)
    {
-      if (getMode() != QUIT)
+      if (! script.getName().equals("<interact mode>") && !interact)
          getProxy().consolePrintln(script.getName() + " loaded successfully.");
-
-//      sleep.bridges.SwingBridge swing = new sleep.bridges.SwingBridge();
-//      swing.scriptLoaded(script);
 
       script.addWarningWatcher(this);
       script.setScriptVariables(new ScriptVariables(sharedVariables));
