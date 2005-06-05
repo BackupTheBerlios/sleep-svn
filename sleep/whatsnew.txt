@@ -1,4 +1,4 @@
-2.0-b8 in progress
+2.0-b8
 ======
 - fixed a bug parsing tuple assignments in certain cases.
 - added a &subarray(@array, n, [m]) function for extracting an array slice
@@ -10,6 +10,8 @@
       | specified field length is used to its fullest.
   u   | is for reading a UTF-8 format string
 - rewrote sleep's interactive console to hopefully be a little more useful
+- fixed a bug with the pack/unpack format string parser not assigning the 
+  specified integer to the last format character.
 
 2.0-b7
 ======

@@ -284,7 +284,7 @@ public class BasicIO implements Loadable
           {
              try
              {
-                in.skipBytes(pattern.count);
+                in.skip(pattern.count);
              }
              catch (Exception ex) { }
           }

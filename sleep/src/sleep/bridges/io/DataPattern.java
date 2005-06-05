@@ -68,6 +68,9 @@ public class DataPattern
          }
       }
 
+      if (count.length() > 0)
+         temp.count = Integer.parseInt(count.toString());
+
       patternCache.put(format, head);
       return head;
    }
