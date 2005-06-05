@@ -1,5 +1,5 @@
  ------- -------------------- ---------   ---------------  ------- ---------
-Sleep - 2.0-beta 7 - README   
+Sleep - 2.0-beta 8 - README   
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 "You got the language, all you need now is the O'Reilly book".  That is
@@ -27,10 +27,6 @@ proficient Java programmers familiar with your API and the Java API
 then by all means use these other projects.  Sleep on the other hand makes 
 it easy for you to integrate your application into a hacker friendly 
 language that does not overwhelm novice programmers.  
-
-Sleep is now under 2.0 development due to the inclusion of the Haphazard
-Object Extensions for Sleep aka HOES.  HOES adds functionality to allow
-Sleep scripts to access, query, and create Java objects.
 
 Sleep Project Homepage: http://sleep.hick.org/
 
@@ -63,9 +59,7 @@ common.htm
 
 console.txt
    A quick reference on the sleep console.  The sleep console is a simple
-   console for interacting with the sleep library.  I use it mostly for
-   debugging purposes.  In the future the console is a very likely area 
-   for expansion and enhancement. 
+   console for interacting with the sleep library.
 
 parser.htm
    A little overview on how the sleep parser works for the curious.
@@ -73,7 +67,6 @@ parser.htm
 You also have the option of generating the JavaDoc API's for the sleep 
 language.  I recommend either generating these or downloading them from 
 the sleep website.  Javadoc is your friend when working with this project.
-The API documentation has recently been updated and expanded.
      
  ------- -------------------- ---------   ---------------  ------- ---------
 Build Instructions
