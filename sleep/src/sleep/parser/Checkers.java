@@ -216,7 +216,12 @@ public class Checkers
 
    public static final boolean isForeach (String a, String b, String c, String d)
    {
-       return (a.equals("foreach") && isScalar(b) && isExpression(c) && isBlock(d));
+       return (a.equals("foreach") && isVariable(b) && isExpression(c) && isBlock(d));
+   }
+
+   public static final boolean isSpecialForeach (String a, String b, String c, String d, String e, String f)
+   {
+       return (a.equals("foreach") && isVariable(b) && c.equals("=>") && isVariable(d) && isExpression(e) && isBlock(f));
    }
 
    public static final boolean isReturn (String temp)
@@ -248,33 +253,20 @@ public class Checkers
 
    public static final boolean isNumber (String temp)
    {
-      if (isHexNumber(temp))
-         return true;
-
       if (temp.endsWith("L"))
       {
-         try
-         {
-            Long.parseLong(temp.substring(0, temp.length() - 1));
-         }
-         catch (Exception lex) { return false; }
-         return true;
+         temp = temp.substring(0, temp.length() - 1);
       }
 
       try
       {
-         Integer.parseInt(temp);
+         Long.decode(temp);
       }
       catch (Exception hex) 
       {
          return false;
       }
       return true;
-   }
-
-   public static final boolean isHexNumber(String temp)
-   {
-      return (temp.length() >= 3 && temp.substring(0, 2).equals("0x"));
    }
 
    public static final boolean isDouble (String temp)

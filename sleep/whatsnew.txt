@@ -1,3 +1,23 @@
+2.0-b9
+======
+- foreach loops now automatically convert hash parameters into their keyset.
+- added a new foreach syntax:
+
+  foreach $index => $value (source) { }
+
+  in this case sleep will assign the index of the source (whether a number for
+  an array or a string for a hash) and the value as well.
+- sleep console now catches uncaught exceptions with evaluated expressions
+- redid the parsing for number literals to rely on Java's methods for doing s
+  so.  this means integer/long literals can now be specified in hex, decimal,
+  and octal formats.  Octal is indicated with a 0 (digit zero) following the
+  number.  Hex is indicated with 0x followed by the hex digits.  Anything
+  else is decimal.  Any of these formats can be signed.  Also any of these
+  formats can be followed by an L to specify a long scalar rather than an
+  int.
+- the remove() function now takes multiple parameters for multiple items to 
+  remove.
+
 2.0-b8
 ======
 - fixed a bug parsing tuple assignments in certain cases.

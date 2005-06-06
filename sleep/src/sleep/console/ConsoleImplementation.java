@@ -394,6 +394,10 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        {
           processScriptErrors(yex);
        }
+       catch (Exception ex)
+       {
+          getProxy().consolePrintln("Oops, an error occured with " + expression + ": " + ex.toString());
+       }
    }
 
    /** a convienence method that formats and writes each syntax error to the proxy output */

@@ -473,7 +473,18 @@ public class TokenParser implements ParserConstants
     	 myToken = new Statement();
 
          // a foreach loop
-         if ((x + 3) < tokens.length && Checkers.isForeach(strings[x], strings[x+1], strings[x+2], strings[x+3]))
+         if ((x + 5) < tokens.length && Checkers.isSpecialForeach(strings[x], strings[x+1], strings[x+2], strings[x+3], strings[x+4], strings[x+5]))
+         {
+            myToken.setType(EXPR_FOREACH_SPECIAL);
+            myToken.add(tokens[x]);
+            myToken.add(tokens[x+1]);
+            myToken.add(tokens[x+2]);
+            myToken.add(tokens[x+3]);
+            myToken.add(tokens[x+4]);
+            myToken.add(tokens[x+5]);
+            x += 5;
+         }
+         else if ((x + 3) < tokens.length && Checkers.isForeach(strings[x], strings[x+1], strings[x+2], strings[x+3]))
          {
             myToken.setType(EXPR_FOREACH);
             myToken.add(tokens[x]);

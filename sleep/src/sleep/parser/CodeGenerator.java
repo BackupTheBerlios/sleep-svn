@@ -430,17 +430,13 @@ public class CodeGenerator implements ParserConstants
            add(atom, tokens[0]);
            break;
          case IDEA_NUMBER:                         // implemented
-           if (Checkers.isHexNumber(strings[0]))
+           if (strings[0].endsWith("L"))
            {
-              ascalar = SleepUtils.getScalar(Integer.parseInt(strings[0].substring(2), 16));
-           }
-           else if (strings[0].endsWith("L"))
-           {
-              ascalar = SleepUtils.getScalar(Long.parseLong(strings[0].substring(0, strings[0].length() - 1)));
+              ascalar = SleepUtils.getScalar(Long.decode(strings[0].substring(0, strings[0].length() - 1)));
            }
            else
            {
-              ascalar = SleepUtils.getScalar(Integer.parseInt(strings[0]));
+              ascalar = SleepUtils.getScalar(Integer.decode(strings[0]));
            }
 
            atom    = GeneratedSteps.SValue(ascalar);
@@ -849,6 +845,26 @@ public class CodeGenerator implements ParserConstants
 
            atom = GeneratedSteps.Goto(parsePredicate(ParserUtilities.extract(tokens[1])), a, b, false);
            add(atom, tokens[1]); 
+           break;
+         case EXPR_FOREACH_SPECIAL:
+           // |foreach   0
+           // |$key      1
+           // |=>        2
+           // |$value    3
+           // |(@temp)   4
+           // |{ &printf("hi"); } 5
+
+           backup(); 
+           parseIdea(ParserUtilities.extract(tokens[4])); // parse the "source" of the foreach
+           a = restore();
+
+           backup();
+           parseBlock(ParserUtilities.extract(tokens[5])); // parse the actual block of code to be executed.
+           b = restore();
+
+           atom = GeneratedSteps.Foreach(a, strings[1], strings[3], b);
+
+           add(atom, tokens[1]);
            break;
          case EXPR_FOREACH:
            // |foreach

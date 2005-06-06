@@ -120,6 +120,12 @@ public class GeneratedSteps
        return temp;
     }
 
+    public static Step Foreach(Block source, String key, String value, Block code)
+    {
+       Step temp = new Foreach(source, key, value, code);
+       return temp;
+    }
+
     public static Step CreateClosure(Block code)
     {
        Step temp = new CreateClosure(code);

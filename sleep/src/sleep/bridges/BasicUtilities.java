@@ -526,15 +526,18 @@ public class BasicUtilities implements Function, Loadable, Predicate
        }
        else if (n.equals("&remove"))
        {
-          Scalar scalar = (Scalar)l.pop();
+          while (!l.isEmpty())
+          {
+             Scalar scalar = (Scalar)l.pop();
 
-          if (value.getArray() != null)
-          {
-             value.getArray().remove(scalar);
-          }
-          else if (value.getHash() != null)
-          {
-             value.getHash().remove(scalar);
+             if (value.getArray() != null)
+             {
+                value.getArray().remove(scalar);
+             }
+             else if (value.getHash() != null)
+             {
+                value.getHash().remove(scalar);
+             }
           }
        }
        else if (n.equals("&keys")) // &keys(%hash)
