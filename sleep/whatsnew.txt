@@ -17,6 +17,9 @@
   int.
 - the remove() function now takes multiple parameters for multiple items to 
   remove.
+- added callback parameters for &listen() and &connect().  this will allow 
+  sleep to call a function when a connection is established or failed for
+  either of these functions.
 
 2.0-b8
 ======

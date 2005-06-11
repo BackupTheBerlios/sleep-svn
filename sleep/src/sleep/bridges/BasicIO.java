@@ -50,8 +50,11 @@ public class BasicIO implements Loadable
 
         // functions
         temp.put("&openf",      new openf());
-        temp.put("&connect",    new connect());
-        temp.put("&listen",     new listen());
+
+        SocketFuncs f = new SocketFuncs();
+
+        temp.put("&connect",    f);
+        temp.put("&listen",     f);
         temp.put("&exec",       new exec());
 
         temp.put("&closef",     new closef());
@@ -112,32 +115,37 @@ public class BasicIO implements Loadable
        }
     }
 
-    private static class connect implements Function
+    private static class SocketFuncs implements Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          String a = ((Scalar)l.pop()).toString();
-          int    b = BridgeUtilities.getInt(l);
+          SocketHandler handler = new SocketHandler();
+          handler.socket        = new SocketObject();
+          handler.script        = i;
 
-          SocketObject temp = new SocketObject();
-          temp.open(a, b, i.getScriptEnvironment());
+          if (n.equals("&listen"))
+          {
+             handler.port     = BridgeUtilities.getInt(l, -1);          // port
+             handler.timeout  = BridgeUtilities.getInt(l, 60 * 1000);   // timeout
+             handler.callback = BridgeUtilities.getScalar(l);           // scalar to put info in to
 
-          return SleepUtils.getScalar(temp);
-       }
-    }
+             handler.type     = LISTEN_FUNCTION;
+          }
+          else
+          {
+             handler.host     = BridgeUtilities.getString(l, "127.0.0.1");
+             handler.port     = BridgeUtilities.getInt(l, 1);
 
-    private static class listen implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
-          int    a = BridgeUtilities.getInt(l, -1);          // port
-          int    b = BridgeUtilities.getInt(l, 60 * 1000);   // timeout
-          Scalar c = BridgeUtilities.getScalar(l);           // scalar to put info in to
+             handler.type     = CONNECT_FUNCTION;
+          }
+          
+          if (!l.isEmpty())
+             handler.function = BridgeUtilities.getFunction(l, i);
 
-          SocketObject temp = new SocketObject();
-          temp.listen(a, b, c, i.getScriptEnvironment());
+         
+          handler.start();
 
-          return SleepUtils.getScalar(temp);
+          return SleepUtils.getScalar(handler.socket);
        }
     }
 
@@ -750,6 +758,54 @@ public class BasicIO implements Loadable
                 source.close();
                 script.getScriptEnvironment().flagError(ex.toString());
              }
+          }
+       }
+    }
+
+    private static final int LISTEN_FUNCTION  = 1;
+    private static final int CONNECT_FUNCTION = 2;
+
+    private static class SocketHandler implements Runnable
+    {
+       public ScriptInstance script;
+       public SleepClosure   function;
+       public SocketObject   socket;
+
+       public int            port;
+       public int            timeout;
+       public String         host;
+       public Scalar         callback;
+
+       public int            type;
+
+       public void start()
+       {
+          if (function != null)
+          {
+             new Thread(this).start();
+          }
+          else
+          {
+             run();
+          }
+       }
+
+       public void run()
+       {
+          if (type == LISTEN_FUNCTION)
+          {
+             socket.listen(port, timeout, callback, script.getScriptEnvironment());
+          }
+          else
+          {
+             socket.open(host, port, script.getScriptEnvironment());
+          }
+
+          if (function != null)
+          {
+             Stack  args  = new Stack();
+             args.push(SleepUtils.getScalar(socket));
+             function.callClosure("&callback", script, args);
           }
        }
     }
