@@ -1,4 +1,4 @@
-2.0-b9
+2.0-stable
 ======
 - foreach loops now automatically convert hash parameters into their keyset.
 - added a new foreach syntax:

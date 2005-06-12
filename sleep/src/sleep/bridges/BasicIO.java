@@ -142,7 +142,6 @@ public class BasicIO implements Loadable
           if (!l.isEmpty())
              handler.function = BridgeUtilities.getFunction(l, i);
 
-         
           handler.start();
 
           return SleepUtils.getScalar(handler.socket);
