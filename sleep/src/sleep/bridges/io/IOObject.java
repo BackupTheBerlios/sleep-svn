@@ -73,6 +73,9 @@ public class IOObject
    {
       try
       {
+         in.notifyAll();  // done to prevent a deadlock, trust me it works
+         out.notifyAll(); // done to prevent a deadlock, trust me it works
+
          if (reader != null)
            reader.close();
 
