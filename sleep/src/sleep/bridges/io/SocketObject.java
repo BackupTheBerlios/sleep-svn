@@ -47,12 +47,12 @@ public class SocketObject extends IOObject
 
    public void close()
    {
-      super.close();
-
       try
       {
          socket.close();
       }
       catch (Exception ex) { }
+
+      super.close();
    }
 }
