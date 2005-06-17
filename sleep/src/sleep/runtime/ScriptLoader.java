@@ -150,6 +150,12 @@ public class ScriptLoader
       return scripts;
    }
 
+   /** Determines wether or not the script is loaded by checking if the specified key exists in the script db. */
+   public boolean isLoaded(String name)
+   {
+      return scripts.containsKey(name);
+   }
+
    /** Convienence method to return the script environment of the first script tht was loaded, returns null if no scripts are loaded */
    public ScriptEnvironment getFirstScriptEnvironment()
    {
