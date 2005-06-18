@@ -54,9 +54,9 @@ import java.util.WeakHashMap;
   * <p>The code above illustrates how to retrieve a Scalar named $var from a 
   * script instance object.</p>
   *
-  * <p>Sleep has 4 levels of scope.  They are (in order of precedence):</p>
+  * <p>Sleep has 3 levels of scope.  They are (in order of precedence):</p>
   * <li>Local   - discarded after use</li>
-  * <li>Closure - specific to the currently executing closure</li>
+  * <li>Closure - specific to the current executing closure</li>
   * <li>Global  - global to all scripts sharing this script variables instance</li>
   * 
   * @see sleep.runtime.Scalar
