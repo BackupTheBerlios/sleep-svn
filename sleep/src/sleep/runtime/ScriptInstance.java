@@ -50,7 +50,7 @@ import java.util.Iterator;
 /** Every piece of information related to a loaded script.  This includes the scripts runtime environment, code in compiled 
   * form, variable information, and listeners for runtime issues.
   */
-public class ScriptInstance implements Serializable
+public class ScriptInstance implements Serializable, Runnable
 {
     /** the name of this script */
     protected String  name  = "Script";
@@ -149,6 +149,22 @@ public class ScriptInstance implements Serializable
         getScriptEnvironment().clearReturn();
     }
  
+    /** Creates a forked script instance.  This does not work like fork in an operating system.  Variables are not copied, period.
+        The idea is to create a fork that shares the same environment as this script instance. */
+    public ScriptInstance fork()
+    {
+        ScriptInstance si = new ScriptInstance(variables.getGlobalVariables().createInternalVariableContainer(), environment.getEnvironment());
+        si.setName("fork of " + getName());
+
+        return si;
+    }
+
+    /** Executes this script, same as runScript() just here for Runnable compatability */
+    public void run()
+    {
+        runScript();
+    }
+
     /** Returns the compiled form of this script */
     public Block getRunnableBlock()
     {

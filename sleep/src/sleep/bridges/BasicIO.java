@@ -56,6 +56,8 @@ public class BasicIO implements Loadable
         temp.put("&connect",    f);
         temp.put("&listen",     f);
         temp.put("&exec",       new exec());
+        temp.put("&fork",       new fork());
+        temp.put("&sleep",      new sleep());
 
         temp.put("&closef",     new closef());
 
@@ -112,6 +114,63 @@ public class BasicIO implements Loadable
           temp.open(a, i.getScriptEnvironment());
 
           return SleepUtils.getScalar(temp);
+       }
+    }
+
+    private static class sleep implements Function
+    {
+       public Scalar evaluate(String n, ScriptInstance i, Stack l)
+       {
+          try
+          {
+             Thread.currentThread().sleep(BridgeUtilities.getLong(l, 0));
+          }
+          catch (Exception ex) { }
+
+          return SleepUtils.getEmptyScalar();
+       }
+    }
+
+    private static class fork implements Function
+    {
+       public Scalar evaluate(String n, ScriptInstance i, Stack l)
+       {
+          SleepClosure   param = BridgeUtilities.getFunction(l, i);        
+
+          // create our fork...
+          ScriptInstance child = i.fork();
+          child.installBlock(param.getRunnableCode());
+
+          // create a pipe between these two items...
+          IOObject parent_io = new IOObject();
+          IOObject child_io  = new IOObject();
+
+          try
+          {
+             PipedInputStream  parent_in  = new PipedInputStream();
+             PipedOutputStream parent_out = new PipedOutputStream();
+             parent_in.connect(parent_out);
+
+             PipedInputStream  child_in   = new PipedInputStream();
+             PipedOutputStream child_out  = new PipedOutputStream();
+             child_in.connect(child_out);
+
+             parent_io.openRead(child_in);
+             parent_io.openWrite(parent_out);
+
+             child_io.openRead(parent_in);
+             child_io.openWrite(child_out);
+          
+             child.getScriptVariables().putScalar("$source", SleepUtils.getScalar(child_io));
+
+             new Thread(child, child.getName()).start();
+          }
+          catch (Exception ex)
+          {
+             i.getScriptEnvironment().flagError(ex.toString());
+          }
+
+          return SleepUtils.getScalar(parent_io);
        }
     }
 

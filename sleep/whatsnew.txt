@@ -1,4 +1,4 @@
-2.0-stable
+2.0-b9 
 ======
 - foreach loops now automatically convert hash parameters into their keyset.
 - added a new foreach syntax:
@@ -22,6 +22,14 @@
   either of these functions.
 - fixed a deadlock condition caused by calling closef() on a socket from 
   a thread other than the read thread. 
+- added fork(&closure) to spin &closure off in its own thread.  &closure 
+  is run in an isolated environment.  communication between the main environment
+  and the &closure environment is facilitated by a IO pipe returned by fork()
+  and available as $source within &closure().
+- added sleep(n) to cause the current thread to sleep for n milliseconds
+- removed the "script" variable scope.  this was necessary to make the 
+  forked isolated script environments a reality.  
+- HOES now sets all fields accessible property to true before invocation
 
 2.0-b8
 ======

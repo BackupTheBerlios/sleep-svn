@@ -58,6 +58,6 @@ public interface Variable
     /** returns which variable environment is used to temporarily store local variables.  */
     public Variable createLocalVariableContainer();
 
-    /** returns which variable environment is used to store non-global / non-local variables.  */
+    /** returns which variable environment is used to store non-global / non-local variables.  this is also used to create the global scope for a forked script environment. */
     public Variable createInternalVariableContainer();
 }

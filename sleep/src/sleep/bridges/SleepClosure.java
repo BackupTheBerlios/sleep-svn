@@ -48,9 +48,6 @@ public class SleepClosure implements Function
     /** the owning script associated with this sleep closure */
     ScriptInstance      owner; 
 
-    /** a set of variables specific to this sleep closure */
-    Variable        variables;
-
     /** Creates a new Sleep Closure, with a brand new set of internal variables.  Don't be afraid, you can call this constructor from your code. */
     public SleepClosure(ScriptInstance si, Block _code)
     {
@@ -62,9 +59,9 @@ public class SleepClosure implements Function
     {
        code     = _code;
        owner    = si;
-       variables = _var;
 
-       variables.putScalar("$this", SleepUtils.getScalar(this));
+       _var.putScalar("$this", SleepUtils.getScalar(this));
+       setVariables(_var);
     }
 
     /** Returns the owning script instance */
@@ -82,13 +79,13 @@ public class SleepClosure implements Function
     /** Returns the variable container for this closures */
     public Variable getVariables()
     {
-       return variables;
+       return getOwner().getScriptVariables().getClosureVariables(this);
     }
 
     /** Sets the variable environment for this closure */
     public void setVariables(Variable _variables)
     {
-       variables = _variables;
+       getOwner().getScriptVariables().setClosureVariables(this, _variables);
     }
 
     /** "Safely" calls this closure.  Use this if you are evaluating this closure from your own code. 
@@ -115,14 +112,14 @@ public class SleepClosure implements Function
     /** Evaluates the closure, use callClosure instead. */
     public Scalar evaluate(String message, ScriptInstance si, Stack locals)
     {
-       ScriptVariables   vars = getOwner().getScriptVariables();
-       ScriptEnvironment env  = getOwner().getScriptEnvironment();
+       ScriptVariables   vars = si.getScriptVariables();
+       ScriptEnvironment env  = si.getScriptEnvironment();
 
        Scalar temp; // return value of subroutine.
 
        synchronized (vars)
        {
-          vars.pushClosureLevel(variables);
+          vars.pushClosureLevel(this);
           vars.pushLocalLevel();
 
           Variable localLevel = vars.getLocalVariables();
@@ -147,11 +144,13 @@ public class SleepClosure implements Function
           //
           temp = code.evaluate(env);
 
-          if (getOwner() != si && env.isReturn())
+/*          if (getOwner() != si && env.isReturn())
           {
              env.clearReturn();
              si.getScriptEnvironment().flagReturn(temp);
-          }
+          } 
+          
+          This commented out block is no longer needed if the environment of the calling script is always used... */
 
           vars.popLocalLevel();
           vars.popClosureLevel();

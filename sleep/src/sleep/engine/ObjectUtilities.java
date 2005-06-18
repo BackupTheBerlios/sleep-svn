@@ -55,11 +55,11 @@ public class ObjectUtilities
       catch (Exception ex) { }
    }
 
-   private static final int ARG_MATCH_YES   = 1;
-   private static final int ARG_MATCH_NO    = 2;
-   private static final int ARG_MATCH_MAYBE = 3;
+   public static final int ARG_MATCH_YES   = 1;
+   public static final int ARG_MATCH_NO    = 2;
+   public static final int ARG_MATCH_MAYBE = 3;
 
-   private static int isArgMatch(Class[] check, Stack arguments)
+   public static int isArgMatch(Class[] check, Stack arguments)
    {
       int value = ARG_MATCH_YES;
 

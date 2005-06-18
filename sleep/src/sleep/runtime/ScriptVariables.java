@@ -35,6 +35,7 @@ import sleep.parser.ParserUtilities;
 import java.util.Hashtable;
 import java.util.Stack;
 import java.util.LinkedList;
+import java.util.WeakHashMap;
 
 /** Maintains variables and variable scopes for a script instance.  If you want to change the way variables are handled do not 
   * override this class.  This class handles all accessing of variables through an object that implements the Variable 
@@ -56,7 +57,6 @@ import java.util.LinkedList;
   * <p>Sleep has 4 levels of scope.  They are (in order of precedence):</p>
   * <li>Local   - discarded after use</li>
   * <li>Closure - specific to the currently executing closure</li>
-  * <li>Script  - global to the current script</li>
   * <li>Global  - global to all scripts sharing this script variables instance</li>
   * 
   * @see sleep.runtime.Scalar
@@ -65,10 +65,10 @@ import java.util.LinkedList;
   */
 public class ScriptVariables implements Serializable
 {
-    Variable   global;   /* global variables */
-    Hashtable  internal; /* internal, scriptinstance specific variables */
-    LinkedList closure;  /* closure specific variables :) */
-    LinkedList locals;   /* local variables */
+    Variable    global;   /* global variables */
+    LinkedList  closure;  /* closure specific variables :) */
+    LinkedList  locals;   /* local variables */
+    WeakHashMap cscopes;  /* closure scope storage */
 
     /** Initializes this ScriptVariables container using a DefaultVariable object for default variable storage */
     public ScriptVariables()
@@ -80,9 +80,9 @@ public class ScriptVariables implements Serializable
     public ScriptVariables(Variable aVariableClass)
     {
        global   = aVariableClass;
-       internal = new Hashtable();
        closure  = new LinkedList();
        locals   = new LinkedList();
+       cscopes  = new WeakHashMap();
 
        pushLocalLevel();
     }
@@ -124,18 +124,6 @@ public class ScriptVariables implements Serializable
        }
 
        //
-       // check internal variables for an occurence of our variable
-       //
-       if (i != null)
-       {
-          temp = getInternalVariables(i);
-          if (temp != null && temp.scalarExists(key))
-          {
-             return temp;
-          }
-       }
-
-       //
        // check the global variables
        //
        temp = getGlobalVariables();
@@ -173,16 +161,6 @@ public class ScriptVariables implements Serializable
        return (Variable)locals.getFirst();
     }
 
-    /** returns the script specific variable scope */
-    public Variable getInternalVariables(ScriptInstance script)
-    {
-       if (internal.get(script) == null)
-       {
-          internal.put(script, global.createInternalVariableContainer());
-       }
-       return (Variable)internal.get(script);
-    }
-
     /** returns the current closure variable scope */
     public Variable getClosureVariables()
     {
@@ -198,10 +176,29 @@ public class ScriptVariables implements Serializable
        return global;
     }
 
-    /** makes the current closure variable scope active, once the closure has executed this should be popped */
-    public void pushClosureLevel(Variable var)
+    /** returns the closure level variables for this specific script environment */
+    public Variable getClosureVariables(SleepClosure closure)
     {
-       closure.addFirst(var);
+       Object temp = cscopes.get(closure);
+       if (temp == null)
+       {
+          temp = global.createInternalVariableContainer();
+          cscopes.put(closure, temp);
+       }
+
+       return (Variable)temp;       
+    }
+
+    /** returns the closure level variables for this specific script environment */
+    public void setClosureVariables(SleepClosure closure, Variable variables)
+    {
+       cscopes.put(closure, variables);
+    }
+
+    /** makes the specified closure variable scope active, once the closure has executed this should be popped */
+    public void pushClosureLevel(SleepClosure level)
+    {
+       closure.addFirst(getClosureVariables(level));
     }
 
     /** discards the current closure variable scope */

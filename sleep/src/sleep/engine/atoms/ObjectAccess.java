@@ -111,6 +111,12 @@ public class ObjectAccess extends Step
 
          if (theMethod != null && (classRef == null || (theMethod.getModifiers() & Modifier.STATIC) == Modifier.STATIC))
          {  
+            try
+            {
+               theMethod.setAccessible(true);
+            }
+            catch (Exception ex) { }
+
             parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
             result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
          }
@@ -118,7 +124,20 @@ public class ObjectAccess extends Step
          {
             Field aField = theClass.getField(name);
 
-            result = ObjectUtilities.BuildScalar(true, aField.get(accessMe));
+            if (aField != null)
+            {
+               try
+               {
+                  aField.setAccessible(true);
+               }
+               catch (Exception ex) { }
+
+               result = ObjectUtilities.BuildScalar(true, aField.get(accessMe));
+            }
+            else
+            {
+               result = SleepUtils.getEmptyScalar();
+            }
          }
       }
       catch (InvocationTargetException ite)

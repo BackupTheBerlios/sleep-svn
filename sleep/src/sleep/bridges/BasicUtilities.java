@@ -72,7 +72,6 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
         temp.put("&local",    scopeFunctions);
         temp.put("&this",     scopeFunctions);
-        temp.put("&module",   scopeFunctions);
 
         temp.put("&reverse",  new reverse());      // @array2 = &reverse(@array) 
         temp.put("&removeAt", new removeAt());   // not safe within foreach loops yada yada yada...
@@ -262,7 +261,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
           while (!l.isEmpty())
           {
              KeyValuePair kvp = BridgeUtilities.getKeyValuePair(l);
-              vars.putScalar(kvp.getKey().toString(), kvp.getValue());
+             vars.putScalar(kvp.getKey().toString(), kvp.getValue());
           }
 
           return SleepUtils.getScalar(value);
@@ -351,7 +350,6 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           if (n.equals("&local")) { level = i.getScriptVariables().getLocalVariables(); }
           else if (n.equals("&this")) { level = i.getScriptVariables().getClosureVariables(); }
-          else if (n.equals("&module")) { level = i.getScriptVariables().getInternalVariables(i); }
 
           String temp = l.pop().toString();
 

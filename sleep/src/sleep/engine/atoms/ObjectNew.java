@@ -57,6 +57,12 @@ public class ObjectNew extends Step
 
          if (theConstructor != null)
          {  
+            try
+            {
+               theConstructor.setAccessible(true);
+            }
+            catch (Exception ex) { }
+
             parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
             result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
          }
