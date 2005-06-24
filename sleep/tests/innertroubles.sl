@@ -9,7 +9,7 @@ $list = [new LinkedList];
 
 $iter = [$list iterator];
 
-while ([$iter hasNext] eq "true")
+while ([$iter hasNext])
 {
    println("Testing: " . [$iter next]);
 }
