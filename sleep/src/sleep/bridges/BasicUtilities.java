@@ -63,6 +63,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&copy",  new copy());
         temp.put("&map",    new map());
 
+        temp.put("&values", this);
         temp.put("&remove", this);     // not safe within foreach loops (since they use an iterator, and remove throws an exception)
         temp.put("-istrue", this);    // predicate -istrue <Scalar>, determine wether or not the scalar is null or not.
         temp.put("-isarray", this);   
@@ -544,6 +545,22 @@ public class BasicUtilities implements Function, Loadable, Predicate
           {
              Scalar temp = SleepUtils.getEmptyScalar();
              temp.setValue(value.getHash().keys());
+             return temp;
+          }
+       }
+       else if (n.equals("&values")) // &values(%hash)
+       {
+          if (value.getHash() != null)
+          {
+             Scalar temp = SleepUtils.getArrayScalar();
+
+             Iterator ih = value.getHash().keys().scalarIterator();
+
+             while (ih.hasNext())
+             {
+                  temp.getArray().push(value.getHash().getAt((Scalar)ih.next()));
+             }
+
              return temp;
           }
        }

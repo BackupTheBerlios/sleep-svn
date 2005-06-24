@@ -1,5 +1,5 @@
  ------- -------------------- ---------   ---------------  ------- ---------
-Sleep - 2.0-b9 - README   
+Sleep - 2.0-stable - README   
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 "You got the language, all you need now is the O'Reilly book".  That is
@@ -8,25 +8,17 @@ coding.
 
 A weekend of possessed coding that yielded a scripting language.  Sleep is
 the Scripting Language for Easily Enhancing Programs.  It is a small 
-scripting language with perl-like syntax implemented in Java.
+scripting language with perl inspired syntax implemented in Java.
 
-Sleep is not a multi-purpose general scripting language.  Sleep's purpose
-is to be extended and integrated into Java applications.   Sleep is easily 
-extendable to make an application's features available to end-user 
-scripters.
+Sleep is primarily a glue language.  Included with Sleep is everything 
+required to embed and extend the language to fit into new applications and
+problem domains.  
 
 The core of sleep was produced in one weekend in early April of 2002.  
 I just wanted something I could integrate into an application I was 
 writing.  Specifically I wanted something I could integrate the way *I 
-wanted* to integrate it.  It has since been revised, expanded, and 
-stabilized.  
-
-There are many great scripting languages for Java that let you 
-automatically expose your entire application API.  If your end-users are
-proficient Java programmers familiar with your API and the Java API
-then by all means use these other projects.  Sleep on the other hand makes 
-it easy for you to integrate your application into a hacker friendly 
-language that does not overwhelm novice programmers.  
+wanted* to integrate it.  Since then, Sleep has been revised, expanded, 
+and stabilized.  
 
 Sleep Project Homepage: http://sleep.hick.org/
 
@@ -72,7 +64,7 @@ the sleep website.  Javadoc is your friend when working with this project.
 Build Instructions
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
-You will need Apache Ant to compile this source code. I use version 1.5.1. 
+You will need Apache Ant to compile this source code. I use version 1.6.0. 
 Ant is easy to install and is available at http://ant.apache.org 
 
 To compile sleep:

@@ -153,6 +153,18 @@ public class IOObject
       catch (Exception ex) { }
    }
  
+   /** Returns the ascii data reader */
+   public BufferedReader getPrimaryReader()
+   {
+       return reader;
+   }
+
+   /** Returns the ascii data writer */
+   public PrintWriter getPrimaryWriter()
+   {
+       return writer;
+   }
+
    /** Returns the binary data reader */
    public DataInputStream getReader()
    {

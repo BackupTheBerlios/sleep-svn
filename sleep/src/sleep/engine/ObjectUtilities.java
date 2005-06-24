@@ -38,7 +38,7 @@ public class ObjectUtilities
    private static Class DOUBLE_SCALAR;
    private static Class LONG_SCALAR;
    private static Class STRING_TYPE;
-   private static Class INTEGER_TYPE;
+   private static Class BOOLEAN_TYPE;
 
    static
    {
@@ -50,7 +50,7 @@ public class ObjectUtilities
          LONG_SCALAR   = Class.forName("sleep.engine.types.LongValue");
 
          STRING_TYPE   = Class.forName("java.lang.String");
-         INTEGER_TYPE   = Class.forName("java.lang.Integer");
+         BOOLEAN_TYPE  = Class.forName("java.lang.Boolean");
       }
       catch (Exception ex) { }
    }
@@ -193,7 +193,7 @@ public class ObjectUtilities
       {
          if (type == Boolean.TYPE)
          {
-            return new Boolean(value.intValue() != 0);
+            return Boolean.valueOf(value.intValue() != 0);
          }
          else if (type == Byte.TYPE)
          {
@@ -297,8 +297,10 @@ public class ObjectUtilities
 
       if (primitives)
       {
-         if (value.getClass() == Boolean.TYPE)
+         if (value.getClass() == Boolean.TYPE || value.getClass() == BOOLEAN_TYPE)
          {
+            // java reflection has a bug where a boolean primitive is returned as a java.lang.Boolean object and not a
+            // type as specified by Boolean.TYPE.  Dorks.
             return SleepUtils.getScalar(  ((Boolean)value).booleanValue() ? 1 : 0 );
          }
          else if (value.getClass() == Byte.TYPE)

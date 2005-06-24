@@ -1,3 +1,11 @@
+2.0-stable
+======
+- fixed a bug with the primitive boolean from HOES being returned as a 
+  scalar string and not an integer 1/0.
+- added a function &values(%hash) for extracting all of the values from
+  a scalar hash.
+- exposed the PrintWriter/BufferedReader in the IOObject API
+
 2.0-b9 
 ======
 - foreach loops now automatically convert hash parameters into their keyset.
