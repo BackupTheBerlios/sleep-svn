@@ -5,6 +5,10 @@
 - added a function &values(%hash) for extracting all of the values from
   a scalar hash.
 - exposed the PrintWriter/BufferedReader in the IOObject API
+- added a check to prevent ls() on a non-existant directory from fireing
+  an exception..
+- added uint(n) to convert scalar int n to a scalar long as an unsigned int.
+- fixed bug that was supressing HOES syntax errors
 
 2.0-b9 
 ======

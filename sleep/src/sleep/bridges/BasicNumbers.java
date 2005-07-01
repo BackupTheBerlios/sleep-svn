@@ -64,6 +64,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable
        // functions
        temp.put("&double", new convert_double());
        temp.put("&int",    new convert_int());
+       temp.put("&uint",    new convert_uint());
        temp.put("&long",   new convert_long());
 
        temp.put("&parseNumber",   new parseNumber());
@@ -172,6 +173,16 @@ public class BasicNumbers implements Predicate, Operator, Loadable
        {
           Scalar temp = BridgeUtilities.getScalar(args);
           return SleepUtils.getScalar(temp.intValue());
+       }
+    }
+
+    private static class convert_uint implements Function
+    {
+       public Scalar evaluate(String name, ScriptInstance si, Stack args)
+       {
+          int temp = BridgeUtilities.getInt(args, 0);
+          long templ = 0x00000000FFFFFFFFL & temp;
+          return SleepUtils.getScalar(templ);
        }
     }
 

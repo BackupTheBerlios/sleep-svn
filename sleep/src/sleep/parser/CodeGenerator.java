@@ -219,6 +219,11 @@ public class CodeGenerator implements ParserConstants
    {
       Statement stmt = TokenParser.ParseObject(parser, LexicalAnalyzer.GroupExpressionIndexTokens(parser, new StringIterator(data.toString(), data.getHint())));
 
+      if (parser.hasErrors())
+      {
+         return;
+      }
+
 /*      System.out.println(stmt);
 
       for (int x = 0; x < stmt.getStrings().length; x++)

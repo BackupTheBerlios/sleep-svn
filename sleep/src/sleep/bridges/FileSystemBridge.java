@@ -214,11 +214,14 @@ public class FileSystemBridge implements Loadable
            File a = BridgeUtilities.getFile(l);
 
            File[] files = a.listFiles();
-
            LinkedList temp = new LinkedList();
-           for (int x = 0; x < files.length; x++)
+
+           if (files != null)
            {
-              temp.add(files[x].getAbsolutePath());
+              for (int x = 0; x < files.length; x++)
+              {
+                 temp.add(files[x].getAbsolutePath());
+              }
            }
 
            return SleepUtils.getArrayWrapper(temp);
