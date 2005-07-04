@@ -319,7 +319,9 @@ public class SleepUtils
    public static Scalar getScalar(boolean x)
    {
       if (x)
-         SleepUtils.getScalar(1);
+      {
+         return SleepUtils.getScalar(1); // thanks to Ralph Becker for finding my lack of a return statement here :)
+      }
 
       return SleepUtils.getEmptyScalar();
    }

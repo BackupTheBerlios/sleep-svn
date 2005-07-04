@@ -296,6 +296,6 @@ public class BasicNumbers implements Predicate, Operator, Loadable
           if (o.equals("^"))  { return SleepUtils.getScalar(a & b); }
        }
 
-       return null;
+       return SleepUtils.getEmptyScalar();
     }
 }

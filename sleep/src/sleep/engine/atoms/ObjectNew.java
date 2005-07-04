@@ -66,6 +66,10 @@ public class ObjectNew extends Step
             parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
             result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
          }
+         else
+         {
+            e.getScriptInstance().fireWarning("no " + e.getCurrentFrame().size() + " argument constructor exists for class " + name.getName(), getLineNumber());
+         }
       }
       catch (InvocationTargetException ite)
       {
@@ -76,18 +80,23 @@ public class ObjectNew extends Step
             yex = yex.getCause();
          }
 
-         e.flagError((yex.getMessage() == null) ? yex.toString() : yex.getMessage());
-         e.getScriptInstance().fireWarning((yex.getMessage() == null) ? yex.toString() : yex.getMessage(), getLineNumber());
+         e.flagError(yex.toString());
+         e.getScriptInstance().fireWarning(yex.toString(), getLineNumber());
       }
       catch (IllegalArgumentException aex)
       {
          e.getScriptInstance().fireWarning(ObjectUtilities.buildArgumentErrorMessage(name, name.getName(), theConstructor.getParameterTypes(),
                                      parameters), getLineNumber());
       }
-      catch (Exception ex)
+      catch (InstantiationException iex)
       {
-         e.getScriptInstance().fireWarning(ex.toString() + " " + ex.getMessage(), getLineNumber());
-         ex.printStackTrace();
+         e.flagError("unable to instantiate abstract class " + name.getName());
+         e.getScriptInstance().fireWarning("unable to instantiate abstract class " + name.getName(), getLineNumber());
+      }
+      catch (Exception iax)
+      {
+         e.flagError(iax.toString());
+         e.getScriptInstance().fireWarning(iax.toString(), getLineNumber());
       }
 
       e.KillFrame();

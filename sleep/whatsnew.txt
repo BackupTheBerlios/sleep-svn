@@ -9,6 +9,18 @@
   an exception..
 - added uint(n) to convert scalar int n to a scalar long as an unsigned int.
 - fixed bug that was supressing HOES syntax errors
+- fixed bug with SleepUtils.getScalar(boolean) always returning a false
+  boolean, thanks to Ralph Becker for finding and isolating the fix for this.
+- fixed a bug with pack() packing creating the byte string the wrong way 
+- fixed bug with z/Z formats only grabbing one character of a string from
+  the IO stream if no max string size is specified.
+- changed the u format and added a U format.. u/U reads/writes 16 bit UTF-16
+  characters similar to how z/Z handles 8 bit ASCII characters.
+- bwrite and writeb now automatically flush the data after writing everything
+- added &wait($handle, [timeout]) to wait for a fork or callback associated
+  with $handle to finish.  If the specified timeout is reached the function
+  will return the empty scalar.  If $handle is a fork, the return value of 
+  the fork will be returned by &wait.
 
 2.0-b9 
 ======

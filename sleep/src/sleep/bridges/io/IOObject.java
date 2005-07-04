@@ -1,6 +1,7 @@
 package sleep.bridges.io;
 
 import java.io.*;
+import sleep.runtime.*;
 
 /** <p>The IOObject is the parent class for all IO Source objects that are compatible with Sleep's
  *  I/O API.</p>
@@ -31,6 +32,35 @@ public class IOObject
 
    protected DataInputStream  readerb = null;
    protected DataOutputStream writerb = null;
+
+   protected Thread           thread  = null;
+   protected Scalar           token   = null;
+
+   /** set the thread used for this IOObject (currently used to allow a script to wait() on the threads completion) */
+   public void setThread(Thread t)
+   {
+      thread = t;
+   }
+
+   /** returns the thread associated with this IOObject */
+   public Thread getThread()
+   {
+      return thread;
+   }
+
+   /** returns a scalar token associated with this IOObject.  Will return the empty scalar if the token is null */
+   public Scalar getToken()
+   {
+      if (token == null) return SleepUtils.getEmptyScalar();
+
+      return token;
+   }
+
+   /** sets the scalar token associated with this IOObject */
+   public void setToken(Scalar t)
+   {
+      token = t;
+   }
 
    /** returns an IOObject that represents stdin/stdout */
    public static IOObject getConsole()

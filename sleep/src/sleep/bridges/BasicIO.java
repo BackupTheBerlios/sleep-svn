@@ -31,6 +31,7 @@ import sleep.interfaces.*;
 import sleep.runtime.*;
 
 import java.io.*;
+import java.nio.*;
 import sleep.bridges.io.*;
 
 /** provides IO functions for the sleep language */
@@ -79,6 +80,7 @@ public class BasicIO implements Loadable
         temp.put("&mark",       new mark());
         temp.put("&skip",       new skip());
         temp.put("&reset",      new reset());
+        temp.put("&wait",       new wait());
 
         // typical ASCII'sh output functions
         temp.put("&print",      new print());
@@ -163,7 +165,14 @@ public class BasicIO implements Loadable
           
              child.getScriptVariables().putScalar("$source", SleepUtils.getScalar(child_io));
 
-             new Thread(child, child.getName()).start();
+             Thread temp = new Thread(child, child.getName());
+
+             parent_io.setThread(temp);
+             child_io.setThread(temp);
+
+             child.setParent(parent_io);
+
+             temp.start();
           }
           catch (Exception ex)
           {
@@ -332,13 +341,19 @@ public class BasicIO implements Loadable
        }
     }
 
-    private static Scalar ReadFormatted(String format, DataInputStream in, ScriptEnvironment env, IOObject control)
+    private static Scalar ReadFormatted(String format, InputStream in, ScriptEnvironment env, IOObject control)
     {
        Scalar temp         = SleepUtils.getArrayScalar();
        DataPattern pattern = DataPattern.Parse(format);
 
+       byte        bdata[] = new byte[8]; 
+       ByteBuffer  buffer  = ByteBuffer.wrap(bdata);
+       int         read    = 0;
+
        while (pattern != null)
        {
+          buffer.order(pattern.order);
+
           if (pattern.value == 'M')
           {
              if (pattern.count == 1)
@@ -354,24 +369,45 @@ public class BasicIO implements Loadable
              }
              catch (Exception ex) { }
           }
-          else if (pattern.value == 'z' || pattern.value == 'Z')
+          else if (pattern.value == 'z' || pattern.value == 'Z' || pattern.value == 'U' || pattern.value == 'u')
           {
              StringBuffer temps = new StringBuffer();
              int tempval;
 
              try
              {
-                tempval = in.readUnsignedByte();
+                if (pattern.value == 'u' || pattern.value == 'U')
+                {
+                   read = in.read(bdata, 0, 2);
+                   if (read < 2) throw new EOFException();
+                   tempval = (int)buffer.getChar(0);
+                }
+                else
+                {
+                   tempval = in.read();
+                   if (tempval == -1) throw new EOFException();
+                }
              
                 int z = 0;
 
-                for (; tempval != 0 && z < pattern.count; z++)
+                for (; tempval != 0 && z != pattern.count; z++)
                 {
                    temps.append((char)tempval);
-                   tempval = in.readUnsignedByte();
+
+                   if (pattern.value == 'u' || pattern.value == 'U')
+                   {
+                      read = in.read(bdata, 0, 2);
+                      if (read < 2) throw new EOFException();
+                      tempval = (int)buffer.getChar(0);
+                   }
+                   else
+                   {
+                      tempval = in.read();
+                      if (tempval == -1) throw new EOFException();
+                   }
                 } 
 
-                if (pattern.value == 'Z' && z < pattern.count)
+                if ((pattern.value == 'Z' || pattern.value == 'U') && z < pattern.count)
                 {
                    in.skip((pattern.count - z) - 1);
                 }
@@ -398,51 +434,82 @@ public class BasicIO implements Loadable
                       case 'R':
                         in.reset();
                         break;
-                      case 'c':
-                        value = SleepUtils.getScalar(in.readChar() + ""); // turns the char into a string
-                        break;
                       case 'C':
-                        value = SleepUtils.getScalar(((char)in.readUnsignedByte()) + ""); // turns the char into a string
+                        read = in.read(bdata, 0, 1);
+
+                        if (read < 1) throw new EOFException();
+
+                        value = SleepUtils.getScalar((char)bdata[0] + ""); // turns the char into a string
+                        break;
+                      case 'c':
+                        read = in.read(bdata, 0, 2);
+
+                        if (read < 2) throw new EOFException();
+
+                        value = SleepUtils.getScalar(buffer.getChar(0) + ""); // turns the char into a string
                         break;
                       case 'b':
-                        value = SleepUtils.getScalar((int)in.readByte()); // turns the byte into an int
+                        bdata[0] = (byte)in.read();
+
+                        if (bdata[0] == -1) throw new EOFException();
+
+                        value = SleepUtils.getScalar((int)bdata[0]); // turns the byte into an int
                         break;
                       case 'B':
-                        value = SleepUtils.getScalar((int)in.readUnsignedByte()); // turns the byte into an int
+                        read = in.read();
+
+                        if (read == -1) throw new EOFException();
+
+                        value = SleepUtils.getScalar(read);
                         break;
                       case 's':
-                        value = SleepUtils.getScalar((int)in.readShort()); // turns the byte into an int
+                        read = in.read(bdata, 0, 2);
+
+                        if (read < 2) throw new EOFException();
+
+                        value = SleepUtils.getScalar(buffer.getShort(0));
                         break;
                       case 'S':
-                        value = SleepUtils.getScalar((int)in.readUnsignedShort()); // turns the byte into an int
+                        read = in.read(bdata, 0, 2);
+
+                        if (read < 2) throw new EOFException();
+
+                        value = SleepUtils.getScalar((int)buffer.getShort(0) & 0x0000FFFF);
                         break;
                       case 'i':
-                        value = SleepUtils.getScalar(in.readInt()); // turns the byte into an int
+                        read = in.read(bdata, 0, 4);
+
+                        if (read < 4) throw new EOFException();
+
+                        value = SleepUtils.getScalar(buffer.getInt(0)); // turns the byte into an int
                         break;
                       case 'I':
-                        int ch1 = in.read();
-                        int ch2 = in.read();
-                        int ch3 = in.read();
-                        int ch4 = in.read();
+                        read = in.read(bdata, 0, 4);
 
-                        if ((ch1 | ch2 | ch3 | ch4) < 0)
-                             throw new EOFException();
+                        if (read < 4) throw new EOFException();
 
-                        long templ = ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
-
-                        value = SleepUtils.getScalar(templ); // turns the byte into an int
+                        value = SleepUtils.getScalar((long)buffer.getInt(0) & 0x00000000FFFFFFFFL); // turns the byte into an int
                         break;
                       case 'f':
-                        value = SleepUtils.getScalar(in.readFloat()); // turns the byte into an int
+                        read = in.read(bdata, 0, 4);
+
+                        if (read < 4) throw new EOFException();
+
+                        value = SleepUtils.getScalar(buffer.getFloat(0)); // turns the byte into an int
                         break;
                       case 'd':
-                        value = SleepUtils.getScalar(in.readDouble()); // turns the byte into an int
+                        read = in.read(bdata, 0, 8);
+
+                        if (read < 8) throw new EOFException();
+
+                        value = SleepUtils.getScalar(buffer.getDouble(0)); // turns the byte into an int
                         break;
                       case 'l':
-                        value = SleepUtils.getScalar(in.readLong()); // turns the byte into an int
-                        break;
-                      case 'u':
-                        value = SleepUtils.getScalar(in.readUTF()); // turns the byte into an int
+                        read = in.read(bdata, 0, 8);
+
+                        if (read < 8) throw new EOFException();
+
+                        value = SleepUtils.getScalar(buffer.getLong(0)); // turns the byte into an int
                         break;
                       default:
                         env.getScriptInstance().fireWarning("Erroneous file pattern character: " + pattern.value, -1);
@@ -467,7 +534,7 @@ public class BasicIO implements Loadable
        return temp;
     }
 
-    private static void WriteFormatted(String format, DataOutputStream out, Stack arguments, IOObject control)
+    private static void WriteFormatted(String format, OutputStream out, Stack arguments, IOObject control)
     {
        DataPattern pattern  = DataPattern.Parse(format);
 
@@ -482,9 +549,14 @@ public class BasicIO implements Loadable
           return;
        }
 
+       byte        bdata[] = new byte[8]; 
+       ByteBuffer  buffer  = ByteBuffer.wrap(bdata);
+
        while (pattern != null)
        {
-          if (pattern.value == 'z' || pattern.value == 'Z')
+          buffer.order(pattern.order);
+
+          if (pattern.value == 'z' || pattern.value == 'Z' || pattern.value == 'u' || pattern.value == 'U')
           {
              try
              {
@@ -492,17 +564,27 @@ public class BasicIO implements Loadable
 
                 for (int y = 0; y < tempchars.length; y++)
                 {
-                   out.writeByte((byte)tempchars[y]);
+                   if (pattern.value == 'u' || pattern.value == 'U')
+                   {
+                      buffer.putChar(0, tempchars[y]);
+                      out.write(bdata, 0, 2);
+                   }
+                   else
+                   {
+                      out.write((int)tempchars[y]);
+                   }
                 }
 
-                out.writeByte(0); // output the null terminator
+                if (pattern.value == 'U') { out.write(0); out.write(0); }
+                else { out.write(0); } // in the case of Z, keep padding the field length with nulls.
    
-                if (pattern.value == 'Z')
+                if (pattern.value == 'Z' || pattern.value == 'U')
                 {
                    // the +1 for the start of this loop is to account for the outputted null character
                    for (int z = tempchars.length + 1; z < pattern.count; z++)
                    {
-                      out.writeByte(0); // in the case of Z, keep padding the field length with nulls.
+                      if (pattern.value == 'U') { out.write(0); out.write(0); }
+                      else { out.write(0); } // in the case of Z, keep padding the field length with nulls.
                    }
                 }
              }
@@ -528,37 +610,40 @@ public class BasicIO implements Loadable
                    switch (pattern.value)
                    {
                       case 'x':
-                        out.writeByte(0);
+                        out.write(0);
                         break;
                       case 'c':
-                        out.writeChar(temp.toString().charAt(0));
+                        buffer.putChar(0, temp.toString().charAt(0));
+                        out.write(bdata, 0, 2);
                         break;
                       case 'C':
-                        out.writeByte((byte)temp.toString().charAt(0));
+                        out.write((int)temp.toString().charAt(0));
                         break;
                       case 'b':
                       case 'B':
-                        out.writeByte(temp.intValue());
+                        out.write(temp.intValue());
                         break;
                       case 's':
                       case 'S':
-                        out.writeShort(temp.intValue());
+                        buffer.putShort(0, (short)temp.intValue());
+                        out.write(bdata, 0, 2);
                         break;
                       case 'i':
                       case 'I':
-                        out.writeInt(temp.intValue());
+                        buffer.putInt(0, temp.intValue());
+                        out.write(bdata, 0, 4);
                         break;
                       case 'f':
-                        out.writeFloat((float)temp.doubleValue());
+                        buffer.putFloat(0, (float)temp.doubleValue());
+                        out.write(bdata, 0, 4);
                         break;
                       case 'd':
-                        out.writeDouble(temp.doubleValue());
+                        buffer.putDouble(0, temp.doubleValue());
+                        out.write(bdata, 0, 8);
                         break;
                       case 'l':
-                        out.writeLong(temp.longValue());
-                        break;
-                      case 'u':
-                        out.writeUTF(temp.toString());
+                        buffer.putLong(0, temp.longValue());
+                        out.write(bdata, 0, 8);
                         break;
                       default:
                    }
@@ -573,6 +658,12 @@ public class BasicIO implements Loadable
 
           pattern = pattern.next;
        }
+
+       try
+       {
+          out.flush();
+       }
+       catch (Exception ex) { }
     }
 
     private static class bread implements Function
@@ -635,6 +726,32 @@ public class BasicIO implements Loadable
        }
     }
 
+    private static class wait implements Function
+    {
+       public Scalar evaluate(String n, ScriptInstance i, Stack l)
+       {
+          IOObject a     = chooseSource(l, 1);
+          long     times = BridgeUtilities.getLong(l, -1);
+          long     stamp = System.currentTimeMillis();
+
+          if (a.getThread() != null)
+          {
+             while (a.getThread().isAlive())
+             {
+                 if (times > -1 && (System.currentTimeMillis() - stamp) > times)
+                 {
+                    i.getScriptEnvironment().flagError("wait on object timed out");
+                    return SleepUtils.getEmptyScalar();
+                 }
+
+                 Thread.yield();
+             }
+          }
+
+          return a.getToken();
+       }
+    }
+
     private static class unpack implements Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
@@ -672,7 +789,7 @@ public class BasicIO implements Loadable
 
           for (int x = 0; x < data.length; x++)
           {
-             value.append((byte)data[x]);
+             value.append((char)data[x]);
           }
 
           return SleepUtils.getScalar(value.toString());
@@ -691,7 +808,8 @@ public class BasicIO implements Loadable
              for (int x = 0; x < data.length(); x++)
              {
                 a.getWriter().writeByte((byte)data.charAt(x));
-             }
+             } 
+             a.getWriter().flush();
           }
           catch (Exception ex)
           {
@@ -737,6 +855,7 @@ public class BasicIO implements Loadable
           SleepClosure b = BridgeUtilities.getFunction(l, i);
 
           Thread fred = new Thread(new CallbackReader(a, i, b, BridgeUtilities.getInt(l, 0)));
+          a.setThread(fred);
           fred.start();
 
           return SleepUtils.getEmptyScalar();
@@ -840,7 +959,8 @@ public class BasicIO implements Loadable
        {
           if (function != null)
           {
-             new Thread(this).start();
+             socket.setThread(new Thread(this));
+             socket.getThread().start();
           }
           else
           {

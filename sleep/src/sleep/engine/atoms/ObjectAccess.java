@@ -149,8 +149,8 @@ public class ObjectAccess extends Step
             yex = yex.getCause();
          }
 
-         e.flagError((yex.getMessage() == null) ? yex.toString() : yex.getMessage());
-         e.getScriptInstance().fireWarning((yex.getMessage() == null) ? yex.toString() : yex.getMessage(), getLineNumber());
+         e.flagError(yex.toString());
+         e.getScriptInstance().fireWarning(yex.toString(), getLineNumber());
       }
       catch (IllegalArgumentException aex)
       {
@@ -159,12 +159,18 @@ public class ObjectAccess extends Step
       }
       catch (NoSuchFieldException fex)
       {
-         e.getScriptInstance().fireWarning("no field/method named " + name + " in " + theClass, getLineNumber());
+         if (!e.getCurrentFrame().isEmpty())
+         {
+            e.getScriptInstance().fireWarning("there is no method " + name + " that takes " + e.getCurrentFrame().size() + " arguments in " + theClass, getLineNumber());
+         }
+         else
+         {
+            e.getScriptInstance().fireWarning("no field/method named " + name + " in " + theClass, getLineNumber());
+         }
       }
-      catch (Exception ex)
+      catch (IllegalAccessException iax)
       {
-         e.getScriptInstance().fireWarning(ex.toString() + " " + ex.getMessage(), getLineNumber());
-         ex.printStackTrace();
+         e.getScriptInstance().fireWarning("cannot access " + name + " in " + theClass + ": " + iax.getMessage(), getLineNumber());
       }
 
       e.KillFrame();

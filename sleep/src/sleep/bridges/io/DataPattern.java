@@ -1,6 +1,7 @@
 package sleep.bridges.io;
 
 import java.util.*;
+import java.nio.*;
 
 /** A DataPattern represents a data format for Sleep's IO functions. */
 public class DataPattern
@@ -8,6 +9,7 @@ public class DataPattern
    public DataPattern next  = null;
    public int         count = 1;
    public char        value = ' ';
+   public ByteOrder   order = ByteOrder.BIG_ENDIAN;
 
    private static HashMap patternCache = new HashMap();
 
@@ -33,7 +35,7 @@ public class DataPattern
       if (patternCache.get(format) != null)
           return (DataPattern)patternCache.get(format);
 
-      DataPattern head = null, temp = null;
+      DataPattern head   = null, temp = null;
       StringBuffer count = null;
 
       for (int x = 0; x < format.length(); x++)
@@ -57,10 +59,27 @@ public class DataPattern
 
             count = new StringBuffer(3);
             temp.value = format.charAt(x);
+
+            if (format.charAt(x) == 'z' || format.charAt(x) == 'Z' || format.charAt(x) == 'u' || format.charAt(x) == 'U')
+            {
+               temp.count = -1;
+            }
          }
          else if (format.charAt(x) == '*')
          {
             temp.count = -1;
+         }
+         else if (format.charAt(x) == '!')
+         {
+            temp.order = ByteOrder.nativeOrder();
+         }
+         else if (format.charAt(x) == '-')
+         {
+            temp.order = ByteOrder.LITTLE_ENDIAN;
+         }
+         else if (format.charAt(x) == '+')
+         {
+            temp.order = ByteOrder.BIG_ENDIAN;
          }
          else if (Character.isDigit(format.charAt(x)))
          {

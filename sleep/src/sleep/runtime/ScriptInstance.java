@@ -143,10 +143,13 @@ public class ScriptInstance implements Serializable, Runnable
     }
 
     /** Executes this script, should be done first thing once a script is loaded */
-    public void runScript()
+    public Scalar runScript()
     {
         script.evaluate(getScriptEnvironment());
+        Scalar temp = getScriptEnvironment().getReturnValue();
+
         getScriptEnvironment().clearReturn();
+        return temp;
     }
  
     /** Creates a forked script instance.  This does not work like fork in an operating system.  Variables are not copied, period.
@@ -162,7 +165,20 @@ public class ScriptInstance implements Serializable, Runnable
     /** Executes this script, same as runScript() just here for Runnable compatability */
     public void run()
     {
-        runScript();
+        Scalar temp = runScript();
+
+        if (parent != null)
+        {
+           parent.setToken(temp);
+        }
+    }
+
+    protected sleep.bridges.io.IOObject parent = null;
+    
+    /** Sets up the parent of this script (in case it is being run via &amp;fork()) */
+    public void setParent(sleep.bridges.io.IOObject p)
+    {
+        parent = p;
     }
 
     /** Returns the compiled form of this script */
