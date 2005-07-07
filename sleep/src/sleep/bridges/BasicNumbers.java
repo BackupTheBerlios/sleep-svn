@@ -32,7 +32,7 @@ import sleep.runtime.*;
 import java.math.*;
 
 /** provides some of the basic number crunching functionality */
-public class BasicNumbers implements Predicate, Operator, Loadable
+public class BasicNumbers implements Predicate, Operator, Loadable, Function
 {
     public static Class TYPE_LONG;
     public static Class TYPE_INT;
@@ -60,6 +60,16 @@ public class BasicNumbers implements Predicate, Operator, Loadable
     public boolean scriptLoaded(ScriptInstance aScript)
     {
        Hashtable temp = aScript.getScriptEnvironment().getEnvironment();
+
+       // math ops..
+
+       String funcs[] = new String[] { "&abs", "&acos", "&asin", "&atan", "&atan2", "&ceil", "&cos", "&log", "&round", 
+                                       "&sin", "&sqrt", "&tan", "&radians", "&degrees", "&exp", "&floor" };
+
+       for (int x = 0; x < funcs.length; x++)
+       {
+          temp.put(funcs[x], this);
+       }
 
        // functions
        temp.put("&double", new convert_double());
@@ -110,6 +120,29 @@ public class BasicNumbers implements Predicate, Operator, Loadable
           BigInteger temp = new BigInteger(number, radix);
           return SleepUtils.getScalar(temp.longValue());
        }
+    }
+
+    public Scalar evaluate(String name, ScriptInstance si, Stack args)
+    {
+       if (name.equals("&abs")) { return SleepUtils.getScalar(Math.abs(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&acos")) { return SleepUtils.getScalar(Math.acos(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&asin")) { return SleepUtils.getScalar(Math.asin(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&atan")) { return SleepUtils.getScalar(Math.atan(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&atan2")) { return SleepUtils.getScalar(Math.atan2(BridgeUtilities.getDouble(args, 0.0), BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&ceil")) { return SleepUtils.getScalar(Math.ceil(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&floor")) { return SleepUtils.getScalar(Math.floor(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&cos")) { return SleepUtils.getScalar(Math.cos(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&log") && args.size() == 1) { return SleepUtils.getScalar(Math.log(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&log") && args.size() == 2) { return SleepUtils.getScalar(Math.log(BridgeUtilities.getDouble(args, 0.0)) / Math.log(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&round")) { return SleepUtils.getScalar(Math.round(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&sin")) { return SleepUtils.getScalar(Math.sin(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&sqrt")) { return SleepUtils.getScalar(Math.sqrt(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&tan")) { return SleepUtils.getScalar(Math.tan(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&radians")) { return SleepUtils.getScalar(Math.toRadians(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&degrees")) { return SleepUtils.getScalar(Math.toDegrees(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&exp")) { return SleepUtils.getScalar(Math.exp(BridgeUtilities.getDouble(args, 0.0))); }
+
+       return SleepUtils.getEmptyScalar();
     }
     
     private static class formatNumber implements Function

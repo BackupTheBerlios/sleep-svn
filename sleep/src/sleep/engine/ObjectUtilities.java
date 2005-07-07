@@ -37,8 +37,7 @@ public class ObjectUtilities
    private static Class INT_SCALAR; 
    private static Class DOUBLE_SCALAR;
    private static Class LONG_SCALAR;
-   private static Class STRING_TYPE;
-   private static Class BOOLEAN_TYPE;
+   private static Class BOOLEAN_TYPE, BYTE_TYPE, CHARACTER_TYPE, DOUBLE_TYPE, FLOAT_TYPE, INTEGER_TYPE, LONG_TYPE, STRING_TYPE;
 
    static
    {
@@ -49,8 +48,14 @@ public class ObjectUtilities
          DOUBLE_SCALAR = Class.forName("sleep.engine.types.DoubleValue");
          LONG_SCALAR   = Class.forName("sleep.engine.types.LongValue");
 
-         STRING_TYPE   = Class.forName("java.lang.String");
-         BOOLEAN_TYPE  = Class.forName("java.lang.Boolean");
+         BOOLEAN_TYPE    = Class.forName("java.lang.Boolean");
+         BYTE_TYPE       = Class.forName("java.lang.Byte");
+         CHARACTER_TYPE  = Class.forName("java.lang.Character");
+         DOUBLE_TYPE     = Class.forName("java.lang.Double");
+         FLOAT_TYPE      = Class.forName("java.lang.Float");
+         INTEGER_TYPE    = Class.forName("java.lang.Integer");
+         LONG_TYPE       = Class.forName("java.lang.Long");
+         STRING_TYPE     = Class.forName("java.lang.String");
       }
       catch (Exception ex) { }
    }
@@ -295,41 +300,41 @@ public class ObjectUtilities
          return array;
       }
 
+      Class check = value.getClass();
+
       if (primitives)
       {
-         if (value.getClass() == Boolean.TYPE || value.getClass() == BOOLEAN_TYPE)
+         if (check == BOOLEAN_TYPE)
          {
-            // java reflection has a bug where a boolean primitive is returned as a java.lang.Boolean object and not a
-            // type as specified by Boolean.TYPE.  Dorks.
             return SleepUtils.getScalar(  ((Boolean)value).booleanValue() ? 1 : 0 );
          }
-         else if (value.getClass() == Byte.TYPE)
+         else if (check == BYTE_TYPE)
          {
             return SleepUtils.getScalar(  (int)( ((Byte)value).byteValue() )  );
          }
-         else if (value.getClass() == Character.TYPE)
+         else if (check == CHARACTER_TYPE)
          {
             return SleepUtils.getScalar(  value.toString()  );
          }
-         else if (value.getClass() == Double.TYPE)
+         else if (check == DOUBLE_TYPE)
          {
             return SleepUtils.getScalar(  ((Double)value).doubleValue()   );
          }
-         else if (value.getClass() == Float.TYPE)
+         else if (check == FLOAT_TYPE)
          {
             return SleepUtils.getScalar(  (double)( ((Float)value).floatValue() )  );
          }
-         else if (value.getClass() == Integer.TYPE)
+         else if (check == INTEGER_TYPE)
          {
             return SleepUtils.getScalar(  ((Integer)value).intValue()   );
          }
-         else if (value.getClass() == Long.TYPE)
+         else if (check == LONG_TYPE)
          {
             return SleepUtils.getScalar(  ((Long)value).longValue()   );
          }
       }
 
-      if (value.getClass() == STRING_TYPE)
+      if (check == STRING_TYPE)
       {
          return SleepUtils.getScalar(value.toString());
       }

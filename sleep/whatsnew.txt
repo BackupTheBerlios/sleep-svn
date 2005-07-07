@@ -1,26 +1,28 @@
-2.0-stable
-======
-- fixed a bug with the primitive boolean from HOES being returned as a 
-  scalar string and not an integer 1/0.
-- added a function &values(%hash) for extracting all of the values from
-  a scalar hash.
+2.0-b10
+=======
+- fixed a bug with primitive values returned by HOES expressions not
+  being interpreted as their primitive selves.
+- added a function &values(%hash) for extracting all of the values from a 
+  scalar hash.
 - exposed the PrintWriter/BufferedReader in the IOObject API
-- added a check to prevent ls() on a non-existant directory from fireing
-  an exception..
+- added a check to prevent ls() on a non-existant directory from fireing an 
+  exception..
 - added uint(n) to convert scalar int n to a scalar long as an unsigned int.
 - fixed bug that was supressing HOES syntax errors
-- fixed bug with SleepUtils.getScalar(boolean) always returning a false
+- fixed bug with SleepUtils.getScalar(boolean) always returning a false 
   boolean, thanks to Ralph Becker for finding and isolating the fix for this.
 - fixed a bug with pack() packing creating the byte string the wrong way 
-- fixed bug with z/Z formats only grabbing one character of a string from
-  the IO stream if no max string size is specified.
+- fixed bug with z/Z formats only grabbing one character of a string from the 
+  IO stream if no max string size is specified.
 - changed the u format and added a U format.. u/U reads/writes 16 bit UTF-16
   characters similar to how z/Z handles 8 bit ASCII characters.
 - bwrite and writeb now automatically flush the data after writing everything
 - added &wait($handle, [timeout]) to wait for a fork or callback associated
   with $handle to finish.  If the specified timeout is reached the function
-  will return the empty scalar.  If $handle is a fork, the return value of 
-  the fork will be returned by &wait.
+  will return the empty scalar.  If $handle is a fork, the return value of the 
+  fork will be returned by &wait.
+- added a whole slew of mathematical functions bridgeing most of java.lang.Math 
+  into Sleep.
 
 2.0-b9 
 ======
