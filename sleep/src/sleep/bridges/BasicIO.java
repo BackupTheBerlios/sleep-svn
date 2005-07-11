@@ -388,7 +388,7 @@ public class BasicIO implements Loadable
                    if (tempval == -1) throw new EOFException();
                 }
              
-                int z = 0;
+                int z = 1;
 
                 for (; tempval != 0 && z != pattern.count; z++)
                 {
@@ -407,9 +407,15 @@ public class BasicIO implements Loadable
                    }
                 } 
 
+                if (tempval != 0)
+                {
+                   temps.append((char)tempval); 
+                }
+
                 if ((pattern.value == 'Z' || pattern.value == 'U') && z < pattern.count)
                 {
-                   in.skip((pattern.count - z) - 1);
+                   int skipby = (pattern.count - z) * (pattern.value == 'U' ? 2 : 1);
+                   in.skip(skipby);
                 }
              }
              catch (Exception fex) 
@@ -575,17 +581,32 @@ public class BasicIO implements Loadable
                    }
                 }
 
-                if (pattern.value == 'U') { out.write(0); out.write(0); }
-                else { out.write(0); } // in the case of Z, keep padding the field length with nulls.
-   
-                if (pattern.value == 'Z' || pattern.value == 'U')
+                // handle padding... 
+
+                for (int z = tempchars.length; z < pattern.count; z++)
                 {
-                   // the +1 for the start of this loop is to account for the outputted null character
-                   for (int z = tempchars.length + 1; z < pattern.count; z++)
+                   switch (pattern.value)
                    {
-                      if (pattern.value == 'U') { out.write(0); out.write(0); }
-                      else { out.write(0); } // in the case of Z, keep padding the field length with nulls.
+                      case 'U':
+                         out.write(0); 
+                         out.write(0);
+                         break;
+                      case 'Z':
+                         out.write(0);
+                         break;
                    }
+                }
+
+                // write out our terminating null byte please...
+
+                if (pattern.value == 'z' || (pattern.value == 'Z' && pattern.count == -1))
+                {
+                   out.write(0);
+                }
+                else if (pattern.value == 'u' || (pattern.value == 'U' && pattern.count == -1))
+                {
+                   out.write(0);
+                   out.write(0);
                 }
              }
              catch (Exception ex)

@@ -187,14 +187,27 @@ public class RegexBridge implements Loadable
     {
        public Scalar evaluate(String n, ScriptInstance script, Stack l)
        {
-          String a = ((Scalar)l.pop()).toString();
-          String b = ((Scalar)l.pop()).toString();
-          String c = ((Scalar)l.pop()).toString();
+          String a = ((Scalar)l.pop()).toString(); // current
+          String b = ((Scalar)l.pop()).toString(); // old
+          String c = ((Scalar)l.pop()).toString(); // new
+          int    d = BridgeUtilities.getInt(l, -1);
+
+          StringBuffer rv = new StringBuffer();
 
           Pattern pattern = RegexBridge.getPattern(b);
           Matcher matcher = pattern.matcher(a);
+       
+          int matches = 0;
 
-          return SleepUtils.getScalar(matcher.replaceAll(c));
+          while (matcher.find() && matches != d)
+          {
+             matcher.appendReplacement(rv, c);
+             matches++;
+          }
+
+          matcher.appendTail(rv);
+
+          return SleepUtils.getScalar(rv.toString());
        }
     }
 }

@@ -62,7 +62,7 @@ public class LexicalAnalyzer
    // using this effectively removes the white space requirement for said built in operator.  
    private static boolean isBuiltInOperator(char f, StringBuffer aTerm, StringIterator iter)
    {
-      if (f == '.' && (aTerm.length() <= 0 || !Character.isDigit(aTerm.charAt(aTerm.length() - 1))))
+      if (f == '.' && (aTerm.length() <= 0 || !(Character.isDigit(aTerm.charAt(aTerm.length() - 1)) && aTerm.charAt(0) != '$')))
       {
          return true;
       }
@@ -191,11 +191,11 @@ public class LexicalAnalyzer
              {
                 report.reportError("Escape is end of string", new Token(value.toString(), iterator.getLineNumber(), iterator.getLineMarker()));
              }
-             else
+             else 
              {
                 value.append(temp);
                 value.append(iterator.next());
-             }
+             } 
          }        
          else if (term.isRight(temp) || term.isMatch(temp))
          {

@@ -365,6 +365,7 @@ public class CodeGenerator implements ParserConstants
 
        Iterator i;
        String   mutilate; // mutilate this string as I see fit...
+       StringBuffer sb;  
 
        String[] strings = datum.getStrings(); // was "temp"
        Token[]  tokens  = datum.getTokens();
@@ -430,7 +431,22 @@ public class CodeGenerator implements ParserConstants
            parseObject(ParserUtilities.extract(tokens[0]));
            break;
          case IDEA_LITERAL: // implemented                   
-           ascalar = SleepUtils.getScalar(ParserUtilities.extract(strings[0]));
+           sb = new StringBuffer(ParserUtilities.extract(strings[0]));
+
+           for (int x = 0; x < sb.length(); x++)
+           {
+              if (sb.charAt(x) == '\\' && (x + 1) < sb.length())
+              {
+                 char tempc = sb.charAt(x + 1);
+
+                 if (tempc == '\'' || tempc == '\\')
+                 {
+                    sb.deleteCharAt(x);
+                 }
+              }
+           }
+
+           ascalar = SleepUtils.getScalar(sb.toString());
            atom    = GeneratedSteps.SValue(ascalar);
            add(atom, tokens[0]);
            break;
@@ -488,7 +504,7 @@ public class CodeGenerator implements ParserConstants
          case EXPR_EVAL_STRING:
          case IDEA_STRING: // implemented -- parsed literals, one of my favorite features in sleep
            int startz = 0; 
-           String c   = ParserUtilities.extract(strings[0]);
+           String c = ParserUtilities.extract(strings[0]);
             
            Stack vals, blocks, aligns;
            vals   = new Stack();
