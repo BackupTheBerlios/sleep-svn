@@ -175,7 +175,7 @@ public class ScriptInstance implements Serializable, Runnable
 
     protected sleep.bridges.io.IOObject parent = null;
     
-    /** Sets up the parent of this script (in case it is being run via &amp;fork()) */
+    /** Sets up the parent of this script (in case it is being run via &amp;fork()).  When this script returns a value, the return value will be passed to the parent IOObject to allow retrieval with the &amp;wait function. */
     public void setParent(sleep.bridges.io.IOObject p)
     {
         parent = p;

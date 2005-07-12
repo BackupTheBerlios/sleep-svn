@@ -48,7 +48,7 @@ public class IOObject
       return thread;
    }
 
-   /** returns a scalar token associated with this IOObject.  Will return the empty scalar if the token is null */
+   /** returns a scalar token associated with this IOObject.  Will return the empty scalar if the token is null.  The token is essentially the stored return value of an executing thread.  */
    public Scalar getToken()
    {
       if (token == null) return SleepUtils.getEmptyScalar();
@@ -56,7 +56,7 @@ public class IOObject
       return token;
    }
 
-   /** sets the scalar token associated with this IOObject */
+   /** sets the scalar token associated with this IOObject.  Any ScriptInstance object calls setToken on it's parent IOObject.  This method is called when the script is finished running and has a return value waiting.  This value can be retrieved in Sleep with the <code>&amp;wait</code> function. */
    public void setToken(Scalar t)
    {
       token = t;
