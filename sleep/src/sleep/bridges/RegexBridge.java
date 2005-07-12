@@ -148,19 +148,30 @@ public class RegexBridge implements Loadable
        {
           String a = ((Scalar)l.pop()).toString();
           String b = ((Scalar)l.pop()).toString();
+          int    c = BridgeUtilities.getInt(l, -1);
+          int    d = BridgeUtilities.getInt(l, c);
 
           Pattern pattern = RegexBridge.getPattern(b);
           Matcher matcher = pattern.matcher(a);
    
           Scalar value = SleepUtils.getArrayScalar();            
-          int    count = matcher.groupCount();  
 
-          if (matcher.find())
+          int temp = 0;
+
+          while (matcher.find())
           {
+             int    count = matcher.groupCount();  
+
+             if (temp == c) { value = SleepUtils.getArrayScalar(); }
+
              for (int x = 1; x <= count; x++)
              {
                 value.getArray().push(SleepUtils.getScalar(matcher.group(x)));
              }
+
+             if (temp == d) { return value; }
+
+             temp++;
           }
 
           return value;

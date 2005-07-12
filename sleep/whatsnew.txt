@@ -22,8 +22,9 @@
 - updated the matches() function to work a lot like hasmatch where
   it will look for substrings and return all groupings for all
   matching substrings...  
-- added a &tr() function similar to the UNIX command tr.  
-  Transliteration is fun for the whole family...
+- added a transliteration function &tr ala the UNIX command tr.  
+- updated &matches to allow either a range of matching substring 
+  groups to be extracted or a single substring group.
 
 2.0-b10
 =======
