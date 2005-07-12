@@ -1,3 +1,30 @@
+2.0-b11
+=======
+- fixed a fringe case with the Z unpack character
+- cleaned up definitions of pack for z/Z/u/U
+- made backslash in single quoted strings behave properly:
+  \' is a single quotes; \\ is a \; \ otherwise has no meaning
+
+  I hate changes that break compatability with old scripts (especially
+  ones I wrote) but the old behavior was a bug, not a feature...
+- fixed $1.$2 not working correctly.  the . operator is the only 
+  built-in operator that can do without white space...
+- replace() function now takes a 4th parameter for the max number of
+  occurences to replace...
+- added a hasmatch predicate similar to ismatch, notable differences:
+  ismatch matches the entire string against the pattern
+
+  hasmatch looks for a matching substring, each subsequent call to
+  hasmatch will look for the next substring until no matches are
+  left to be found (in which case it resets itself after returning
+  false).   hasmatch is essentially the same as the g option in
+  Perl's regex stuff...
+- updated the matches() function to work a lot like hasmatch where
+  it will look for substrings and return all groupings for all
+  matching substrings...  
+- added a &tr() function similar to the UNIX command tr.  
+  Transliteration is fun for the whole family...
+
 2.0-b10
 =======
 - fixed a bug with primitive values returned by HOES expressions not

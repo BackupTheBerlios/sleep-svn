@@ -84,7 +84,10 @@ public class BasicIO implements Loadable
 
         // typical ASCII'sh output functions
         temp.put("&print",      new print());
-        temp.put("&println",    new println());
+
+        println f_println = new println();
+        temp.put("&println",    f_println);
+        temp.put("&printf",    f_println); // I need to fix my unit tests to get rid of the printf function... grr
         temp.put("&printAll",   new printArray());
         temp.put("&printEOF",   new printEOF());
 

@@ -41,6 +41,7 @@ public class RegexBridge implements Loadable
     static
     {
        ParserConfig.addKeyword("ismatch");
+       ParserConfig.addKeyword("hasmatch");
     }
 
     private static Pattern getPattern(String pattern)
@@ -69,6 +70,7 @@ public class RegexBridge implements Loadable
 
         // predicates
         temp.put("ismatch", matcher);
+        temp.put("hasmatch", matcher);
 
         // functions
         temp.put("&matched", matcher);
@@ -84,15 +86,42 @@ public class RegexBridge implements Loadable
     {
        protected Matcher matcher = null;
 
+       protected HashMap context = new HashMap(); // storing matcher contexts...
+
        public boolean decide(String n, ScriptInstance i, Stack l)
        {
-          String b = ((Scalar)l.pop()).toString();
-          String a = ((Scalar)l.pop()).toString();
+          String b = ((Scalar)l.pop()).toString(); // PATTERN
+          String a = ((Scalar)l.pop()).toString(); // TEXT TO MATCH AGAINST
 
           Pattern pattern = RegexBridge.getPattern(b);
-          matcher = pattern.matcher(a);
-    
-          return matcher.matches();
+          boolean rv;
+
+          if (n.equals("hasmatch"))
+          {
+              if (context.containsKey(a + b))
+              {
+                 matcher = (Matcher)context.get(a + b);
+              }
+              else
+              {
+                 matcher = pattern.matcher(a);
+                 context.put(a + b, matcher);
+              }
+              rv = matcher.find();
+          }
+          else
+          {
+              matcher = pattern.matcher(a);
+              rv =  matcher.matches();
+          }
+
+          if (!rv) 
+          {
+             matcher  = null;           
+             context.remove(a + b);
+          }
+
+          return rv;
        }
 
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
@@ -126,7 +155,7 @@ public class RegexBridge implements Loadable
           Scalar value = SleepUtils.getArrayScalar();            
           int    count = matcher.groupCount();  
 
-          if (matcher.matches())
+          if (matcher.find())
           {
              for (int x = 1; x <= count; x++)
              {

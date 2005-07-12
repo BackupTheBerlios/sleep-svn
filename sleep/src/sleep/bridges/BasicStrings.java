@@ -56,7 +56,6 @@ public class BasicStrings implements Loadable
         Hashtable temp = aScript.getScriptEnvironment().getEnvironment();
 
         // functions
-        temp.put("&printf", new func_printf());
         temp.put("&left",   new func_left());
         temp.put("&right",  new func_right());
 
@@ -67,6 +66,8 @@ public class BasicStrings implements Loadable
         temp.put("&indexOf", new func_indexOf());
         temp.put("&strlen",  new func_strlen());
         temp.put("&strrep",  new func_strrep());
+
+        temp.put("&tr",      new func_tr());
 
         temp.put("&asc",     new func_asc());
         temp.put("&chr",     new func_chr());
@@ -259,15 +260,6 @@ public class BasicStrings implements Loadable
         }
     }
 
-    private static class func_printf implements Function
-    {
-        public Scalar evaluate(String n, ScriptInstance i, Stack l)
-        {
-           System.out.println(((Scalar)l.pop()).toString());
-           return null;
-        }
-    }
-
     private static class func_left implements Function
     {
         public Scalar evaluate(String n, ScriptInstance i, Stack l)
@@ -278,6 +270,27 @@ public class BasicStrings implements Loadable
            if (value >= temp.length()) { return SleepUtils.getScalar(temp); }
 
            return SleepUtils.getScalar(temp.substring(0, value));
+        }
+    }
+
+    private static class func_tr implements Function
+    {
+        public Scalar evaluate(String n, ScriptInstance i, Stack l)
+        {
+           String old       = BridgeUtilities.getString(l, "");
+           String pattern   = BridgeUtilities.getString(l, "");
+           String mapper    = BridgeUtilities.getString(l, "");
+           String optstr    = BridgeUtilities.getString(l, "");
+
+           int options = 0; 
+
+           if (optstr.indexOf('c') > -1) { options = options | Transliteration.OPTION_COMPLEMENT; }
+           if (optstr.indexOf('d') > -1) { options = options | Transliteration.OPTION_DELETE; }
+           if (optstr.indexOf('s') > -1) { options = options | Transliteration.OPTION_SQUEEZE; }
+
+           Transliteration temp = Transliteration.compile(pattern, mapper, options);
+
+           return SleepUtils.getScalar(temp.translate(old));
         }
     }
 
