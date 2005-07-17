@@ -187,7 +187,6 @@ public class ObjectUtilities
          while (i.hasNext())
          {
             Scalar temp = (Scalar)i.next();
-             Object argt = buildArgument(atype, temp, script);
             Array.set(arrayV, x, buildArgument(atype, temp, script));
             x++;
          }
