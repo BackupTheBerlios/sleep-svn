@@ -31,13 +31,15 @@ import sleep.runtime.*;
 import sleep.engine.types.*;
 import sleep.interfaces.Function;
 
+import sleep.bridges.*;
+
 public class ObjectUtilities
 {
    private static Class STRING_SCALAR;
    private static Class INT_SCALAR; 
    private static Class DOUBLE_SCALAR;
    private static Class LONG_SCALAR;
-   private static Class BOOLEAN_TYPE, BYTE_TYPE, CHARACTER_TYPE, DOUBLE_TYPE, FLOAT_TYPE, INTEGER_TYPE, LONG_TYPE, STRING_TYPE;
+   public  static Class BOOLEAN_TYPE, BYTE_TYPE, CHARACTER_TYPE, DOUBLE_TYPE, FLOAT_TYPE, INTEGER_TYPE, LONG_TYPE, STRING_TYPE, OBJECT_TYPE;
 
    static
    {
@@ -55,6 +57,7 @@ public class ObjectUtilities
          FLOAT_TYPE      = Class.forName("java.lang.Float");
          INTEGER_TYPE    = Class.forName("java.lang.Integer");
          LONG_TYPE       = Class.forName("java.lang.Long");
+         OBJECT_TYPE     = Class.forName("java.lang.Object");
          STRING_TYPE     = Class.forName("java.lang.String");
       }
       catch (Exception ex) { }
@@ -78,6 +81,26 @@ public class ObjectUtilities
          {
              // do nothing, this argument is a give me
          }
+         else if (check[z].isArray() && scalar.getArray() != null)
+         {
+             if (check[z].getComponentType() == OBJECT_TYPE)
+             {
+                value = ARG_MATCH_MAYBE;
+             }
+             else
+             {
+                Class mytype = getArrayType(scalar, null);
+ 
+                if (mytype == check[z].getComponentType())
+                {
+                   value = ARG_MATCH_YES;
+                }
+                else
+                {
+                   value = ARG_MATCH_NO;
+                }
+             }
+         }
          else if (check[z].isPrimitive() && !(stemp == INT_SCALAR || stemp == DOUBLE_SCALAR || stemp == LONG_SCALAR))
          {
              value = ARG_MATCH_MAYBE;
@@ -100,32 +123,6 @@ public class ObjectUtilities
       return value;
    }
 
-/*   public static Method findMethod(Class theClass, String method, Stack arguments)
-   {
-      Method temp = findMethod2(theClass, method, arguments);
-
-      if (temp == null) return null;
-
-      System.out.println("Calling: " + method + " w/ args: ");
-      for (int z = arguments.size() - 1; z >= 0; z--)
-      {
-         System.out.println("  " + arguments.get(z).getClass() + ": " + ((Scalar)arguments.get(z)).objectValue().getClass()); 
-      }
-
-
-      System.out.println("Selected: " + method + " w/ args: ");
-      for (int z = 0; z < temp.getParameterTypes().length; z++)
-      {
-         Class t = temp.getParameterTypes()[z];
-
-         System.out.println("  " + t + ": Primitive? " + t.isPrimitive() + "  Interface? " + t.isInterface()); 
-      }
-
-      System.out.println("     -------");
-
-      return temp;
-   } */
-
    public static Method findMethod(Class theClass, String method, Stack arguments)
    {
       int      size    = arguments.size();
@@ -141,7 +138,7 @@ public class ObjectUtilities
                    return methods[x];
 
              int value = isArgMatch(methods[x].getParameterTypes(), arguments);
-             if (value == ARG_MATCH_YES)
+             if (value == ARG_MATCH_YES) 
                    return methods[x];
 
              if (value == ARG_MATCH_MAYBE)
@@ -182,13 +179,16 @@ public class ObjectUtilities
    {
       if (type.isArray() && value.getArray() != null)
       {
-         Object arrayV = Array.newInstance(type, value.getArray().size());
+         Class atype = getArrayType(value, type.getComponentType());
+
+         Object arrayV = Array.newInstance(atype, value.getArray().size());
          Iterator i = value.getArray().scalarIterator();
          int x = 0;
          while (i.hasNext())
          {
             Scalar temp = (Scalar)i.next();
-            Array.set(arrayV, x, buildArgument(type, temp, script));
+             Object argt = buildArgument(atype, temp, script);
+            Array.set(arrayV, x, buildArgument(atype, temp, script));
             x++;
          }
 
@@ -219,6 +219,10 @@ public class ObjectUtilities
          else if (type == Integer.TYPE)
          {
             return new Integer(value.intValue());
+         }
+         else if (type == Short.TYPE)
+         {
+            return new Short((short)value.intValue());
          }
          else if (type == Long.TYPE)
          {
@@ -382,5 +386,42 @@ public class ObjectUtilities
 
          return null;
       }
+   }
+
+   /** Determines the primitive type of the specified array.  Primitive Sleep values (int, long, double) will return the appropriate Number.TYPE class.  This is an important distinction as Double.TYPE != new Double().getClass() */
+   public static Class getArrayType(Scalar value, Class defaultc)
+   {
+      if (value.getArray() != null && value.getArray().size() > 0 && (defaultc == null || defaultc == sleep.engine.ObjectUtilities.OBJECT_TYPE))
+      {
+          for (int x = 0; x < value.getArray().size(); x++)
+          {
+             if (value.getArray().getAt(x).getArray() != null)
+             {
+                return getArrayType(value.getArray().getAt(x), defaultc);
+             }
+
+             Class  elem  = value.getArray().getAt(x).getValue().getClass();
+             Object tempo = value.getArray().getAt(x).objectValue();
+
+             if (elem == DOUBLE_SCALAR)
+             {
+                return Double.TYPE;
+             }
+             else if (elem == INT_SCALAR)
+             {
+                return Integer.TYPE;
+             }
+             else if (elem == LONG_SCALAR)
+             {
+                return Long.TYPE;
+             }
+             else if (tempo != null)
+             {
+                return tempo.getClass();
+             }
+          }
+      }
+
+      return defaultc;
    }
 }

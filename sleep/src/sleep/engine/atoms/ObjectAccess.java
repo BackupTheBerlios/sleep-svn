@@ -154,6 +154,8 @@ public class ObjectAccess extends Step
       }
       catch (IllegalArgumentException aex)
       {
+         aex.printStackTrace();
+
          e.getScriptInstance().fireWarning(ObjectUtilities.buildArgumentErrorMessage(theClass, name, theMethod.getParameterTypes(), 
                                      parameters), getLineNumber());
       }

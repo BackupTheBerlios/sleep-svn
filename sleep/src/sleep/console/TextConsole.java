@@ -20,6 +20,12 @@ public class TextConsole implements ConsoleProxy
 
       if (args.length > 0)
       {
+         if (args[0].equals("-version") || args[0].equals("--version") || args[0].equals("-v"))
+         {
+             System.out.println(SleepUtils.SLEEP_VERSION + " (" + SleepUtils.SLEEP_RELEASE + ")");
+             return;
+         }
+
          //
          // put all of our command line arguments into an array scalar
          //

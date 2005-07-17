@@ -32,6 +32,8 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import java.lang.reflect.*; // for array casting stuff
+
 import sleep.parser.Parser;
 import sleep.error.YourCodeSucksException;
 
@@ -58,10 +60,13 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&push",  this);      // &push(@array, $value) = $scalar
         temp.put("&pop",   this);      // &pop(@array) = $scalar
         temp.put("&add",   this);      // &pop(@array) = $scalar
+        temp.put("&flatten",   this);      // &pop(@array) = $scalar
         temp.put("&clear", this);
         temp.put("&subarray", this);
         temp.put("&copy",  new copy());
         temp.put("&map",    new map());
+        temp.put("&cast",   new f_cast());
+
 
         temp.put("&values", this);
         temp.put("&remove", this);     // not safe within foreach loops (since they use an iterator, and remove throws an exception)
@@ -218,6 +223,134 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
 
           return value;
+       }
+    }
+
+    private static class f_cast implements Function
+    {
+       public Scalar evaluate(String n, ScriptInstance si, Stack l)
+       {
+          Scalar value      = BridgeUtilities.getScalar(l);
+          String type       = BridgeUtilities.getString(l, " ");
+
+          if (type.length() == 0) { type = " "; }
+
+          if (value.getArray() == null)
+          {
+             if (type.charAt(0) == 'c')
+             {
+                return SleepUtils.getScalar(value.toString().toCharArray());
+             }             
+             else if (type.charAt(0) == 'b')
+             {
+                // we do a straight conversion here because we don't want byte data to be mucked up by charsets
+                // this is because string stores an array of bytes as a string...
+                char[] tempc = value.toString().toCharArray();
+                byte[] tempb = new byte[tempc.length];
+
+                for (int x = 0; x < tempc.length; x++)
+                {
+                   tempb[x] = (byte)tempc[x];
+                }
+
+                return SleepUtils.getScalar(tempb);
+             }             
+
+             return SleepUtils.getEmptyScalar();
+          }
+
+          if (l.size() == 0) { l.push(SleepUtils.getScalar(value.getArray().size())); }
+
+          int dimensions[] = new int[l.size()];
+          int totaldim     = 1;
+
+          for (int x = 0; !l.isEmpty(); x++)
+          {
+             dimensions[x] = BridgeUtilities.getInt(l, 0);
+
+             totaldim *= dimensions[x];
+          }
+
+          Object rv;
+
+          Class atype = null;
+
+          switch (type.charAt(0))
+          {
+             case 'z':
+                atype = Boolean.TYPE;
+                break;
+             case 'c':
+                atype = Character.TYPE;
+                break;
+             case 'b':
+                atype = Byte.TYPE;
+                break;
+             case 'h':
+                atype = Short.TYPE;
+                break;
+             case 'i':
+                atype = Integer.TYPE;
+                break;
+             case 'l':
+                atype = Long.TYPE;
+                break;
+             case 'f':
+                atype = Float.TYPE;
+                break;
+             case 'd':
+                atype = Double.TYPE;
+                break;
+             default:
+                atype = ObjectUtilities.getArrayType(value, ObjectUtilities.OBJECT_TYPE);
+          }
+
+          Scalar flat = BridgeUtilities.flattenArray(value, null);
+
+          if (totaldim != flat.getArray().size())
+          {
+             throw new RuntimeException("&cast: specified dimensions " + totaldim + " is not equal to total array elements " + flat.getArray().size());
+          }
+
+          rv = Array.newInstance(atype, dimensions);
+
+          int current[] = new int[dimensions.length]; // defaults at 0, 0, 0
+
+          for (int x = 0; true; x++)
+          {
+             Object tempa = rv;
+
+             //
+             // find our index
+             //
+             for (int z = 0; z < (current.length - 1); z++)
+             {
+                tempa = Array.get(tempa, current[z]);
+             }
+
+             //
+             // set our value
+             //
+             Object tempo = ObjectUtilities.buildArgument(atype, flat.getArray().getAt(x), si);
+             Array.set(tempa, current[current.length - 1], tempo);
+
+             //
+             // increment our index step...
+             //
+             current[current.length - 1] += 1;
+
+             for (int y = current.length - 1; current[y] >= dimensions[y]; y--)
+             {
+                if (y == 0)
+                {
+                   return SleepUtils.getScalar(rv); // we're done building the array at this point...
+                }
+
+                current[y] = 0;
+                current[y-1] += 1;
+             }
+          }
+
        }
     }
 
@@ -505,6 +638,11 @@ public class BasicUtilities implements Function, Loadable, Predicate
           {
              value.setValue(SleepUtils.getEmptyScalar());
           }
+       }
+       else if (n.equals("&flatten"))
+       {
+          if (value.getArray() == null) { return SleepUtils.getEmptyScalar(); }
+          return BridgeUtilities.flattenArray(value, null);
        }
        else if (n.equals("&subarray"))
        {

@@ -1,3 +1,27 @@
+2.0-stable
+=======
+- added a -version, -v, --version command line switch to see what
+  Sleep version you're using :)
+- HOES now automatically converts a 1-dimensional Sleep array into
+  a Java array for argument matching (of any Object/non-primitive
+  type).  This is a potential area of improvement for the future
+  if there is enough demand for it...
+
+  Auto casting is also done for int arrays, double arrays, and float
+  arrays.  The first element of the array determines the overarching
+  type.  More sophisticated casting should be done using the cast
+  function (detailed later in this changelog)
+- added function &flatten(@array) for flattening a multidimensional
+  array into a 1-dimensional array.
+- HOES now recognizes a desired short argument and can build a value
+  for it...  (the Java primitive type short)
+- when an error occurs sleep will now immediately jump out of the
+  currently executing block.
+- added a &cast(@var, 't', ...) which casts @var into a native java
+  array with a type t (b = byte, c = char, i = int, etc..).  
+  Any arguments specified represent the dimensions of the array i.e.
+  &cast(@var, 'l', 2, 3) casts @var into a 2x3 array of Java longs.
+
 2.0-b11
 =======
 - fixed a fringe case with the Z unpack character

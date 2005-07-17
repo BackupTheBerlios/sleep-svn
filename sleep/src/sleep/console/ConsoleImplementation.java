@@ -118,7 +118,7 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
    /** starts the console */
    public void rppl() throws IOException
    {
-       getProxy().consolePrintln(">> Welcome to the Sleep Scripting Language");
+       getProxy().consolePrintln(">> Welcome to the Sleep scripting language");
 
        interact = false;
 
@@ -175,6 +175,10 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
                 }
 
                 env(args, filter);
+             }
+             else if (command.equals("version"))
+             {
+                getProxy().consolePrintln(SleepUtils.SLEEP_VERSION + " (" + SleepUtils.SLEEP_RELEASE + ")");
              }
              else if (command.equals("help"))
              {
@@ -244,6 +248,8 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        getProxy().consolePrintln("   displays the Abstract Syntax Tree for the specified key");
        getProxy().consolePrintln("quit");
        getProxy().consolePrintln("   stops the console");
+       getProxy().consolePrintln("version");
+       getProxy().consolePrintln("   display the current Sleep version");
        getProxy().consolePrintln("x <expression>");
        getProxy().consolePrintln("   evaluates a sleep expression and displays the value");
 

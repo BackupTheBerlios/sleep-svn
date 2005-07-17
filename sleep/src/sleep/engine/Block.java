@@ -134,7 +134,9 @@ public class Block implements Serializable
            catch (Exception ex)
            {
               environment.getScriptInstance().fireWarning(ex.toString(), temp.getLineNumber());
-              ex.printStackTrace();
+              ex.printStackTrace(System.out);
+
+              return SleepUtils.getEmptyScalar();
            }
      
            if (environment.isReturn())

@@ -240,4 +240,27 @@ public class BridgeUtilities
 
       return new KeyValuePair(key, value);
    }
+
+   /** Flattens the specified scalar array.  The <var>toValue</var> field can be null. */
+   public static Scalar flattenArray(Scalar fromValue, Scalar toValue)
+   {
+      if (toValue == null) { toValue = SleepUtils.getArrayScalar(); }
+
+      Iterator i = fromValue.getArray().scalarIterator();
+      while (i.hasNext())
+      {
+         Scalar temp = (Scalar)i.next();
+
+         if (temp.getArray() != null)
+         {
+            flattenArray(temp, toValue);
+         }
+         else
+         {
+            toValue.getArray().push(temp);
+         }
+      }
+
+      return toValue;
+   }
 }
