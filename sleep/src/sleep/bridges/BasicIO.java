@@ -146,6 +146,14 @@ public class BasicIO implements Loadable
           ScriptInstance child = i.fork();
           child.installBlock(param.getRunnableCode());
 
+          ScriptVariables vars = child.getScriptVariables();
+
+          while (!l.isEmpty())
+          {
+             KeyValuePair kvp = BridgeUtilities.getKeyValuePair(l);
+             vars.putScalar(kvp.getKey().toString(), kvp.getValue());
+          }
+
           // create a pipe between these two items...
           IOObject parent_io = new IOObject();
           IOObject child_io  = new IOObject();

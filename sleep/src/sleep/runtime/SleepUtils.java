@@ -49,10 +49,10 @@ import sleep.bridges.SleepClosure;
 public class SleepUtils
 {
    /** A date stamp of this Sleep release in YYYYMMDD format */
-   public static final int    SLEEP_RELEASE = 20050718;
+   public static final int    SLEEP_RELEASE = 20050720;
 
    /** A string description of this Sleep release */
-   public static final String SLEEP_VERSION = "Sleep 2.0-stable";
+   public static final String SLEEP_VERSION = "Sleep 2.0";
 
    /** registers "keyword" as a keyword with the parser.  This is a necessity if you have extra non standard
      bridges in sleep */

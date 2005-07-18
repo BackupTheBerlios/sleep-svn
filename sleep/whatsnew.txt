@@ -24,6 +24,9 @@
 - &sort now throws an IllegalArgumentException if not enough args
   are specified (I've been bitten by accidentally using &sort when
   I really wanted &sorta and friends...)
+- added the ability for fork(&closure, ...) to take an initial set
+  of values to pass to the forked script environment.  this feature
+  comes with a heavy warning, see the docs for more details
 
 2.0-b11
 =======
