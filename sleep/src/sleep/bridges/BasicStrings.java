@@ -414,6 +414,11 @@ public class BasicStrings implements Loadable
     {
         public Scalar evaluate(String n, ScriptInstance i, Stack l)
         {
+           if (l.size() != 2)
+           {
+              throw new IllegalArgumentException("&sort requires a function to specify how to sort the data");
+           }
+
            Function     my_func   = BridgeUtilities.getFunction(l, i);
            ScalarArray  array     = BridgeUtilities.getWorkableArray(l);
 

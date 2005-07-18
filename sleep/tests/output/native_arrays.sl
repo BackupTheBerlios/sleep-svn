@@ -32,15 +32,7 @@ $temp[1][2] = 9
 $temp[1][3] = 10
 $temp[1][4] = 11
 $temp[1][5] = 12
-Warning: java.lang.RuntimeException: &cast: specified dimensions 18 is not equal to total array elements 12 at line 116
-java.lang.RuntimeException: &cast: specified dimensions 18 is not equal to total array elements 12
-	at sleep.bridges.BasicUtilities$f_cast.evaluate(Unknown Source)
-	at sleep.engine.atoms.Call.evaluate(Unknown Source)
-	at sleep.engine.Block.evaluate(Unknown Source)
-	at sleep.engine.atoms.Goto.evaluate(Unknown Source)
-	at sleep.engine.Block.evaluate(Unknown Source)
-	at sleep.runtime.ScriptInstance.runScript(Unknown Source)
-	at sleep.console.TextConsole.main(Unknown Source)
+Warning: &cast: specified dimensions 18 is not equal to total array elements 12 at line 116
 Still going...
 <--------------------------------------------------->
 temp[0] = t

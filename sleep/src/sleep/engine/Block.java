@@ -131,6 +131,16 @@ public class Block implements Serializable
            {
               Scalar value = temp.evaluate(environment);
            }
+           catch (IllegalArgumentException aex)
+           {
+              environment.getScriptInstance().fireWarning(aex.getMessage(), temp.getLineNumber());
+              return SleepUtils.getEmptyScalar();
+           }
+           catch (RuntimeException rex)
+           {
+              environment.getScriptInstance().fireWarning(rex.getMessage(), temp.getLineNumber());
+              return SleepUtils.getEmptyScalar();
+           }
            catch (Exception ex)
            {
               environment.getScriptInstance().fireWarning(ex.toString(), temp.getLineNumber());

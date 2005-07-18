@@ -1,5 +1,5 @@
-2.0-stable
-=======
+2.0-release
+===========
 - added a -version, -v, --version command line switch to see what
   Sleep version you're using :)
 - HOES now automatically converts a 1-dimensional Sleep array into
@@ -21,6 +21,9 @@
   array with a type t (b = byte, c = char, i = int, etc..).  
   Any arguments specified represent the dimensions of the array i.e.
   &cast(@var, 'l', 2, 3) casts @var into a 2x3 array of Java longs.
+- &sort now throws an IllegalArgumentException if not enough args
+  are specified (I've been bitten by accidentally using &sort when
+  I really wanted &sorta and friends...)
 
 2.0-b11
 =======
