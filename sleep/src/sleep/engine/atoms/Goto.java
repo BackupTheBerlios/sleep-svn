@@ -99,13 +99,12 @@ public class Goto extends Step
           env.clear();
       }
 
-      if (isLoop)
+      if (isLoop && e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_BREAK)
       {
-          e.flagBreak(false);
+          e.clearReturn();
           env.clear();
       }
 
-//      env.push(temp);
       return temp;
    }
 }

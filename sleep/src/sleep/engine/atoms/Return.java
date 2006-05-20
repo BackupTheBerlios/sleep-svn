@@ -29,22 +29,34 @@ import sleep.runtime.*;
 
 public class Return extends Step
 {
+   protected int return_type;
+
+   /** See ScriptEnvironment.FLOW_CONTROL_* for the type constants */
+   public Return(int type)
+   {
+      return_type = type;
+   }
+
    public String toString()
    {
-      return "[Return] \n";
+      return "[Return]: " + return_type + " \n";
    }
 
    public Scalar evaluate(ScriptEnvironment e)
    {
       Stack env = e.getEnvironmentStack();   
 
-      if (env.isEmpty())
+      if (return_type == ScriptEnvironment.FLOW_CONTROL_BREAK)
       {
-         e.flagReturn(SleepUtils.getEmptyScalar());
+         e.flagReturn(null, return_type);
+      }
+      else if (env.isEmpty())
+      {
+         e.flagReturn(SleepUtils.getEmptyScalar(), return_type);
       }
       else
       {
-         e.flagReturn((Scalar)env.pop());
+         e.flagReturn((Scalar)env.pop(), return_type);
       }
 
       return e.getReturnValue();

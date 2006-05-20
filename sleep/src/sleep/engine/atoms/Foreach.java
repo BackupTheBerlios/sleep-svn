@@ -119,20 +119,22 @@ public class Foreach extends Step
 
          code.evaluate(e);
 
-         if (e.isBreak())
-         {
-            break;
-         }
-
          if (e.isReturn())
          {
-            return e.getReturnValue();
+            if (e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_BREAK)
+            {
+               e.clearReturn();
+               break;
+            }
+            else
+            {
+               return e.getReturnValue();
+            }
          }
 
          x++;
       }
 
-      e.flagBreak(false);
       env.clear();
 //      env.push(valueHolder);
       return null;

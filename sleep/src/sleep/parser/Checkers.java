@@ -43,18 +43,20 @@ public class Checkers
    {
       keywords = new Hashtable();
 
-      keywords.put("if",      Boolean.TRUE);
-      keywords.put("for",     Boolean.TRUE);
-      keywords.put("while",   Boolean.TRUE);
-      keywords.put("foreach", Boolean.TRUE);
-      keywords.put("&&",      Boolean.TRUE);
-      keywords.put("||",      Boolean.TRUE);
-      keywords.put("EOT",     Boolean.TRUE);
-      keywords.put("EOL",     Boolean.TRUE);
-      keywords.put("return",  Boolean.TRUE);
-      keywords.put("halt",    Boolean.TRUE);
-      keywords.put("done",    Boolean.TRUE);
-      keywords.put("break",   Boolean.TRUE);
+      keywords.put("if",       Boolean.TRUE);
+      keywords.put("for",      Boolean.TRUE);
+      keywords.put("while",    Boolean.TRUE);
+      keywords.put("foreach",  Boolean.TRUE);
+      keywords.put("&&",       Boolean.TRUE);
+      keywords.put("||",       Boolean.TRUE);
+      keywords.put("EOT",      Boolean.TRUE);
+      keywords.put("EOL",      Boolean.TRUE);
+      keywords.put("return",   Boolean.TRUE);
+      keywords.put("halt",     Boolean.TRUE);
+      keywords.put("done",     Boolean.TRUE);
+      keywords.put("break",    Boolean.TRUE);
+      keywords.put("continue", Boolean.TRUE);
+      keywords.put("yield",    Boolean.TRUE);
    }
 
    public static boolean isIfStatement(String a, String b, String c)
@@ -228,12 +230,7 @@ public class Checkers
    {
        // halt and done are kind of jIRC related... when you write the scripting language you
        // can do whatever you want...
-       return  (temp.equals("return") || temp.equals("done") || temp.equals("halt"));
-   }
-
-   public static final boolean isBreak (String temp)
-   {
-       return  temp.equals("break");
+       return  (temp.equals("return") || temp.equals("done") || temp.equals("halt") || temp.equals("break") || temp.equals("yield"));
    }
 
    public static final boolean isString (String item)

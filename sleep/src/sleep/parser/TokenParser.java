@@ -652,11 +652,6 @@ public class TokenParser implements ParserConstants
             myToken.setType(IDEA_FUNC);
             myToken.add(tokens[x]);
          }
-         else if (Checkers.isBreak(strings[x]))
-         {
-            myToken.setType(EXPR_BREAK);
-            myToken.add(tokens[x]);
-         }
          else if (strings[x].equals("EOT"))
          {
             // do nothing.

@@ -206,9 +206,20 @@ public class ScriptEnvironment implements Serializable
     }
 
     //
-    // Stuff related to returning from a block.
+    // ******** Flow Control **********
     //
-    Scalar rv = null;
+
+    /** currently no flow contrl change has been requested */
+    public static final int FLOW_CONTROL_NONE   = 0;
+
+    /** request a return from the current function */
+    public static final int FLOW_CONTROL_RETURN = 1;
+
+    /** request a break out of the current loop */
+    public static final int FLOW_CONTROL_BREAK  = 2;
+    
+    protected Scalar rv      = null;
+    protected int    request = 0;
 
     public Scalar getReturnValue()
     {
@@ -217,18 +228,25 @@ public class ScriptEnvironment implements Serializable
 
     public boolean isReturn()
     {
-       return (rv != null) || isBreak;
+       return request != FLOW_CONTROL_NONE;
     }
 
-    public void flagReturn(Scalar value)
+    public int getFlowControlRequest()
+    {
+       return request;
+    }
+
+    public void flagReturn(Scalar value, int type_of_flow)
     {
        if (value == null) { value = SleepUtils.getEmptyScalar(); }
-       rv = value;
+       rv      = value;
+       request = type_of_flow;
     }
 
     public void clearReturn()
     {
-       rv = null;
+       request = FLOW_CONTROL_NONE;
+       rv      = null;
     }
 
     //
@@ -256,26 +274,6 @@ public class ScriptEnvironment implements Serializable
        } 
 
        findex++;
-    }
-
-
-    //
-    // stuff related to breaking out of a loop
-    //
-   
-    /** value that determines if we are breaking out of the current loop or not */
-    protected boolean isBreak = false;
-
-    /** determine wether or not we want to break out of the current loop */
-    public void flagBreak(boolean flag)
-    {
-        isBreak = flag;
-    }
-
-    /** checks wether or not we want to break out of the current loop */
-    public boolean isBreak()
-    {
-        return isBreak;
     }
 
     /** evaluate a full blown statement... probably best to just load a script at this point */

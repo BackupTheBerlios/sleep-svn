@@ -34,15 +34,9 @@ public class GeneratedSteps
        return temp;
     }
 
-    public static Step Return()
+    public static Step Return(int type)
     {
-       Step temp = new Return();
-       return temp;
-    }
-
-    public static Step Break()
-    {
-       Step temp = new Break();
+       Step temp = new Return(type);
        return temp;
     }
 

@@ -1,3 +1,7 @@
+2.1-beta 1
+===========
+- fixed the clean target in the sleep build.xml file
+
 2.0-release
 ===========
 - added a -version, -v, --version command line switch to see what

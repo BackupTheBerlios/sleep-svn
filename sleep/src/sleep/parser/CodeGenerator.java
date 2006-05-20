@@ -941,10 +941,6 @@ public class CodeGenerator implements ParserConstants
          case OBJECT_IMPORT:
            parser.importPackage(strings[0]);
            break;           
-         case EXPR_BREAK:
-           atom = GeneratedSteps.Break();
-           add(atom, tokens[0]);
-           break;
          case EXPR_RETURN:                     // implemented
            if (strings[0].equals("done"))
            {
@@ -963,8 +959,16 @@ public class CodeGenerator implements ParserConstants
               parseIdea(tokens[0].copy("$null"));
            }
 
-           atom = GeneratedSteps.Return();
-           add(atom, tokens[0]);
+           if (strings[0].equals("break"))
+           {
+              atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_BREAK);
+              add(atom, tokens[0]);
+           }
+           else
+           {
+              atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_RETURN);
+              add(atom, tokens[0]);
+           }
            break;
          default:
       }     

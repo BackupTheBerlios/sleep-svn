@@ -16,7 +16,7 @@
            destdir="${project.build}"
            nowarn="yes"
            depend="yes"
-           debug="no"
+           debug="yes"
            optimize="yes"
     >
     </javac>
@@ -66,7 +66,7 @@
   </target>
 
   <target name="clean" description="clean up" >
-    <delete dir="${build}"/>
+    <delete dir="${project.build}"/>
   </target>
 </project>
 
