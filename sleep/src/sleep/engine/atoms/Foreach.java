@@ -126,6 +126,11 @@ public class Foreach extends Step
                e.clearReturn();
                break;
             }
+            else if (e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_CONTINUE)
+            {
+               e.clearReturn();
+               continue;
+            }
             else
             {
                return e.getReturnValue();

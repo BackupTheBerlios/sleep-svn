@@ -230,7 +230,7 @@ public class Checkers
    {
        // halt and done are kind of jIRC related... when you write the scripting language you
        // can do whatever you want...
-       return  (temp.equals("return") || temp.equals("done") || temp.equals("halt") || temp.equals("break") || temp.equals("yield"));
+       return  (temp.equals("return") || temp.equals("done") || temp.equals("halt") || temp.equals("break") || temp.equals("yield") || temp.equals("continue"));
    }
 
    public static final boolean isString (String item)

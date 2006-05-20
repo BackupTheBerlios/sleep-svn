@@ -1,6 +1,8 @@
 2.1-beta 1
 ===========
 - fixed the clean target in the sleep build.xml file
+- added a continue keyword for flow control of while/for/foreach
+  loops.  My arm hath been twisted.
 
 2.0-release
 ===========

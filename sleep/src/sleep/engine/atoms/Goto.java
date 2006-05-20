@@ -31,10 +31,12 @@ public class Goto extends Step
 {
    public Block iftrue;
    public Block iffalse;
+
    public Check start;
  
    public String name;
    public boolean isLoop;
+   public Block increment;
 
    public Goto (Check s)
    {
@@ -64,12 +66,20 @@ public class Goto extends Step
          temp.append(iffalse.toString(prefix+"      "));
       }
 
+      if (increment != null)
+      {
+         temp.append(prefix); 
+         temp.append("  [Increment]:   \n");      
+         temp.append(increment.toString(prefix+"      "));
+      }
+
       return temp.toString();
    }
 
-   public void setLoop(boolean l)
+   public void setLoop(boolean l, Block i)
    {
-      isLoop = l;
+      isLoop    = l;
+      increment = i;
    }
 
    public void setChoices(Block t, Block f)
@@ -93,16 +103,39 @@ public class Goto extends Step
           temp = iffalse.evaluate(e);
       }
 
-      while (!e.isReturn() && isLoop && start.check(e))
+      if (isLoop)
       {
-          temp = iftrue.evaluate(e);
-          env.clear();
-      }
+          if (e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_CONTINUE)
+          {
+             e.clearReturn();
+          }
 
-      if (isLoop && e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_BREAK)
-      {
-          e.clearReturn();
-          env.clear();
+          if (increment != null)
+          {
+             increment.evaluate(e);
+          }
+
+          while (!e.isReturn() && start.check(e))
+          {
+             temp = iftrue.evaluate(e);
+             env.clear();
+
+             if (e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_CONTINUE)
+             {
+                e.clearReturn();
+             }
+
+             if (increment != null)
+             {
+                increment.evaluate(e);
+             }
+         }
+
+         if (e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_BREAK)
+         {
+             e.clearReturn();
+             env.clear();
+         }
       }
 
       return temp;

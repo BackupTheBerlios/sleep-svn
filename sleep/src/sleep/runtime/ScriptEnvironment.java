@@ -210,13 +210,16 @@ public class ScriptEnvironment implements Serializable
     //
 
     /** currently no flow contrl change has been requested */
-    public static final int FLOW_CONTROL_NONE   = 0;
+    public static final int FLOW_CONTROL_NONE     = 0;
 
     /** request a return from the current function */
-    public static final int FLOW_CONTROL_RETURN = 1;
+    public static final int FLOW_CONTROL_RETURN   = 1;
 
     /** request a break out of the current loop */
-    public static final int FLOW_CONTROL_BREAK  = 2;
+    public static final int FLOW_CONTROL_BREAK    = 2;
+
+    /** adding a continue keyword as people keep demanding it */
+    public static final int FLOW_CONTROL_CONTINUE = 3;
     
     protected Scalar rv      = null;
     protected int    request = 0;

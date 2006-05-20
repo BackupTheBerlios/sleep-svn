@@ -786,7 +786,7 @@ public class CodeGenerator implements ParserConstants
               parseIdea(termsAr[2]);
               b = restore();
 
-              atom = GeneratedSteps.Goto(parsePredicate(termsAr[0]), a, b, false);
+              atom = GeneratedSteps.Goto(parsePredicate(termsAr[0]), a, b, null, false);
               add(atom, tokens[0]); 
            }
            else if (tokens.length > 1)
@@ -807,7 +807,7 @@ public class CodeGenerator implements ParserConstants
          case EXPR_WHILE:                                        // done
            backup();
            parseBlock(tokens[2]);    
-           atom = GeneratedSteps.Goto(parsePredicate(ParserUtilities.extract(tokens[1])), restore(), null, true);
+           atom = GeneratedSteps.Goto(parsePredicate(ParserUtilities.extract(tokens[1])), restore(), null, null, true);
            add(atom, tokens[1]);
            break;
          case EXPR_ASSIGNMENT_T:                                  // implemented
@@ -864,7 +864,7 @@ public class CodeGenerator implements ParserConstants
            }
            b = restore();
 
-           atom = GeneratedSteps.Goto(parsePredicate(ParserUtilities.extract(tokens[1])), a, b, false);
+           atom = GeneratedSteps.Goto(parsePredicate(ParserUtilities.extract(tokens[1])), a, b, null, false);
            add(atom, tokens[1]); 
            break;
          case EXPR_FOREACH_SPECIAL:
@@ -909,8 +909,12 @@ public class CodeGenerator implements ParserConstants
            // |for
            // |($x = 0; $x < 100; $x++)
            // |{ &printf("hi"); }
+
            Token extracted_terms[] = ParserUtilities.groupByBlockTerm(parser, ParserUtilities.extract(tokens[1])).getTokens();
 
+           //
+           // evaluate initial terms...           
+           //
            StringBuffer doThis = new StringBuffer();
 
            TokenList initial_terms = ParserUtilities.groupByParameterTerm(parser, extracted_terms[0]);
@@ -924,8 +928,19 @@ public class CodeGenerator implements ParserConstants
 
            parseBlock(tokens[0].copy(doThis.toString()));
 
+           //
+           // parse the loop body and save it
+           //
+           backup();
+
+           parseBlock(tokens[2]);    
+           b = restore();
+
+           //
+           // parse the final terms and save them...
+           //
+           backup();
            doThis = new StringBuffer();
-           doThis.append(ParserUtilities.extract(strings[2]));
 
            TokenList final_terms = ParserUtilities.groupByParameterTerm(parser, extracted_terms[2]);
 
@@ -933,10 +948,17 @@ public class CodeGenerator implements ParserConstants
            while (i.hasNext())
            {
               doThis.append(i.next().toString());
-              doThis.append(";\n");
+              doThis.append("; ");
            }
 
-           parseBlock(tokens[0].copy("while ("+extracted_terms[1].toString()+")\n{\n" + doThis.toString() + "}"));
+           parseBlock(tokens[0].copy(doThis.toString()));
+           a = restore();
+
+           //
+           // setup our goto object..
+           // 
+           atom = GeneratedSteps.Goto(parsePredicate(extracted_terms[1]), b, null, a, true);
+           add(atom, tokens[1]);
            break;
          case OBJECT_IMPORT:
            parser.importPackage(strings[0]);
@@ -962,6 +984,11 @@ public class CodeGenerator implements ParserConstants
            if (strings[0].equals("break"))
            {
               atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_BREAK);
+              add(atom, tokens[0]);
+           }
+           else if (strings[0].equals("continue"))
+           {
+              atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_CONTINUE);
               add(atom, tokens[0]);
            }
            else

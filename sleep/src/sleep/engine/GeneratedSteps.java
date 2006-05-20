@@ -58,11 +58,11 @@ public class GeneratedSteps
        return temp;
     }
 
-    public static Step Goto(Check conditionForGoto, Block ifTrue, Block ifFalse, boolean shouldLoop)
+    public static Step Goto(Check conditionForGoto, Block ifTrue, Block ifFalse, Block increment, boolean shouldLoop)
     {
        Goto temp = new Goto(conditionForGoto);
        temp.setChoices(ifTrue, ifFalse);
-       temp.setLoop(shouldLoop);
+       temp.setLoop(shouldLoop, increment);
        return temp;
     }
  
