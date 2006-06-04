@@ -124,6 +124,11 @@ public class Block implements Serializable
         code.  don't call this method yourself.  okay? */
     public Scalar evaluate(ScriptEnvironment environment)
     {
+        if (environment.isReturn())
+        {
+           return environment.getReturnValue();
+        }
+
         Step temp = first;
         while (temp != null)
         {
@@ -148,7 +153,7 @@ public class Block implements Serializable
 
               return SleepUtils.getEmptyScalar();
            }
-     
+
            if (environment.isReturn())
            {
               return environment.getReturnValue();
@@ -157,20 +162,6 @@ public class Block implements Serializable
            temp = temp.next;
         }
 
-        // it looks tempting to remove this bit of code here, doesn't it?  You are 
-        // probably thinking "I yAM THe OpTIMizATiON PrIME MaSTeR"... well guess 
-        // what, you're not.  Don't remove this stuff here.  
-        //
-        // Basically this forces a function that doesn't return anything to return $null.
-        //
-        Stack env = environment.getEnvironmentStack();
-
-        if (env.isEmpty())
-        {
-           return SleepUtils.getEmptyScalar(); 
-        }
-
-        return null;
-//        return (Scalar)(env.peek());
+        return SleepUtils.getEmptyScalar(); 
     }
 }

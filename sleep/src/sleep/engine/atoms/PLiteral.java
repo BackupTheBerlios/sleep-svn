@@ -78,8 +78,7 @@ public class PLiteral extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack  env   = e.getEnvironmentStack();
-      String value = buildString(e, env);
+      String value = buildString(e);
       Scalar rv;
 
       if (evaluator != null && e.getEnvironment().get(evaluator) != null)
@@ -92,12 +91,14 @@ public class PLiteral extends Step
          rv = SleepUtils.getScalar(value);
       }
 
-      env.push(rv);
+      e.getCurrentFrame().push(rv);
       return rv;
    }
 
-   protected String buildString(ScriptEnvironment e, Stack env)
+   protected String buildString(ScriptEnvironment e)
    {
+      e.CreateFrame();
+
       StringBuffer value = new StringBuffer();
       for (int x = 0; x < fragments.length; x++) 
       {
@@ -107,9 +108,9 @@ public class PLiteral extends Step
              code[x].evaluate(e);
              if (align[x] != null)
              {
-                String temp = ((Scalar)env.pop()).getValue().toString();
+                String temp = ((Scalar)e.getCurrentFrame().pop()).getValue().toString();
                 align[x].evaluate(e);
-                int al = ((Scalar)env.pop()).getValue().intValue();
+                int al = ((Scalar)e.getCurrentFrame().pop()).getValue().intValue();
                 if (temp != null)
                 {
                    for (int z = 0 - temp.length(); z > al; z--)
@@ -125,10 +126,12 @@ public class PLiteral extends Step
              }
              else
              {
-                value = value.append(((Scalar)env.pop()).getValue().toString());
+                value = value.append(((Scalar)e.getCurrentFrame().pop()).getValue().toString());
              }
           }
       }
+
+      e.KillFrame();
 
       return value.toString();
    }

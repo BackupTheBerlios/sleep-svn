@@ -263,6 +263,17 @@ public class ScriptEnvironment implements Serializable
        return (Stack)frames.get(findex);    
     }
 
+    public void FrameResult(Scalar value)
+    {
+       KillFrame();
+       if (findex >= 0)
+       {
+          getCurrentFrame().push(value);
+       }
+    }
+
+    public boolean hasFrame() { return findex >= 0; }
+
     public void KillFrame()
     {
        getCurrentFrame().clear();

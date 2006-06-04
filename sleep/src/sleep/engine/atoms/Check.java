@@ -156,6 +156,7 @@ public class Check implements Serializable
    /** Performs this "check".  Returns the value of the condition that is checked. */
    public boolean check(ScriptEnvironment env)
    {
+      env.CreateFrame();
       setup.evaluate(env);
       Predicate choice = env.getPredicate(name);
  

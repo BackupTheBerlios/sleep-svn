@@ -46,9 +46,17 @@ public class ObjectAccess extends Step
       return "[Object Access]: "+classRef+"#"+name+"\n";
    }
 
+   //
+   // Pre Condition:
+   //   object we're accessing is top item on current frame
+   //   arguments consist of the rest of the current frame...
+   //
+   // Post Condition:
+   //   current frame is dissolved
+   //   result is top item on parent frame
+
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack  env    = e.getEnvironmentStack();
       Scalar result = SleepUtils.getEmptyScalar();
 
       Object accessMe = null;
@@ -58,15 +66,17 @@ public class ObjectAccess extends Step
 
       if (classRef == null)
       {
-         scalar    = (Scalar)env.pop();
+         scalar    = (Scalar)e.getCurrentFrame().pop();
          accessMe  = scalar.objectValue();
 
          if (accessMe == null)
          {
-            e.getScriptInstance().fireWarning("Attempted to call a method on a null reference", getLineNumber());
-            env.push(SleepUtils.getEmptyScalar());
+            e.getScriptInstance().fireWarning("Attempted to call a non-static method on a null reference", getLineNumber());
             e.KillFrame();
-            return SleepUtils.getEmptyScalar();
+
+            e.getCurrentFrame().push(SleepUtils.getEmptyScalar());
+
+            return null;
          }
 
          theClass  = accessMe.getClass();
@@ -84,19 +94,21 @@ public class ObjectAccess extends Step
          Function func = SleepUtils.getFunctionFromScalar(scalar, e.getScriptInstance());
 
          result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
-         e.clearReturn(); // this has to be done or else bad things will happen when the closure returns stuff
 
-         env.push(result);
-         e.KillFrame();
-         return result;
+         e.clearReturn(); // this has to be done or else bad things will happen when the closure returns stuff
+         // ^-- evaluate, is this really necessary or are closures smart enough to clear the return themselves? // RSM
+
+         e.FrameResult(result);
+         return null;
       }
 
       if (name == null)
       {
          e.getScriptInstance().fireWarning("Attempted to query an object with no method/field", getLineNumber());
-         env.push(result);
          e.KillFrame();
-         return result;
+         e.getCurrentFrame().push(result);
+
+         return null;
       }
 
       //
@@ -175,8 +187,7 @@ public class ObjectAccess extends Step
          e.getScriptInstance().fireWarning("cannot access " + name + " in " + theClass + ": " + iax.getMessage(), getLineNumber());
       }
 
-      e.KillFrame();
-      env.push(result);
-      return result;
+      e.FrameResult(result);
+      return null;
    }
 }

@@ -43,9 +43,16 @@ public class ObjectNew extends Step
       return "[Object New]: "+name+"\n";
    }
 
+   //
+   // Pre Condition:
+   //   arguments are on the current frame
+   //
+   // Post Condition:
+   //   current frame dissolved
+   //   new object is placed on parent frame
+
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack  env    = e.getEnvironmentStack();
       Scalar result = SleepUtils.getEmptyScalar();
 
       Object[]    parameters     = null;
@@ -99,8 +106,7 @@ public class ObjectNew extends Step
          e.getScriptInstance().fireWarning(iax.toString(), getLineNumber());
       }
 
-      e.KillFrame();
-      env.push(result);
-      return result;
+      e.FrameResult(result);
+      return null;
    }
 }

@@ -40,13 +40,17 @@ public class Call extends Step
    {
       return "[Function Call]: "+function+"\n";
    }
+  
+   // Pre Condition:
+   //  arguments on the current stack (to allow stack to be passed0
+   //
+   // Post Condition:
+   //  current frame will be dissolved and return value will be placed on parent frame
+
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack env   = e.getEnvironmentStack();
-
       Scalar temp = null;
-
       Function callme = e.getFunction(function);
 
       if (callme != null)
@@ -60,9 +64,8 @@ public class Call extends Step
           temp = SleepUtils.getEmptyScalar();
       }
 
-      e.KillFrame();
-      env.clear();
-      env.push(temp);
-      return temp;
+      e.FrameResult(temp);
+
+      return null;
    }
 }

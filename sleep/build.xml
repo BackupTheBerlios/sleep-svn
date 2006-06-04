@@ -16,7 +16,7 @@
            destdir="${project.build}"
            nowarn="yes"
            depend="yes"
-           debug="yes"
+           debug="no"
            optimize="yes"
     >
     </javac>

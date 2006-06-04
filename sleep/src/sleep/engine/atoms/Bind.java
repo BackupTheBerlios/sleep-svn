@@ -62,16 +62,20 @@ public class Bind extends Step
       code = c;
    }
 
+   //
+   // no stack pre/post conditions for this step
+   //
+
    public Scalar evaluate(ScriptEnvironment e)
    {
       Environment temp = e.getFunctionEnvironment(funcenv);
       
       if (temp != null)
       { 
-         Stack env = e.getEnvironmentStack();   
-
-         name.evaluate(e);
-         Scalar funcname = (Scalar)env.pop();
+         e.CreateFrame();
+            name.evaluate(e);
+            Scalar funcname = (Scalar)e.getCurrentFrame().pop();
+         e.KillFrame();
 
          temp.bindFunction(e.getScriptInstance(), funcenv, funcname.getValue().toString(), code);
       }
@@ -80,8 +84,7 @@ public class Bind extends Step
          e.getScriptInstance().fireWarning("Attempting to bind code to non-existent environment: " + funcenv, getLineNumber());
       }
 
-      Scalar ts = SleepUtils.getScalar(code);
-      return ts;
+      return null;
    }
 }
 

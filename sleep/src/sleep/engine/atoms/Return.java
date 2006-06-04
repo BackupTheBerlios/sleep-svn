@@ -44,22 +44,21 @@ public class Return extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack env = e.getEnvironmentStack();   
-
       if (return_type == ScriptEnvironment.FLOW_CONTROL_BREAK)
       {
          e.flagReturn(null, return_type);
       }
-      else if (env.isEmpty())
+      else if (e.getCurrentFrame().isEmpty())
       {
          e.flagReturn(SleepUtils.getEmptyScalar(), return_type);
       }
       else
       {
-         e.flagReturn((Scalar)env.pop(), return_type);
+         e.flagReturn((Scalar)e.getCurrentFrame().pop(), return_type);
       }
 
-      return e.getReturnValue();
+      e.KillFrame();
+      return null;
    }
 }
 

@@ -57,12 +57,19 @@ public class Index extends Step
       index = i;
    }
 
+   //
+   // Pre Condition:
+   //   previous data structure is top item on current frame
+   //
+   // Post Condition:
+   //   current frame is dissolved
+   //   current data data structure is top item on parent frame
+
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack  env       = e.getEnvironmentStack();
       Scalar pos, rv = null;
 
-      Scalar structure = (Scalar)env.pop();
+      Scalar structure = (Scalar)e.getCurrentFrame().pop();
 
       if (SleepUtils.isEmptyScalar(structure))
       {
@@ -76,16 +83,16 @@ public class Index extends Step
           }
       }
 
-      index.evaluate(e);
-      pos = (Scalar)(env.pop());
+      e.CreateFrame();
+         index.evaluate(e);
+         pos = (Scalar)(e.getCurrentFrame().pop());
+      e.KillFrame();
 
       if (structure.getArray() != null) { rv = structure.getArray().getAt(pos.getValue().intValue()); }
       else if (structure.getHash() != null) { rv = structure.getHash().getAt(pos); }
       else { rv = SleepUtils.getEmptyScalar(); } // always return an empty scalar if we are not referencing a hash or an array
 
-      return (Scalar)(env.push(rv));
+      e.FrameResult(rv);
+      return null;
    }
 }
-
-
-

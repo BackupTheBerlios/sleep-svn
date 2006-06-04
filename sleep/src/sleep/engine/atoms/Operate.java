@@ -41,26 +41,33 @@ public class Operate extends Step
        return "[Operator]: "+oper+"\n";
    }
 
+   //
+   // Pre Condition:
+   //   lhs, rhs are both on current frame
+   //
+   // Post Condition:
+   //   current frame is dissolved
+   //   return value of operation placed on parent frame
+   //
+
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack env = e.getEnvironmentStack();   
-
       Operator callme = e.getOperator(oper);
 
       if (callme != null)
       {
          Scalar temp = callme.operate(oper, e.getScriptInstance(), e.getCurrentFrame());
-         env.push(temp);
          e.KillFrame();
-         return temp;
+         e.getCurrentFrame().push(temp);
       }
       else
       {
          e.getScriptInstance().fireWarning("Attempting to use non-existent operator: '" + oper + "'", getLineNumber());
+         e.KillFrame();
+         e.getCurrentFrame().push(SleepUtils.getEmptyScalar());
       }
-      e.KillFrame();
 
-      return SleepUtils.getEmptyScalar();
+      return null;
    }
 }
 

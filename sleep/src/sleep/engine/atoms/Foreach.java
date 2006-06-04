@@ -66,8 +66,6 @@ public class Foreach extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack env = e.getEnvironmentStack();   
-
       Variable venv = e.getScriptVariables().getScalarLevel(value, e.getScriptInstance());
 
       if (venv == null)
@@ -75,9 +73,12 @@ public class Foreach extends Step
          venv = e.getScriptVariables().getGlobalVariables();
       }
 
+      e.CreateFrame();
       source.evaluate(e);
  
-      Scalar src = (Scalar)env.pop();
+      Scalar src = (Scalar)e.getCurrentFrame().pop();
+      e.KillFrame();
+
       Iterator i;
 
       if (src.getHash() != null)
@@ -117,7 +118,9 @@ public class Foreach extends Step
             venv.putScalar(value, out);
          }
 
+         e.CreateFrame();
          code.evaluate(e);
+         e.KillFrame();
 
          if (e.isReturn())
          {
@@ -140,8 +143,6 @@ public class Foreach extends Step
          x++;
       }
 
-      env.clear();
-//      env.push(valueHolder);
       return null;
    }
 }

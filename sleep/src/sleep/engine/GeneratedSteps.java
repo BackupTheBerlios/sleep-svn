@@ -40,12 +40,6 @@ public class GeneratedSteps
        return temp;
     }
 
-    public static Step Push()
-    {
-       Step temp = new Push();
-       return temp;
-    }
-
     public static Step SValue(Scalar value)
     {
        Step temp = new SValue(value);

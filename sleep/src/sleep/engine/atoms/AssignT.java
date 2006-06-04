@@ -39,15 +39,21 @@ public class AssignT extends Step
       return temp.toString();
    }
 
+   // Pre Condition:
+   //   top value of "current frame" is the array value
+   //   n values on "current frame" represent our assign to scalars
+   //
+   // Post Condition:
+   //   "current frame" is dissolved.
+   // 
+
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack env = e.getEnvironmentStack();
-
-      Scalar   scalar = (Scalar)env.pop();
-
       Scalar   putv;
       Scalar   value;
       Stack    variables = e.getCurrentFrame();
+
+      Scalar   scalar = (Scalar)variables.pop();
 
       if (scalar.getArray() == null)
       {
@@ -57,7 +63,7 @@ public class AssignT extends Step
             ((Scalar)i.next()).setValue(scalar.getValue()); // copying of value or ref handled by Scalar class
          }          
          e.KillFrame();
-         return SleepUtils.getEmptyScalar();
+         return null;
       }
 
       Iterator values = scalar.getArray().scalarIterator();
@@ -79,8 +85,8 @@ public class AssignT extends Step
          putv.setValue(value);
       }
 
-      e.KillFrame();
-      return SleepUtils.getEmptyScalar();
+      e.FrameResult(scalar);
+      return null;
    }
 }
 

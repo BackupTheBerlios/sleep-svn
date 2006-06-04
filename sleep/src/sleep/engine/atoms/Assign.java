@@ -49,17 +49,28 @@ public class Assign extends Step
       return temp.toString();
    }
 
+   // Pre condition:
+   //   actual right hand side value is on "current stack"
+   //
+   // Post condition:
+   //   "current stack" is killed.
+   
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack env = e.getEnvironmentStack();
-      variable.evaluate(e);
- 
-      Scalar putv  = (Scalar)env.pop();
-      Scalar value = (Scalar)env.pop();
+      Scalar putv, value;
 
+      // evaluate our left hand side (assign to) value
+
+      e.CreateFrame();
+         variable.evaluate(e);
+         putv  = (Scalar)(e.getCurrentFrame().pop());
+      e.KillFrame();
+ 
+      value = (Scalar)(e.getCurrentFrame().pop());
       putv.setValue(value);    
 
-      return putv;
+      e.FrameResult(value);
+      return null;
    }
 }
 

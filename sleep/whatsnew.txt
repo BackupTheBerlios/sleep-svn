@@ -3,6 +3,11 @@
 - fixed the clean target in the sleep build.xml file
 - added a continue keyword for flow control of while/for/foreach
   loops.  My arm hath been twisted.
+- rewrote the interpreter to use stack frames instead of a single
+  environment stack for all temporary calculations...  this could 
+  create bugs and needs lots and lots of testing.
+- fixed bug related to using a function call within an array/hash 
+  index
 
 2.0-release
 ===========

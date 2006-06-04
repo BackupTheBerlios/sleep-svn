@@ -32,24 +32,28 @@ public class CreateClosure extends Step
 {
    Block  block = null;
 
+   public String toString()
+   {
+      return "[Create Closure]\n" + block.toString("   ");
+   }
+
    public CreateClosure(Block _block)
    {
       block = _block;
    }
 
+   // 
+   // no stack pre condition.
+   //
+   // post condition:
+   //   pushes closure onto current frame
+
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack env = e.getEnvironmentStack();   
-
       Scalar value = SleepUtils.getScalar(new SleepClosure(e.getScriptInstance(), block));
+      e.getCurrentFrame().push(value);
 
-      env.push(value);
-      return value;
-   }
-
-   public String toString()
-   {
-      return "[Create Closure]\n" + block.toString("   ");
+      return null;
    }
 }
 

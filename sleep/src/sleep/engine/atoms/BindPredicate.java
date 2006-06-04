@@ -65,8 +65,7 @@ public class BindPredicate extends Step
          e.getScriptInstance().fireWarning("Attempting to bind code to non-existent predicate environment: " + funcenv, getLineNumber());
       }
 
-      Scalar ts = SleepUtils.getScalar(code);
-      return ts;
+      return null;
    }
 }
 

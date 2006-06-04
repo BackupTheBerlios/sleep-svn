@@ -43,37 +43,33 @@ public class Get extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack env = e.getEnvironmentStack();
-
       if (value.charAt(0) == '&')
       {
          Function func = e.getFunction(value);
 
          Scalar blah = SleepUtils.getScalar(func); 
-
-         env.push(blah);
-         return blah;
+         e.getCurrentFrame().push(blah);
       }
-
-      Scalar structure = e.getScalar(value);
-
-      if (structure != null)
-      {
-         env.push(structure);
-         return structure;
-      }
-
-      if (value.charAt(0) == '@')
-         structure = SleepUtils.getArrayScalar();
-      else if (value.charAt(0) == '%')
-         structure = SleepUtils.getHashScalar();
       else
-         structure = SleepUtils.getEmptyScalar();
+      {
+         Scalar structure = e.getScalar(value);
 
-      e.putScalar(value, structure);
-      env.push(structure);
+         if (structure == null)
+         {
+            if (value.charAt(0) == '@')
+               structure = SleepUtils.getArrayScalar();
+            else if (value.charAt(0) == '%')
+               structure = SleepUtils.getHashScalar();
+            else
+               structure = SleepUtils.getEmptyScalar();
 
-      return structure;
+            e.putScalar(value, structure);
+         }
+
+         e.getCurrentFrame().push(structure);
+      }
+
+      return null;
    }
 }
 

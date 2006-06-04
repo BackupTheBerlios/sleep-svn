@@ -139,16 +139,8 @@ public class CodeGenerator implements ParserConstants
            // <idea> <string> <idea>
            backup();
 
-           atom = GeneratedSteps.CreateFrame();
-           add(atom, tokens[0]);
-
            parseIdea(tokens[0]);
-           atom = GeneratedSteps.Push();
-           add(atom, tokens[0]);
-
            parseIdea(tokens[2]);
-           atom = GeneratedSteps.Push();
-           add(atom, tokens[2]);
 
            tempc = GeneratedSteps.Check(strings[1], restore()); // a KillFrame is implied here
            tempc.setInfo(tokens[1].getHint());
@@ -157,14 +149,8 @@ public class CodeGenerator implements ParserConstants
          case PRED_UNI:
            backup();
 
-           atom = GeneratedSteps.CreateFrame();
-           add(atom, tokens[1]);
-
            parseIdea(tokens[1]);
              
-           atom = GeneratedSteps.Push();
-           add(atom, tokens[1]);
-
            tempc = GeneratedSteps.Check(strings[0], restore());
            tempc.setInfo(tokens[0].getHint());
 
@@ -246,14 +232,12 @@ public class CodeGenerator implements ParserConstants
        switch (datum.getType())
        {
          case OBJECT_NEW:
+           atom = GeneratedSteps.CreateFrame();
+           add(atom, tokens[0]);
+
            if (tokens.length > 1)
            {
               parseParameters(tokens[1]);
-           }
-           else
-           {
-              atom = GeneratedSteps.CreateFrame();
-              add(atom, tokens[0]);
            }
 
            aClass = parser.findImportedClass(strings[0]);
@@ -265,14 +249,12 @@ public class CodeGenerator implements ParserConstants
            add(atom, tokens[0]);
            break;
         case OBJECT_CL_CALL: 
+           atom = GeneratedSteps.CreateFrame();
+           add(atom, tokens[0]);
+
            if (tokens.length > 1)
            {
               parseParameters(tokens[1]);
-           }
-           else
-           {
-              atom = GeneratedSteps.CreateFrame();
-              add(atom, tokens[0]);
            }
 
            parseIdea(tokens[0]);
@@ -281,14 +263,12 @@ public class CodeGenerator implements ParserConstants
            add(atom, tokens[0]);
            break;
         case OBJECT_ACCESS:
+           atom = GeneratedSteps.CreateFrame();
+           add(atom, tokens[0]);
+
            if (tokens.length > 2)
            {
               parseParameters(tokens[2]);
-           }
-           else
-           {
-              atom = GeneratedSteps.CreateFrame();
-              add(atom, tokens[0]);
            }
 
            parseIdea(tokens[0]);
@@ -297,22 +277,20 @@ public class CodeGenerator implements ParserConstants
            add(atom, tokens[0]);
            break;
          case OBJECT_ACCESS_S:
+           atom = GeneratedSteps.CreateFrame();
+           add(atom, tokens[0]);
+
            if (tokens.length > 2)
            {
               parseParameters(tokens[2]);
            }
-           else
-           {
-              atom = GeneratedSteps.CreateFrame();
-              add(atom, tokens[0]);
-           }
- 
+
            aClass = parser.findImportedClass(strings[0]);
 
            if (aClass == null)
               parser.reportError("Class " + strings[0] + " was not found", tokens[0]);
            
-           atom    = GeneratedSteps.ObjectAccessStatic(aClass, strings[1]);
+           atom = GeneratedSteps.ObjectAccessStatic(aClass, strings[1]);
            add(atom, tokens[0]);
            break;
        }
@@ -383,8 +361,6 @@ public class CodeGenerator implements ParserConstants
            // parse B
            //
            parseIdea(tokens[2]);
-           atom = GeneratedSteps.Push();
-           add(atom, tokens[2]);
 
            //
            // parse A - or just push it onto the stack as a literal token :)
@@ -392,9 +368,6 @@ public class CodeGenerator implements ParserConstants
            ascalar = SleepUtils.getScalar(strings[0]);
            atom    = GeneratedSteps.SValue(ascalar);
            add(atom, tokens[0]);
-
-           atom = GeneratedSteps.Push();
-           add(atom, tokens[2]);
 
            //
            // parse operator
@@ -413,14 +386,12 @@ public class CodeGenerator implements ParserConstants
            // parse B
            //
            parseIdea(tokens[2]);
-           atom = GeneratedSteps.Push();
-           add(atom, tokens[2]);
+
            //
            // parse A
            //
            parseIdea(tokens[0]);
-           atom = GeneratedSteps.Push();
-           add(atom, tokens[2]);
+
            //
            // parse operator
            //
@@ -487,13 +458,16 @@ public class CodeGenerator implements ParserConstants
            }
            break;
          case VALUE_INDEXED:
-
            parseIdea(tokens[0]); // parse the thing we're going to index stuff off of..
 
            for (int z = 1; z < tokens.length; z++)
            {         
               backup();
+
+              atom = GeneratedSteps.CreateFrame();
+              add(atom, tokens[0]);
               parseIdea(ParserUtilities.extract(tokens[z]));
+
               atom = GeneratedSteps.Index(strings[0], restore());
               add(atom, tokens[0]);
            }
@@ -791,6 +765,9 @@ public class CodeGenerator implements ParserConstants
            }
            else if (tokens.length > 1)
            {
+              atom = GeneratedSteps.CreateFrame();
+              add(atom, tokens[0]);
+
               parseParameters(ParserUtilities.extract(tokens[1]));
 
               atom = GeneratedSteps.Call(strings[0]);
@@ -820,8 +797,6 @@ public class CodeGenerator implements ParserConstants
            for (int x = 0; x < termsAr2.length; x++)
            {
               parseIdea(termsAr2[x]);
-              atom = GeneratedSteps.Push();
-              add(atom, termsAr2[x]);
            }
 
            parseIdea(tokens[2]);
@@ -830,13 +805,15 @@ public class CodeGenerator implements ParserConstants
            add(atom, tokens[0]);
            break;
          case EXPR_ASSIGNMENT:                                  // implemented
-           backup();
-
-           parseIdea(tokens[0]);
-           atom = GeneratedSteps.Assign(restore());
+           atom = GeneratedSteps.CreateFrame();
+           add(atom, tokens[2]);
 
            parseIdea(tokens[2]);
 
+           backup();
+           parseIdea(tokens[0]);
+
+           atom = GeneratedSteps.Assign(restore());
            add(atom, tokens[2]);
            break;
          case EXPR_IF_ELSE:                                // done
@@ -964,6 +941,9 @@ public class CodeGenerator implements ParserConstants
            parser.importPackage(strings[0]);
            break;           
          case EXPR_RETURN:                     // implemented
+           atom = GeneratedSteps.CreateFrame();
+           add(atom, tokens[0]);
+
            if (strings[0].equals("done"))
            {
               parseIdea(tokens[0].copy("1"));  // in jIRC speak this means just plain old return
@@ -1003,17 +983,12 @@ public class CodeGenerator implements ParserConstants
 
    public void parseParameters(Token token)
    {
-      Step atom = GeneratedSteps.CreateFrame();
-      add(atom, token);
-
       TokenList terms   = ParserUtilities.groupByParameterTerm(parser, token);
       Token[]   termsAr = terms.getTokens();
 
       for (int x = termsAr.length - 1; x >= 0; x--)
       {
          parseIdea(termsAr[x]);
-         atom = GeneratedSteps.Push();
-         add(atom, termsAr[x]);
       }
    }
 }

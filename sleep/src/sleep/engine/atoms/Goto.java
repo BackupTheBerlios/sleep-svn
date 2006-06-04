@@ -90,17 +90,15 @@ public class Goto extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Stack env = e.getEnvironmentStack();   
-
       Scalar temp = null;
 
       if (start.check(e))
       {
-          temp = iftrue.evaluate(e);
+          iftrue.evaluate(e);
       }
       else if (iffalse != null)
       {
-          temp = iffalse.evaluate(e);
+          iffalse.evaluate(e);
       }
 
       if (isLoop)
@@ -117,8 +115,7 @@ public class Goto extends Step
 
           while (!e.isReturn() && start.check(e))
           {
-             temp = iftrue.evaluate(e);
-             env.clear();
+             iftrue.evaluate(e);
 
              if (e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_CONTINUE)
              {
@@ -134,11 +131,10 @@ public class Goto extends Step
          if (e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_BREAK)
          {
              e.clearReturn();
-             env.clear();
          }
       }
 
-      return temp;
+      return null;
    }
 }
 
