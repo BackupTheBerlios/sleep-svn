@@ -49,8 +49,8 @@ import sleep.runtime.*;
  */
 public class Block implements Serializable
 {
-    Step  first;
-    Step  last;
+    protected Step  first;
+    protected Step  last;
 
     public String toString(String prefix)
     { 
@@ -124,12 +124,20 @@ public class Block implements Serializable
         code.  don't call this method yourself.  okay? */
     public Scalar evaluate(ScriptEnvironment environment)
     {
+        return evaluate(environment, first);
+    }
+
+    /** evaluates this block of code.  please note that if the block has a return statement and the method clearReturn() is not 
+        called on the corresponding script environment chaos will ensue.  use SleepUtils.runCode() to safely execute a block of
+        code.  don't call this method yourself.  okay? */
+    public Scalar evaluate(ScriptEnvironment environment, Step start)
+    {
         if (environment.isReturn())
         {
            return environment.getReturnValue();
         }
 
-        Step temp = first;
+        Step temp = start;
         while (temp != null)
         {
            try
@@ -156,6 +164,18 @@ public class Block implements Serializable
 
            if (environment.isReturn())
            {
+              if (environment.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_YIELD)
+              {
+                 if (temp instanceof sleep.engine.atoms.Return)
+                 {
+                    environment.addToContext(this, temp.next);
+                 }
+                 else
+                 {
+                    environment.addToContext(this, temp);
+                 }
+              }
+
               return environment.getReturnValue();
            }
 

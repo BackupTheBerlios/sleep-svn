@@ -971,6 +971,11 @@ public class CodeGenerator implements ParserConstants
               atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_CONTINUE);
               add(atom, tokens[0]);
            }
+           else if (strings[0].equals("yield"))
+           {
+              atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_YIELD);
+              add(atom, tokens[0]);
+           }
            else
            {
               atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_RETURN);

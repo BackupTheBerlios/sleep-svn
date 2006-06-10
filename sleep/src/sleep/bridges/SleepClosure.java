@@ -48,6 +48,9 @@ public class SleepClosure implements Function
     /** the owning script associated with this sleep closure */
     ScriptInstance      owner; 
 
+    /** the saved context of this closure */
+    Stack             context;
+
     /** Creates a new Sleep Closure, with a brand new set of internal variables.  Don't be afraid, you can call this constructor from your code. */
     public SleepClosure(ScriptInstance si, Block _code)
     {
@@ -59,6 +62,7 @@ public class SleepClosure implements Function
     {
        code     = _code;
        owner    = si;
+       context  = null;
 
        _var.putScalar("$this", SleepUtils.getScalar(this));
        setVariables(_var);
@@ -119,6 +123,8 @@ public class SleepClosure implements Function
 
        synchronized (vars)
        {
+          env.loadContext(context);
+
           vars.pushClosureLevel(this);
           vars.pushLocalLevel();
 
@@ -142,15 +148,16 @@ public class SleepClosure implements Function
           //
           // call the function, save the scalar that was returned. 
           //
-          temp = code.evaluate(env);
-
-/*          if (getOwner() != si && env.isReturn())
+          if (context != null && ! context.isEmpty())
           {
-             env.clearReturn();
-             si.getScriptEnvironment().flagReturn(temp);
-          } 
-          
-          This commented out block is no longer needed if the environment of the calling script is always used... */
+             temp = env.evaluateOldContext();
+          }
+          else
+          {
+             temp = code.evaluate(env);
+          }
+
+          context = env.saveContext();
 
           vars.popLocalLevel();
           vars.popClosureLevel();

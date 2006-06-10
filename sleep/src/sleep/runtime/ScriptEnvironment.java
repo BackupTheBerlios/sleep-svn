@@ -26,6 +26,7 @@ import java.io.Serializable;
 
 import sleep.runtime.Scalar;
 import sleep.engine.Block;
+import sleep.engine.Step;
 
 import sleep.bridges.BasicNumbers;
 import sleep.bridges.BasicStrings;
@@ -206,6 +207,62 @@ public class ScriptEnvironment implements Serializable
     }
 
     //
+    // ******** Context Management **********
+    //
+    
+    protected static class Context
+    {
+       public Block block;
+       public Step  last;       
+
+       public String toString() { return "[" + last.toString() + ":" + last.getLineNumber() + "]"; }
+    }
+
+    protected Stack contextStack = null;
+
+    public void loadContext(Stack c)
+    {
+       contextStack = c;
+    }
+
+    public void addToContext(Block b, Step s)
+    {
+       if (contextStack == null)
+           contextStack = new Stack();
+
+       Context temp = new Context();
+       temp.block = b;
+       temp.last  = s;
+       contextStack.add(0, temp);
+    }
+
+    public Scalar evaluateOldContext()
+    {
+       Scalar rv = SleepUtils.getEmptyScalar();
+
+       if (contextStack == null)
+           return rv;
+
+       Stack cstack = contextStack;
+       contextStack = null;
+
+       while (!cstack.isEmpty())
+       {
+          Context temp = (Context)cstack.pop();
+          rv = temp.block.evaluate(this, temp.last);
+       }
+
+       return rv;
+    }
+
+    public Stack saveContext()
+    {
+       Stack temp   = contextStack;
+       contextStack = null;
+       return temp;
+    }
+
+    //
     // ******** Flow Control **********
     //
 
@@ -220,6 +277,9 @@ public class ScriptEnvironment implements Serializable
 
     /** adding a continue keyword as people keep demanding it */
     public static final int FLOW_CONTROL_CONTINUE = 3;
+
+    /** adding a yield keyword */
+    public static final int FLOW_CONTROL_YIELD    = 4;
     
     protected Scalar rv      = null;
     protected int    request = 0;

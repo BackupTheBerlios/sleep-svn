@@ -90,8 +90,6 @@ public class Goto extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Scalar temp = null;
-
       if (start.check(e))
       {
           iftrue.evaluate(e);
