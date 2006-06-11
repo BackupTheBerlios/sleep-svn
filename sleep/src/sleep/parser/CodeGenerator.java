@@ -906,14 +906,6 @@ public class CodeGenerator implements ParserConstants
            parseBlock(tokens[0].copy(doThis.toString()));
 
            //
-           // parse the loop body and save it
-           //
-           backup();
-
-           parseBlock(tokens[2]);    
-           b = restore();
-
-           //
            // parse the final terms and save them...
            //
            backup();
@@ -930,6 +922,15 @@ public class CodeGenerator implements ParserConstants
 
            parseBlock(tokens[0].copy(doThis.toString()));
            a = restore();
+
+           //
+           // parse the loop body and save it
+           //
+           backup();
+
+           parseBlock(tokens[2]);    
+           parseBlock(tokens[0].copy(doThis.toString()));
+           b = restore();
 
            //
            // setup our goto object..

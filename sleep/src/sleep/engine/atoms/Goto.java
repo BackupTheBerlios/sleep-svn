@@ -29,9 +29,9 @@ import sleep.runtime.*;
 
 public class Goto extends Step
 {
-   public Block iftrue;
-   public Check start;
-   public Block increment;
+   protected Block   iftrue;
+   protected Check   start;
+   protected Block   increment;
 
    public Goto (Check s)
    {
@@ -83,11 +83,12 @@ public class Goto extends Step
          if (e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_CONTINUE)
          {
             e.clearReturn();
-         }
 
-         if (increment != null)
-         {
-            increment.evaluate(e);
+            if (increment != null)
+            {
+               increment.evaluate(e); /* normally this portion exists within iftrue but in the case of a continue
+                                      the increment has to be executed separately so it is included */
+            }
          }
       }
 
