@@ -52,11 +52,18 @@ public class GeneratedSteps
        return temp;
     }
 
-    public static Step Goto(Check conditionForGoto, Block ifTrue, Block ifFalse, Block increment, boolean shouldLoop)
+    public static Step Goto(Check conditionForGoto, Block ifTrue, Block increment)
     {
        Goto temp = new Goto(conditionForGoto);
+       temp.setChoices(ifTrue);
+       temp.setIncrement(increment);
+       return temp;
+    }
+
+    public static Step Decide(Check conditionForGoto, Block ifTrue, Block ifFalse)
+    {
+       Decide temp = new Decide(conditionForGoto);
        temp.setChoices(ifTrue, ifFalse);
-       temp.setLoop(shouldLoop, increment);
        return temp;
     }
  

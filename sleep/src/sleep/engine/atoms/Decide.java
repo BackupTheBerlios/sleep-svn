@@ -1,7 +1,7 @@
 /*
    SLEEP - Simple Language for Environment Extension Purposes
- .-------------------------.
- | sleep.engine.atoms.Goto |__________________________________________________
+ .---------------------------.
+ | sleep.engine.atoms.Decide |________________________________________________
  |                                                                            |
    Author: Raphael Mudge (rsmudge@mtu.edu)
            http://www.csl.mtu.edu/~rsmudge/
@@ -27,13 +27,13 @@ import sleep.interfaces.*;
 import sleep.engine.*;
 import sleep.runtime.*;
 
-public class Goto extends Step
+public class Decide extends Step
 {
    public Block iftrue;
+   public Block iffalse;
    public Check start;
-   public Block increment;
-
-   public Goto (Check s)
+ 
+   public Decide (Check s)
    {
       start = s;
    }
@@ -42,7 +42,7 @@ public class Goto extends Step
    {
       StringBuffer temp = new StringBuffer();
       temp.append(prefix);
-      temp.append("[Goto]: \n");
+      temp.append("[Decide]:\n");
       temp.append(prefix);
       temp.append("  [Condition]: \n");      
       temp.append(start.toString(prefix+"      "));
@@ -54,46 +54,31 @@ public class Goto extends Step
          temp.append(iftrue.toString(prefix+"      "));
       }
 
-      if (increment != null)
+      if (iffalse != null)
       {
          temp.append(prefix); 
-         temp.append("  [Increment]:   \n");      
-         temp.append(increment.toString(prefix+"      "));
+         temp.append("  [If False]:   \n");      
+         temp.append(iffalse.toString(prefix+"      "));
       }
 
       return temp.toString();
    }
 
-   public void setIncrement(Block i)
+   public void setChoices(Block t, Block f)
    {
-      increment = i;
-   }
-
-   public void setChoices(Block t)
-   {
-      iftrue = t;
+      iftrue  = t;
+      iffalse = f;
    }
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      while (!e.isReturn() && start.check(e))
+      if (start.check(e))
       {
-         iftrue.evaluate(e);
-
-         if (e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_CONTINUE)
-         {
-            e.clearReturn();
-         }
-
-         if (increment != null)
-         {
-            increment.evaluate(e);
-         }
+          iftrue.evaluate(e);
       }
-
-      if (e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_BREAK)
+      else if (iffalse != null)
       {
-         e.clearReturn();
+          iffalse.evaluate(e);
       }
 
       return null;

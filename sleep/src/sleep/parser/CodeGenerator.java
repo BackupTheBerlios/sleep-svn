@@ -760,7 +760,7 @@ public class CodeGenerator implements ParserConstants
               parseIdea(termsAr[2]);
               b = restore();
 
-              atom = GeneratedSteps.Goto(parsePredicate(termsAr[0]), a, b, null, false);
+              atom = GeneratedSteps.Decide(parsePredicate(termsAr[0]), a, b);
               add(atom, tokens[0]); 
            }
            else if (tokens.length > 1)
@@ -784,7 +784,7 @@ public class CodeGenerator implements ParserConstants
          case EXPR_WHILE:                                        // done
            backup();
            parseBlock(tokens[2]);    
-           atom = GeneratedSteps.Goto(parsePredicate(ParserUtilities.extract(tokens[1])), restore(), null, null, true);
+           atom = GeneratedSteps.Goto(parsePredicate(ParserUtilities.extract(tokens[1])), restore(), null);
            add(atom, tokens[1]);
            break;
          case EXPR_ASSIGNMENT_T:                                  // implemented
@@ -841,7 +841,7 @@ public class CodeGenerator implements ParserConstants
            }
            b = restore();
 
-           atom = GeneratedSteps.Goto(parsePredicate(ParserUtilities.extract(tokens[1])), a, b, null, false);
+           atom = GeneratedSteps.Decide(parsePredicate(ParserUtilities.extract(tokens[1])), a, b);
            add(atom, tokens[1]); 
            break;
          case EXPR_FOREACH_SPECIAL:
@@ -934,7 +934,7 @@ public class CodeGenerator implements ParserConstants
            //
            // setup our goto object..
            // 
-           atom = GeneratedSteps.Goto(parsePredicate(extracted_terms[1]), b, null, a, true);
+           atom = GeneratedSteps.Goto(parsePredicate(extracted_terms[1]), b, a);
            add(atom, tokens[1]);
            break;
          case OBJECT_IMPORT:

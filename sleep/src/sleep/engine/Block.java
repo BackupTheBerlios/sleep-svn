@@ -166,16 +166,16 @@ public class Block implements Serializable
            {
               if (environment.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_YIELD)
               {
-                 if (temp instanceof sleep.engine.atoms.Return)
+                 if (temp instanceof sleep.engine.atoms.Goto)
+                 {
+                    environment.addToContext(this, temp);
+                 }
+                 else
                  {
                     if (temp.next != null)
                     {
                        environment.addToContext(this, temp.next);
                     }
-                 }
-                 else
-                 {
-                    environment.addToContext(this, temp);
                  }
               }
 
