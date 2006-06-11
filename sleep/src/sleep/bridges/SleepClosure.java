@@ -62,7 +62,7 @@ public class SleepClosure implements Function
     {
        code     = _code;
        owner    = si;
-       context  = null;
+       context  = new Stack();
 
        _var.putScalar("$this", SleepUtils.getScalar(this));
        setVariables(_var);
@@ -148,13 +148,13 @@ public class SleepClosure implements Function
           //
           // call the function, save the scalar that was returned. 
           //
-          if (context != null && ! context.isEmpty())
+          if (context.isEmpty())
           {
-             temp = env.evaluateOldContext();
+             temp = code.evaluate(env);
           }
           else
           {
-             temp = code.evaluate(env);
+             temp = env.evaluateOldContext();
           }
 
           context = env.saveContext();

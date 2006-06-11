@@ -214,37 +214,34 @@ public class ScriptEnvironment implements Serializable
     {
        public Block block;
        public Step  last;       
-
-       public String toString() { return "[" + last.toString() + ":" + last.getLineNumber() + "]"; }
     }
 
-    protected Stack contextStack = null;
+    protected Stack context      = null;
+    protected Stack contextStack = new Stack();
 
     public void loadContext(Stack c)
     {
-       contextStack = c;
+       if (context != null)
+       { 
+          contextStack.push(context);
+       }
+       context = c;
     }
 
     public void addToContext(Block b, Step s)
     {
-       if (contextStack == null)
-           contextStack = new Stack();
-
        Context temp = new Context();
        temp.block = b;
        temp.last  = s;
-       contextStack.add(0, temp);
+       context.add(0, temp);
     }
 
     public Scalar evaluateOldContext()
     {
        Scalar rv = SleepUtils.getEmptyScalar();
 
-       if (contextStack == null)
-           return rv;
-
-       Stack cstack = contextStack;
-       contextStack = null;
+       Stack cstack = context;
+       context      = new Stack();
 
        while (!cstack.isEmpty())
        {
@@ -257,9 +254,18 @@ public class ScriptEnvironment implements Serializable
 
     public Stack saveContext()
     {
-       Stack temp   = contextStack;
-       contextStack = null;
-       return temp;
+       Stack cstack = context;
+
+       if (contextStack.isEmpty())
+       {
+          context = null;
+       }
+       else
+       {
+          context = (Stack)(contextStack.pop());
+       }
+
+       return cstack;
     }
 
     //

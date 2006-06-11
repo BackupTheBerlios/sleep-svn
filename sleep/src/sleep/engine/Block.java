@@ -168,7 +168,10 @@ public class Block implements Serializable
               {
                  if (temp instanceof sleep.engine.atoms.Return)
                  {
-                    environment.addToContext(this, temp.next);
+                    if (temp.next != null)
+                    {
+                       environment.addToContext(this, temp.next);
+                    }
                  }
                  else
                  {
