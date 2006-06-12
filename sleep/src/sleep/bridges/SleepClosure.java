@@ -51,6 +51,9 @@ public class SleepClosure implements Function
     /** the saved context of this closure */
     Stack             context;
 
+    /** the meta data for this closure context */
+    HashMap          metadata; 
+
     /** Creates a new Sleep Closure, with a brand new set of internal variables.  Don't be afraid, you can call this constructor from your code. */
     public SleepClosure(ScriptInstance si, Block _code)
     {
@@ -63,6 +66,7 @@ public class SleepClosure implements Function
        code     = _code;
        owner    = si;
        context  = new Stack();
+       metadata = new HashMap();
 
        _var.putScalar("$this", SleepUtils.getScalar(this));
        setVariables(_var);
@@ -123,7 +127,7 @@ public class SleepClosure implements Function
 
        synchronized (vars)
        {
-          env.loadContext(context);
+          env.loadContext(context, metadata);
 
           vars.pushClosureLevel(this);
           vars.pushLocalLevel();

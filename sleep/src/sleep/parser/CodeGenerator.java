@@ -341,6 +341,8 @@ public class CodeGenerator implements ParserConstants
        Step     atom;
        Scalar   ascalar;
 
+       Check    tempp;
+
        Iterator i;
        String   mutilate; // mutilate this string as I see fit...
        StringBuffer sb;  
@@ -851,35 +853,70 @@ public class CodeGenerator implements ParserConstants
            // |$value    3
            // |(@temp)   4
            // |{ &printf("hi"); } 5
+ 
+           /**** purposeful fall thru... ****/
 
-           backup(); 
-           parseIdea(ParserUtilities.extract(tokens[4])); // parse the "source" of the foreach
-           a = restore();
-
-           backup();
-           parseBlock(ParserUtilities.extract(tokens[5])); // parse the actual block of code to be executed.
-           b = restore();
-
-           atom = GeneratedSteps.Foreach(a, strings[1], strings[3], b);
-
-           add(atom, tokens[1]);
-           break;
          case EXPR_FOREACH:
            // |foreach
            // |$var
            // |(@temp)
            // |{ &printf("hi"); }
 
-           backup(); 
-           parseIdea(ParserUtilities.extract(tokens[2])); // parse the "source" of the foreach
+           //
+           // setup our frame with the value, possibly the key,  and the source
+           //
+           atom = GeneratedSteps.CreateFrame();
+           add(atom, tokens[0]);
+
+           if (datum.getType() == EXPR_FOREACH)
+           {
+              parseIdea(ParserUtilities.extract(tokens[2])); // parse the "source" of the foreach
+              atom = GeneratedSteps.IteratorCreate(null, strings[1]);
+           }
+           else
+           {
+              parseIdea(ParserUtilities.extract(tokens[4])); // parse the "source" of the foreach
+              atom = GeneratedSteps.IteratorCreate(strings[1], strings[3]);
+           }
+           add(atom, tokens[0]);
+
+           //
+           // parse the body of the loop
+           // 
+           backup();
+
+           if (datum.getType() == EXPR_FOREACH)
+           {
+              parseBlock(ParserUtilities.extract(tokens[3])); // parse the actual block of code to be executed.
+           }
+           else
+           {
+              parseBlock(ParserUtilities.extract(tokens[5])); // parse the actual block of code to be executed.
+           }
+
            a = restore();
 
+           //
+           // setup the has next portion of the iterator...
+           //
            backup();
-           parseBlock(ParserUtilities.extract(tokens[3])); // parse the actual block of code to be executed.
-           b = restore();
 
-           atom = GeneratedSteps.Foreach(a, strings[1], b);
+           atom = GeneratedSteps.IteratorNext();
+           add(atom, tokens[0]);
+             
+           tempp = GeneratedSteps.Check("-istrue", restore());
+           tempp.setInfo(tokens[0].getHint());
 
+           //
+           // add our looping mechanism (everyone loves this part, eh!?!)
+           //
+           atom = GeneratedSteps.Goto(tempp, a, null);
+           add(atom, tokens[1]);
+
+           //
+           // add our mechanism for destroying the iterator...
+           //
+           atom = GeneratedSteps.IteratorDestroy();
            add(atom, tokens[1]);
            break; 
          case EXPR_FOR:

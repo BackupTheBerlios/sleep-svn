@@ -46,6 +46,21 @@ public class GeneratedSteps
        return temp;
     }
 
+    public static Step IteratorCreate(String key, String value)
+    {
+       return new Iterate(key, value, Iterate.ITERATOR_CREATE);
+    }
+
+    public static Step IteratorNext()
+    {
+       return new Iterate(null, null, Iterate.ITERATOR_NEXT);
+    }
+
+    public static Step IteratorDestroy()
+    {
+       return new Iterate(null, null, Iterate.ITERATOR_DESTROY);
+    }
+
     public static Check Check(String nameOfOperator, Block setupOperands)
     {
        Check temp = new Check(nameOfOperator, setupOperands);
@@ -106,18 +121,6 @@ public class GeneratedSteps
     public static Step Call(String function)
     {
        Step temp = new Call(function);
-       return temp;
-    }
-
-    public static Step Foreach(Block source, String value, Block code)
-    {
-       Step temp = new Foreach(source, value, code);
-       return temp;
-    }
-
-    public static Step Foreach(Block source, String key, String value, Block code)
-    {
-       Step temp = new Foreach(source, key, value, code);
        return temp;
     }
 

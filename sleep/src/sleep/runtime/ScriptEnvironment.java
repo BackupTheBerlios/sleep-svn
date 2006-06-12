@@ -216,16 +216,39 @@ public class ScriptEnvironment implements Serializable
        public Step  last;       
     }
 
-    protected Stack context      = null;
-    protected Stack contextStack = new Stack();
+    protected Stack    context      = new Stack();
+    protected Stack    contextStack = new Stack();
 
-    public void loadContext(Stack c)
+    protected HashMap  metadata     = new HashMap();
+    protected Stack    metaStack    = new Stack();
+
+    public void loadContext(Stack _context, HashMap _metadata)
     {
-       if (context != null)
-       { 
-          contextStack.push(context);
+       contextStack.push(context);
+       metaStack.push(metadata); 
+
+       context  = _context;
+       metadata = _metadata;
+    }
+
+    /** Use this function to save some meta data for this particular closure context, passing null for value will
+        remove the key from the metadata for this context */
+    public void setContextMetadata(Object key, Object value)
+    {
+       if (value == null) 
+       {
+          metadata.remove(key);
        }
-       context = c;
+       else
+       {
+          metadata.put(key, value);
+       }
+    }
+
+    /** Returns the data associated with the particular key for this context. */
+    public Object getContextMetadata(Object key)
+    {
+       return metadata.get(key);
     }
 
     public void addToContext(Block b, Step s)
@@ -256,14 +279,8 @@ public class ScriptEnvironment implements Serializable
     {
        Stack cstack = context;
 
-       if (contextStack.isEmpty())
-       {
-          context = null;
-       }
-       else
-       {
-          context = (Stack)(contextStack.pop());
-       }
+       context  = (Stack)(contextStack.pop());
+       metadata = (HashMap)(metaStack.pop());
 
        return cstack;
     }
