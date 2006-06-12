@@ -256,7 +256,7 @@ public class ScriptEnvironment implements Serializable
        Context temp = new Context();
        temp.block = b;
        temp.last  = s;
-       context.add(0, temp);
+       context.add(temp);
     }
 
     public Scalar evaluateOldContext()
@@ -266,9 +266,10 @@ public class ScriptEnvironment implements Serializable
        Stack cstack = context;
        context      = new Stack();
 
-       while (!cstack.isEmpty())
+       Iterator i = cstack.iterator();
+       while (i.hasNext())
        {
-          Context temp = (Context)cstack.pop();
+          Context temp = (Context)i.next();
           rv = temp.block.evaluate(this, temp.last);
        }
 

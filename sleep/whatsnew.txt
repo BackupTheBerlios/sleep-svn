@@ -8,6 +8,13 @@
   create bugs and needs lots and lots of testing.
 - fixed bug related to using a function call within an array/hash 
   index
+- added coroutines to the sleep language, this consists of a yield
+  keyword (works like return that exits a closure at that point.  
+  Next time said closure is called execution resumes at the point
+  where you last yielded from.
+- did massive reworking of the sleep interpreter to allow for
+  coroutines (this had some benefits as well including the ability
+  for bridge writers to track bridge data by script context).
 
 2.0-release
 ===========
