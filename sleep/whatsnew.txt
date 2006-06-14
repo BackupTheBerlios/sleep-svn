@@ -15,6 +15,8 @@
 - did massive reworking of the sleep interpreter to allow for
   coroutines (this had some benefits as well including the ability
   for bridge writers to track bridge data by script context).
+- oops, fixed broken ^ operator (bridge was written wrong, thanks
+  to Ralph Becker for catching this one).
 
 2.0-release
 ===========

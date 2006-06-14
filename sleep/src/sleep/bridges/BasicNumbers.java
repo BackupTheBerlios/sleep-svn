@@ -309,7 +309,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
           if (o.equals("<<"))  { return SleepUtils.getScalar(a << b); }
           if (o.equals("&"))  { return SleepUtils.getScalar(a & b); }
           if (o.equals("|"))  { return SleepUtils.getScalar(a | b); }
-          if (o.equals("^"))  { return SleepUtils.getScalar(a & b); }
+          if (o.equals("^"))  { return SleepUtils.getScalar(a ^ b); }
        }
        else
        {
@@ -326,7 +326,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
           if (o.equals("<<"))  { return SleepUtils.getScalar(a << b); }
           if (o.equals("&"))  { return SleepUtils.getScalar(a & b); }
           if (o.equals("|"))  { return SleepUtils.getScalar(a | b); }
-          if (o.equals("^"))  { return SleepUtils.getScalar(a & b); }
+          if (o.equals("^"))  { return SleepUtils.getScalar(a ^ b); }
        }
 
        return SleepUtils.getEmptyScalar();
