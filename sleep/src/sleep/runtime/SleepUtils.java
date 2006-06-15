@@ -263,6 +263,24 @@ public class SleepUtils
       return temp;
    } 
 
+   /** returns an int scalar (coverted from the short) with value x */
+   public static Scalar getScalar(short x)
+   {
+      Scalar temp = new Scalar();
+      temp.setValue(new IntValue((int)x));
+
+      return temp;
+   } 
+
+   /** returns a double scalar (coverted from the float) with value x */
+   public static Scalar getScalar(float x)
+   {
+      Scalar temp = new Scalar();
+      temp.setValue(new DoubleValue((double)x));
+
+      return temp;
+   } 
+
    /** returns a double scalar with value x */
    public static Scalar getScalar(double x)
    {

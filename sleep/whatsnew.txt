@@ -25,6 +25,7 @@
   data feature to keep tracker of matchers (the old way was not
   thread safe)
 - for loop initialization and increment terms can now be empty
+- added SleepUtils.getScalar(x) for Java shorts and floats
 
 2.0-release
 ===========
