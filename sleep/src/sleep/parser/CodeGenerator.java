@@ -945,20 +945,29 @@ public class CodeGenerator implements ParserConstants
            //
            // parse the final terms and save them...
            //
-           backup();
-           doThis = new StringBuffer();
 
-           TokenList final_terms = ParserUtilities.groupByParameterTerm(parser, extracted_terms[2]);
-
-           i = final_terms.getList().iterator();
-           while (i.hasNext())
+           if (extracted_terms.length == 3)
            {
-              doThis.append(i.next().toString());
-              doThis.append("; ");
-           }
+              backup();
+              doThis = new StringBuffer();
 
-           parseBlock(tokens[0].copy(doThis.toString()));
-           a = restore();
+              TokenList final_terms = ParserUtilities.groupByParameterTerm(parser, extracted_terms[2]);
+
+              i = final_terms.getList().iterator();
+              while (i.hasNext())
+              {
+                 doThis.append(i.next().toString());
+                 doThis.append("; ");
+              }
+
+              parseBlock(tokens[0].copy(doThis.toString()));
+              a = restore();
+           }
+           else
+           {
+              a = null;
+              doThis = new StringBuffer();
+           }
 
            //
            // parse the loop body and save it
