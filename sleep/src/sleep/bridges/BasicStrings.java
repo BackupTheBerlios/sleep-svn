@@ -205,6 +205,8 @@ public class BasicStrings implements Loadable
            String b = locals.pop().toString();
            String a = locals.pop().toString();
 
+           try
+           {
            if ((a.length() == 0 || b.length() == 0) && a.length() != b.length())
               return false;
 
@@ -225,20 +227,31 @@ public class BasicStrings implements Loadable
                     }
                  }
 
-                 for (cptr = aptr; cptr < a.length() && a.charAt(cptr) != '?' && a.charAt(cptr) != '*'; cptr++);
+                 for (cptr = aptr; cptr < a.length() && a.charAt(cptr) != '?' && a.charAt(cptr) != '*'; cptr++) { } // body intentionally left empty.
 
-                 if (greedy)
-                    cptr = b.lastIndexOf(a.substring(aptr, cptr)); 
-                 else
-                    cptr = b.indexOf(a.substring(aptr, cptr), bptr); 
-
-
-                 if (cptr == -1 || cptr < bptr) // < - require 0 or more chars, <= - requires 1 or more chars
+                 if (cptr != aptr) // don't advance our bptr unless there is some non-wildcard pattern to look for next in the string
                  {
-                    return false;
+                    if (greedy)
+                       cptr = b.lastIndexOf(a.substring(aptr, cptr)); 
+                    else
+                       cptr = b.indexOf(a.substring(aptr, cptr), bptr);
+
+                    if (cptr == -1 || cptr < bptr) // < - require 0 or more chars, <= - requires 1 or more chars
+                    {
+                       return false;
+                    }
+
+                    bptr = cptr;
                  }
 
-                 bptr = cptr;
+                 if (a.charAt(aptr) == '?') // if the current aptr is a ?, decrement so the loop can deal with it on the next round
+                 {
+                    aptr--;
+                 }
+              }
+              else if (bptr >= b.length())
+              {
+                 return false;
               }
               else if (a.charAt(aptr) == '\\')
               {
@@ -255,9 +268,13 @@ public class BasicStrings implements Loadable
               aptr++;
               bptr++;
            }
-
            return (bptr == b.length());
+           }
+           catch (Exception ex) { ex.printStackTrace(); }
+     
+           return false;
         }
+     
     }
 
     private static class func_left implements Function

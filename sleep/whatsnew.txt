@@ -19,6 +19,8 @@
   to Ralph Becker for catching this one).
 - remove() with no parameters will remove the current array element
   in a foreach loop (this only works on arrays, not hashes).
+- fixed bugs with iswm algorithm when wildcard pattern is longer 
+  than the text it is being compared against.
 
 2.0-release
 ===========
