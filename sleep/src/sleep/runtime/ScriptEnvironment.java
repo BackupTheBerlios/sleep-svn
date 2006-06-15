@@ -251,6 +251,19 @@ public class ScriptEnvironment implements Serializable
        return metadata.get(key);
     }
 
+    /** Returns the data associated with the particular key for this context. If the key value is null then the specified default_value is returned */
+    public Object getContextMetadata(Object key, Object default_value)
+    {
+       Object value = metadata.get(key);
+
+       if (value == null)
+       {
+          return default_value;
+       }
+ 
+       return metadata.get(key);
+    }
+
     public void addToContext(Block b, Step s)
     {
        Context temp = new Context();

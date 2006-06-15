@@ -84,41 +84,45 @@ public class RegexBridge implements Loadable
 
     private static class isMatch implements Predicate, Function
     {
-       protected Matcher matcher = null;
-
-       protected HashMap context = new HashMap(); // storing matcher contexts...
-
        public boolean decide(String n, ScriptInstance i, Stack l)
        {
           String b = ((Scalar)l.pop()).toString(); // PATTERN
           String a = ((Scalar)l.pop()).toString(); // TEXT TO MATCH AGAINST
+
+          ScriptEnvironment env = i.getScriptEnvironment();
+          Matcher matcher;
 
           Pattern pattern = RegexBridge.getPattern(b);
           boolean rv;
 
           if (n.equals("hasmatch"))
           {
-              if (context.containsKey(a + b))
+              matcher = (Matcher)env.getContextMetadata(a + b);
+
+              if (matcher != null)
               {
-                 matcher = (Matcher)context.get(a + b);
+                 env.setContextMetadata("matcher", matcher);
               }
               else
               {
                  matcher = pattern.matcher(a);
-                 context.put(a + b, matcher);
+                 env.setContextMetadata(a + b, matcher);
+                 env.setContextMetadata("matcher", matcher);
               }
               rv = matcher.find();
           }
           else
           {
               matcher = pattern.matcher(a);
+              env.setContextMetadata("matcher", matcher);
               rv =  matcher.matches();
           }
 
           if (!rv) 
           {
              matcher  = null;           
-             context.remove(a + b);
+             env.setContextMetadata("matcher", null);
+             env.setContextMetadata(a + b, null);
           }
 
           return rv;
@@ -127,6 +131,9 @@ public class RegexBridge implements Loadable
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
           Scalar value = SleepUtils.getArrayScalar();            
+
+          ScriptEnvironment env = i.getScriptEnvironment();
+          Matcher matcher = (Matcher)env.getContextMetadata("matcher");
 
           if (matcher != null)
           {

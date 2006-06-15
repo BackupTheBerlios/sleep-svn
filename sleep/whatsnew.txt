@@ -21,6 +21,9 @@
   in a foreach loop (this only works on arrays, not hashes).
 - fixed bugs with iswm algorithm when wildcard pattern is longer 
   than the text it is being compared against.
+- updated isMatch/hasMatch/matched to use the new context meta
+  data feature to keep tracker of matchers (the old way was not
+  thread safe)
 
 2.0-release
 ===========
