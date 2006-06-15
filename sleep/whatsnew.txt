@@ -17,6 +17,8 @@
   for bridge writers to track bridge data by script context).
 - oops, fixed broken ^ operator (bridge was written wrong, thanks
   to Ralph Becker for catching this one).
+- remove() with no parameters will remove the current array element
+  in a foreach loop (this only works on arrays, not hashes).
 
 2.0-release
 ===========

@@ -592,6 +592,24 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
     public Scalar evaluate(String n, ScriptInstance i, Stack l)
     {
+       if (l.isEmpty() && n.equals("&remove"))
+       {
+          Stack iterators = (Stack)(i.getScriptEnvironment().getContextMetadata("iterators"));
+
+          if (iterators == null || iterators.isEmpty())
+          {
+             throw new RuntimeException("&remove: no active foreach loop to remove element from");
+          }
+          else
+          {
+             sleep.engine.atoms.Iterate.IteratorData d = (sleep.engine.atoms.Iterate.IteratorData)iterators.peek();
+             d.iterator.remove();
+             d.count = d.count - 1;
+          }
+         
+          return SleepUtils.getEmptyScalar();
+       }
+
        Scalar value = BridgeUtilities.getScalar(l);
 
        if (n.equals("&push"))

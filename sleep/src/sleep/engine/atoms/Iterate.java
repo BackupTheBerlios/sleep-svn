@@ -28,7 +28,7 @@ import sleep.runtime.*;
 
 public class Iterate extends Step
 {
-   private static class IteratorData
+   public static class IteratorData
    {
       public String   key      = null;
       public Variable kenv     = null;
