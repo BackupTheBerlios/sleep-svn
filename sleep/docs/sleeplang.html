@@ -457,6 +457,27 @@ while ($x < 100)
 <p>The loop example above is setup to count to 100.  Once the count reaches 50 though the loop is broken out of.  The break 
 statement is a way of saying "this is the end of the loop, right here".</p>
 
+<h3>The Continue Command</h3>
+
+<p>Once in awhile it is useful to skip to the beginning of a loop ignoring the current element.  This is what the continue
+command is for.</p>
+
+<p>Another example:</p>
+
+<pre>for ($x = 0; $x < 100; $x++)
+{
+   if ($x > 10 && $x < 90)
+   {
+      continue;
+   }
+
+   println($x);
+}</pre>
+
+<p>The loop above will print 0 .. 10, skip all values between 11 and 89, and then print 90 - 99.  The continue command
+just jumps to the beginning of the loop again ignoring the current item.  Within a for loop the incremeter ($x++
+in this example) is always executed even if continue is used.</p>
+
 <a name="4"><h2>Number Crunching</h2></a>
 
 <p>The Scalars -> Expressions section introduced sleep's family of numerical scalars.</p>
@@ -637,9 +658,12 @@ value is set to <var>$scalar</var>.  Accessing <var>$scalar</var> is the same as
 <p>The foreach loop above will loop through the source (either an <var>@array</var> or a <var>%hash</var>).  The index of the 
 source will be assigned to the scalar on the left.  The value of the source will be assigned to the scalar on the right.</p>
 
-<p>Within a foreach loop functions that modify the structure of <var>@array</var> are not allowed.  This includes add(), 
+<p>Within a foreach loop most functions that modify the structure of <var>@array</var> are not allowed.  This includes add(), 
 remove(), removeAt(), push(), pop() etc.  An attempt to modify the structure of @array during a foreach loops execution will 
 result in a script warning.</p>
+
+<p>The current element of a foreach loop can be removed by calling <code>remove()</code> with no parameters.  This only works 
+when iterating over an <var>@array</var>.</p>
 
 <h3>Arrays as Stacks</h3>
 
@@ -1462,7 +1486,7 @@ where yield was last called.</p>
 
 <p>When execution is restored local variables are not preserved.  If you want to preserve variables you will need to 
 place variables into the <b>this</b> scope for the current closure.  Arguments passed to each call on the closure
-will be available as local variables during the call.</p>
+will be available as local variables $1, $2, etc. during the current call.</p>
 
 <p>It is important to note that while coroutines can call other coroutines, a coroutine should not recursively call
 itself.  A closure turns into a coroutine once the yield keyword has been utilized.  The reason coroutines should not
@@ -1471,6 +1495,24 @@ the last used context is restored.  If a coroutine is trying to save its context
 restore from the last execution, bad things will happen.</p>
 
 <p>When the return command is used or the end of the closure is reached, the saved context will be discarded.</p>
+
+<h4>Generators with Coroutines</h4>
+
+<p>One usage of a coroutine is to easily generate a sequence of numbers i.e.:</p>
+
+<pre>$generator = {
+   this('$counter');
+
+   for ($counter = 0; $counter < 1000; $counter++)
+   {
+      yield $counter;
+   }
+
+   return $null;
+};</pre>
+
+<p>The above stores a coroutine into $generator.  The first time $generator is called a 0 will be returned.  The second time $generator will
+return a 1.  So on and so forth until $null is finally returned.</p>
 
 <a name="11"><h2>Function Library</h2></a>
 
@@ -1553,7 +1595,7 @@ to represent the dimensions of the array.</td>
  <tr>
   <td></td>
   <td>remove(@array, $scalar, ...)</td>
-  <td>removes each specified $scalar from @array..</td>
+  <td>removes each specified $scalar from @array.  if no parameters are passed the active element in the current foreach loop is removed.</td>
  </tr>
  <tr>
   <td>$</td>

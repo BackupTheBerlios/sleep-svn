@@ -325,7 +325,7 @@ reference a variable etc. it refers to its environment for the appropriate bridg
 application bridge, the application bridge will call an API in the application, any values returned by the application will be 
 sent back to the script.  Figure 1 highlights what the Sleep bridge architecture looks like.</p>
 
-<center><img src="image001.png" align="center"></center>
+<center><img src="images/image001.png" align="center"></center>
  
 <center><p>Figure 1. Sleep Bridge Architecture</p></center>
 
@@ -818,6 +818,29 @@ executed.</p>
 <p>Sleep scripts can happily interact in a multithreaded context.  The trick is to force any blocking/waiting to occur within 
 Java itself.   Once the blocking/waiting is done just call a preregisted block of sleep code to respond to the event.</p>
 
+<h3>Saving Context Data</h3>
+
+<p>State information for a bridge should not be stored in a bridge itself.  You may ask, why is this?  Typically bridges are
+shared among multiple scripts/script environments to save memory.  If scripts sharing some bridges are executing in a multi
+threaded environment it is possible that the saved instance data could get corrupted.</p>
+
+<p>Until recently the hasMatch predicate kept track of the current matcher in an instance variable of the regex bridge.  One
+user noticed that when they used fork() that their regex matches kept failing when they shouldn't.</p>
+
+<p>The correct way to save context data is to use the following functions from an instance of ScriptEnvironment:</p>
+
+<table>
+ <tr><td colspan="2"><i>public Object getContextMetaData(Object key)</i></td></tr>
+ <tr><td width="25"></td><td>retrieve a piece of data saved within the current executing context.</td></tr>
+ <tr><td colspan="2"></td></tr>
+ <tr><td colspan="2"><i>public void setContextMetaData(Object key, Object value)</i></td></tr>
+ <tr><td width="25"></td><td>store a piece of data into the context store for the current executing context.</td></tr>
+</table>
+
+<p>The set context meta data function will store the given value in the context meta data store for the current closure context.
+If no closure is currently active then the data will be stored into a default context meta data store.  This is the recommended
+way to save bridge state information.</p>
+
 <h3>Multithreading with Fork</h3>
 
 <p>The Sleep function <code>&amp;fork</code> implementation creates a new script environment entirely separate from the currnet 
@@ -847,7 +870,7 @@ from <var>sleep.bridges.io.IOObject</var>.  The IOObject class provides all of t
 piece is the IO Bridge itself.  The IO Bridge is just a normal set of Sleep bridges that implement functions, predicates, and operators that make the
 functionality of the IO Source and the IOObject accessible to scripters.</p>
 
-<p align="center"><img src="IODiagram.png"><br><br>Figure 2. Sleep IO Architecture</p>
+<p align="center"><img src="images/IODiagram.png"><br><br>Figure 2. Sleep IO Architecture</p>
 
 <a name="3a.2"><h2>The IOObject Class</h2></a>
 
