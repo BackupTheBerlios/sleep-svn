@@ -147,8 +147,8 @@ forum:
 Legal Garbage
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
-Sleep is (c) 2002, 2003, 2004, 2005 Raphael Mudge (raffi@hick.org).  All of 
-the source and somehow the documentation are released under the GNU Lesser
+Sleep is (c) 2002, 2003, 2004, 2005, 2006 Raphael Mudge (raffi@hick.org).  All 
+of the source and somehow the documentation are released under the GNU Lesser
 Public License.  
 
 The scripts and library files supplied as input to or produced as output 

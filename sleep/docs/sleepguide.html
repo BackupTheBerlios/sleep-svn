@@ -1,0 +1,1505 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <title>Sleep Developer's Guide</title>
+  <meta name="Copyright" content="This file may be redistributed and/or modified without limitation" />
+  <meta name="Language" content="en" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta http-equiv="Content-Language" content="en" />
+  <link rel="StyleSheet" href="css/screen.css" type="text/css" media="screen" />
+  <link rel="StyleSheet" href="css/print.css" type="text/css" media="print" />
+</head>
+
+<body>
+<h1>Sleep Developer's Guide</h1>
+
+<ul>
+<li><a href="#0">Part 0: About Sleep</a></li>
+   <ul>
+   <li><a href="#0.1">Sleep Language Features</a></li>
+   <li><a href="#0.2">Bridges: Connecting Your Application to Sleep</a></li>
+   </ul>
+<li><a href="#1">Part 1: Introduction - The Most Basic Stuff</a></li>
+   <ul>
+   <li><a href="#1.1">Load a Script</a></li>
+   <li><a href="#1.2">Add a Built-In Function</a></li>
+   <li><a href="#1.3">A little about Scalars</a></li>
+   <li><a href="#1.4">Reading and Writing Scalars</a></li>
+   <li><a href="#1.5">Calling a Function</a></li>
+   <li><a href="#1.6">A Better Way to Install Functions</a></li>
+   </ul>
+<li><a href="#2">Part 2: Bridge Writers Guide</a></li>
+   <ul>
+   <li><a href="#2.1">The Bridge Architecture</a></li>
+   <li><a href="#2.2">Loadable Bridges</a></li>
+   <li><a href="#2.3">Function Bridges</a></li>
+   <li><a href="#2.4">Predicate Bridges</a></li>
+   <li><a href="#2.5">Operator Bridges</a></li>
+   <li><a href="#2.51">Evaluation Bridge</a></li>
+   <li><a href="#2.6">Variable Bridges</a></li> 
+   <li><a href="#2.7">Environment Bridges</a></li>
+   <li><a href="#2.8">Filtered Environment Bridges</a></li>
+   <li><a href="#2.9">Predicate Environment Bridges</a></li>
+   <li><a href="#2.95">Generating Runtime Warning Messages</a></li>
+   <li><a href="#2.10">Bridge Design Patterns</a></li>
+   <li><a href="#2.11">Bridge Utilities Class</a></li>
+   <li><a href="#2.12">Multithreaded Bridges</a></li>
+   </ul>
+<li><a href="#3a">Part 3: Extending Sleep Input/Output</a></li>
+   <ul>
+   <li><a href="#3a.1">The Input/Output World</a></li>
+   <li><a href="#3a.2">The IOObject Class</a></li>
+   <li><a href="#3a.2">An IO Source Implementation</a></li>
+   <li><a href="#3a.2">An IO Bridge</a></li>
+   </ul>
+<li><a href="#3">Part 4: Working with Scalars</a></li>
+   <ul>
+   <li><a href="#3.1">What is a Scalar</a></li>
+   <li><a href="#3.2">Instantiating a Scalar</a></li>
+   <li><a href="#3.3">Working with Array and Hashtable Scalars</a></li>
+   <li><a href="#3.4">Creating a Scalar type</a></li>
+   <li><a href="#3.5">Creating a Scalar Array Implementation</a></li>
+   <li><a href="#3.6">Creating a Scalar Hash Implementation</a></li>
+   </ul>
+<li><a href="#4">Part 5: How-to Guide</a></li>
+   <ul>
+   <li><a href="#4.1">Install an Escape Constant</a></li>
+   <li><a href="#4.2">Force Scripts to Share Information</a></li>
+   <li><a href="#4.3">Execute a Block of code</a></li>
+   <li><a href="#4.4">Evaluate Code</a></li>
+   <li><a href="#4.5">Catch a Syntax Error when loading a Script</a></li>
+   <li><a href="#4.6">Catch a Runtime Script Error</a></li>
+   <li><a href="#4.7">Integrate the Sleep Console</a></li>
+   </ul>
+<li><a href="#glossary">Glossary</a></li>
+<li><a href="#A">Appendix A: Complete Example from Part 1</a></li>
+</ul>
+
+<h1><a name="0">Part 0: About Sleep</a></h1>
+
+<p>This document is a guide for developers who want to integrate sleep into their application.  Sleep is an embeddable
+scripting solution for Java applications.  The language is heavily inspired by Perl with bits of Objective-C thrown in. The
+Sleep Java API allows the language to be extended with new constructs, operators, functions, and variable containers.</p>
+
+<p>Sleep came from an inspired weekend of coding in April 2002. Since then Sleep has been developed in parallel with the Java
+IRC Client, jIRCii.</p>
+
+<h2><a name="0.1">Sleep Language Features</a></h2>
+
+<p><h4>A Perl inspired language</h4>
+    <ul>The Sleep language is very heavily inspired by Perl.  The syntax and API are easy to pickup for novice
+    programmers and familiar to those with Perl scripting experience.  Scripters do not need to know Java to effectively
+    extend an application that embeds Sleep.</ul></p>
+
+<p><h4>Built-in Regular Expression support</h4>
+    <ul>Regular expressions are a powerful feature for parsing and extracting information from strings.  Sleep provides full
+    support for regular expressions built right into the language.  Sleep also includes a transliteration function.  These 
+    two features are considered by some to be the meat and potatoes of Perl scripting.</ul></p>
+
+<p><h4>Powerful unified I/O API for scripters</h4>
+    <ul>The Sleep language includes a powerful unified I/O API for reading and writing from/to sockets, processes, and files
+    all using the same interface.  Sleep also includes powerful functionality for manipulating and extracting binary
+    data.</ul></p>
+
+<p><h4>Access, create, and query Java objects from Sleep scripts</h4>
+    <ul>Sleep 2.0 includes the HOES subsystem which provides the ability to access, instantiate, and manipulate Java objects.
+    This means Sleep can interface directly with any Java API or API present in your application.  This ability makes Sleep a
+    very powerful glue language for the Java platform.</ul></p>
+
+<p><h4>Flexible Datastructures</h4>
+    <ul>Sleep has three primary data structures built right into the language.  Scalars are general purpose variables that
+    can hold any type of data including ints, doubles, longs, strings, and even object references.  The Sleep array data type
+    can act as a stack and a list as well.  Sleep includes extensive functionality for manipulating and sorting arrays.
+    Sleep hashes are easy to use dictionary data structures that allow any key to map directly to a value.  As an added bonus
+    hashes and arrays can easily be combined into multidimensional data structures.</ul></p>
+
+<p><h4>Closures and Pseudo Objects</h4>
+   <ul>Sleep closures are essentially blocks of code that contain their own lexical scope.  These blocks of code can be
+   passed as parameters, assigned to variables, and invoked.  Within Sleep closures can be used to create pseudo object
+   interfaces.  Sleep closures can even be passed off as fake Java objects using the HOES subsystem.  Closures bring to Sleep
+   a method for organizing data, a way to implement Java interfaces, and they enable a simple functional programming 
+   within Sleep scripts.</ul></p>
+
+<p>The above is just a sampling of what the Sleep language has to offer.  For more information read the <a
+href="http://sleep.hick.org/sleeplang.html">Sleep Language Fundamentals</a> document.</p>
+
+<h2><a name="0.2">Bridges: Connecting Your Application to Sleep</a></h2>
+
+<p>A proper Sleep based solution brings more than syntactic sugar to an application.  Sleep bridges allow you to provide a 
+higher level and easier to use abstraction of existing APIs.  Bridges are APIs for adding basic language elements to Sleep.  
+By providing logical operations, predicates, functions, and constructs that map to an API, the Sleep language can be adapted to 
+your application or to problem domains within your application.</p>
+
+<p>You can easily add built in functions just by implementing a java interface.  Classes implementing the function interface 
+are known as function bridges. Function bridges can take arguments from sleep scripts and can return values as well.  </p>
+
+<p>Data in your application can be made available to scripters.  Sleep provides a number of utility methods for wrapping your 
+application data into scalar variables that user scripts can work with.</p>
+
+<p>It is also possible to create built-in variables.  This is accomplished with the Variable interface.  Variable bridges let 
+you create built-in variables that execute a java function and return a value whenever they are accessed.  </p>
+
+<p>Adding new comparison operators for use in if statements and loop constructs is easy as well. By implementing a java 
+interface you can add new predicates to the sleep language. Operators for use within expressions can be added as well using the Operator 
+interface.</p>
+
+<p>Sleep also lets you build environment bridges. An environment bridge is a defined keyword that is associated with user 
+script code.   Whenever a defined keyword is encountered your own code can be called to handle it.  You can use environment 
+bridges to easily create event listeners, syntax for popup menus, or anything else you can imagine.  Environment bridges offer 
+a lot of power and flexibility towards integrating sleep in an easy to use way for your end-user scripters.</p>
+
+<p>Most of sleeps basic language features were implemented using the same API's available to you. The package sleep.bridges.* 
+is an immediate source code reference for developing useful sleep bridges.</p>
+
+<h1><a name="1">Part 1:  Introduction - The Most Basic Stuff</a></h1>
+
+<p>This introduction will serve as a basic overview for making your application scriptable.  When making an application 
+scriptable there are a few fundamental things you will want to know.  These fundamentals include loading a script, adding your 
+own built-in functions, reading and writing variables from/to the script environment, and calling functions.   This 
+introduction will cover how to do all of these things mostly with examples.  A complete example based off of Part 1 is 
+available in Appendix A.</p>
+
+<h2><a name="1.1">Load a Script</a></h2>
+
+<p>To load a script from a file and run it:</p>
+
+<pre>ScriptLoader   loader = new ScriptLoader();
+ScriptInstance script = loader.loadScript("script.sl");
+
+script.runScript();</pre>
+
+<p>The above will load the file script.sl and then execute it immediately.</p>
+
+<h2><a name="1.2">Add a Built-In Function</a></h2>
+
+<p>Just loading and executing a script isn't of much use.  You want to make it so the script can interact with your 
+application. One way to do this is to add functions that scripters can take advantage of.   An example of a basic function 
+bridge is below:</p>
+
+<pre>public class FooFunction implements Function
+{
+   public Scalar evaluate(String name, ScriptInstance script, Stack args)
+   {
+      System.out.println("function foo has been called");  
+      return SleepUtils.getEmptyScalar();
+   }
+}</pre>
+
+<p>The above class implements the Function interface.  The Function interface is used for creating built in functions.  All 
+functions available to scripters come from a class implementing the Function interface.</p>
+
+<p>To use the above Function it must be installed into the script environment.  To install a Function class into the script 
+environment use:</p>
+ 
+<pre>script.getScriptEnvironment().getEnvironment().put("&foo", new FooFunction());</pre>
+
+<p>The above code puts an instance of FooFunction into the environment as the function named <var>&foo</var>.  This means the 
+ScriptInstance represented by the script variable will be able to call <code>foo()</code>.  When <code>foo()</code> is called 
+by a scripter the evaluate method in the FooFunction instance will be called.</p>
+
+<p>The evaluate method is expected to return a Scalar object.  If a function isn't returning anything then return the value 
+returned by <code>SleepUtils.getEmptyScalar()</code>.  The empty scalar is the sleep equivalent of null, undef, and nil in 
+other languages.  Sleep uses <var>$null</var> to represent the empty scalar in scripts.</p>
+
+<p>To work with arguments passed to a built-in function:</p>
+
+<pre>public class MyAddFunction implements Function
+{
+   public Scalar evaluate(String name, ScriptInstance script, Stack args)
+   {
+      int arg1 = BridgeUtilities.getInt(args, 0);
+      int arg2 = BridgeUtilities.getInt(args, 0);
+    
+      return SleepUtils.getScalar(arg1 + arg2);
+   }
+}</pre> 
+
+<p>The function above takes two arguments.  The arguments are passed in as a Stack object.  The BridgeUtilities class contains 
+methods for safely extracting parameters from the arguments stack.  In the above example two integer parameters are extracted. 
+The BridgeUtilities class allows a default value to be specified in case the stack is empty (i.e. not enough parameters were 
+passed).  I recommend you use the BridgeUtilities class.</p>
+
+<p>The last part of the above function is the return statement.  Notice that the result of adding arg1 and arg2 is passed to 
+<code>SleepUtils.getScalar()</code>.  The SleepUtils class contains static methods for converting just about any type you can 
+think of into a scalar usable by sleep scripts.</p>
+
+<p>To install the MyAddFunction into a script environment:</p>
+
+<pre>script.getScriptEnvironment().getEnvironment().put("&myadd", new MyAddFunction());</pre>
+
+<p>The ScriptInstance represented by the script variable will now be able to call <code>myadd(3, 3)</code> to add two numbers 
+together.</p>
+
+<p>What do you need to know to add scripting to your application?  At the most fundamental level a scriptable app needs a way 
+of loading scripts, unloading scripts, and running a code snippet (from a file or some other place).</p>
+
+<p>So far we've covered how to load a script and add built in functions.  Next we'll discover how to make your applications 
+data structures available to sleep scripts.</p>
+
+<h2><a name="1.3">A Little About Scalars</a></h2>
+
+<p>Scalars are the fundamental data type in sleep.  They are represented with the Scalar class.  Scalars can contain an int 
+value, long value,.double value, String value, and even an object reference.</p>
+
+<p>The SleepUtils class contains static methods for easily wrapping data into scalars.  For any type a Scalar can represent the 
+SleepUtils class contains a getScalar(type) method that will return the appropriate scalar.</p>
+
+<h2><a name="1.4">Reading and Writing Scalars</a></h2>
+
+<p>To write a value into the script environment:</p>
+
+<pre>script.getScriptVariables().putScalar("$test", SleepUtils.getScalar("sleep example"));</pre>
+
+<p>To read a variable from the script environment:</p>
+
+<pre>Scalar test  = script.getScriptVariables().getScalar("$test");</pre>
+
+<p>The first snippet puts a string scalar into the script environment with the name <var>$test</var>.  The second snippet reads 
+the scalar assigned to <var>$test</var> from the script environment.</p>
+
+<h2><a name="1.5">Calling a Function</a></h2>
+
+<p>To call a function in a script:</p>
+
+<pre>Scalar value = script.callFunction("&konk", new Stack());</pre>
+
+<p>The above calls the function &konk from the ScriptInstance object contained by script.  The second parameter to callFunction 
+is a stack of arguments.  Arguments are contained in the stack in a first in, last out fashion.  Meaning the first value passed 
+to the function should be the top item on the Stack.</p>
+
+<h2><a name="1.6">A Better Way to Install Functions</a></h2>
+
+<p>Remembering to install every built-in function into every can be cumbersome.  Sleep provides a Loadable bridge interface and 
+the ScriptLoader class to help make this process easier.</p>
+
+<p>To create a Loadable bridge that installs our two functions into a script environment:</p>
+
+<pre>public class SetupBridge implements Loadable
+{
+   public boolean scriptLoaded(ScriptInstance script)
+   {
+      Hashtable env = script.getScriptEnvironment().getEnvironment();
+
+      env.put("&foo",   new FooFunction());
+      env.put("&myadd", new MyAddFunction());
+
+      return true;
+   }
+
+   public boolean scriptUnloaded(ScriptInstance si)
+   {
+      return true;
+   }
+}</pre>
+
+<p>By itself the above doesn't do much.  However in conjunction with a ScriptLoader object the process of setting up each 
+ScriptInstance when a script is loaded or unloaded is made much easier.</p>
+
+<p>To create a script loader, install a loadable bridge, and load a script:</p>
+
+<pre>ScriptLoader   loader = new ScriptLoader();
+loader.addSpecificBridge(new SetupBridge());
+
+ScriptInstance script = loader.loadScript("script.sl");
+
+script.runScript();</pre>
+
+<p>The above installs an instance of our loadable bridge, SetupBridge into the script loader loader.  When script.sl is loaded 
+via the loadScript method of loader the scriptLoaded method in SetupBridge will be called.</p>
+
+<h2><a name="1.7">Conclusion</a></h2>
+
+<p>This section presented some of the basic concepts for interfacing with a scripting language.  The code presented in this 
+section is presented in Appendix A. Knowing how to load a script, add built in functions, read/write variables, and call 
+functions are the most important concepts for interfacing an application with a scripting language.</p>
+
+<p>We covered Loadable and Function bridges in this section.  In the next part of this guide we will cover all of the bridging 
+options in sleep.</p>
+
+<h1><a name="2">Part 2: Bridge Writers Guide</a></h1>
+
+<h2><a name="2.1">The Bridge Architecture</a></h2>
+
+<p>Each loaded script has an associated environment with it.  When a script attempts to call a function, check a condition, 
+reference a variable etc. it refers to its environment for the appropriate bridge.   If the bridge happens to be an 
+application bridge, the application bridge will call an API in the application, any values returned by the application will be 
+sent back to the script.  Figure 1 highlights what the Sleep bridge architecture looks like.</p>
+
+<center><img src="image001.png" align="center"></center>
+ 
+<center><p>Figure 1. Sleep Bridge Architecture</p></center>
+
+<h2><a name="2.2">Loadable Bridges</a></h2>
+
+<p>A loadable bridge is used to perform actions on scripts when they are loaded and unloaded.  Loadable bridges by themselves 
+do not add anything to the sleep language at all.  In conjunction with a ScriptLoader loadable bridges make it easy to process 
+the environment of scripts as they are loaded and unloaded. </p>
+
+<p>A sleep loadable bridge is created through implementing the sleep.interfaces.Loadable interface.  The loadable interface is 
+as follows:</p>
+
+<table>
+<!-- 
+ <tr><td colspan="2"><i></i></td></tr> 
+ <tr><td width="25"></td><td></td></tr>
+ -->
+ <tr><td colspan="2"><i>public boolean scriptLoaded (ScriptInstance script)</i></td></tr> 
+ <tr><td width="25"></td><td>Called when a script is loaded.  The loaded ScriptInstance is passed to this method.  The script loading function can be
+used to install things to the environment (i.e. new Functions, Predicates etc).  The return value should be true if the
+environment was loaded successfully.</td></tr>
+ <tr><td colspan="2"></td></tr>
+ <tr><td colspan="2"><i>public boolean scriptUnloaded (ScriptInstance script)</i></td></tr> 
+ <tr><td width="25"></td><td>Called when a script is unloaded.  The loaded ScriptInstance is passed to this method.  The script loading function can
+be used to clean up script specific resources when the script is unloaded.  The return value should be true if this bridge was
+unloaded successfully.</td></tr>
+</table>
+
+<p>A loadable bridge is installed into the language by adding it to a script loader class.  According to the ScriptLoader class 
+there are two types of bridges.  The two types are specific and global bridges.</p>
+
+<p>A specific bridge is executed for each and every script on load, no matter what.  </p>
+
+<p>A global bridge is executed once for each script environment.  If scripts are sharing an environment there is no sense in 
+loading stuff into the environment more than once.  This is why global bridges exist.</p>
+
+<p>An example of adding a loadable bridge to a script loader:</p>
+
+<pre>ScriptLoader loader = new ScriptLoader()
+loader.addSpecificBridge(new MyLoadableBridge());</pre>
+
+<p>Loadable bridges ARE used to install other bridges into a script environment.  Using a loadable bridge is the easiest way to 
+make sure actions are always performed on a script as it loads.  Loadable bridges in conjunction with a script loader are used 
+to perform cleanup actions when a script is unloaded.</p>
+
+<h2><a name="2.3">Function Bridges</a></h2>
+
+<p>A function bridge is used to define a built-in function.  Once a function bridge is installed into the script environment, 
+it can be called from user created scripts.</p>
+
+<p>A function bridge is created through implementing the interface sleep.interfaces.Function.  The Function interface is as 
+follows:</p>
+
+<table>
+<!-- 
+ <tr><td colspan="2"><i></i></td></tr> 
+ <tr><td width="25"></td><td></td></tr>
+ -->
+ <tr><td colspan="2"><i>public Scalar evaluate(String name, ScriptInstance instance, Stack locals)</i></td></tr> 
+ <tr><td width="25"></td><td>Called when a function of the specified name is to be evaluated.  The script instance of the calling script is passed
+in.  The java.util.Stack object contains the arguments passed to the function.  The arguments are in the locals stack in the
+order they were passed in.  The name for a function will always be prefixed with the & ampersand symbol.   A Scalar value is
+returned by this interface.  The returned value is passed back to the calling script.</td></tr>
+</table>
+
+<p>To install a function into a script environment:</p>
+
+<pre>ScriptInstance script;           // assume
+Function       myFunctionBridge; // assume
+
+Hashtable environment = script.getScriptEnvironment().getEnvironment();
+environment.put("&functionName", myFunctionBridge);</pre>
+
+<p>In the above code snippet the script environment is extracted from the ScriptInstance object script.  The function name is 
+the key with the instance of our Function bridge as the value.   The function name must begin with & ampersand for sleep to 
+know it is a function.</p>
+
+<p>Function bridges are incredibly useful for making application functionality available in sleep.</p>
+
+<h2><a name="2.4">Predicate Bridges</a></h2>
+
+<p>A predicate is an operator used inside of comparisons.  Comparisons are used in if statements and loop constructs.  Sleep 
+supports two types of predicates.  A unary predicate which takes one argument.  The other type is a binary (normal) predicate 
+which takes two arguments.   In the example comparison a == b, a is the left hand side, b is the right hand side, and == is 
+the predicate.  Predicate bridges are used to add new predicates to the language.</p>
+
+<P>A predicate is created by implementing the interface sleep.interfaces.Predicate.</p>
+
+<table>
+ <tr><td colspan="2"><i>public boolean decide(String name, ScriptInstance instance, Stack locals)</i></td></tr> 
+ <tr><td width="25"></td><td>The above function is called whenever the predicate name is called.  The calling script instance is passed to the
+function.  The java.util.Stack of locals contains the arguments passed into the predicate.  The arguments are passed in reverse
+order.  For example in a binary predicate the left hand side is the last item on the stack and the right hand side is the
+first item on the stack.   The decide function returns a boolean value depending on the outcome of the predicate.</td></tr>
+</table>
+
+<p>To install a predicate into a script environment:</p>
+
+<pre>ScriptInstance script;           // assume
+Predicate      myPredicateBridge; // assume
+
+Hashtable environment = script.getScriptEnvironment().getEnvironment();
+environment.put("isPredicate", myPredicateBridge);</pre>
+
+<p>In the above code snippet the script environment is extracted from the script instance class. </p>
+
+<p>A binary predicate can have any name.  A unary predicate always begins with the - minus symbol.  "isin" would be considered 
+a binary predicate where as "-isletter" would be considered a unary predicate.</p>
+
+<p>Additional built-in predicate keywords should be registered with the script parser before any scripts are loaded.  This can 
+be accomplished as follows:</p>
+
+<pre>ParserConfig.addKeyword("predicate");</pre>
+
+<p>Predicates are useful for implementing boolean functions.</p>
+
+<h2><a name="2.5">Operator Bridges</a></h2>
+
+<p>An operator in sleep parlance is anything used to operate on two variables inside of an expression.  For example 2 + 3 is 
+the expression add 2 and 3.  The + plus sign is the operator. </p>
+
+<p>Creating an Operator class and installing it into the environment makes the operator available for use within 
+expressions.</p>
+
+<p>An operator is created by implementing the interface sleep.interfaces.Operator:</p>
+
+<table>
+ <tr><td colspan="2"><i>public Scalar operate(String name, ScriptInstance instance, Stack locals)</i></td></tr> 
+ <tr><td width="25"></td><td>The operate function is called whenever operator name is to be applied.  The calling script instance is passed to the
+method.  The Stack locals contains the left hand side value and right hand side value of the expression in that order.
+</td></tr>
+</table>
+    
+<p>To install an operator into a script environment:</p>
+
+<pre>ScriptInstance script;           // assume
+Operator       myOperatorBridge; // assume
+
+Hashtable environment = script.getScriptEnvironment().getEnvironment();
+environment.put("operator", myOperatorBridge);</pre>
+
+<p>New built-in operators should be registered with the script parser before any scripts are loaded.  This can be accomplished 
+as follows:</p>
+
+<pre>ParserConfig.addKeyword("operator");</pre>
+
+<p>The keyword registering practice is in place to clear up ambiguity when parsing scripts. Sleep when parsing scripts does not 
+know what operators, functions, keywords it has.  If you create an operator that follows the same naming rules as a function 
+name, sleep might confuse left_hand_side operator (expression) for being a function call.  This is due to operator 
+(expression) looking the same as function (expression) to the parser.</p>
+ 
+<p>Operator bridges probably won't be as common as other bridges.  Operator bridges can be used for adding new math operators 
+or new string manipulation operators.  </p>
+
+<h2><a name="2.51">Evaluation Bridge</a></h2>
+
+<p>A Sleep evaluation is a way to define how a `back quoted` string should work. In Perl any text inside of `back quotes` is 
+fevaluated for embedded $scalar values and then executed as a shell command. The output of the executed command is collected 
+into a perl array and returned as the resulting value of the `back quote` expression.</p>
+
+<p>While executing commands in this way might be a useful abstraction, it seems more fun to allow application 
+developer's to define what this syntax should do.</p>
+
+<p>The sleep.interfaces.Evaluation interface consists of a single method:</p>
+
+<table>
+ <tr><td colspan="2"><i>public Scalar evaluateString(ScriptInstance script, String value)</i></td></tr> 
+ <tr><td width="25"></td><td>Evaluates the specified string value</td></tr>
+</table>
+
+<p>The following is an implementation of perl-like backquote behavior for Sleep:</p>
+
+<pre>import sleep.interfaces.Evaluation;
+
+import sleep.runtime.Scalar;
+import sleep.runtime.ScriptInstance;
+import sleep.runtime.SleepUtils;
+
+import java.io.*;
+
+public class PerlLike implements Evaluation
+{
+   public Scalar evaluateString(ScriptInstance script, String value)
+   {
+      Scalar rv = SleepUtils.getArrayScalar();
+
+      try
+      { 
+         // execute our process and setup a reader for it 
+ 
+         Process proc  = Runtime.getRuntime().exec(value);
+         BufferedReader reader = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+         // read each line from the process output, stuff it into our scalar array rv
+
+         String text = null;
+         while ((text = reader.readLine()) != null)
+         {
+            rv.getArray().push(SleepUtils.getScalar(text));
+         }
+      }
+      catch (IOException ex)
+      {
+         script.getScriptEnvironment().flagError(ex.toString());
+      }
+
+      return rv;
+   }
+}</pre>
+
+<p>To install the perl-like backquote evaluator into the script environment:</p>
+
+<pre>public boolean scriptLoaded(ScriptInstance script)
+{
+   Evaluation perlStuff = new PerlLike();
+ 
+   Hashtable environment = script.getScriptEnvironment().getEnvironment();
+   environment.put("%BACKQUOTE%", perlStuff);
+
+   return true;
+}</pre>
+
+<p>The above code enables the following type of script to work:</p>
+
+<pre>@files = `ls -alh`; # execute the UNIX ls command
+
+println("The files are:");
+printAll(@files);</pre>
+
+<p>If no Evaluation bridge is installed (default) then a `backquoted string` will be treated like a normal parsed literal.</p>
+
+<h2><a name="2.6">Variable Bridges</a></h2>
+
+<p>A variable bridge is a container for storing scalars.  A variable bridge is nothing more than a container.  It is possible 
+to use a new variable container to alter how scalars are stored and accessed.  All scalars, scalar arrays, and scalar hashes 
+are stored using this system. </P>
+
+<p>A Variable bridge is created by implementing the sleep.interfaces.Variable interface. </p>
+
+<table>
+ <tr><td colspan="2"><i>public boolean scalarExists(String variable)</i></td></tr> 
+ <tr><td width="25"></td><td>Return true if a scalar variable exists in this container.  Called whenever a scalar is requested by a script.  This
+method is used to check if the scalar exists or not.</td></tr>
+ <tr><td colspan="2"></td></tr>
+ <tr><td colspan="2"><i>public Scalar getScalar(String variable)</i></td></tr> 
+ <tr><td width="25"></td><td>If the scalar does exist (as determined by scalarExists()) this method will be called to request the scalar itself.  The
+reference of the scalar can be returned.  Passing scalars by value (and not by reference) is taken care of by the Scalar
+class.</td></tr>
+ <tr><td colspan="2"></td></tr>
+ <tr><td colspan="2"><i>public Scalar putScalar(String key, Scalar value)</i></td></tr> 
+ <tr><td width="25"></td><td>If a scalar does exist (as determined by scalarExists()) this method will be called when a script wants to store a
+scalar value.</td></tr>
+ <tr><td colspan="2"></td></tr>
+ <tr><td colspan="2"><i>public void removeScalar(String key)</i></td></tr> 
+ <tr><td width="25"></td><td>If a scalar exists and a script wants to remove a scalar this method will be called.</td></tr>
+ <tr><td colspan="2"></td></tr>
+ <tr><td colspan="2"><i>public Variable createLocalVariableContainer()</i></td></tr> 
+ <tr><td width="25"></td><td>This method is called to return a class that implements Variable for maintaining local variables. This method is only
+called on the Variable class used as the global variable container.</td></tr>
+ <tr><td colspan="2"></td></tr>
+ <tr><td colspan="2"><i>public Variable createInternalVariableContainer()</i></td></tr> 
+ <tr><td width="25"></td><td>This method is called to return a class that implements Variable for maintaining the internal variable context.
+Internal variables are variables that are global to a single Script Instance only.  This method is only called on the Variable
+class used as the global variable container.</td></tr>
+</table>
+ 
+<p>A Variable bridge is installed by creating a new script variable manager with the new variable bridge.   The variable 
+manager is then installed into a given script.  </p>
+
+<pre>ScriptVariables variableManager = new ScriptVariable(new MyVariable());
+script.setScriptVariables(variableManager);</pre>
+
+<p>Sleep scripts can share variables by using the same instance of ScriptVariables.  A Variable bridge can be used to create 
+built in variables.  Every time a certain scalar is accessed the bridge might call a method and return the value of the method 
+as the value of the accessed scalar.</p>
+
+<h2><a name="2.7">Environment Bridges</a></h2>
+
+<p>Blocks of code associated with an identifier are processed by their environment.  An example of an environment is the 
+subroutine environment.   To declare a subroutine in sleep you use:</p>
+
+<pre>sub identifier { commands; }</pre>
+
+<p>When sleep encounters this code it looks for the environment bound to the keyword "sub".  It passes the environment for 
+"sub" a copy of the script instance, the identifier, and the block of executable code.  The environment can do anything it 
+wants with this information.   The subroutine environment simply creates a Function object with the block of code and installs 
+it into the environment.  Thus allowing scripts to declare custom subroutines.</p>
+
+<p>In general a block of code is associated with an environment using the following syntax:</p>
+
+<pre>keyword identifier { commands; } # sleep code</pre>
+
+<p>The interface for an environment is:</p>
+
+<table>
+ <tr><td colspan="2"><i>public void bindFunction(ScriptInstance instance, String keyword, String identifier, Block commands)</i></td></tr> 
+ <tr><td width="25"></td><td>Called when the keyword for the environment is encountered i.e. keyword identifier { commands; }.
+The identifier is passed in as a string.  Identifiers can also be enclosed within " double or ' single quotes.  The block
+object contains all of the executable code for the commands associated with this identifier.</td></tr>
+</table>
+
+<p>Script environment bridge keywords should be registered with the script parser before any scripts are loaded.  This can be 
+accomplished as follows:</p>
+
+<pre>ParserConfig.addKeyword("keyword");</pre>
+
+<p>To install a new environment into the script environment:</p>
+
+<pre>ScriptInstance script;              // assume
+Environment    myEnvironmentBridge; // assume
+
+Hashtable environment = script.getScriptEnvironment().getEnvironment();
+environment.put("keyword", myEnvironmentBridge);</pre>
+
+<p>The Block object passed to the environment can be executed using:</p>
+
+<pre>SleepUtils.runCode(commands, instance.getScriptEnvironment());</pre>
+
+<p>Environment bridges are great for implementing different types of paradigms. I've used this feature to add everything from 
+event driven scripting to popup menu structures to my application. Environments are a very powerful way to get the most out of 
+integrating your application with the sleep language.</p>
+
+<h2><a name="2.8">Filtered Environment Bridges</a></h2>
+
+<p>Filtered environments are similar to normal keyword environments except they also allow a parameter specified by the user.  
+The identifier and parameter are both sent to the bridge when a block of code is bound to a particular filtered environment 
+keyword.</p>
+
+<p>In general the syntax for binding a filtered environment is:</p>
+
+<pre>keyword identifier "parameter" { code; }</pre>
+
+<p>The filtered environment interface is pretty similar to a normal environment interface:</p>
+
+<table>
+ <tr><td colspan="2"><i>public void bindFilterFunction(ScriptInstance script, String keyword, String parameter, Block body)</i></td></tr> 
+ <tr><td width="25"></td><td>This method is called when a filter environment is to be bound.  The script instance of the
+         calling script is passed in.  The keyword for the environment is passed in as well.
+         Something worth noting is that the parameter string is passed in as-is from the source file.
+         i.e. if the user specified a "string", the value of parameter will be "string".  If a user script
+         specified an expression i.e. (2 + 2) the parameter will be the string "(2 + 2)".  The
+         parameter string does have to adhere to sleep syntax rules though.  i.e. no mismatched
+         parentheses, mismatched quotes etc.</td></tr>
+</table>
+
+<p>The parameter keyword is passed in unparsed to allow you, the bridge writer, choice in the matter of what to do with the 
+parameter.  Depending on the purpose of the bridge some may want to evaluate the parameter when the block of code is first 
+bound.  Others may want to evaluate the parameter each time the bridge carries out its actions.  In any case to evaluate the 
+parameter string as a sleep expression:</p>
+
+<pre>ScriptEnvironment environment = script.getScriptEnvironment();
+Scalar value = environment.evaluateExpression(parameter);</pre>
+
+<p>Filter environment bridge keywords should be registered with the script parser before any scripts are loaded.  This can be 
+accomplished as follows:</p>
+
+<pre>ParserConfig.addKeyword("keyword");</pre>
+
+<p>To install a new filter environment into the script environment:</p>
+
+<pre>ScriptInstance    script;              // assume
+FilterEnvironment myEnvironmentBridge; // assume
+
+Hashtable environment = script.getScriptEnvironment().getEnvironment();
+environment.put("keyword", myEnvironmentBridge);</pre>
+
+<p>Filter environments are really just an extension of the normal environment bridges.  In particular Filter environments can 
+be used to implement event listener mechanisms or as an expansion for normal environment bridges that might require a 
+parameter.  </p>
+
+<h2><a name="2.9">Predicate Environment Bridges</a></h2>
+
+<p>Predicate environments are similar to normal keyword environments except instead of binding commands to an identifier they 
+are bound to a predicate condition.   </p>
+
+<p>In general the syntax for declaring a predicate environment is:</p>
+
+<pre>keyword (condition) { commands; }</pre>
+
+<p>The predicate environment interface looks like:</p>
+
+<table>
+ <tr><td colspan="2"><i>public void bindPredicate(ScriptInstance instance, String keyword, Check condition, Block commands)</i></td></tr> 
+ <tr><td width="25"></td><td>This method is called when a predicate is to be bound.  The script instance of the calling script is passed in.  The
+keyword for the environment is passed in as well.  The condition for whether or not to execute this code is passed in as a 
+Check instance.  The commands to execute are defined within the Block instance.</td></tr>
+</table>
+ 
+<p>Predicate environment bridge keywords should be registered with the script parser before any scripts are loaded.  This can 
+be accomplished as follows:</p>
+
+<pre>ParserConfig.addKeyword("keyword");</pre>
+
+<p>To install a new predicate environment into the script environment:</p>
+
+<pre>ScriptInstance          script;              // assume
+PredicateEnvironment    myEnvironmentBridge; // assume
+
+Hashtable environment = script.getScriptEnvironment().getEnvironment();
+environment.put("keyword", myEnvironmentBridge);</pre>
+
+<p>Predicate environments are a powerful way to create environments that are triggered selectively.  Predicate environments can 
+also be used to add new constructs to the sleep language such as an unless (comparison) { } construct.</p>
+
+<h2><a name="2.95">Generating Runtime Warning Messages</a></h2>
+
+<p>Sleep has a built-in mechanism for notifying the scripter of runtime warning messages.  Typically if an error occurs inside 
+of a bridge it is helpful to make any relevant information available to the scripter.  In general any uncaught exceptions will 
+be caught by the Sleep runtime and formatted into a Sleep error message with the appropriate Sleep script line number/file 
+isolated.</p>
+
+<p>As a convention though, two exceptions are useful for bridge writers.  These include 
+<var>java.lang.IllegalArgumentException</var> and <var>java.lang.RuntimeException</var>.  Both of these exceptions are 
+formatted cleanly without the exception message name.   Keep in mind an exception really should only be thrown for an 
+exceptional case.  When a bridge throws an exception Sleep will jump out of the current executing block of code.  So use 
+them sparingly and only when the script has encountered an unrecoverable error.</p>
+
+<h2><a name="2.10">Bridge Design Patterns</a></h2>
+
+<p>A convenient way to design a bridge is to group bridges of a certain type together.  Create each bridge function, predicate, 
+or operator as a static inner class.   Then make the enclosing outer class a loadable bridge that instantiates each inner class 
+and adds each item to the script environment.</p>
+
+<p>Below is an example of this design pattern:</p>
+
+<pre>public class MyBridge implements Loadable
+{
+   public boolean scriptLoaded(ScriptInstance script)
+   {
+      Hashtable environment = 
+            script.getScriptEnvironment().getEnvironment();
+      environment.put("&function", new MyFunction());
+      environment.put("-predicate", new MyPredicate());
+   }
+
+   public boolean scriptUnloaded(ScriptInstance script)
+   {
+      return true;
+   }
+
+   private static class MyFunction implements Function
+   {
+      public Scalar evaluate(String name, ScriptInstance si, Stack args)
+      {
+          // code for MyFunction
+      }
+   }
+
+   private static class MyPredicate implements Predicate
+   {
+      public boolean decide(String name, ScriptInstance si, Stack args)
+      {
+          // code for MyPredicate
+      }
+   }
+}</pre>
+
+<p>The above Loadable bridge with all of its API's contained within can then be installed into the script loader:</p>
+
+<pre>ScriptLoader   loader = new ScriptLoader();
+loader.addSpecificBridge(new MyBridge());</pre>
+
+<p>Now each time a script is loaded using loader, &function and -predicate will be installed into the script's environment.  
+I've found this pattern very useful for making my own bridges. </p>
+
+<h2><a name="2.11">Bridge Utilities Class</a></h2>
+
+<p>The Bridge Utilities class is a in the sleep.bridges package.  It contains many static methods for extracting java types 
+from a java.util.Stack of Scalar arguments.   Use of this class is recommended for extracting arguments as it provides a safe 
+way to do it.</p>
+
+<h2><a name="2.12">Multithreaded Bridges</a></h2>
+
+<p>Sleep is safe to use in a multi-threaded application. This is accomplished by internal synchronization that allows only one 
+block of sleep code to be in the process of execution at any time regardless of the number of threads.  I should say one block 
+of Sleep code per shared environment.  A shared environment is defined as scripts sharing the same variable set.  Sleep 
+internally synchronizes on the <var>sleep.runtime.ScriptVariables</var> object held by each <var>ScriptEnvironment</var> 
+object.</p>
+
+<p>Bottom line: if a sleep function is executing, any attempt to execute a sleep function in another thread will block 
+until the executing function returns.</p>
+ 
+<p>The recommended way of dealing with 'blocking' code is to build bridges that accept a callback function.  In the Sleep IO 
+API the <code>&amp;read</code> function takes an IO source and a callback function as a parameter.  When data is available from 
+the IO source the callback function is called.  Underneath the hood, the <code>&amp;read</code> function spins off a new 
+thread.   Any blocking that occurs by trying to read from the specified IO source is contained in this new thread.  When its 
+time for a script to do something (i.e. start executing, process the read data, stop executing) the callback function is 
+executed.</p>
+
+<p>Sleep scripts can happily interact in a multithreaded context.  The trick is to force any blocking/waiting to occur within 
+Java itself.   Once the blocking/waiting is done just call a preregisted block of sleep code to respond to the event.</p>
+
+<h3>Multithreading with Fork</h3>
+
+<p>The Sleep function <code>&amp;fork</code> implementation creates a new script environment entirely separate from the currnet 
+one.  Forked code can run in multiple threads without blocking.  To create a forked script instance simply call the 
+<var>fork()</var> method on a ScriptInstance object.   This will share the script environment without sharing any 
+variables.</p>
+
+<p>Data can be returned from a fork if your implementation uses <var>sleep.bridges.io.IOObject</var>.  A thread contained by an 
+IOObject can be waited on within a Sleep script using the <code>&amp;wait($handle)</code> function.  To setup an IOObject for 
+waiting simply call <var>setThread(java.lang.Thread t)</var> on an IOObject instance.  To pass a return value from a fork use 
+the <var>setToken(Scalar s)</var> on the IOObject instance containing the thread.</p>
+
+<a name="3a"><h1>Part 3: Extending Sleep Input/Output</h1></a>
+
+<p>Nearly everything built into Sleep is implemented via Sleep bridges.  Period.  The Input/Output system is no exception.  The 
+Sleep IO library provides functionality for reading ascii-based text data and binary data.  By default Sleep provides 
+facilities for accessing files, sockets, and processes.  What makes the interface fun is that it is all unified and easily 
+extensible.</p>
+
+<p>This chapter presents the architecture of the IO system and describes the implementation of the socket piece.  The goal is 
+to thoroughly explain a complete Sleep API implementation.</p>
+
+<a name="3a.1"><h2>The Input/Output World</h2></a>
+
+<p>The Sleep I/O World really consists of 3 pieces.  The first piece is some sort of class that defines an IO source.  This IO source class inherits 
+from <var>sleep.bridges.io.IOObject</var>.  The IOObject class provides all of the compatability with Sleeps current array of IO functions.  The last 
+piece is the IO Bridge itself.  The IO Bridge is just a normal set of Sleep bridges that implement functions, predicates, and operators that make the
+functionality of the IO Source and the IOObject accessible to scripters.</p>
+
+<p align="center"><img src="IODiagram.png"><br><br>Figure 2. Sleep IO Architecture</p>
+
+<a name="3a.2"><h2>The IOObject Class</h2></a>
+
+<p>The IOObject is the parent class for all IO Source object that are compatible with Sleep's I/O API.</P>
+
+<h3>Methods</h3>
+
+<table>
+ <tr><td colspan="2"><i>public DataInputStream getReader()</i></td></tr>
+ <tr><td width="25"></td><td> Returns the binary data reader</td></tr>
+ <tr><td colspan="2"></td></tr>
+ <tr><td colspan="2"><i>public DataOutputStream getWriter()</i></td></tr>
+ <tr><td width="25"></td><td>Returns the binary data writer</td></tr>
+ <tr><td colspan="2"></td></tr>
+ <tr><td colspan="2"><i>public void openRead(InputStream in)</i></td></tr>
+ <tr><td width="25"></td><td>Initializes a binary reader (a DataInputStream) and a text reader (a BufferedReader) 
+against this input stream.</td></tr>
+
+ <tr><td colspan="2"><i>public void openWrite(OutputStream out)</i></td></tr>
+ <tr><td width="25"></td><td> Initializes a binary writer (a DataOutputStream) and a text writer (a PrintWriter) 
+against this input stream.</td></tr>
+
+ <tr><td colspan="2"><i>public void sendEOF()</i></td></tr>
+ <tr><td width="25"></td><td>Closes down the output streams effectively sending an end of file message to the reading end.</td></tr>
+</table>
+
+<a name="3a.3"><h2>An IO Source Implementation</h2></a>
+
+<p>IO Sources extend the sleep.bridges.io.IOObject class (detailed above).  The IO Source class is responsible for providing 
+'starter' methods that initialize the streams correctly.  The starter methods can be whatever the developer likes.  They are 
+later tied explicitly to a sleep function via a Function bridge.
+
+<p>Starter methods have the responsibility of initializing the IO source and setting up the IO streams.  IO streams are 
+intialized by calling the openRead() and openWrite() methods of the parent IOObject class.</p>
+
+<p>The following example is the Sleep implementation of the Socket IO Source:</p>
+
+<pre>package sleep.bridges.io;
+
+import java.io.*;
+import java.net.*;
+import sleep.runtime.*;
+
+public class SocketObject extends IOObject
+{
+   protected Socket socket;
+
+   public void open(String server, int port, ScriptEnvironment env)
+   {
+      try
+      {
+         socket = new Socket(server, port);
+         socket.setSoLinger(true, 5);
+
+         openRead(socket.getInputStream());
+         openWrite(socket.getOutputStream());
+      }
+      catch (Exception ex)
+      {
+         env.flagError(ex.toString());
+      }
+   }
+
+   public void listen(int port, int timeout, Scalar data, ScriptEnvironment env)
+   {
+      try
+      {
+         ServerSocket server = new ServerSocket(port);
+         server.setSoTimeout(timeout);
+        
+         socket = server.accept();
+         socket.setSoLinger(true, 5);
+
+         data.setValue(SleepUtils.getScalar(socket.getInetAddress().getHostAddress()));
+
+         openRead(socket.getInputStream());
+         openWrite(socket.getOutputStream());
+      }
+      catch (Exception ex)
+      {
+         env.flagError(ex.toString());
+      }
+   }
+
+   public void close()
+   {
+      super.close();
+
+      try
+      {
+         socket.close();
+      }
+      catch (Exception ex) { }
+   }
+}</pre>
+
+<p>Notice that two 'starter' methods are provided.  A 'open' method which connects to a server and the 'listen' method which waits for a connection.  
+Once a connection has been established both of these start methods call openRead and openWrite with the appropriate input/output streams.</p>
+
+<p>Having an appropriate IO source class is great however it does not provide anything new for the scripter.  The next step 
+is to tie the starter methods into a sleep function.</p>
+
+<a name="3a.4"><h2>The IO Bridge</h2></a>
+
+<p>To make the socket functionality accessible, the relevant sleep function bridges have to be created.  In the case of the 
+socket API there are 2 unique and 1 overriden functions in Sleep:</p>
+
+<table>
+ <tr><td colspan="2"><i>closef($handle)</i></td></tr>
+ <tr><td width="25"></td><td>closes the IO for $handle</td></tr>
+ <tr><td colspan="2"></td></tr>
+ <tr><td colspan="2"><i>connect("host", port)</i></td></tr>
+ <tr><td width="25"></td><td>connects to the specified host:port and returns a $handle.</td></tr>
+ <tr><td colspan="2"></td></tr>
+ <tr><td colspan="2"><i>listen(port, [timeout], [$host])</i></td></tr>
+ <tr><td width="25"></td><td>listens for a connection on the specified port.</td></tr>
+</table>
+
+<p>The &amp;closef function is implicit to all IO objects.  When &amp;closef is called, the close() method of the IO source is 
+called.</p>
+
+<p>The sleep functions &amp;connect and &amp;listen instantiate a SocketObject and call the appropriate starter method.  As an 
+example, the implementation of the &connect bridge is below:</p>
+
+<pre>public class connect implements Function
+{
+   public Scalar evaluate(String func, ScriptInstance script, Stack args)
+   {
+      String host = BridgeUtilities.getString(args, "");
+      int    port = BridgeUtilities.getInt(args);
+          
+      SocketObject socket = new SocketObject();
+      socket.open(host, port, script.getScriptEnvironment());
+          
+      return SleepUtils.getScalar(socket);
+   }
+}</pre>
+
+<p>Note that the arguments are extracted from the argument stack.  The SocketObject is created.  The appropriate starter method 
+is called and finally the socket object is wrapped into a scalar and returned.</p>
+
+<p>Finally, the function needs to be made available in the script environment.  This is typically done at script load time 
+using a sleep.interfaces.Loadable bridge.  Loadable bridges are registered with a script loader.  Whenever a script is loaded 
+or unloaded the script loader class calls the scriptLoaded/scriptUnloaded methods of all registered Loadable bridges.</p>
+
+<p>The relevant pieces of a Loadable bridge to install the &amp;connect function are:</p>
+
+<pre>public boolean scriptLoaded (ScriptInstance script)
+{
+   Hashtable env = script.getScriptEnvironment().getEnvironment();
+   env.put("&amp;connect",  new connect());
+}</pre>
+
+<h1><a name="3">Part 4: Working with Scalars</a></h1>
+
+<h2><a name="3.1">What is a Scalar</a></h2>
+
+<p>Scalars have been mentioned in this document many times.   Scalars are just sleep variables.  Scalars can be strings, 
+numbers, or even a reference to an object.   Scalars are represented by the java class sleep.runtime.Scalar.  </p>
+
+<p>Scalar objects maintain a reference to an instantiated scalar type.  A scalar type represents data of a certain type.  A 
+scalar type also contains logic to convert the stored data to any of the primitive types used by sleep.  Sleep primitive types 
+include double, int, long, object, and String.  </p>
+
+<p>When a scalar is instantiated its type is determined.  Example:</p>
+
+$x = 3.4;
+
+<p>When the above is executed 3.4 is determined to be a double.  3.4 is then created as a scalar type double, this scalar type 
+double is stored in the scalar <var>$x</var>.  Any attempt to use <var>$x</var> as a string would result in the value of "3.4".  
+Any attempt to use <var>$x</var> as an integer would result in the value of 3.  </p>
+
+<p>The following table below illustrates the scalar types and how the data would be converted to other types if needed.</p>
+
+<table class="simple2" width="95%">
+ <tr>
+  <th>Type</th>
+  <th>Example</th>
+  <th>Double</th>
+  <th>Int</th>
+  <th>Long</th>
+  <th>Object</th>
+  <th>String</th>
+ </tr>
+ <tr>
+  <td>Double</td>
+  <td>3.3</td>
+  <td>3.3</td>
+  <td>3</td>
+  <td>3L</td>
+  <td>new Double(3.3)</td>
+  <td>"3.3"</td>
+ </tr>
+ <tr>
+  <td>Integer</td>
+  <td>3.3</td>
+  <td>4</td>
+  <td>4.0</td>
+  <td>4L</td>
+  <td>new Integer(4)</td>
+  <td>"4"</td>
+ </tr>
+ <tr>
+  <td>Long</td>
+  <td>5</td>
+  <td>5.0</td>
+  <td>5</td>
+  <td>5L</td>
+  <td>new Long(5)</td>
+  <td>"5"</td>
+ </tr>
+ <tr>
+  <td>Object *</td>
+  <td>ref</td>
+  <td>hashcode</td>
+  <td>hashcode</td>
+  <td>hashcode</td>
+  <td>ref</td>
+  <td>ref.toString()</td>
+ </tr>
+ <tr>
+  <td>String **</td>
+  <td>"3rd place"</td>
+  <td>0</td>
+  <td>0</td>
+  <td>0L</td>
+  <td>"3rd place"</td>
+  <td>"3rd place"</td>
+ </tr>
+ <tr>
+  <td>$null</td>
+  <td></td>
+  <td>0.0</td>
+  <td>0</td>
+  <td>0L</td>
+  <td>null</td>
+  <td>""</td>
+ </tr>
+</table>
+
+<p><i>* The word ref within the Object column refers to a reference to an object.
+<br>** If a string value contains a number i.e. "42" then the string can be used as a number</i></p> 
+
+<p>To obtain the string value of a Scalar:</p>
+
+<pre>String value = scalar.toString();</pre>
+
+<p>To obtain the integer value of a Scalar:</p>
+
+<pre>int value = scalar.intValue();</pre>
+
+<p>For more information on querying data from a Scalar see the Java API Documentation for sleep.runtime.Scalar.</p>
+
+<h2><a name="3.2">Instantiating a Scalar</a></h2>
+
+<p>Instantiating a Scalar is most easily done using the sleep.runtime.SleepUtils class.  The SleepUtils class contains several 
+static methods for creating a Scalar object from data.</p>
+
+<p>The general pattern for this is a <code>SleepUtils.getScalar(data)</code> method.  There are static getScalar() methods that 
+take a double, int, long, Object, or a String as a parameter.</p>
+
+<p>There are even methods for wrapping java data structures into a scalar array or scalar hash.  Methods also exist to copy 
+data from one scalar into another new scalar. </p>
+
+<h3>Examples:</h3>
+
+<pre>Scalar anInt   = SleepUtils.getScalar(3); // create an int scalar
+Scalar aDouble = SleepUtils.getScalar(4.5); // create a double scalar
+Scalar aString = SleepUtils.getScalar("hello"); // string scalar
+Scalar anArray = SleepUtils.getArrayWrapper(new LinkedList(); // array scalar</pre>
+
+<p>For more information see the sleep.runtime.SleepUtils Java API Documentation.  </p>
+
+<h2><a name="3.3">Working with Array and Hashtable Scalars</a></h2>
+
+<p>To add a value to a Scalar array:</p>
+
+<pre>Scalar arrayScalar = SleepUtils.getArray(); // empty array
+arrayScalar.getArray().add(SleepUtils.getScalar("value"), 0);</pre>
+
+<p>To iterate through all of the values in a Scalar array:</p>
+
+<pre>Iterator i = arrayScalar.getArray().scalarIterator();
+while (i.hasNext())
+{
+    Scalar temp = (Scalar)i.next();
+}</pre>
+
+<p>For more information see the sleep.runtime.ScalarArray Java API Documentation.  </p>
+
+<p>To add a value to a Scalar hashtable:</p>
+
+<pre>Scalar hashScalar = SleepUtils.getHashScalar(); // blank hashtable
+Scalar temp = hashScalar.getHash().getAt(SleepUtils.getScalar("key"));
+temp.setValue(SleepUtils.getScalar("value"));</pre>
+
+<p>The second line obtains a Scalar for "key". The returned Scalar is just a container.   It is possible to set the value of 
+the returned scalar using the setValue method.  </p>
+
+<p>Internally scalar values in sleep are passed by value.  Methods like setValue inside of the Scalar class take care of 
+copying the value.  Externally though Scalar objects are passed by reference.  When you call getAt() in the ScalarHash you are 
+obtaining a reference to a Scalar inside of the hashtable.  When you change the value of the Scalar you obtained, you change 
+the value of the Scalar in the hashtable.</p>
+
+<p>For more information see the sleep.runtime.ScalarHash Java API Documentation.  </p>
+
+<h2><a name="3.4">Creating a Scalar Type</a></h2>
+
+<p>If wrapping data into an already existing scalar type isn't enough.  It is possible to create a new scalar type that 
+performs its own conversions and everything.</p>
+
+<p>To create a new type of scalar create a class that implements the sleep.runtime.ScalarType interface.   The interface is 
+self explanatory.  Simply implement several methods that ask for the stored value as a certain primitive type.</p>
+
+<p>To store a custom scalar type in a scalar:</p>
+
+<pre>Scalar temp = SleepUtils.getScalar(); // returns an empty scalar.
+temp.setValue(new MyScalarType()); </pre>
+
+<p>In the above example MyScalarType is an instance that implements the ScalarType interface.</p>
+
+<h2><a name="3.5">Creating a Scalar Array Implementation</a></h2>
+
+<p>It is possible to create a scalar array with your own backend implementation of the scalar array interface.  This allows for 
+an easy way to make your data structures in your application available to scripters.</p>
+
+<p>To create a new type of scalar array create a class that implements the sleep.runtime.ScalarArray interface.  The scalar 
+array interface asks for methods that define all of the common operations on sleep arrays.  </p>
+
+<p>To instantiate a custom scalar array:</p>
+
+<pre>Scalar temp = SleepUtils.getArrayScalar(new MyScalarArray());</pre>
+
+<p>In the above example MyScalarArray is the class name of your new scalar array implementation.</p>
+
+<h2><a name="3.6">Creating a Scalar Hash Implementation</a></h2>
+
+<p>It is also possible to create a hashtable scalar with your own backend implementation of the scalar hash interface.  This 
+allows for an easy way to make your data structures in your application available to scripters.</p>
+
+<p>To create a new type of scalar hash: create a class that implements the sleep.runtime.ScalarHash interface.  The scalar hash 
+interface asks for methods that define all of the common operations on sleep hashes.  </p>
+
+<p>To instantiate a custom scalar hash:</p>
+
+<pre>Scalar temp = SleepUtils.getHashScalar(new MyHashScalar());</pre>
+
+<p>In the above example MyHashScalar is the class name of your new scalar hash implementation.</p>
+
+<h1><a name="4">Part 5: How-to Guide</a></h1>
+
+<p>This section describes some of the miscellaneous stuff one might need to know.</p>
+
+<h2><a name="4.1">Install an Escape Constant</a></h2>
+
+<p>In sleep a character prefixed by a \ backslash within a "double quoted" string is said to be escaped.  Typically an escaped 
+character is just skipped over during processing.  It is possible in sleep to add meaning to different characters by installing 
+an escape.   For example to add the escape \r to mean the new line character one would do the following:</p>
+
+<pre>sleep.parser.ParserConfig.installEscapeConstant('r', "\n");</pre>
+
+<p>Once the above code is executed the value "blah\r" inside of sleep would be equivalent in java to "blah\n".</p>
+
+<h2><a name="4.2">Force Scripts to Share Information</a></h2>
+
+<p>By default sleep scripts are isolated from each other.  Isolated scripts do not share variable or function information.  It 
+is possible to get scripts to share this information:</p>
+
+<p>Functions and other environment information are typically stored in a java.util.Hashtable.  Each loadScript() method inside 
+of the Script Loader has a similar method that takes a java.util.Hashtable argument.  Passing the same Hashtable to all of your 
+loaded scripts will force those scripts to share function information. </p>
+
+<pre>Hashtable environment = new Hashtable();
+
+ScriptLoader loader = new ScriptLoader();
+ScriptInstance a = loader.loadScript("script1.sl", environment);
+ScriptInstance b = loader.loadScript("script2.sl", environment);</pre>
+
+<p>In the above example the Script Instance's a and b are both sharing the same function environment.  If a subroutine is 
+declared in script a it will be available in script b.  The script loader is also smart about shared environments.  </p>
+
+<p>When installing a loadable bridge you have the choice of installing a bridge as a global or a specific bridge.  The two 
+methods for this are addGlobalBridge() and addSpecificBridge() in sleep.runtime.ScriptLoader.  Specific bridges are processed 
+for every single script that is loaded whether they are sharing environments or not.  Global bridges will only be processed if 
+they have not already been loaded into the specified environment.  This saves some overhead when loading multiple scripts 
+sharing the same environments.</p>
+
+<p>Variables in sleep are managed by the class sleep.runtime.ScriptVariables.  To force scripts to share variables among 
+multiple instances:</p>
+
+<pre>ScriptVariables variables = new ScriptVariables();
+
+ScriptLoader loader = new ScriptLoader();
+
+ScriptInstance a = loader.loadScript("script1.sl");
+a.setScriptVariables(variables);
+
+ScriptInstance b = loader.loadScript("script2.sl");
+b.setScriptVariables(variables);</pre>
+
+<p>In the above example the Script Instance's a and b are both sharing the same variable information.  </p>
+
+<h2><a name="4.3">Execute a Block of Code</a></h2>
+
+<p>To execute a block of code:</p>
+
+<pre>Block             code; // assume
+ScriptEnvironment env  = script.getEnvironment();  
+
+Scalar value = SleepUtils.runCode(code, env);</pre>
+
+<h2><a name="4.4">Evaluate Code from a String</a></h2>
+
+<p>To evaluate an expression:</p>
+
+<pre>Scalar value = env.evaluateExpression("2 + 2");</pre>
+
+<p>To evaluate a predicate expression:</p>
+
+<pre>boolean condition = env.evaluatePredicate("2 == 2");</pre>
+
+<p>To evaluate a statement or series of statements:</p>
+
+<pre>env.evaluateStatement("while ($x < 100) { $x++; }");</pre>
+
+<h2><a name="4.5">Catch a Syntax Error when loading a Script</a></h2>
+
+<p>Syntax errors are a reality of programming.  Any time a syntax error occurs when attempting to load a script the exception 
+YourCodeSucksException will be raised.  [ yes, the exception name is staying ]</p>
+
+<p>To catch a YourCodeSucksException:</p>
+
+<pre>try
+{
+   ScriptInstance script;
+   script = loader.loadScript("name", inputStream);
+}
+catch (YourCodeSucksException ex)
+{
+   Iterator i = ex.getErrors().iterator();
+   while (i.hasNext())
+   {
+      SyntaxError error = (SyntaxError)i.next();
+
+      String description = error.getDescription();
+      String code        = error.getCodeSnippet();
+      int    lineNumber  = error.getLineNumber();
+   }
+}</pre>
+
+<h2><a name="4.6">Catch a Runtime Script Error</a></h2>
+
+<p>Runtime errors are caught by sleep.  Examples of a runtime error include calling a function that doesn't exist, using an 
+operator that doesn't exist, or causing an exception in the underlying java code.  Whenever any of these events occurs the 
+event is isolated and turned into a ScriptWarning object.  The Script Warning object is then propagated to all registered 
+warning watchers.  </p>
+
+<p>To create a runtime warning watcher:</p>
+
+<pre>public class Watchdog implements RuntimeWarningWatcher
+{
+   public void processScriptWarning(ScriptWarning warning)
+   {
+      String message = warning.getMessage();
+      int    lineNo  = warning.getLineNumber();
+      String script  = warning.getNameShort(); // name of script
+   }
+}</pre>
+
+<p>To register a warning watcher (assume script is a ScriptInstance object):</p>
+
+<pre>script.addWarningWatcher(new Watchdog());</pre>
+
+<h2><a name="4.7">Integrate the Sleep Console</a></h2>
+
+<p>The sleep console is an interactive console for working with sleep scripts.  The console includes commands for loading 
+scripts, running scripts, and dumping an abstract syntax tree of parsed scripts.  Integrating the sleep console consists of 
+building a console proxy that provides input/output services for the actual Sleep Console.</p>   
+
+<p>An example console proxy (using STDIN/STDOUT) is below:</p>
+
+<pre>import sleep.io.*;
+import sleep.console.ConsoleProxy;
+
+public class MyConsoleProxy implements ConsoleProxy
+{
+   protected BufferedRead in;
+
+   public MyConsoleProxy()
+   {
+      in = new BufferedReader(new InputStreamReader(System.in));
+   }
+
+   public void consolePrint(String message)
+   {
+      System.out.print(message);
+   }
+
+   public void consolePrintln(Object message)
+   {
+      System.out.println(message.toString());
+   }
+
+   public String consoleReadln()
+   {
+      try
+      {
+         return in.readLine();
+      }
+      catch (IOException ex)
+      {
+         ex.printStackTrace();
+         return null;
+      }
+   }
+}</pre>
+
+<p>To instantiate the Sleep Console and install a custom console proxy:</p>
+
+<pre>// assume ScriptEnvironment environment; ScriptVariables variables; ScriptLoader loader;
+
+ConsoleImplementation console;
+console = new ConsoleImplementation(environment, variables, loader);
+
+console.setProxy(new MyConsoleProxy());
+console.rppl(); // starts the console</pre>
+
+<p>The above will instantiate a sleep console with the specified function environment, script variables, and script loader.  
+Once an implementation of the ConsoleProxy interface is installed the sleep console is ready to use.   Any application taking 
+advantage of the sleep console should instantiate it before scripts are loaded.  This is necessary as the sleep console 
+installs itself as a loadable bridge into the script loader.</p>
+
+
+<h1><a name="glossary">Glossary:</a></h1>
+
+<h3>Bridge</h3>
+<p>A piece of code that brings application functionality together with sleep scripts.  Called a bridge because it bridges the 
+gap between an application and the sleep scripting language.</p>
+
+<h3>Block</h3>
+<p>A block of code in sleep is a ready to execute block of parsed sleep code.  Blocks do not have any variable or environment 
+information associated with them.  They are simply parsed sleep code.  </p>
+
+<h3>Environment</h3>
+<p>Environment is a little bit of an overloaded term in sleep.  There is the script environment class which contains methods 
+for accessing the data stack, return value of a function, and the real script environment.   In sleep the real script environment 
+is a simple java.util.Hashtable.   A hashtable stores all of the bridged information, all of the scripted subroutines, and all 
+of the scalar values.  It is possible in Sleeps API's to have all scripts be isolated from each other (i.e. they have there own 
+Hashtable environment).  Scripts can share subroutines and variables simply by sharing a Hashtable reference.  </p>
+
+<h3>Scalar</h3>
+<p>A scalar is the universal data type for sleep variables.  Scalars can have numerical values of integer, double, or long.  
+Scalars can have a string value.  Scalars can also contain a reference to a scalar array, scalar hash, or a generic Java 
+object.</p>
+
+<h3>Script Instance</h3>
+<p>A script instance in sleep is a loaded script.  It contains all of the environment information for the loaded script.  It 
+contains the Block of executable sleep code.  The script instance class contains several utility methods for checking if that 
+script instance represents a loaded script, calling functions, and querying the script for information.</p>
+
+<h1><a name="A">Appendix A: Example Code</a></h1>
+
+<h2>Contents of ScriptExample.java:</h2>
+
+<pre>import sleep.interfaces.Function;
+import sleep.interfaces.Loadable;
+
+import sleep.runtime.ScriptLoader;
+import sleep.runtime.ScriptInstance;
+import sleep.runtime.SleepUtils;
+import sleep.runtime.Scalar;
+
+import sleep.error.YourCodeSucksException;
+import sleep.bridges.BridgeUtilities;
+
+import java.io.IOException;
+import java.util.Stack;
+
+public class ScriptExample
+{
+   public static void main (String args[]) throws IOException, YourCodeSucksException
+   {
+       // initialize the script loader and add a bridge
+       ScriptLoader   loader = new ScriptLoader();
+       loader.addSpecificBridge(new SetupBridge()); 
+
+       ScriptInstance script = loader.loadScript("script.sl"); // loads the script
+      
+       script.runScript(); // evaluates the script
+
+       // put a scalar into the environment
+       script.getScriptVariables().putScalar("$test", SleepUtils.getScalar("sleep example"));
+
+       // retrieve a scalar from the environment
+       Scalar test  = script.getScriptVariables().getScalar("$test");
+
+       // call a function
+       Scalar value = script.callFunction("&konk", new Stack());
+
+       // unload the script
+       loader.unloadScript(script);
+   }
+
+   private static class FooFunction implements Function 
+   {
+       public Scalar evaluate(String name, ScriptInstance script, Stack parameters) 
+       {
+           System.out.println("function foo has been called");
+           return SleepUtils.getEmptyScalar();
+       }
+   }
+
+   private static class MyAddFunction implements Function 
+   {
+       public Scalar evaluate(String name, ScriptInstance script, Stack parameters) 
+       {
+           int arg1 = BridgeUtilities.getInt(parameters, 0);
+           int arg2 = BridgeUtilities.getInt(parameters, 0);
+
+           return SleepUtils.getScalar(arg1 + arg2);
+       }
+   }
+
+   private static class SetupBridge implements Loadable
+   {
+       public boolean scriptLoaded(ScriptInstance script) 
+       {
+          Hashtable env = script.getScriptEnvironment().getEnvironment();
+
+          env.put("&foo",   new FooFunction());
+          env.put("&myadd", new MyAddFunction());
+
+          return true;
+       }
+
+       public boolean scriptUnloaded(ScriptInstance script) 
+       {
+          return true;
+       }
+   }
+}</pre>
+
+<h2>Contents of script.sl</h2>
+
+<pre>sub konk
+{
+   println("Konk has been called: \$test is $test");
+}
+
+foo();
+println("Calling built in: " . myadd(6, 36));</pre>
+
+
+</body>
+</html>

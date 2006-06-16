@@ -26,6 +26,7 @@
   thread safe)
 - for loop initialization and increment terms can now be empty
 - added SleepUtils.getScalar(x) for Java shorts and floats
+- opted to distribute documentation as HTML instead of PDF...
 
 2.0-release
 ===========
