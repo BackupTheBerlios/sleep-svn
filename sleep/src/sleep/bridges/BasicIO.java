@@ -348,7 +348,7 @@ public class BasicIO implements Loadable
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          return SleepUtils.getScalar(IOObject.getConsole());
+          return SleepUtils.getScalar(IOObject.getConsole(i.getScriptEnvironment()));
        }
     }
 

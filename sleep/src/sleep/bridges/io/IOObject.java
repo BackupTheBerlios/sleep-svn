@@ -68,8 +68,18 @@ public class IOObject
       token = t;
    }
 
-   /** returns an IOObject that represents stdin/stdout */
+   /** this method is no longer the preferred way for obtaining the console IOObject */
    public static IOObject getConsole()
+   {
+      IOObject temp = new IOObject();
+      temp.openRead(System.in);
+      temp.openWrite(System.out);
+
+      return temp;
+   }
+
+   /** returns an IOObject that represents stdin/stdout */
+   public static IOObject getConsole(ScriptEnvironment environment)
    {
       if (console == null)
       {

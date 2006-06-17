@@ -648,6 +648,12 @@ environment.put("keyword", myEnvironmentBridge);</pre>
 event driven scripting to popup menu structures to my application. Environments are a very powerful way to get the most out of 
 integrating your application with the sleep language.</p>
 
+<p>As a side note, Sleep comes with two extra keywords built-in.  These are <code>halt</code>
+and <code>done</code>.  These keywords function exactly like return except they return a 
+specific integer constant.  In the case of halt the return value is 2.  done returns a 1.  
+These keywords were put into the Sleep language to work with the event handling bridges in the
+IRC client jIRCii.  Feel free to take advantage of them within your own apps.</p>
+
 <h2><a name="2.8">Filtered Environment Bridges</a></h2>
 
 <p>Filtered environments are similar to normal keyword environments except they also allow a parameter specified by the user.  
