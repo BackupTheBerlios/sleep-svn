@@ -34,6 +34,7 @@ import sleep.runtime.*;
 
 import java.io.*;
 
+import sleep.bridges.BridgeUtilities;
 import sleep.bridges.SleepClosure;
 
 /** This class contains generalized utilities for instantiating/wrapping data into the sleep Scalar type. 
@@ -209,6 +210,73 @@ public class SleepUtils
       temp.setValue(new ArrayContainer());
 
       return temp;
+   }
+
+   /** Generate a java.util.Map from a scalar hash.  Keys will be Java strings.  Values will be
+       the Java object equivalents of the data stored in the scalar hash. */
+   public static Map getMapFromHash(Scalar map)
+   { 
+      return getMapFromHash(map.getHash());
+   }
+
+   /** Generate a java.util.Map from a scalar hash.  Keys will be Java strings.  Values will be
+       the Java object equivalents of the data stored in the scalar hash. */
+   public static Map getMapFromHash(ScalarHash map)
+   {
+      HashMap dict = new HashMap();
+
+      if (map != null)
+      {
+         Iterator i = map.keys().scalarIterator();
+         while (i.hasNext())
+         {
+            Scalar key  = (Scalar)i.next();
+            Scalar val  = map.getAt(key);
+
+            if (val.getHash() != null)
+            {
+               dict.put(key.toString(), getMapFromHash(val.getHash()));
+            }
+            else if (val.getArray() != null)
+            {
+               dict.put(key.toString(), getListFromArray(val.getArray()));
+            }
+            else
+            {  
+               dict.put(key.toString(), val.objectValue());
+            }
+         }
+      }
+
+      return dict;
+   }
+
+   /** Generate a java.util.List from a scalar array.  Values will be the Java object 
+       equivalents of the data stored in the scalar array. */
+   public static List getListFromArray(Scalar array)
+   {
+      return getListFromArray(array.getArray());
+   }
+
+   /** Generate a java.util.List from a scalar array.  Values will be the Java object 
+       equivalents of the data stored in the scalar array. */
+   public static List getListFromArray(ScalarArray array)
+   {
+      LinkedList list = new LinkedList();
+       
+      if (array != null)
+      {
+         array = BridgeUtilities.flattenArray(SleepUtils.getArrayScalar(array), null).getArray();
+
+         Iterator i = array.scalarIterator();
+         while (i.hasNext())
+         {
+            Scalar temp = (Scalar)i.next();
+            list.add(temp.objectValue());
+         }
+      }
+
+      return list;
    }
 
    /** a shared instance of the dreaded null scalar... */

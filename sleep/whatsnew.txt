@@ -35,7 +35,8 @@
   @ removeAll(@a, @b) - modifies @a with the difference of @a - @b
   @ addAll(@a, @b) - modifies @a with the union of @a + @b
   @ retainAll(@a, @b) - modifies @a to contain the intersection of @a and @b
-
+- added methods to SleepUtils to generate a java.util.Map from a 
+  Sleep Hash scalar and to generate a java.util.List from a Sleep Array.
 
 2.1-beta 1
 ===========
