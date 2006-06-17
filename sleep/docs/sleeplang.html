@@ -1532,6 +1532,21 @@ restore from the last execution, bad things will happen.</p>
 <p>The above stores a coroutine into $generator.  The first time $generator is called a 0 will be returned.  The second time $generator will
 return a 1.  So on and so forth until $null is finally returned.</p>
 
+<p>Foreach loops can be used to iterate over a closure.</p>
+
+<pre>foreach $value ($generator)
+{
+   println("Value is $value");
+}</pre>
+
+<p>The above would iterate over $generator until it returned $null.  The output would be:</p>
+
+<pre>Value is 0
+Value is 1
+...
+Value is 998
+Value is 999</pre>
+
 <a name="11"><h2>Function Library</h2></a>
 
 <p>This appendix is a list of the application neutral built-in functions for sleep.  I expect this list to grow as time goes on.  
@@ -1567,6 +1582,11 @@ as many arguments as you are willing to specify.</p>
   <td>$</td>
   <td>add(@array, $scalar, [index])</td>
   <td>inserts $scalar into @array at the specified index.  if no index is specified, 0 is assumed.</td>
+ </tr>
+ <tr>
+  <td>@</td>
+  <td>addAll(@a, @b)</td>
+  <td>adds all of the non-present elements of @b into @a. equivalent to the union of @a and @b</td>
  </tr>
  <tr>
   <td>@</td>
@@ -1626,9 +1646,19 @@ to represent the dimensions of the array.</td>
   <td>removes each specified $scalar from @array.  if no parameters are passed the active element in the current foreach loop is removed.</td>
  </tr>
  <tr>
+  <td>@</td>
+  <td>removeAll(@a, @b)</td>
+  <td>removes all elements of @b from @a. equivalent to the different of @a and @b</td>
+ </tr>
+ <tr>
   <td>$</td>
   <td>removeAt(@arrray, index)</td>
   <td>removes the element at index from @array.</td>
+ </tr>
+ <tr>
+  <td>@</td>
+  <td>retainAll(@a, @b)</td>
+  <td>removes all elements from @a that are not present in @b.  equivalent to the intersection of @a and @b.</td>
  </tr>
  <tr>
   <td>@</td>
