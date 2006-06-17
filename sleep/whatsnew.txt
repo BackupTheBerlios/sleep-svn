@@ -28,8 +28,9 @@
   Sleep scripts on the command line can run with different debug 
   levels using:
   java -Dsleep.debug=3 -jar sleep.jar filename.sl
-
-
+- foreach can now iterate over closures..  if a closure is passed to
+  foreach then the closure will be called continuously until a $null
+  is returned.
 
 2.1-beta 1
 ===========

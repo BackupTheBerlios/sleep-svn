@@ -26,6 +26,8 @@ import sleep.interfaces.*;
 import sleep.engine.*;
 import sleep.runtime.*;
 
+import sleep.bridges.SleepClosure;
+
 public class Iterate extends Step
 {
    public static class IteratorData
@@ -39,6 +41,35 @@ public class Iterate extends Step
       public Scalar   source   = null;
       public Iterator iterator = null;
       public int      count    = 0;
+   }
+
+   private static class FunctionIterator implements Iterator
+   {
+      protected SleepClosure      closure;
+      protected ScriptInstance    si;
+      protected Scalar            current;
+      protected Stack             locals = new Stack();
+
+      public FunctionIterator(SleepClosure c, ScriptInstance i)
+      {
+         closure = c;
+         si      = i;
+      }
+
+      public boolean hasNext()
+      {
+         current = closure.callClosure("eval", si, locals);
+         return !SleepUtils.isEmptyScalar(current);
+      }
+
+      public Object next()
+      {
+         return current;
+      }
+
+      public void remove()
+      {
+      }
    }
 
    public static final int ITERATOR_CREATE   = 1;
@@ -118,6 +149,10 @@ public class Iterate extends Step
       else if (data.source.getArray() != null)
       {
          data.iterator = data.source.getArray().scalarIterator();
+      }
+      else if (SleepUtils.isFunctionScalar(data.source))
+      {
+         data.iterator = new FunctionIterator(SleepUtils.getFunctionFromScalar(data.source, e.getScriptInstance()), e.getScriptInstance()); 
       }
       else
       {
