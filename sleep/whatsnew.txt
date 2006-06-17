@@ -13,6 +13,23 @@
   not bridge. (i.e. exit value of a process)
 - added an API to SleepUtils for building an IO handle scalar 
   from a Java InputStream/OutputStream
+- added a debug flag to each script instance.  the options consist 
+  of:
+  DEBUG_SHOW_ERRORS = 1 - this is the typical behavior that causes
+     a runtime warning to be fired whenever an uncaught exception
+     occurs within a bridge.
+  DEBUG_SHOW_WARNINGS = 2 - fires a runtime warning any time an error
+     is flagged using flagError() in the script environment.  
+     runtime warnings are typically errors a scripter is meant to
+     check for with checkError($error).  
+  DEBUG_NONE = 0 - disables all firing of runtime warnings (not 
+     recommended)
+
+  Sleep scripts on the command line can run with different debug 
+  levels using:
+  java -Dsleep.debug=3 -jar sleep.jar filename.sl
+
+
 
 2.1-beta 1
 ===========

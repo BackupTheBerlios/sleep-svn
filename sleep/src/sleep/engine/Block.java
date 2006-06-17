@@ -142,7 +142,7 @@ public class Block implements Serializable
         {
            try
            {
-              Scalar value = temp.evaluate(environment);
+              temp.evaluate(environment);
            }
            catch (IllegalArgumentException aex)
            {
@@ -179,7 +179,15 @@ public class Block implements Serializable
                  }
               }
 
-              return environment.getReturnValue();
+              if (environment.isDebugInterrupt())
+              {
+                 environment.getScriptInstance().fireWarning(environment.getDebugString(), temp.getLineNumber());
+                 /** get debug string clears the debug interrupt! */
+              }
+              else
+              {
+                 return environment.getReturnValue();
+              }
            }
 
            temp = temp.next;

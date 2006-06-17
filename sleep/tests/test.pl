@@ -27,15 +27,19 @@ chdir("..");
 
 foreach $var (@files)
 {
+   $PROPS = "";
+   if ($var eq "debugce.sl") { $PROPS = "-Dsleep.debug=3"; }
+
    if (!-e "./tests/output/$var")
    {
-      `java -jar sleep.jar ./tests/$var >./tests/output/$var`;
+      `java $PROPS -jar sleep.jar ./tests/$var >./tests/output/$var`;
       push @errors, "$var output does not exist, creating it";
    }
    else
    {
       $expected_value = join("", `cat ./tests/output/$var`);
-      $script_value   = join("", `java -jar sleep.jar ./tests/$var`);
+
+      $script_value   = join("", `java $PROPS -jar sleep.jar ./tests/$var`);
 
       if ($expected_value ne $script_value)
       {

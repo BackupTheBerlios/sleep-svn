@@ -25,13 +25,14 @@ public class TextConsole implements ConsoleProxy
              System.out.println(SleepUtils.SLEEP_VERSION + " (" + SleepUtils.SLEEP_RELEASE + ")");
              return;
          }
-
+         
          //
          // put all of our command line arguments into an array scalar
          //
          Scalar array = SleepUtils.getArrayScalar();
          for (int x = 1; x < args.length; x++)
          {
+
             array.getArray().push(SleepUtils.getScalar(args[x]));
          }
 
@@ -39,6 +40,11 @@ public class TextConsole implements ConsoleProxy
          {
             ScriptInstance script = loader.loadScript(args[0]);     // load the script, parse it, etc.
             script.getScriptVariables().putScalar("@ARGV", array);  // set @ARGV to be our array of command line arguments
+
+            if (System.getProperty("sleep.debug") != null)
+            {
+               script.setDebugFlags(Integer.parseInt(System.getProperty("sleep.debug")));
+            }
 
             script.runScript();                                     // run the script...
          } 

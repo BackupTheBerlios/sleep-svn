@@ -108,7 +108,11 @@ public class ScriptEnvironment implements Serializable
     public void flagError(String message)
     {
        errorMessage = message;
-//       getScriptVariables().putScalar("$!", SleepUtils.getScalar(message));
+
+       if ((getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_SHOW_WARNINGS) == ScriptInstance.DEBUG_SHOW_WARNINGS)
+       {
+          showDebugMessage("checkError(): " + message);
+       }
     }
 
     /** once an error is checked using this function, it is cleared, the orignal error message is returned as well */
@@ -317,9 +321,16 @@ public class ScriptEnvironment implements Serializable
 
     /** adding a yield keyword */
     public static final int FLOW_CONTROL_YIELD    = 4;
-    
+
+    protected boolean isDebugInterrupt  = false;
+    protected String  debugString       = "";
     protected Scalar rv      = null;
     protected int    request = 0;
+
+    public boolean isDebugInterrupt()
+    {
+       return isDebugInterrupt;
+    }
 
     public Scalar getReturnValue()
     {
@@ -328,12 +339,25 @@ public class ScriptEnvironment implements Serializable
 
     public boolean isReturn()
     {
-       return request != FLOW_CONTROL_NONE;
+       return request != FLOW_CONTROL_NONE || isDebugInterrupt;
     }
 
     public int getFlowControlRequest()
     {
        return request;
+    }
+
+    public String getDebugString()
+    {
+       isDebugInterrupt = false;
+       return debugString;
+    }
+
+    /** fires this debug message via a runtime warning complete with line number of current step */
+    public void showDebugMessage(String message)
+    {
+       isDebugInterrupt = true;
+       debugString = message;
     }
 
     public void flagReturn(Scalar value, int type_of_flow)

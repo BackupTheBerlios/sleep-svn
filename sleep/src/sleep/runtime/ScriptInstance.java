@@ -71,6 +71,30 @@ public class ScriptInstance implements Serializable, Runnable
     /** The compiled sleep code for this script, the ScriptLoader will set this value upon loading a script. */
     protected Block             script;
 
+    /** debug should be absolutely quiet, never fire any runtime warnings */
+    public static final int DEBUG_NONE          = 0;
+
+    /** fire runtime warnings for all critical flow interrupting errors */
+    public static final int DEBUG_SHOW_ERRORS   = 1;
+
+    /** fire runtime warnings for anything flagged for retrieval with checkError() */
+    public static final int DEBUG_SHOW_WARNINGS = 2;
+
+    /** track all of the flagged debug options for this script (set to DEBUG_SHOW_ERRORS by default) */
+    protected int debug = DEBUG_SHOW_ERRORS;
+
+    /** set the debug flags for this script */
+    public void setDebugFlags(int options)
+    {
+        debug = options;
+    }
+
+    /** retrieve the debug flags for this script */
+    public int getDebugFlags()  
+    {
+        return debug;
+    }
+
     public ScriptInstance(Hashtable environmentToShare)
     {
         this((Variable)null, environmentToShare);
@@ -232,12 +256,15 @@ public class ScriptInstance implements Serializable, Runnable
     /** Fire a runtime script warning */
     public void fireWarning(String message, int line)
     {
-       ScriptWarning temp = new ScriptWarning(this, message, line);
- 
-       Iterator i = watchers.iterator();
-       while (i.hasNext())
+       if (debug != DEBUG_NONE)
        {
-          ((RuntimeWarningWatcher)i.next()).processScriptWarning(temp);
+          ScriptWarning temp = new ScriptWarning(this, message, line);
+ 
+          Iterator i = watchers.iterator();
+          while (i.hasNext())
+          {
+             ((RuntimeWarningWatcher)i.next()).processScriptWarning(temp);
+          }
        }
     }
 }
