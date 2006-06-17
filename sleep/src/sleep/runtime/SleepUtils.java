@@ -266,13 +266,23 @@ public class SleepUtils
        
       if (array != null)
       {
-         array = BridgeUtilities.flattenArray(SleepUtils.getArrayScalar(array), null).getArray();
-
          Iterator i = array.scalarIterator();
          while (i.hasNext())
          {
             Scalar temp = (Scalar)i.next();
-            list.add(temp.objectValue());
+
+            if (temp.getHash() != null)
+            {
+               list.add(getMapFromHash(temp.getHash()));
+            }
+            else if (temp.getArray() != null)
+            {
+               list.add(getListFromArray(temp.getArray()));
+            }
+            else
+            {
+               list.add(temp.objectValue());
+            }
          }
       }
 
