@@ -323,6 +323,24 @@ statement.</P>
  </tr>
 </table>
 
+<p>One example use of the <code>is</code> comparison is to check if a function really returned
+<var>$null</var> and not just an empty string:</p>
+
+<pre>if ($null is "")
+{
+   println("This will not print");
+}
+
+if ($null is 0)
+{
+   println("This will not print either.");
+}
+
+if ($null is $null)
+{
+   println("Bingo!");
+}</pre>
+
 <p>Most comparisons in sleep can be negated with the ! exclamation point before the operator in the comparison.</p>
 
 <pre>if ("test" !isin "walrus")
