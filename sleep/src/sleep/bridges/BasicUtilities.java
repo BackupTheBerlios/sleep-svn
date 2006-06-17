@@ -64,10 +64,15 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&clear", this);
         temp.put("&subarray", this);
         temp.put("&copy",  new copy());
-        temp.put("&map",    new map());
+ 
+        map map_f = new map();
+
+        temp.put("&map",    map_f);
+        temp.put("&filter",    map_f);
         temp.put("&cast",   new f_cast());
 
-
+        temp.put("&search", this);
+        temp.put("&reduce", this);
         temp.put("&values", this);
         temp.put("&remove", this);     // not safe within foreach loops (since they use an iterator, and remove throws an exception)
         temp.put("-istrue", this);    // predicate -istrue <Scalar>, determine wether or not the scalar is null or not.
@@ -416,7 +421,14 @@ public class BasicUtilities implements Function, Loadable, Predicate
           while (i.hasNext())
           {
              locals.push(i.next());
-             rv.getArray().push(temp.callClosure("eval", si, locals));
+
+             Scalar val = temp.callClosure("eval", si, locals);
+
+             if (!SleepUtils.isEmptyScalar(val) || n.equals("&map"))
+             {
+                rv.getArray().push(val);
+             }
+
              locals.clear();
           }
 
@@ -616,31 +628,19 @@ public class BasicUtilities implements Function, Loadable, Predicate
        {
           return value.getArray().push(SleepUtils.getScalar((Scalar)l.pop()));
        }
-       else if (n.equals("&add"))
+       else if (n.equals("&add") && value.getArray() != null)
        {
-          Scalar item = (Scalar)l.pop();
-
-          int index    = 0;
-
-          if (!l.isEmpty())
-          {
-             index = BridgeUtilities.getInt(l);  
-          }
-          else
-          {
-             index = value.getArray().size();
-          }
-
+          Scalar item = BridgeUtilities.getScalar(l);
+          int index = BridgeUtilities.getInt(l, value.getArray().size());  
           return value.getArray().add(item, index);
        }
        else if (n.equals("&pop"))
        {
           return value.getArray().pop();
        }
-       else if (n.equals("&size")) // &size(@array)
+       else if (n.equals("&size") && value.getArray() != null) // &size(@array)
        {
-          if (value.getArray() != null)
-             return SleepUtils.getScalar(value.getArray().size());
+          return SleepUtils.getScalar(value.getArray().size());
        }
        else if (n.equals("&clear"))
        {
@@ -657,9 +657,72 @@ public class BasicUtilities implements Function, Loadable, Predicate
              value.setValue(SleepUtils.getEmptyScalar());
           }
        }
-       else if (n.equals("&flatten"))
+       else if (n.equals("&search") && value.getArray() != null)
        {
-          if (value.getArray() == null) { return SleepUtils.getEmptyScalar(); }
+          SleepClosure f = BridgeUtilities.getFunction(l, i); 
+          int start      = BridgeUtilities.getInt(l, 0);
+          int count      = 0;
+          Stack locals   = new Stack();
+
+          Iterator iter = value.getArray().scalarIterator();
+          while (iter.hasNext())
+          {
+             Scalar temp = (Scalar)iter.next();
+
+             if (start > 0)
+             {
+                start--;
+                count++;
+                continue;
+             }            
+
+             locals.push(SleepUtils.getScalar(count));
+             locals.push(temp);
+             Scalar val = f.callClosure("eval", i, locals);
+
+             if (! SleepUtils.isEmptyScalar(val))
+             {
+                return val;
+             }
+
+             locals.clear();
+             count++;
+          }
+       }
+       else if (n.equals("&reduce") && SleepUtils.isFunctionScalar(value))
+       {
+          SleepClosure f    = SleepUtils.getFunctionFromScalar(value, i); 
+          ScalarArray array = BridgeUtilities.getArray(l);
+          Stack locals      = new Stack();
+
+          Iterator iter = array.scalarIterator();
+
+          Scalar a      = iter.hasNext() ? (Scalar)iter.next() : SleepUtils.getEmptyScalar();
+          Scalar b      = iter.hasNext() ? (Scalar)iter.next() : SleepUtils.getEmptyScalar();
+          Scalar temp   = null;
+
+          locals.push(a);
+          locals.push(b);
+
+          a = f.callClosure("eval", i, locals);
+ 
+          locals.clear();
+
+          while (iter.hasNext())
+          {
+             b = (Scalar)iter.next();
+
+             locals.push(b);
+             locals.push(a);
+             a = f.callClosure("eval", i, locals);
+
+             locals.clear();
+          }
+
+          return a;
+       }
+       else if (n.equals("&flatten") && value.getArray() != null)
+       {
           return BridgeUtilities.flattenArray(value, null);
        }
        else if (n.equals("&subarray"))

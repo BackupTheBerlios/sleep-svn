@@ -1,3 +1,10 @@
+2.1-beta 2
+===========
+- added a few more FP-style functions to Sleep:
+  &reduce(&closure, @array)
+  &search(@array, &closure, [index])
+  &filter(@array, &closure)
+
 2.1-beta 1
 ===========
 - fixed the clean target in the sleep build.xml file
