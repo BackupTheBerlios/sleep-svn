@@ -66,6 +66,7 @@ public class BasicStrings implements Loadable
         temp.put("&indexOf", new func_indexOf());
         temp.put("&strlen",  new func_strlen());
         temp.put("&strrep",  new func_strrep());
+        temp.put("&replaceAt",  new func_replaceAt());
 
         temp.put("&tr",      new func_tr());
 
@@ -388,6 +389,22 @@ public class BasicStrings implements Loadable
                  x += newstr.length();
               }
            }
+
+           return SleepUtils.getScalar(work.toString());
+        }
+    }
+
+    private static class func_replaceAt implements Function
+    {
+        public Scalar evaluate(String n, ScriptInstance i, Stack l)
+        {
+           StringBuffer work    = new StringBuffer(BridgeUtilities.getString(l, ""));
+           String       nstr    = BridgeUtilities.getString(l, "");
+           int          index   = BridgeUtilities.getInt(l, 0);
+           int          nchar   = BridgeUtilities.getInt(l, nstr.length());
+
+           work.delete(index, index + nchar);
+           work.insert(index, nstr);
 
            return SleepUtils.getScalar(work.toString());
         }
