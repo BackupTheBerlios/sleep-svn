@@ -1592,6 +1592,11 @@ to represent the dimensions of the array.</td>
  </tr>
  <tr>
   <td>@</td>
+  <td>filter(&amp;closure, @array)</td>
+  <td>Evaluates the specified closure against each element of @array.  Each non-null value returned by &amp;closure is collected into an array that is returned by the filter() call.</td>
+ </tr>
+ <tr>
+  <td>@</td>
   <td>flatten(@array)</td>
   <td>returns a copy of a multidimensional(?) @array flattened into a one dimensional array</td>
  </tr>
@@ -1611,6 +1616,11 @@ to represent the dimensions of the array.</td>
   <td>pushes $scalar arguments on to the top of @array</td>
  </tr>
  <tr>
+  <td>@</td>
+  <td>reduce(@array, &amp;closure)</td>
+  <td>I probably should have learned from python and not added this but here it is anyways.  Applies &amp;closure to first two elements of @array.  Takes the resulting value and applies it to the next element of @array, so on and so forth.  Returns one value.</td>
+ </tr>
+ <tr>
   <td></td>
   <td>remove(@array, $scalar, ...)</td>
   <td>removes each specified $scalar from @array.  if no parameters are passed the active element in the current foreach loop is removed.</td>
@@ -1624,6 +1634,11 @@ to represent the dimensions of the array.</td>
   <td>@</td>
   <td>reverse(@array)</td>
   <td>returns a copy of @array in reverse order</td>
+ </tr>
+ <tr>
+  <td>@</td>
+  <td>search(@array, &amp;closure, [index])</td>
+  <td>Applies &amp;closure to each element of @array (beginning with the specified index).  Returns the first non-null return value of &amp;closure.</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2202,10 +2217,21 @@ n-m substrings will be returned.</td>
  </tr>
  <tr>
   <td>$</td>
+  <td>mid("string", start, n)</td>
+  <td>returns a substring of the specified "string" starting from the start index followed by the next n chars</td>
+ </tr>
+ <tr>
+  <td>$</td>
   <td>replace("string", 'pattern', "new", [n])</td>
   <td>splits "string" by regex 'pattern' in "string" and joins it with specified "new" value.  will replace up to n occurences. 
   within the "new" string remembered patterns can be expanded with the literal $1, $2, etc.  These are literal characters  
   provided by the regex engine.  </td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>replaceAt("string", "new", index, [n])</td>
+  <td>removes n characters from the specified index (or just len of the new string if n isn't
+      specified) then inserts the new string into the specified index.</td>
  </tr>
  <tr>
   <td>$</td>
