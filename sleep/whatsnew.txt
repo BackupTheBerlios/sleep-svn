@@ -31,6 +31,11 @@
 - foreach can now iterate over closures..  if a closure is passed to
   foreach then the closure will be called continuously until a $null
   is returned.
+- added a few functions for performing set type operations on @arrays
+  @ removeAll(@a, @b) - modifies @a with the difference of @a - @b
+  @ addAll(@a, @b) - modifies @a with the union of @a + @b
+  @ retainAll(@a, @b) - modifies @a to contain the intersection of @a and @b
+
 
 2.1-beta 1
 ===========
