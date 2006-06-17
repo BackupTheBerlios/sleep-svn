@@ -62,7 +62,11 @@ public class BasicStrings implements Loadable
         temp.put("&charAt",  new func_charAt());
         temp.put("&uc",      new func_uc());
         temp.put("&lc",      new func_lc());
-        temp.put("&substr",  new func_substr());
+
+        func_substr f_substr = new func_substr();
+        temp.put("&substr",  f_substr);
+        temp.put("&mid",  f_substr);
+
         temp.put("&indexOf", new func_indexOf());
         temp.put("&strlen",  new func_strlen());
         temp.put("&strrep",  new func_strrep());
@@ -414,10 +418,20 @@ public class BasicStrings implements Loadable
     {
         public Scalar evaluate(String n, ScriptInstance i, Stack l)
         {
-           String value = l.pop().toString();
-           int    start = BridgeUtilities.getInt(l);
-           int    stop  = BridgeUtilities.getInt(l, value.length());
-          
+           String value = BridgeUtilities.getString(l, "");
+
+           int start, stop;
+           start = BridgeUtilities.getInt(l);
+
+           if (n.equals("&mid"))
+           {
+              stop  = BridgeUtilities.getInt(l, value.length() - start) + start;
+           }
+           else
+           {
+              stop  = BridgeUtilities.getInt(l, value.length());
+           }
+                    
            return SleepUtils.getScalar(value.substring(start, stop));
         }
     }

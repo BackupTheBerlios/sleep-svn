@@ -5,6 +5,8 @@
   &search(@array, &closure, [index])
   &filter(@array, &closure)
 - added &replaceAt("original", "new", index, [chars to delete]);
+- added &mid("string", index, n chars) to extract a substring
+  equivalent to &substr("string", index, index + n chars) 
 
 2.1-beta 1
 ===========
