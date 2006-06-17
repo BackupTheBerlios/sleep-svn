@@ -7,6 +7,10 @@
 - added &replaceAt("original", "new", index, [chars to delete]);
 - added &mid("string", index, n chars) to extract a substring
   equivalent to &substr("string", index, index + n chars) 
+- exposed the IO Process, File, and Socket using a new method
+  added to IOObject: getSource().  This will allow scripters to
+  query the IO source using HOES if there is some API Sleep does
+  not bridge. (i.e. exit value of a process)
 
 2.1-beta 1
 ===========

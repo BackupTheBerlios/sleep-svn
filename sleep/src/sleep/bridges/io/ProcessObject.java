@@ -7,6 +7,12 @@ public class ProcessObject extends IOObject
 {
    protected Process process;
 
+   /** returns the Process object used by this IO implementation */
+   public Object getSource()
+   {
+      return process;
+   }
+
    public void open(String command, ScriptEnvironment env)
    {
       try

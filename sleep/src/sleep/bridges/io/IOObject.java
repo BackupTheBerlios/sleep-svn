@@ -36,6 +36,12 @@ public class IOObject
    protected Thread           thread  = null;
    protected Scalar           token   = null;
 
+   /** return the actual source of this IO for scripters to query using HOES */
+   public Object getSource()
+   {
+      return null;
+   }
+
    /** set the thread used for this IOObject (currently used to allow a script to wait() on the threads completion) */
    public void setThread(Thread t)
    {

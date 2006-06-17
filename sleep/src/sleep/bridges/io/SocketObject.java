@@ -8,6 +8,12 @@ public class SocketObject extends IOObject
 {
    protected Socket socket;
 
+   /** returns the socket used for this connection */
+   public Object getSource()
+   {
+      return socket;
+   }
+
    public void open(String server, int port, ScriptEnvironment env)
    {
       try

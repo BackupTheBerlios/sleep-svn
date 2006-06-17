@@ -8,6 +8,12 @@ public class FileObject extends IOObject
 {
    protected File file;
 
+   /** returns the file referenced by this IOObject */
+   public Object getSource()
+   {
+      return file;
+   }
+
    /** opens a file and references it to this file object.  the descriptor parameter is a filename */
    public void open(String descriptor, ScriptEnvironment env)
    {
