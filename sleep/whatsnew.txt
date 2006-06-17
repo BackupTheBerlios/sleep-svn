@@ -11,6 +11,8 @@
   added to IOObject: getSource().  This will allow scripters to
   query the IO source using HOES if there is some API Sleep does
   not bridge. (i.e. exit value of a process)
+- added an API to SleepUtils for building an IO handle scalar 
+  from a Java InputStream/OutputStream
 
 2.1-beta 1
 ===========
