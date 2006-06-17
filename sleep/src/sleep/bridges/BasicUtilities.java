@@ -71,6 +71,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&filter",    map_f);
         temp.put("&cast",   new f_cast());
 
+        temp.put("&addAll", this);
+        temp.put("&removeAll", this);
+        temp.put("&retainAll", this);
+
         temp.put("&search", this);
         temp.put("&reduce", this);
         temp.put("&values", this);
@@ -627,6 +631,60 @@ public class BasicUtilities implements Function, Loadable, Predicate
        if (n.equals("&push"))
        {
           return value.getArray().push(SleepUtils.getScalar((Scalar)l.pop()));
+       }
+       else if ((n.equals("&retainAll") || n.equals("&removeAll")) && value.getArray() != null)
+       {
+          ScalarArray a = value.getArray();
+          ScalarArray b = BridgeUtilities.getArray(l);
+    
+          HashSet s = new HashSet();
+          Iterator iter = b.scalarIterator();
+          while (iter.hasNext())
+          {
+             s.add(iter.next().toString());
+          }      
+
+          iter = a.scalarIterator();
+          while (iter.hasNext())
+          {
+             Object temp = iter.next();
+
+             if (!s.contains(temp.toString()) && n.equals("&retainAll"))
+             {
+                iter.remove();
+             }
+             else if (s.contains(temp.toString()) && n.equals("&removeAll"))
+             {
+                iter.remove();
+             }
+          }
+
+          return SleepUtils.getArrayScalar(a);
+       }
+       else if (n.equals("&addAll") && value.getArray() != null)
+       {
+          ScalarArray a = value.getArray();
+          ScalarArray b = BridgeUtilities.getArray(l);
+    
+          HashSet s = new HashSet();
+          Iterator iter = a.scalarIterator();
+          while (iter.hasNext())
+          {
+             s.add(iter.next().toString());
+          }      
+
+          iter = b.scalarIterator();
+          while (iter.hasNext())
+          {
+             Scalar temp = (Scalar)iter.next();
+
+             if (!s.contains(temp.toString()))
+             {
+                a.push(temp);
+             }
+          }
+
+          return SleepUtils.getArrayScalar(a);
        }
        else if (n.equals("&add") && value.getArray() != null)
        {
