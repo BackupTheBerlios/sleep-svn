@@ -1020,6 +1020,8 @@ handle is at the end of the file.  If the handle is at the end of the file then 
 is required use the getConsole() function.  The predicate operator -eof is one such case where a handle must always be 
 specified.</p>
 
+<p>Sleep I/O read functions return the empty scalar $null to indicate the read operation failed.</p>
+
 <p>To write data to a file you have to first open the file for writing.</p>
    
 <pre>$handle = openf(">>/etc/passwd");
@@ -1915,6 +1917,18 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
   <th width="240">Function</th>
   <th>Description</th>
  </tr>  
+ <tr>
+  <td>$</td>
+  <td>available([$handle])</td>
+  <td>returns the number of bytes available for reading from $handle</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>available($handle, "delim")</td>
+  <td>reads ahead in the specified handle looking to see if the specified delimeter string is present in the read
+      buffer or not.  this operation uses mark and reset (meaning it will invalidate any mark you may have set on 
+      the specified handle).</td>
+ </tr>
  <tr>
   <td>@</td>
   <td>bread([$handle], 'format')</td>

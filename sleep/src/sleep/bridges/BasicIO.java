@@ -77,6 +77,7 @@ public class BasicIO implements Loadable
         temp.put("&pack",       new pack());
         temp.put("&unpack",     new unpack());
 
+        temp.put("&available",  new available());
         temp.put("&mark",       new mark());
         temp.put("&skip",       new skip());
         temp.put("&reset",      new reset());
@@ -248,7 +249,7 @@ public class BasicIO implements Loadable
 
           if (temp == null)
           {
-             temp = "EOF";
+             return SleepUtils.getEmptyScalar();
           }
 
           return SleepUtils.getScalar(temp);
@@ -726,9 +727,47 @@ public class BasicIO implements Loadable
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
           IOObject        a = chooseSource(l, 2);
-          a.getReader().mark(BridgeUtilities.getInt(l, 1024 * 10 * 10));
+          a.getInputBuffer().mark(BridgeUtilities.getInt(l, 1024 * 10 * 10));
 
           return SleepUtils.getEmptyScalar();
+       }
+    }
+
+    private static class available implements Function
+    {
+       public Scalar evaluate(String n, ScriptInstance i, Stack l)
+       {
+          try
+          {
+             IOObject        a = chooseSource(l, 1);
+
+             if (l.isEmpty())
+             {
+                return SleepUtils.getScalar(a.getInputBuffer().available());
+             }
+             else
+             {
+                String delim = BridgeUtilities.getString(l, "\n");
+
+                StringBuffer temp = new StringBuffer();
+
+                int x = 0;
+                int y = a.getInputBuffer().available();
+
+                a.getInputBuffer().mark(y);
+                
+                while (x < y)
+                {
+                   temp.append((char)a.getReader().readUnsignedByte());
+                   x++;
+                }
+
+                a.getInputBuffer().reset();
+      
+                return SleepUtils.getScalar(temp.indexOf(delim) > -1);
+             }
+          }
+          catch (Exception ex) { return SleepUtils.getEmptyScalar(); }
        }
     }
 
@@ -738,7 +777,7 @@ public class BasicIO implements Loadable
        {
           try {
           IOObject        a = chooseSource(l, 2);
-          a.getReader().skip(BridgeUtilities.getLong(l, 0));
+          a.getInputBuffer().skip(BridgeUtilities.getLong(l, 0));
           } catch (Exception ex) { }
 
           return SleepUtils.getEmptyScalar();
@@ -751,7 +790,7 @@ public class BasicIO implements Loadable
        {
           try {
           IOObject        a = chooseSource(l, 1);
-          a.getReader().reset();
+          a.getInputBuffer().reset();
           } catch (Exception ex) { }
 
           return SleepUtils.getEmptyScalar();

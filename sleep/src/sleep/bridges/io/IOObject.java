@@ -13,25 +13,27 @@ import sleep.runtime.*;
  *
  *  <p>The pipeline for reading data looks like this:</p>
  *
- *  <pre>BufferedReader <- DataInputStream <- Original Input Stream</pre>
+ *  <pre>DataInputStream <- BufferedInputStream <- Original Input Stream</pre>
  *
  *  <p>The pipeline for writing data is:</p>
  *
- *  <pre>PrintWriter -> DataOutputStream -> Original Output Stream</pre>
+ *  <pre>DataOutputStream -> Original Output Stream</pre>
  */
 
 public class IOObject
 {
    private static IOObject console = null;
 
-   protected InputStream     in       = null;
-   protected OutputStream    out      = null;
+   /* input pipeline */ 
 
-   protected BufferedReader  reader   = null;
-   protected PrintWriter     writer   = null;
+   protected DataInputStream     readerb = null; /* used to support the binary read/write stuffz */
+   protected BufferedInputStream reader  = null; /* used to support mark and reset functionality y0 */
+   protected InputStream         in      = null; /* the original stream, love it, hold it... yeah right */
 
-   protected DataInputStream  readerb = null;
-   protected DataOutputStream writerb = null;
+   /* output pipeline */
+
+   protected DataOutputStream writerb = null; /* high level method for writing stuff out, fun fun fun */
+   protected OutputStream     out     = null; /* original output stream */
 
    protected Thread           thread  = null;
    protected Scalar           token   = null;
@@ -97,8 +99,8 @@ public class IOObject
       
       if (in != null)
       {
-         readerb = new DataInputStream(in);
-         reader  = new BufferedReader(new InputStreamReader(readerb));
+         reader  = new BufferedInputStream(in);
+         readerb = new DataInputStream(reader);
       }
    }
 
@@ -110,7 +112,6 @@ public class IOObject
       if (out != null)
       {
          writerb = new DataOutputStream(out);
-         writer  = new PrintWriter(writerb, true);
       }
    }
 
@@ -127,9 +128,6 @@ public class IOObject
 
          if (readerb != null)
            readerb.close();
-
-         if (writer != null)
-           writer.close();
 
          if (writerb != null)
            writerb.close();
@@ -149,7 +147,6 @@ public class IOObject
          in     = null;
          out    = null;
          reader = null;
-         writer = null;
          readerb = null;
          writerb = null;
       }
@@ -160,19 +157,25 @@ public class IOObject
    {
       try
       {
-         if (reader != null)
+         if (readerb != null)
          {
-            String temp = reader.readLine();
+            String temp = readerb.readLine(); /* deprecated, I know, but it has the behavior I want */
 
             if (temp == null)
-              reader = null;
+            {
+               readerb = null;
+               reader  = null;
+            }
 
             return temp;
          }
       }
-      catch (Exception ex) { }
+      catch (Exception ex) 
+      { 
+         readerb = null;
+         reader  = null;
+      }
 
-      reader = null;
       return null;
    }
 
@@ -185,9 +188,6 @@ public class IOObject
    /** Closes down the output streams effectively sending an end of file message to the reading end. */
    public void sendEOF()
    {
-      if (writer != null)
-        writer.close();
-
       try
       {
          if (writerb != null)
@@ -200,15 +200,9 @@ public class IOObject
    }
  
    /** Returns the ascii data reader */
-   public BufferedReader getPrimaryReader()
+   public BufferedInputStream getInputBuffer()
    {
        return reader;
-   }
-
-   /** Returns the ascii data writer */
-   public PrintWriter getPrimaryWriter()
-   {
-       return writer;
    }
 
    /** Returns the binary data reader */
@@ -223,22 +217,32 @@ public class IOObject
        return writerb;
    }
 
+   private static final String lineSeparator = System.getProperty("line.separator");
+
    /** Prints out a line of text with a newline character appended */
    public void printLine(String text)
    {
-      if (writer != null)
-      {
-         writer.println(text);
-      }
+      print(text + lineSeparator);
    }
 
    /** Prints out a line of text with no newline character appended */
    public void print(String text)
    {
-      if (writer != null)
+      if (writerb != null)
       {
-         writer.print(text);
-         writer.flush();
+         try
+         {
+            for (int x = 0; x < text.length(); x++)
+            {
+               writerb.writeByte((byte)text.charAt(x));
+            }
+
+            writerb.flush(); /* we don't know if the underlying stream does this or not, so we'll force it */
+         }
+         catch (Exception ex)
+         {
+            writerb = null;
+         }
       }
    }
 }

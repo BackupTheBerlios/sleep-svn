@@ -37,6 +37,22 @@
   @ retainAll(@a, @b) - modifies @a to contain the intersection of @a and @b
 - added methods to SleepUtils to generate a java.util.Map from a 
   Sleep Hash scalar and to generate a java.util.List from a Sleep Array.
+- readln in Sleep I/O now returns the empty scalar at the end of the stream
+  this can be checked for using is.. i.e.
+
+  $temp = readln($handle);
+  while ($temp !is $null)
+  {
+     # do something with $temp
+     $temp = readln($temp);
+  }
+
+- sleep I/O streams now autoflush on all writes.  this should solve many
+  frustrations that the I/O pipeline has occasionally caused scripters.
+- added &available($handle) to determine the number of available bytes 
+  for a given stream.  also an option is &available($handle, "substring")
+  to determine if the specified "substring" is contained in the data
+  available to be read.
 
 2.1-beta 1
 ===========
