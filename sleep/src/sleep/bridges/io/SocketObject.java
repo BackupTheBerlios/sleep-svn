@@ -50,11 +50,19 @@ public class SocketObject extends IOObject
 
          openRead(socket.getInputStream());
          openWrite(socket.getOutputStream());
+
+         return;
       }
       catch (Exception ex)
       {
          env.flagError(ex.toString());
       }
+
+      try
+      {
+         if (server != null) { server.close(); }
+      }
+      catch (Exception ex) { }
    }
 
    public void close()
