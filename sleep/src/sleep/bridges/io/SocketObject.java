@@ -14,12 +14,13 @@ public class SocketObject extends IOObject
       return socket;
    }
 
-   public void open(String server, int port, ScriptEnvironment env)
+   public void open(String server, int port, int timeout, ScriptEnvironment env)
    {
       try
       {
          socket = new Socket(server, port);
          socket.setSoLinger(true, 5);
+         socket.setSoTimeout(timeout);
 
          openRead(socket.getInputStream());
          openWrite(socket.getOutputStream());

@@ -215,6 +215,7 @@ public class BasicIO implements Loadable
           {
              handler.host     = BridgeUtilities.getString(l, "127.0.0.1");
              handler.port     = BridgeUtilities.getInt(l, 1);
+             handler.timeout  = BridgeUtilities.getInt(l, 60 * 1000);   // timeout
 
              handler.type     = CONNECT_FUNCTION;
           }
@@ -1047,7 +1048,7 @@ public class BasicIO implements Loadable
           }
           else
           {
-             socket.open(host, port, script.getScriptEnvironment());
+             socket.open(host, port, timeout, script.getScriptEnvironment());
           }
 
           if (function != null)
