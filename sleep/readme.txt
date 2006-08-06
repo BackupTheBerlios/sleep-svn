@@ -1,5 +1,5 @@
  ------- -------------------- ---------   ---------------  ------- ---------
-Sleep - 2.1 beta 1 - README   
+Sleep - 2.1 beta 2 - README   
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 "You got the language, all you need now is the O'Reilly book".  That is
@@ -31,13 +31,13 @@ a documentation deficiency.  Sleep is no different.
 
 Contained in the docs/ directory:
 
-sleeplang.pdf
+sleeplang.htm
    A tutorial on the sleep language from an end-users perspective.  Covers
    the basic language constructs, built in functions, and relevant 
    background information.  Fun for the whole family.  Now in its 6th 
    revision. 
 
-sleepguide.pdf
+sleepguide.htm
    This document is a guide to integrating the sleep language into your
    application.  Part 1 of this document is an absolute must read if you plan 
    to integrate sleep into your application.
