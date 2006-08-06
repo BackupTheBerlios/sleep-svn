@@ -23,23 +23,21 @@ if (!-e "output")
    `mkdir output`;
 }
 
-chdir("..");
-
 foreach $var (@files)
 {
    $PROPS = "";
    if ($var eq "debugce.sl") { $PROPS = "-Dsleep.debug=3"; }
 
-   if (!-e "./tests/output/$var")
+   if (!-e "./output/$var")
    {
-      `java $PROPS -jar sleep.jar ./tests/$var >./tests/output/$var`;
+      `java $PROPS -jar ../sleep.jar ./$var >./output/$var`;
       push @errors, "$var output does not exist, creating it";
    }
    else
    {
-      $expected_value = join("", `cat ./tests/output/$var`);
+      $expected_value = join("", `cat ./output/$var`);
 
-      $script_value   = join("", `java $PROPS -jar sleep.jar ./tests/$var`);
+      $script_value   = join("", `java $PROPS -jar ../sleep.jar ./$var`);
 
       if ($expected_value ne $script_value)
       {
@@ -47,7 +45,7 @@ foreach $var (@files)
 
          if ($ARGV[0] eq "-dump")
          {
-            print "\njava -classpath . sleep.console.TextConsole ../tests/$var\n";
+            print "\njava $PROPS -jar ../sleep.jar ./$var\n";
             print "\n".$script_value."\n";
          }
       }  

@@ -4,7 +4,7 @@
 
 # assume we're running this from the toplevel sleep directory.
 
-use("tests/data/test.jar", "org.hick.tests.TestLoadable");
+use("./data/test.jar", "org.hick.tests.TestLoadable");
 
 if (checkError($error))
 {
