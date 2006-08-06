@@ -33,13 +33,18 @@ public class SocketObject extends IOObject
 
    public void listen(int port, int timeout, Scalar data, ScriptEnvironment env)
    {
+      ServerSocket server = null;
+
       try
       {
-         ServerSocket server = new ServerSocket(port);
+         server = new ServerSocket(port);
          server.setSoTimeout(timeout);
         
          socket = server.accept();
          socket.setSoLinger(true, 5);
+
+         server.close(); /* releases the bound and listening port, probably not a good idea for a massive server but for a scripting
+                            lang API who cares */
 
          data.setValue(SleepUtils.getScalar(socket.getInetAddress().getHostAddress()));
 
