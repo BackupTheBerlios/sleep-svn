@@ -455,6 +455,30 @@ code in the above example.</p>
 
 <pre>for ($x = 0; $x < 100; $x = $x + 1) { }</pre>
 
+<h3>Assignment Loops</h3>
+
+<p>While loops can be used in another way.  Namely to assign the results of an expression to a scalar and then execute
+a series of commands while the specified expression does not evaluate to $null.</p>
+
+<p>The syntax for these assignment loops looks like:</p>
+
+<pre>while <b>$variable</b> (<b>expression</b>) { <b>commands</b> }</pre>
+
+<p>This form of a while loop has numerous uses including easily reading from a file.  For example:</p>
+
+<pre>$handle = openf("myfile.txt");
+while $text (readln($handle))
+{
+   println("Read a line of text from myfile.txt: $text");
+}</pre>
+
+<p>In the example above, myfile.txt is opened and the handle is assigned to $handle.  readln is then continuously called
+on $handle and the result assigned to $text.  Each time this happens the print function in the body of the loop is called.
+When there is no more text to be read the function readln returns $null.  When this happens the loop finishes.</p>
+
+<p>Assignment loops are used to iterate over any type of expression where as foreach loops are used to iterate over any
+type of collection of date.  The assignment loop is the flexible cousin of the foreach loop.</p>
+
 <h3>The Break Command</h3>
 
 <p>Sometimes you may want to end a loop before it has completed.  An easy way to do this is with the break command.</p>
@@ -682,6 +706,9 @@ result in a script warning.</p>
 
 <p>The current element of a foreach loop can be removed by calling <code>remove()</code> with no parameters.  This only works 
 when iterating over an <var>@array</var>.</p>
+
+<p>Foreach loops can also iterate over closures.  This use of foreach loops is described when closures and coroutines are
+described in the <a href="#10a">closures section</a>.</p>
 
 <h3>Arrays as Stacks</h3>
 
@@ -1548,6 +1575,10 @@ Value is 1
 ...
 Value is 998
 Value is 999</pre>
+
+<p>This use of foreach is a limited version of the assignment loops using the extended while syntax.  Assignment loops
+evaluate an expression each iteration of a loop where as foreach is iterating over a closure reference.  The difference is
+pretty much in the implementation, the end result is the same.</p>
 
 <a name="11"><h2>Function Library</h2></a>
 

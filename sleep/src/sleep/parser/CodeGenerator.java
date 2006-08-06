@@ -789,6 +789,35 @@ public class CodeGenerator implements ParserConstants
            atom = GeneratedSteps.Goto(parsePredicate(ParserUtilities.extract(tokens[1])), restore(), null);
            add(atom, tokens[1]);
            break;
+         case EXPR_WHILE_SPECIAL:                                        // done
+           /* 0 = while
+              1 = $var
+              2 = (expression) 
+              3 = {block} */
+
+           // handle the actual block of code
+           backup();
+           parseBlock(tokens[3]);    
+           b = restore(); 
+
+           // handle the assignment step please (Assign will push the RHS onto the stack)
+           backup();
+
+           atom = GeneratedSteps.CreateFrame(); /* overall create the frame please */
+           add(atom, tokens[0]);
+        
+           parseBlock(new Token(strings[1] + " = " + strings[2] + ";", tokens[2].getHint()));
+           
+           // push $null onto the current frame as well...
+           add(GeneratedSteps.SValue(SleepUtils.getEmptyScalar()), tokens[2]);
+
+           a = restore();
+
+           // dew the lewp while the assigned value is not $null
+           atom = GeneratedSteps.Goto(new Check("!is", a), b, null);
+           add(atom, tokens[1]);
+
+           break;
          case EXPR_ASSIGNMENT_T:                                  // implemented
            atom = GeneratedSteps.CreateFrame();
            add(atom, tokens[0]);

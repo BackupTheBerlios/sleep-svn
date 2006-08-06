@@ -5,54 +5,53 @@
   &search(@array, &closure, [index])
   &filter(@array, &closure)
 - added &replaceAt("original", "new", index, [chars to delete]);
-- added &mid("string", index, n chars) to extract a substring
-  equivalent to &substr("string", index, index + n chars) 
-- exposed the IO Process, File, and Socket using a new method
-  added to IOObject: getSource().  This will allow scripters to
-  query the IO source using HOES if there is some API Sleep does
-  not bridge. (i.e. exit value of a process)
-- added an API to SleepUtils for building an IO handle scalar 
-  from a Java InputStream/OutputStream
-- added a debug flag to each script instance.  the options consist 
-  of:
-  DEBUG_SHOW_ERRORS = 1 - this is the typical behavior that causes
-     a runtime warning to be fired whenever an uncaught exception
-     occurs within a bridge.
-  DEBUG_SHOW_WARNINGS = 2 - fires a runtime warning any time an error
-     is flagged using flagError() in the script environment.  
-     runtime warnings are typically errors a scripter is meant to
-     check for with checkError($error).  
-  DEBUG_NONE = 0 - disables all firing of runtime warnings (not 
-     recommended)
+- added &mid("string", index, n chars) to extract a substring equivalent to 
+  &substr("string", index, index + n chars) 
+- exposed the IO Process, File, and Socket using a new method added to 
+  IOObject: getSource().  This will allow scripters to query the IO source 
+  using HOES if there is some API Sleep does not bridge. (i.e. exit value of a
+  process)
+- added an API to SleepUtils for building an IO handle scalar from a Java 
+  InputStream/OutputStream
+- added a debug flag to each script instance.  the options consist of:
 
-  Sleep scripts on the command line can run with different debug 
-  levels using:
+  DEBUG_SHOW_ERRORS = 1 - this is the typical behavior that causes a runtime 
+     warning to be fired whenever an uncaught exception occurs within a bridge.
+  DEBUG_SHOW_WARNINGS = 2 - fires a runtime warning any time an error
+     is flagged using flagError() in the script environment.  runtime warnings
+     are typically errors a scripter is meant to check for with 
+     checkError($error).  
+  DEBUG_NONE = 0 - disables all firing of runtime warnings (not recommended)
+
+  Sleep scripts on the command line can run with different debug levels using:
   java -Dsleep.debug=3 -jar sleep.jar filename.sl
-- foreach can now iterate over closures..  if a closure is passed to
-  foreach then the closure will be called continuously until a $null
-  is returned.
+- foreach can now iterate over closures..  if a closure is passed to foreach 
+  then the closure will be called continuously until a $null is returned.
 - added a few functions for performing set type operations on @arrays
   @ removeAll(@a, @b) - modifies @a with the difference of @a - @b
   @ addAll(@a, @b) - modifies @a with the union of @a + @b
   @ retainAll(@a, @b) - modifies @a to contain the intersection of @a and @b
-- added methods to SleepUtils to generate a java.util.Map from a 
-  Sleep Hash scalar and to generate a java.util.List from a Sleep Array.
+- added methods to SleepUtils to generate a java.util.Map from a Sleep Hash 
+  scalar and to generate a java.util.List from a Sleep Array.
 - readln in Sleep I/O now returns the empty scalar at the end of the stream
-  this can be checked for using is.. i.e.
-
-  $temp = readln($handle);
-  while ($temp !is $null)
-  {
-     # do something with $temp
-     $temp = readln($temp);
-  }
-
 - sleep I/O streams now autoflush on all writes.  this should solve many
   frustrations that the I/O pipeline has occasionally caused scripters.
-- added &available($handle) to determine the number of available bytes 
-  for a given stream.  also an option is &available($handle, "substring")
-  to determine if the specified "substring" is contained in the data
-  available to be read.
+- added &available($handle) to determine the number of available bytes for a 
+  given stream.  also an option is &available($handle, "substring") to 
+  determine if the specified "substring" is contained in the data available to
+  be read.
+- added an extended version of the while loop that continuously evaluates an 
+  expression, assigns it to a variable, and executes a block of code so long as
+  the specified variable is not null.  example:
+
+  $handle = openf("somefile.txt");
+  while $data (readln($handle))
+  {
+     println("Read: $data");
+  } 
+- added formatErrors() and printErrors(OutputStream out) functions to the
+  YourCodeSucksException class.   should make reporting parser errors less of
+  a burden when embedding sleep into applications.
 
 2.1-beta 1
 ===========

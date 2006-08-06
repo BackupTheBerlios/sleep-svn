@@ -484,6 +484,15 @@ public class TokenParser implements ParserConstants
             myToken.add(tokens[x+5]);
             x += 5;
          }
+         else if ((x + 3) < tokens.length && Checkers.isSpecialWhile(strings[x], strings[x+1], strings[x+2], strings[x+3]))
+         {
+            myToken.setType(EXPR_WHILE_SPECIAL);
+            myToken.add(tokens[x]);
+            myToken.add(tokens[x+1]);
+            myToken.add(tokens[x+2]);
+            myToken.add(tokens[x+3]);
+            x += 3;
+         }
          else if ((x + 3) < tokens.length && Checkers.isForeach(strings[x], strings[x+1], strings[x+2], strings[x+3]))
          {
             myToken.setType(EXPR_FOREACH);

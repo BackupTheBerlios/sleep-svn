@@ -206,6 +206,11 @@ public class Checkers
        return true;
    }
 
+   public static final boolean isSpecialWhile(String a, String b, String c, String d)
+   {
+       return isWhile(a, c, d) && isVariable(b);
+   }
+
    public static final boolean isWhile (String a, String b, String c)
    {
        return (a.equals("while") && isExpression(b) && isBlock(c));

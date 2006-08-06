@@ -409,17 +409,7 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
    /** a convienence method that formats and writes each syntax error to the proxy output */
    public void processScriptErrors(YourCodeSucksException ex)
    {
-      LinkedList errors = ex.getErrors();
-      Iterator i = errors.iterator();
-      while (i.hasNext())
-      {
-         SyntaxError anError = (SyntaxError)i.next();
-         getProxy().consolePrintln("Error: " + anError.getDescription() + " at line " + anError.getLineNumber());
-         getProxy().consolePrintln("       " + anError.getCodeSnippet());
-                         
-         if (anError.getMarker() != null)
-           getProxy().consolePrintln("       " + anError.getMarker());
-      }
+      getProxy().consolePrint(ex.formatErrors());
    }
 
    public void processScriptWarning(ScriptWarning warning)

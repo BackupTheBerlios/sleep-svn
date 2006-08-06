@@ -384,6 +384,7 @@ public class ScriptEnvironment implements Serializable
        return (Stack)frames.get(findex);    
     }
 
+    /** kills the current frame and if there is a parent frame pushes the specified value on to it */
     public void FrameResult(Scalar value)
     {
        KillFrame();

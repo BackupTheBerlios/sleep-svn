@@ -17,6 +17,7 @@
 package sleep.error;
 
 import java.util.*;
+import java.io.*;
 
 /**
  * Syntax errors are a reality of programming.  Any time a syntax error occurs when attempting to load a script the 
@@ -76,10 +77,38 @@ public class YourCodeSucksException extends RuntimeException
        return buf.toString();
     }
 
-    /** Returns a string representation of the errors within this exception */
+    /** Returns a simple string representation of the errors within this exception */
     public String toString()
     {
        return "YourCodeSucksException: " + getMessage();
+    }
+
+    /** print a nicely formatted version of the script errors to the specified stream */
+    public void printErrors(OutputStream out)
+    {
+       PrintWriter pout = new PrintWriter(out);
+       pout.print(formatErrors());
+       pout.flush();
+    }
+
+    /** generate a nicely formatted string representation of the script errors in this exception */
+    public String formatErrors()
+    {
+       StringBuffer representation = new StringBuffer();
+
+       LinkedList errors = getErrors();
+       Iterator i = errors.iterator();
+       while (i.hasNext())
+       {
+           SyntaxError anError = (SyntaxError)i.next();
+           representation.append("Error: " + anError.getDescription() + " at line " + anError.getLineNumber() + "\n");
+           representation.append("       " + anError.getCodeSnippet() + "\n");
+
+           if (anError.getMarker() != null)
+             representation.append("       " + anError.getMarker() + "\n");
+       }
+
+       return representation.toString();
     }
 
     /** All of the errors are stored in a linked list.  The linked list contains {@link sleep.error.SyntaxError SyntaxError} objects. */
