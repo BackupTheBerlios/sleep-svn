@@ -1,8 +1,8 @@
 2.1-beta 3
 ===========
 - added an optional timeout parameter for the socket connect function i.e.:
-  $socket = connect("host", port, [timeout]) 
-  default is 60 seconds, -1 means never timeout.
+  $socket = connect("host", port, [timeout in milliseconds]) 
+  default is 60 seconds.
 
 2.1-beta 2
 ===========

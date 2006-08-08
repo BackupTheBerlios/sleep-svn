@@ -18,9 +18,10 @@ public class SocketObject extends IOObject
    {
       try
       {
-         socket = new Socket(server, port);
+         socket = new Socket();
+
+         socket.connect(new InetSocketAddress(server, port), timeout);
          socket.setSoLinger(true, 5);
-         socket.setSoTimeout(timeout);
 
          openRead(socket.getInputStream());
          openWrite(socket.getOutputStream());
