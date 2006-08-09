@@ -64,6 +64,11 @@ public class Get extends Step
                structure = SleepUtils.getEmptyScalar();
 
             e.putScalar(value, structure);
+
+            if ((e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_REQUIRE_STRICT) == ScriptInstance.DEBUG_REQUIRE_STRICT)
+            {
+               e.showDebugMessage("variable '" + value + "' not declared");
+            }
          }
 
          e.getCurrentFrame().push(structure);

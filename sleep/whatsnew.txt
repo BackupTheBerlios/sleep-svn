@@ -6,6 +6,11 @@
 - modified listen to create bind to the specified port, each call to listen
   is a call to accept a connection on the specified port.  to stop listening
   on the specified port use closef(port number) instead of $handle.
+- added a function global to declare a series of variables into the global 
+  scope
+- added a require strict debug flag, this flag causes a runtime warning to
+  be fired whenever a script uses a variable without delcaring it using
+  global, local, or this.
 
 2.1-beta 2
 ===========

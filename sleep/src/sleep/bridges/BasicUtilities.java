@@ -87,6 +87,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
         temp.put("&local",    scopeFunctions);
         temp.put("&this",     scopeFunctions);
+        temp.put("&global",     scopeFunctions);
 
         temp.put("&reverse",  new reverse());      // @array2 = &reverse(@array) 
         temp.put("&removeAt", new removeAt());   // not safe within foreach loops yada yada yada...
@@ -500,6 +501,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           if (n.equals("&local")) { level = i.getScriptVariables().getLocalVariables(); }
           else if (n.equals("&this")) { level = i.getScriptVariables().getClosureVariables(); }
+          else if (n.equals("&global")) { level = i.getScriptVariables().getGlobalVariables(); }
 
           String temp = l.pop().toString();
 

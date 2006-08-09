@@ -80,6 +80,9 @@ public class ScriptInstance implements Serializable, Runnable
     /** fire runtime warnings for anything flagged for retrieval with checkError() */
     public static final int DEBUG_SHOW_WARNINGS = 2;
 
+    /** fire runtime warning whenever an undeclared variable is fired */
+    public static final int DEBUG_REQUIRE_STRICT = 4;
+
     /** track all of the flagged debug options for this script (set to DEBUG_SHOW_ERRORS by default) */
     protected int debug = DEBUG_SHOW_ERRORS;
 
