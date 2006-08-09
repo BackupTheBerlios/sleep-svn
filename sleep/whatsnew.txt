@@ -3,6 +3,9 @@
 - added an optional timeout parameter for the socket connect function i.e.:
   $socket = connect("host", port, [timeout in milliseconds]) 
   default is 60 seconds.
+- modified listen to create bind to the specified port, each call to listen
+  is a call to accept a connection on the specified port.  to stop listening
+  on the specified port use closef(port number) instead of $handle.
 
 2.1-beta 2
 ===========

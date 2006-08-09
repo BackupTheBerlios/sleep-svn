@@ -233,8 +233,16 @@ public class BasicIO implements Loadable
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject a = (IOObject)BridgeUtilities.getObject(l);
-          a.close();
+          if (!l.isEmpty() && l.peek() instanceof IOObject)
+          {
+             IOObject a = (IOObject)BridgeUtilities.getObject(l);
+             a.close();
+          }
+          else
+          {
+             int port = BridgeUtilities.getInt(l, 80);
+             SocketObject.release(port);
+          }
 
           return SleepUtils.getEmptyScalar();
        }
