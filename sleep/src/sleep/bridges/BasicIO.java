@@ -35,7 +35,7 @@ import java.nio.*;
 import sleep.bridges.io.*;
 
 /** provides IO functions for the sleep language */
-public class BasicIO implements Loadable
+public class BasicIO implements Loadable, Function
 {
     public boolean scriptUnloaded(ScriptInstance aScript)
     {
@@ -81,7 +81,7 @@ public class BasicIO implements Loadable
         temp.put("&mark",       new mark());
         temp.put("&skip",       new skip());
         temp.put("&reset",      new reset());
-        temp.put("&wait",       new wait());
+        temp.put("&wait",       this);
 
         // typical ASCII'sh output functions
         temp.put("&print",      new print());
@@ -95,6 +95,21 @@ public class BasicIO implements Loadable
         temp.put("&getConsole", new getConsoleObject());
 
         return true;
+    }
+
+    public Scalar evaluate(String n, ScriptInstance i, Stack l)
+    {
+       if (n.equals("&wait"))
+       {
+          IOObject a = (IOObject)BridgeUtilities.getObject(l);
+          long    to = BridgeUtilities.getLong(l, 0);
+
+          return a.wait(i.getScriptEnvironment(), to);
+       }
+
+       System.out.println("apparently we were wrong about '" + n + "'");
+
+       return SleepUtils.getEmptyScalar();
     }
 
     private static class openf implements Function
@@ -803,32 +818,6 @@ public class BasicIO implements Loadable
           } catch (Exception ex) { }
 
           return SleepUtils.getEmptyScalar();
-       }
-    }
-
-    private static class wait implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
-          IOObject a     = chooseSource(l, 1);
-          long     times = BridgeUtilities.getLong(l, -1);
-          long     stamp = System.currentTimeMillis();
-
-          if (a.getThread() != null)
-          {
-             while (a.getThread().isAlive())
-             {
-                 if (times > -1 && (System.currentTimeMillis() - stamp) > times)
-                 {
-                    i.getScriptEnvironment().flagError("wait on object timed out");
-                    return SleepUtils.getEmptyScalar();
-                 }
-
-                 Thread.yield();
-             }
-          }
-
-          return a.getToken();
        }
     }
 

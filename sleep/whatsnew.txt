@@ -3,9 +3,10 @@
 - added an optional timeout parameter for the socket connect function i.e.:
   $socket = connect("host", port, [timeout in milliseconds]) 
   default is 60 seconds.
-- modified listen to create bind to the specified port, each call to listen
-  is a call to accept a connection on the specified port.  to stop listening
-  on the specified port use closef(port number) instead of $handle.
+- modified listen to create a server socket and bind to the specified port, 
+  each call to listen is a call to accept a connection on the specified port.
+  to stop listening on the specified port use closef(port number) instead of 
+  $handle.
 - added a function global to declare a series of variables into the global 
   scope
 - added a require strict debug flag, this flag causes a runtime warning to
@@ -25,6 +26,12 @@
   any of these flags can be OR'd together i.e.:
 
   debug(1 | 4); # show all errors and uses of non-declared variables
+- when passed an array parameter, &rand will return a random element of the
+  array.
+- eliminated the use of a busy loop to wait for a timeout within the &wait
+  function
+- &wait when called on a process will now wait for that process to exit
+  and return the exit value of the process.
 
 2.1-beta 2
 ===========

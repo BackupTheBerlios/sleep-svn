@@ -1,7 +1,7 @@
 package sleep.bridges.io;
 
 import java.io.*;
-import sleep.runtime.ScriptEnvironment;
+import sleep.runtime.*;
 
 public class ProcessObject extends IOObject
 {
@@ -34,6 +34,26 @@ public class ProcessObject extends IOObject
       {
          env.flagError(ex.toString());
       }
+   }
+
+   public Scalar wait(ScriptEnvironment env, long timeout)
+   {
+      if (getThread() != null && getThread().isAlive())
+      {
+         super.wait(env, timeout);
+      }
+
+      try
+      {
+         process.waitFor();
+         return SleepUtils.getScalar(process.waitFor());
+      }
+      catch (Exception ex)
+      {
+         env.flagError("wait for process failed: " + ex);
+      }
+
+      return SleepUtils.getEmptyScalar();
    }
 
    public void close()

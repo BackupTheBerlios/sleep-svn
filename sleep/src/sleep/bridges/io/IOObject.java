@@ -56,6 +56,30 @@ public class IOObject
       return thread;
    }
 
+   public Scalar wait(ScriptEnvironment env, long timeout)
+   {
+      if (getThread() != null && getThread().isAlive())
+      {
+         try
+         {
+            getThread().join(timeout);
+
+            if (getThread().isAlive())
+            {
+               env.flagError("wait on object timed out");
+               return SleepUtils.getEmptyScalar();
+            }
+         }
+         catch (Exception ex)
+         {
+            env.flagError("wait on object failed: " + ex.getMessage());
+            return SleepUtils.getEmptyScalar();
+         }
+      }
+
+      return getToken();
+   }
+
    /** returns a scalar token associated with this IOObject.  Will return the empty scalar if the token is null.  The token is essentially the stored return value of an executing thread.  */
    public Scalar getToken()
    {

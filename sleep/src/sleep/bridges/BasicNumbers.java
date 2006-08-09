@@ -184,8 +184,17 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        {
           if (! args.isEmpty())
           {
-             int to = BridgeUtilities.getInt(args);
-             return SleepUtils.getScalar((int)(Math.random() * to));
+             Scalar temp = (Scalar)args.pop();
+
+             if (temp.getArray() != null)
+             {
+                int potential = (int)(Math.random() * temp.getArray().size());
+                return temp.getArray().getAt(potential);
+             }
+             else
+             {
+                return SleepUtils.getScalar((int)(Math.random() * temp.intValue()));
+             }
           }
           
           return SleepUtils.getScalar(Math.random());
