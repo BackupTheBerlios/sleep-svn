@@ -89,6 +89,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&this",     scopeFunctions);
         temp.put("&global",     scopeFunctions);
 
+        temp.put("&debug", this);
+
         temp.put("&reverse",  new reverse());      // @array2 = &reverse(@array) 
         temp.put("&removeAt", new removeAt());   // not safe within foreach loops yada yada yada...
         temp.put("&shift",    new shift());   // not safe within foreach loops yada yada yada...
@@ -626,6 +628,17 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
          
           return SleepUtils.getEmptyScalar();
+       }
+       else if (n.equals("&debug"))
+       {
+          /* allow the script to programatically set the debug level */
+          if (!l.isEmpty())
+          {
+             int flag = BridgeUtilities.getInt(l, 0);
+             i.setDebugFlags(flag);
+          }
+
+          return SleepUtils.getScalar(i.getDebugFlags());
        }
 
        Scalar value = BridgeUtilities.getScalar(l);

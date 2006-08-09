@@ -11,6 +11,20 @@
 - added a require strict debug flag, this flag causes a runtime warning to
   be fired whenever a script uses a variable without delcaring it using
   global, local, or this.
+- added &debug(mode) allows scripters to programatically set the debug flags
+  for their script..  debug with no arguments returns the current debug flags
+
+  levels are:
+  1 - show errors: dump all critical script errors as runtime warnings, this
+      should never be turned off.
+  2 - show warnings: dump all non-critical script exceptions as runtime 
+      warnings.  These can be checked for programatically with &checkError
+  4 - require strict: dump all first time uses of non-declared variables as
+      runtime warnings.  
+
+  any of these flags can be OR'd together i.e.:
+
+  debug(1 | 4); # show all errors and uses of non-declared variables
 
 2.1-beta 2
 ===========
