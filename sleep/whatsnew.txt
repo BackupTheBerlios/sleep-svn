@@ -38,7 +38,7 @@
   or generator function interchangeably.
 - updated several functions in the sleep utility library to use this new
   iterator extractor mechanism:
-  &map, &filter, &copy, &reverse, &reduce, &printAll
+  &map, &filter, &copy, &reverse, &reduce, &printAll, &addAll
 - fixed a bug where several bridge utility functions were inadvertently 
   causing arrays/hashes to share scalar references with passed in data. 
   &add, &addAll, &array, &filter, &map, &subarray, and &map.

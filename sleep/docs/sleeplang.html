@@ -587,6 +587,22 @@ third argument <var>$3</var> etc. All subroutines are placed in the global scope
 <p>The special array <var>@_</var> contains all of the arguments for a subroutine as well.  <var>@_[0]</var> is <var>$1</var>, 
 <var>@_[1]</var> is <var>$2</var>, etc.</p>
 
+<h4>Pass by Reference</h4>
+
+<p>Arguments passed to a Sleep subroutine are passed by "reference".  This means if you pass 
+$fluffy as the first argument of a subroutine and that subroutine places a new value into $1 
+then $fluffy will reflect that new value as well.  Example:</p>
+
+<pre>sub test
+{
+  $1 = "bar";
+}
+
+$fluffy = "foo";
+test($fluffy);</pre>
+
+<p>The value of <var>$fluffy</var> after the code snippet above is executed is <b>bar</b>.</p>
+
 <h3>The Return Command</h3>
 
 <p>The return command causes the current subroutine to stop executing and return to where it started.  You can specify a scalar 
@@ -1600,6 +1616,8 @@ some a hash (%), and others a scalar ($).  Functions that have no return value w
 <p>Optional parameters will be enclosed in [ ] square brackets.  The ellipse ... as a parameter indicates the function can handle 
 as many arguments as you are willing to specify.</p>
 
+<p>Parameters specified as <code>@|&</code> represent that either an @array can be passed or a &generator function.  A generator function is a closure that iterates over a sequence with the yield keyword and returns $null when no values are left to iterate over.</p>
+
 <p>Note, the $ is not part of the function name.  It is solely shorthand for specifying the return type of the function.</p>
 
 <h3>Array Functions</h3>
@@ -1640,13 +1658,13 @@ to represent the dimensions of the array.</td>
  </tr>
  <tr>
   <td>@</td>
-  <td>copy(@array)</td>
-  <td>returns a copy of @array with copies of its elements</td>
+  <td>copy(@|&)</td>
+  <td>returns an array with copies of the elements of @array or &generator</td>
  </tr>
  <tr>
   <td>@</td>
-  <td>filter(&amp;closure, @array)</td>
-  <td>Evaluates the specified closure against each element of @array.  Each non-null value returned by &amp;closure is collected into an array that is returned by the filter() call.</td>
+  <td>filter(&amp;closure, @|&)</td>
+  <td>Evaluates the specified closure against each element of @array or &generator.  Each non-null value returned by &amp;closure is collected into an array that is returned by the filter() call.</td>
  </tr>
  <tr>
   <td>@</td>
@@ -1655,8 +1673,8 @@ to represent the dimensions of the array.</td>
  </tr>
  <tr>
   <td>@</td>
-  <td>map(&amp;closure, @array)</td>
-  <td>Evaluates the specified closure against each element of @array.  Each value returned by &amp;closure is collected into an array that is returned by the map() call.</td>
+  <td>map(&amp;closure, @|&)</td>
+  <td>Evaluates the specified closure against each element of @array or &generator.  Each value returned by &amp;closure is collected into an array that is returned by the map() call.</td>
  </tr>
  <tr>
   <td>$</td>
@@ -1670,8 +1688,8 @@ to represent the dimensions of the array.</td>
  </tr>
  <tr>
   <td>@</td>
-  <td>reduce(@array, &amp;closure)</td>
-  <td>I probably should have learned from python and not added this but here it is anyways.  Applies &amp;closure to first two elements of @array.  Takes the resulting value and applies it to the next element of @array, so on and so forth.  Returns one value.</td>
+  <td>reduce(@|&, &amp;closure)</td>
+  <td>I probably should have learned from python and not added this but here it is anyways.  Applies &amp;closure to first two elements of @array or &generator.  Takes the resulting value and applies it to the next element of @array or &generator, so on and so forth.  Returns one value.</td>
  </tr>
  <tr>
   <td></td>
@@ -1695,8 +1713,8 @@ to represent the dimensions of the array.</td>
  </tr>
  <tr>
   <td>@</td>
-  <td>reverse(@array)</td>
-  <td>returns a copy of @array in reverse order</td>
+  <td>reverse(@|&)</td>
+  <td>returns a copy of @array or &generator in reverse order</td>
  </tr>
  <tr>
   <td>@</td>
@@ -1977,8 +1995,14 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
   <td>closes the IO for $handle</td>
  </tr>
  <tr>
+  <td></td>
+  <td>closef(port)</td>
+  <td>if a port number is specified, forces Sleep to stop listening for socket connections on 
+      the specified port.</td>
+ </tr>
+ <tr>
   <td>$</td>
-  <td>connect("host", port, [&amp;closure])</td>
+  <td>connect("host", port, [timeout], [&amp;closure])</td>
   <td>connects to the specified host:port and returns a $handle.  Check for issues connecting to a host with checkError().  If 
      &amp;closure is specified, this call will not block.  &amp;closure will be called when a connection is established.</td>
  </tr>
@@ -2030,8 +2054,8 @@ specified as either 1 parameter per format item or a single array with an elemen
  </tr>
  <tr>
   <td></td>
-  <td>printAll([$handle], @array)</td>
-  <td>prints entire contents of @array to $handle</td>
+  <td>printAll([$handle], @|&)</td>
+  <td>prints entire contents of passed in @array or &generator to $handle</td>
  </tr>
  <tr>
   <td></td>
@@ -2084,8 +2108,8 @@ specified in the format string</td>
  <tr>
   <td>$</td>
   <td>wait($handle, [timeout])</td>
-  <td>waits for the callback or fork associated with $handle to finish.  if $handle is a fork, the return value of the fork 
-will be returned by &amp;wait.  If the specified timeout is reached $null will be returned.</td>
+  <td>waits for the callback, process, or fork associated with $handle to finish.  if $handle is a fork, the return value of the fork 
+will be returned by &amp;wait.  if $handle is a process, the return value of the process will be returned by &amp;wait. If the specified timeout is reached $null will be returned.</td>
  </tr>
  <tr>
   <td></td>
@@ -2199,6 +2223,11 @@ will be returned by &amp;wait.  If the specified timeout is reached $null will b
   <td>$</td>
   <td>rand([number])</td>
   <td>generates a random integer between 0 and number.  If number is ommited the function generates a random double between 0 and 1</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>rand(@array)</td>
+  <td>returns a random element of @array</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2365,6 +2394,11 @@ n-m substrings will be returned.</td>
  </tr>
  <tr>
   <td>$</td>
+  <td>debug(level)</td>
+  <td>explicitly enables the specified debug level for this script: 0 - no debugging; 1 - show only critical errors (default); 2 - show all warnings; 4 - show first time use of non-declared variables.  any of the levels can be |'d together.</td>
+ </tr>
+ <tr>
+  <td>$</td>
   <td width="240">eval("code")</td>
   <td>parses and evaluates the specified code returning the return value of the code.  syntax errors can be obtained with &amp;checkError()</td>
  </tr>
@@ -2377,6 +2411,11 @@ n-m substrings will be returned.</td>
   <td>$</td>
   <td>function('&func_name')</td>
   <td>obtains the function handle for the function bound to the specified string</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>global('$x $y')</td>
+  <td>parses the specified string and declares all variables in the string as global variables.</td>
  </tr>
  <tr>
   <td>&amp;</td>
