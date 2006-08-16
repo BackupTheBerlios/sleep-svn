@@ -98,6 +98,22 @@ public class BridgeUtilities
       return ((Scalar)arguments.pop()).doubleValue();
    }
 
+   /** grabs a scalar iterator, this can come from either an array or a closure called continuously until $null is returned. */
+   public static Iterator getIterator(Stack arguments, ScriptInstance script)
+   {
+      if (arguments.isEmpty())
+        return getArray(arguments).scalarIterator();
+
+      Scalar temp = (Scalar)arguments.pop();
+
+      if (temp.getArray() != null)
+      {
+         return temp.getArray().scalarIterator();
+      }      
+
+      return SleepUtils.getFunctionFromScalar(temp, script).scalarIterator();
+   }
+
    /** grab a sleep array, if the stack is empty a scalar array with no elements will be returned. */
    public static ScalarArray getArray(Stack arguments)
    {

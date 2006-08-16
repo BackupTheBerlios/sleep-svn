@@ -43,35 +43,6 @@ public class Iterate extends Step
       public int      count    = 0;
    }
 
-   private static class FunctionIterator implements Iterator
-   {
-      protected SleepClosure      closure;
-      protected ScriptInstance    si;
-      protected Scalar            current;
-      protected Stack             locals = new Stack();
-
-      public FunctionIterator(SleepClosure c, ScriptInstance i)
-      {
-         closure = c;
-         si      = i;
-      }
-
-      public boolean hasNext()
-      {
-         current = closure.callClosure("eval", si, locals);
-         return !SleepUtils.isEmptyScalar(current);
-      }
-
-      public Object next()
-      {
-         return current;
-      }
-
-      public void remove()
-      {
-      }
-   }
-
    public static final int ITERATOR_CREATE   = 1;
    public static final int ITERATOR_DESTROY  = 2;
    public static final int ITERATOR_NEXT     = 3;
@@ -152,7 +123,7 @@ public class Iterate extends Step
       }
       else if (SleepUtils.isFunctionScalar(data.source))
       {
-         data.iterator = new FunctionIterator(SleepUtils.getFunctionFromScalar(data.source, e.getScriptInstance()), e.getScriptInstance()); 
+         data.iterator = SleepUtils.getFunctionFromScalar(data.source, e.getScriptInstance()).scalarIterator();
       }
       else
       {

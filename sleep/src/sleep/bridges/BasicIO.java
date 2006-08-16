@@ -316,9 +316,8 @@ public class BasicIO implements Loadable, Function
        public Scalar evaluate(String n, ScriptInstance inst, Stack l)
        {
           IOObject a       = chooseSource(l, 2);
-          ScalarArray   ar = BridgeUtilities.getArray(l);
 
-          Iterator i = ar.scalarIterator();
+          Iterator i = BridgeUtilities.getIterator(l, inst);
           while (i.hasNext())
           {
              a.printLine(i.next().toString());

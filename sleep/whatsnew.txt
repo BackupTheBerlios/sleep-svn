@@ -32,6 +32,16 @@
   function
 - &wait when called on a process will now wait for that process to exit
   and return the exit value of the process.
+- added a new function to BridgeUtilities to extract an "iterator" from the
+  argument stack, this iterator will be generated if the argument is an array
+  or generator function.  This allows certain functions to accept an array
+  or generator function interchangeably.
+- updated several functions in the sleep utility library to use this new
+  iterator extractor mechanism:
+  &map, &filter, &copy, &reverse, &reduce, &printAll
+- fixed a bug where several bridge utility functions were inadvertently 
+  causing arrays/hashes to share scalar references with passed in data. 
+  &add, &addAll, &array, &filter, &map, &subarray, and &map.
 
 2.1-beta 2
 ===========

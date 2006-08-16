@@ -231,7 +231,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
            
           while (!l.isEmpty())
           {
-             value.getArray().push(BridgeUtilities.getScalar(l));
+             value.getArray().push(SleepUtils.getScalar(BridgeUtilities.getScalar(l)));
           }
 
           return value;
@@ -419,12 +419,11 @@ public class BasicUtilities implements Function, Loadable, Predicate
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
           SleepClosure temp  = BridgeUtilities.getFunction(l, si);           
-          ScalarArray  value = BridgeUtilities.getArray(l); 
+          Iterator     i     = BridgeUtilities.getIterator(l, si);
 
-          Scalar       rv    = SleepUtils.getArrayScalar();
+          Scalar       rv     = SleepUtils.getArrayScalar();
           Stack        locals = new Stack();
 
-          Iterator i = value.scalarIterator();
           while (i.hasNext())
           {
              locals.push(i.next());
@@ -433,7 +432,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
              if (!SleepUtils.isEmptyScalar(val) || n.equals("&map"))
              {
-                rv.getArray().push(val);
+                rv.getArray().push(SleepUtils.getScalar(val));
              }
 
              locals.clear();
@@ -448,9 +447,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
           Scalar      value = SleepUtils.getArrayScalar();
-          ScalarArray temp  = BridgeUtilities.getArray(l);           
+          Iterator    i     = BridgeUtilities.getIterator(l, si);
 
-          Iterator i = temp.scalarIterator();
           while (i.hasNext())
           {
              value.getArray().push(SleepUtils.getScalar((Scalar)i.next()));
@@ -482,10 +480,9 @@ public class BasicUtilities implements Function, Loadable, Predicate
     {
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
-          ScalarArray temp  = BridgeUtilities.getArray(l);
           Scalar value = SleepUtils.getArrayScalar();
+          Iterator  i  = BridgeUtilities.getIterator(l, si);
 
-          Iterator i = temp.scalarIterator();
           while (i.hasNext())
           {
              value.getArray().add(SleepUtils.getScalar((Scalar)i.next()), 0);
@@ -695,7 +692,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
              if (!s.contains(temp.toString()))
              {
-                a.push(temp);
+                a.push(SleepUtils.getScalar(temp));
              }
           }
 
@@ -705,7 +702,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
        {
           Scalar item = BridgeUtilities.getScalar(l);
           int index = BridgeUtilities.getInt(l, value.getArray().size());  
-          return value.getArray().add(item, index);
+          return value.getArray().add(SleepUtils.getScalar(item), index);
        }
        else if (n.equals("&pop"))
        {
@@ -765,10 +762,9 @@ public class BasicUtilities implements Function, Loadable, Predicate
        else if (n.equals("&reduce") && SleepUtils.isFunctionScalar(value))
        {
           SleepClosure f    = SleepUtils.getFunctionFromScalar(value, i); 
-          ScalarArray array = BridgeUtilities.getArray(l);
           Stack locals      = new Stack();
 
-          Iterator iter = array.scalarIterator();
+          Iterator iter = BridgeUtilities.getIterator(l, i);
 
           Scalar a      = iter.hasNext() ? (Scalar)iter.next() : SleepUtils.getEmptyScalar();
           Scalar b      = iter.hasNext() ? (Scalar)iter.next() : SleepUtils.getEmptyScalar();
@@ -808,7 +804,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
              Scalar rv = SleepUtils.getArrayScalar();
              while (begin < end)
              {
-                rv.getArray().push(value.getArray().getAt(begin));
+                rv.getArray().push(SleepUtils.getScalar(value.getArray().getAt(begin)));
                 begin++;
              }
 
@@ -850,7 +846,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
              while (ih.hasNext())
              {
-                  temp.getArray().push(value.getHash().getAt((Scalar)ih.next()));
+                  temp.getArray().push(SleepUtils.getScalar(value.getHash().getAt((Scalar)ih.next())));
              }
 
              return temp;

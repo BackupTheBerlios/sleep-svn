@@ -31,6 +31,32 @@ import sleep.runtime.*;
 /** The Sleep Closure class.  This class represents a Function object that is also a self contained closure */
 public class SleepClosure implements Function
 {
+    private class ClosureIterator implements Iterator
+    {
+       protected Scalar            current;
+       protected Stack             locals = new Stack();
+
+       public boolean hasNext()
+       {
+          current = callClosure("eval", null, locals);
+          return !SleepUtils.isEmptyScalar(current);
+       }
+
+       public Object next()
+       {
+          return current;
+       }
+
+       public void remove()
+       {
+       }
+    }
+
+    public Iterator scalarIterator()
+    {
+       return new ClosureIterator();
+    }
+
     public static Class CLOSURE_CLASS;
 
     static
