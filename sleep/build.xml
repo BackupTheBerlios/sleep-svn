@@ -17,6 +17,7 @@
            nowarn="yes"
            depend="yes"
            debug="false"
+           source="1.4"
            optimize="yes"
     >
     </javac>
