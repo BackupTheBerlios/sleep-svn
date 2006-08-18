@@ -731,6 +731,24 @@ public class CodeGenerator implements ParserConstants
            atom    = GeneratedSteps.CreateClosure(restore());
            add(atom, tokens[0]);
            break;
+         case IDEA_HASH_LIT:
+           atom = GeneratedSteps.CreateFrame();
+           add(atom, tokens[0]);
+
+           parseParameters(ParserUtilities.extract(tokens[0].substring(1)));
+
+           atom = GeneratedSteps.Call("&hash");
+           add(atom, tokens[0]);
+           break;
+         case IDEA_ARRAY_LIT:
+           atom = GeneratedSteps.CreateFrame();
+           add(atom, tokens[0]);
+
+           parseParameters(ParserUtilities.extract(tokens[0].substring(1)));
+
+           atom = GeneratedSteps.Call("&array");
+           add(atom, tokens[0]);
+           break;
          case IDEA_FUNC: // implemented 
            TokenList funcParms = LexicalAnalyzer.CreateTerms(parser, new StringIterator(strings[0], tokens[0].getHint()));
 

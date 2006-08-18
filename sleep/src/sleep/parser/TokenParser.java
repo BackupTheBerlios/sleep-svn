@@ -365,6 +365,16 @@ public class TokenParser implements ParserConstants
                }
             }
          }
+         else if (Checkers.isArrayLiteral(strings[x]))
+         {
+            myToken.setType(IDEA_ARRAY_LIT);
+            myToken.add(tokens[x]);
+         }
+         else if (Checkers.isHashLiteral(strings[x]))
+         {
+            myToken.setType(IDEA_HASH_LIT);
+            myToken.add(tokens[x]);
+         }
          else if (Checkers.isIndexableItem(strings[x]))
          {
             myToken.setType(VALUE_INDEXED);

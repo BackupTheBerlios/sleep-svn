@@ -33,6 +33,8 @@ public interface ParserConstants
    public static final int IDEA_EXPR_I     = 611;
    public static final int IDEA_HASH_PAIR  = 612;
    public static final int IDEA_BLOCK      = 613;
+   public static final int IDEA_HASH_LIT   = 614;
+   public static final int IDEA_ARRAY_LIT  = 615;
   
    public static final int OBJECT_NEW      = 441;
    public static final int OBJECT_ACCESS   = 442;
