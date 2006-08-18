@@ -248,7 +248,7 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          if (!l.isEmpty() && l.peek() instanceof IOObject)
+          if (!l.isEmpty() && ((Scalar)l.peek()).objectValue() instanceof IOObject)
           {
              IOObject a = (IOObject)BridgeUtilities.getObject(l);
              a.close();
