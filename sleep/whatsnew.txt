@@ -1,5 +1,8 @@
 2.1-beta 4
 ===========
+- added a literal form for arrays and hashes:
+  @("a", "b", "c", "d", "e", @("f", "g", "h", "i"), "j", "k")
+  %(a => "apple", b => "batman", c => "cow")
 
 2.1-beta 3
 ===========

@@ -52,9 +52,15 @@ public class BasicUtilities implements Function, Loadable, Predicate
         // functions
         //
 
+        Function f_array = new array();
+        Function f_hash  = new hash();
+
+        temp.put("&array", f_array); 
+        temp.put("&hash", f_hash);
+        temp.put("&@", f_array);
+        temp.put("&%", f_hash);  
+
         // array & hashtable related
-        temp.put("&array",   new array());    // &keys(%hash) = @array
-        temp.put("&hash",   new hash());      // &keys(%hash) = @array
         temp.put("&keys",  this);      // &keys(%hash) = @array
         temp.put("&size",  this);      // &size(@array) = <int>
         temp.put("&push",  this);      // &push(@array, $value) = $scalar

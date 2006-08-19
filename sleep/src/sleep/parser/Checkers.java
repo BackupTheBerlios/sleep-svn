@@ -161,7 +161,7 @@ public class Checkers
 
    public static boolean isFunctionCall(String a, String b)
    {
-      return (isFunction(a) && isExpression(b));
+      return ((isFunction(a) || a.equals("@") || a.equals("%")) && isExpression(b));
    }
 
    public static boolean isFunction(String a)
@@ -169,9 +169,14 @@ public class Checkers
       return ((Character.isJavaIdentifierStart(a.charAt(0)) || a.charAt(0) == '&') && a.charAt(0) != '$' && keywords.get(a) == null);
    }
 
+   public static boolean isDataLiteral(String a)
+   {
+      return (a.length() > 2) && (  a.substring(0, 2).equals("@(") || a.substring(0, 2).equals("%(")  );
+   }
+
    public static boolean isFunctionCall(String a)
    {
-      return (isFunction(a) && (a.indexOf('(') > -1) && (a.indexOf(')') > -1));
+      return ((isFunction(a) || isDataLiteral(a)) && (a.indexOf('(') > -1) && (a.indexOf(')') > -1));
    }
 
    public static boolean isIndexableItem(String a, String b)

@@ -65,16 +65,16 @@ sub recurseH
 # Array of Arrays / Scalars
 #
 
-@data =     @['item 1', 
+@data = @('item 1', 
               'item 2',  
-              @[
+               @(
                   'sub array 1',
                   'sub array 2',
                   'sub array 3',
                   'sub array 4',
-               ],
+               ),
                'item 4',
-               'item 5'];
+               'item 5');
 
 recurse(@data);
 
@@ -87,30 +87,30 @@ sub test
    return "kvp op takes functions";
 }
 
-%data2 =    %[key1 => "value 1",
+%data2 = %(key1 => "value 1",
               key2 => "value 2",
               key3 => test(), 
-              %key3 => %[
+              %key3 => %(
                   key3a => "value a",
                   key3b => "value b",
                   key3c => "value c",
-                  key3d => "value d"],
-              key4 => "value 4"];
+                  key3d => "value d"),
+              key4 => "value 4");
 
 recurse(%data2);
 
 #
 # Hash of Arrays
 #
-%data3 =    %[letters => @["a", "b", "c"],
-              numbers => @[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-              puncs   => @["!", "@", "%", ".", ",", "^"],
-              letters+numbers+puncs => @[
-                  array("a", "b", "c"),    # just for giggles to make sure functions still work.. :)
-                  @[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                  @["!", "@", "%", ".", ",", "^"]
-              ],
-              astring => "this is just a string for good measure"];
+%data3 = hash(letters => @("a", "b", "c"),
+              numbers => @(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+              puncs   => @("!", "@", "%", ".", ",", "^"),
+              letters+numbers+puncs => @(
+                  @("a", "b", "c"),
+                  @(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
+                  @("!", "@", "%", ".", ",", "^")
+              ),
+              astring => "this is just a string for good measure");
 
 recurse(%data3);
 
@@ -118,9 +118,9 @@ recurse(%data3);
 # Array of Hashes
 #
 
-@data4 = @[%[rsmudge => "Raphael Mudge", fvmudge => "Frances Mudge", bjmudge => "Brad Mudge"],
-               %[olopez  => "Orlando Lopez", hlopez  => "Heather Lopez"],
-               %[jsmith  => "John Smith", jjsmith => "Jimmy John Smith", rj => "Rick James!!!"]
-              ];
+@data4 = @(%(rsmudge => "Raphael Mudge", fvmudge => "Frances Mudge", bjmudge => "Brad Mudge"),
+               %(olopez  => "Orlando Lopez", hlopez  => "Heather Lopez"),
+               %(jsmith  => "John Smith", jjsmith => "Jimmy John Smith", rj => "Rick James!!!")
+              );
 
 recurse(@data4);
