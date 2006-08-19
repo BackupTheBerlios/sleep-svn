@@ -159,16 +159,6 @@ public class Checkers
       return (a.charAt(0) == '{' && a.charAt(a.length() - 1) == '}');
    }
 
-   public static boolean isArrayLiteral(String a)
-   {
-      return (a.length() > 3 && a.charAt(0) == '@' && isIndex(a.substring(1)));
-   }
-
-   public static boolean isHashLiteral(String a)
-   {
-      return (a.length() > 3 && a.charAt(0) == '%' && isIndex(a.substring(1)));
-   }
-
    public static boolean isFunctionCall(String a, String b)
    {
       return (isFunction(a) && isExpression(b));

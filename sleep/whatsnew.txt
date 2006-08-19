@@ -1,10 +1,5 @@
 2.1-beta 4
 ===========
-- added literal forms of arrays and hashes...  
-  %[ key => "value", ... ] # hash literal form
-  @[ 1, 2, 3, 4, 5, "6", ... ] # array literal form
-  saves typing a few characters at least.
-
 
 2.1-beta 3
 ===========

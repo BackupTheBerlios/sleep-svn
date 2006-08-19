@@ -50,16 +50,6 @@ public class Token
       return marker;
    }
 
-   public Token substring(int x, int y)
-   {
-      return new Token(term.substring(x, y), getHint());
-   }    
-
-   public Token substring(int x)
-   {
-      return new Token(term.substring(x), getHint());
-   }    
-
    public Token copy(String text)
    {
       return new Token(text, getHint());

@@ -365,16 +365,6 @@ public class TokenParser implements ParserConstants
                }
             }
          }
-         else if (Checkers.isArrayLiteral(strings[x]))
-         {
-            myToken.setType(IDEA_ARRAY_LIT);
-            myToken.add(tokens[x]);
-         }
-         else if (Checkers.isHashLiteral(strings[x]))
-         {
-            myToken.setType(IDEA_HASH_LIT);
-            myToken.add(tokens[x]);
-         }
          else if (Checkers.isIndexableItem(strings[x]))
          {
             myToken.setType(VALUE_INDEXED);
@@ -400,6 +390,11 @@ public class TokenParser implements ParserConstants
             myToken.setType(IDEA_EXPR_I);
             myToken.add(tokens[x]);
          }
+         else if (Checkers.isFunctionCall(strings[x])) /* moved above isVariable since @() and %() are now "function" calls */
+         {
+            myToken.setType(IDEA_FUNC);
+            myToken.add(tokens[x]);
+         }
          else if (Checkers.isVariable(strings[x]))
          {
             myToken.setType(VALUE_SCALAR);
@@ -408,11 +403,6 @@ public class TokenParser implements ParserConstants
          else if (Checkers.isExpression(strings[x]))
          {
             myToken.setType(IDEA_EXPR);
-            myToken.add(tokens[x]);
-         }
-         else if (Checkers.isFunctionCall(strings[x]))
-         {
-            myToken.setType(IDEA_FUNC);
             myToken.add(tokens[x]);
          }
          else if (Checkers.isFunction(strings[x]))
