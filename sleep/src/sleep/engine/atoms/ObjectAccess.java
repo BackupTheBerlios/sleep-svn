@@ -57,6 +57,8 @@ public class ObjectAccess extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
+      boolean isTrace = (e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS;
+
       Scalar result = SleepUtils.getEmptyScalar();
 
       Object accessMe = null;
@@ -93,7 +95,41 @@ public class ObjectAccess extends Step
       {
          Function func = SleepUtils.getFunctionFromScalar(scalar, e.getScriptInstance());
 
-         result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
+         if (isTrace)
+         {
+            String args = SleepUtils.describe(e.getCurrentFrame());
+
+            result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
+
+            /* construct the actual trace message */
+
+            StringBuffer trace = new StringBuffer("[&closure");
+           
+            if (name != null && name.length() > 0)
+            {
+               trace.append(" " + name);
+            }
+
+            if (args.length() > 0)
+            {
+               trace.append(": " + args + "]");
+            }
+            else
+            {
+               trace.append("]");
+            }
+
+            if (!SleepUtils.isEmptyScalar(result))
+            {
+               trace.append(" = " + SleepUtils.describe(result));
+            }
+
+            e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+         }
+         else
+         {
+            result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
+         }         
 
          e.clearReturn(); // this has to be done or else bad things will happen when the closure returns stuff
          // ^-- evaluate, is this really necessary or are closures smart enough to clear the return themselves? // RSM
@@ -129,8 +165,40 @@ public class ObjectAccess extends Step
             }
             catch (Exception ex) { }
 
-            parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
-            result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
+            if (isTrace)
+            {
+               String args = SleepUtils.describe(e.getCurrentFrame());
+
+               if (args.length() > 0) { args = ": " + args; }
+
+               parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
+               result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
+
+               /* construct the actual trace message */
+
+               StringBuffer trace = new StringBuffer("[");
+
+               if (scalar == null)
+               {
+                  trace.append(theClass.getName() + " " + name + args + "]");
+               }
+               else
+               {
+                  trace.append(SleepUtils.describe(scalar) + " " + name + args + "]");
+               }
+
+               if (!SleepUtils.isEmptyScalar(result))
+               {
+                  trace.append(" = " + SleepUtils.describe(result));
+               }
+
+               e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+            }
+            else
+            {
+               parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
+               result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
+            }
          }
          else
          {

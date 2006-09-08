@@ -25,6 +25,7 @@ package sleep.engine.atoms;
 import java.util.*;
 import sleep.interfaces.*;
 import sleep.engine.*;
+import sleep.engine.types.*;
 import sleep.runtime.*;
 
 public class Call extends Step
@@ -55,13 +56,32 @@ public class Call extends Step
 
       if (callme != null)
       {
-          temp = callme.evaluate(function, e.getScriptInstance(), e.getCurrentFrame());
-          e.clearReturn();
+         if ((e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS && !function.equals("&@") && !function.equals("&%"))
+         {
+             String args = SleepUtils.describe(e.getCurrentFrame());
+
+             temp = callme.evaluate(function, e.getScriptInstance(), e.getCurrentFrame());
+             e.clearReturn();
+             
+             if (SleepUtils.isEmptyScalar(temp))
+             {
+                e.getScriptInstance().fireWarning(function + "(" + args + ")", getLineNumber(), true);
+             }
+             else
+             {
+                e.getScriptInstance().fireWarning(function + "(" + args + ") = " + SleepUtils.describe(temp), getLineNumber(), true);
+             }
+         }
+         else
+         {
+             temp = callme.evaluate(function, e.getScriptInstance(), e.getCurrentFrame());
+             e.clearReturn();
+         }
       }
       else
       {
-          e.getScriptInstance().fireWarning("Attempted to call non-existent function " + function, getLineNumber());
-          temp = SleepUtils.getEmptyScalar();
+         e.getScriptInstance().fireWarning("Attempted to call non-existent function " + function, getLineNumber());
+         temp = SleepUtils.getEmptyScalar();
       }
 
       e.FrameResult(temp);

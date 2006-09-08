@@ -83,6 +83,9 @@ public class ScriptInstance implements Serializable, Runnable
     /** fire runtime warning whenever an undeclared variable is fired */
     public static final int DEBUG_REQUIRE_STRICT = 4;
 
+    /** fire a runtime warning describing each function call */
+    public static final int DEBUG_TRACE_CALLS    = 8;
+
     /** track all of the flagged debug options for this script (set to DEBUG_SHOW_ERRORS by default) */
     protected int debug = DEBUG_SHOW_ERRORS;
 
@@ -259,10 +262,16 @@ public class ScriptInstance implements Serializable, Runnable
     /** Fire a runtime script warning */
     public void fireWarning(String message, int line)
     {
+       fireWarning(message, line, false);
+    }
+
+    /** Fire a runtime script warning */
+    public void fireWarning(String message, int line, boolean isTrace)
+    {
        if (debug != DEBUG_NONE)
        {
-          ScriptWarning temp = new ScriptWarning(this, message, line);
- 
+          ScriptWarning temp = new ScriptWarning(this, message, line, isTrace);
+
           Iterator i = watchers.iterator();
           while (i.hasNext())
           {

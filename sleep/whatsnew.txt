@@ -3,6 +3,13 @@
 - added a literal form for arrays and hashes:
   @("a", "b", "c", "d", "e", @("f", "g", "h", "i"), "j", "k")
   %(a => "apple", b => "batman", c => "cow")
+- fixed a bug in the Sleep parser transforming long/int literals
+  into ObjectValues rather than LongValue/IntValue.
+- string form of arrays and hashes (when converted to a string) is now 
+  consistent with the sleep literal form
+- added another debug level (8) for function call tracing.  while this
+  flag is set all function calls with their arguments and return value
+  will be displayed to the user as a runtime warning.  
 
 2.1-beta 3
 ===========

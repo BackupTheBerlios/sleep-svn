@@ -14,12 +14,25 @@ public class ScriptWarning
    protected ScriptInstance script;
    protected String         message; 
    protected int            line;
+   protected boolean        trace;
 
    public ScriptWarning(ScriptInstance _script, String _message, int _line)
+   {
+      this(_script, _message, _line, false);
+   }
+
+   public ScriptWarning(ScriptInstance _script, String _message, int _line, boolean _trace)
    {
       script  = _script;
       message = _message;
       line    = _line;
+      trace   = _trace;
+   }
+
+   /** is this a trace message for one of the trace debug options */
+   public boolean isDebugTrace()
+   {
+      return trace;
    }
 
    /** returns the ScriptInstance object that was the source of this runtime error */

@@ -53,6 +53,8 @@ public class ObjectNew extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
+      boolean isTrace = (e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS;
+
       Scalar result = SleepUtils.getEmptyScalar();
 
       Object[]    parameters     = null;
@@ -70,8 +72,34 @@ public class ObjectNew extends Step
             }
             catch (Exception ex) { }
 
-            parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
-            result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
+            if (isTrace)
+            {
+               String args = SleepUtils.describe(e.getCurrentFrame());
+
+               parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
+               result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
+
+               StringBuffer trace = new StringBuffer("[new " + name.getName());
+
+               if (args.length() > 0)
+               {
+                  trace.append(": " + args);
+               }
+
+               trace.append("]");
+
+               if (!SleepUtils.isEmptyScalar(result))
+               {
+                  trace.append(" = " + SleepUtils.describe(result));
+               }
+
+               e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
+            }
+            else
+            {
+               parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
+               result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
+            }
          }
          else
          {

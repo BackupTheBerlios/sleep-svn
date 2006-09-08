@@ -5,4 +5,4 @@ Hrm.. value is : test
 Hrm.. value is : with
 Hrm.. value is : 7
 Hrm.. value is : words
-This should be empty: []
+This should be empty: @()

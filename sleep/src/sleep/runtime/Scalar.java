@@ -89,10 +89,10 @@ public class Scalar implements Serializable
       /* these are in case the scalar is being misused */
 
       if (array != null)
-         return SleepUtils.getScalar(array.toString()).getValue();
+         return SleepUtils.getScalar(SleepUtils.describe(this)).getValue();
 
       if (hash != null)
-         return SleepUtils.getScalar(hash.toString()).getValue();
+         return SleepUtils.getScalar(SleepUtils.describe(this)).getValue();
 
       return null;
    }

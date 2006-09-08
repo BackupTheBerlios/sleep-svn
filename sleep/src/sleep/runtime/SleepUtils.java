@@ -334,6 +334,102 @@ public class SleepUtils
       return SleepUtils.getScalar(handle);
    }
 
+   /** returns a comma separated list of descriptions of the scalars in the specified argument
+       stack.  This is used by the debugging mechanism to format arguments to strings based on
+       their scalar type. */
+   public static String describe(Stack arguments)
+   {
+      StringBuffer values = new StringBuffer();
+
+      Iterator i = arguments.iterator();
+      while (i.hasNext())
+      {
+         Scalar tempz = (Scalar)i.next();
+
+         values.insert(0, SleepUtils.describe(tempz));
+
+         if (i.hasNext()) { values.insert(0, ", "); }
+      }
+
+      return values.toString();
+   }
+
+   /** returns a string description of the specified scalar. Used by debugging mechanism to
+       format scalars based on their value type, i.e. strings are enclosed in single quotes,
+       objects in brackets, $null is displayed as $null, etc. */
+   public static String describe(Scalar scalar)
+   {
+      if (scalar.getArray() != null)
+      {
+         StringBuffer buffer = new StringBuffer("@(");
+         Iterator i = scalar.getArray().scalarIterator();
+         while (i.hasNext())
+         {
+            Scalar next = (Scalar)i.next();
+            buffer.append(describe(next));
+
+            if (i.hasNext())
+            {
+               buffer.append(", ");
+            }
+         }
+        
+         buffer.append(")");
+         return buffer.toString();
+      }
+      if (scalar.getHash() != null)
+      {
+         StringBuffer buffer = new StringBuffer("%(");
+         Iterator i = scalar.getHash().keys().scalarIterator();
+         while (i.hasNext())
+         {
+            Scalar next = (Scalar)i.next();
+            buffer.append(next.toString());
+
+            buffer.append(" => ");
+
+            Scalar nval = scalar.getHash().getAt(next);
+
+            buffer.append(describe(nval));
+
+            if (i.hasNext())
+            {
+               buffer.append(", ");
+            }
+         }
+        
+         buffer.append(")");
+         return buffer.toString();
+      }
+      else
+      {
+         if (scalar.getValue() instanceof NullValue)
+         {
+            return "$null";
+         }
+         else if (scalar.getValue() instanceof StringValue)
+         {
+            return "'" + scalar.toString() + "'";
+         }
+         else if (isFunctionScalar(scalar))
+         {
+            return scalar.toString();
+         }
+         else if (scalar.getValue() instanceof ObjectValue)
+         {
+            return "[" + scalar.toString() + "]";
+         }
+         else if (scalar.getValue() instanceof LongValue)
+         {
+            return scalar.toString() + "L";
+         }
+         else
+         {
+            return scalar.toString();
+         }
+      }
+   }
+
    /** returns an empty hashmap scalar */
    public static Scalar getHashScalar()
    {

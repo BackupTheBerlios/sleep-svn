@@ -414,7 +414,14 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
 
    public void processScriptWarning(ScriptWarning warning)
    {
-      getProxy().consolePrintln("Warning: " + warning.getMessage() + " at line " + warning.getLineNumber());
+      if (warning.isDebugTrace())
+      {
+         getProxy().consolePrintln("Trace: " + warning.getMessage() + " at line " + warning.getLineNumber());
+      }
+      else
+      {
+         getProxy().consolePrintln("Warning: " + warning.getMessage() + " at line " + warning.getLineNumber());
+      }
    }     
 
    public boolean scriptLoaded(ScriptInstance script)

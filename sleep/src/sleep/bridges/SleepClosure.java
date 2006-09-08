@@ -80,6 +80,11 @@ public class SleepClosure implements Function
     /** the meta data for this closure context */
     HashMap          metadata; 
 
+    public String toString()
+    {
+       return "&closure" + hashCode();
+    }
+
     /** Creates a new Sleep Closure, with a brand new set of internal variables.  Don't be afraid, you can call this constructor from your code. */
     public SleepClosure(ScriptInstance si, Block _code)
     {

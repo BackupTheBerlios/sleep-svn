@@ -426,11 +426,11 @@ public class CodeGenerator implements ParserConstants
          case IDEA_NUMBER:                         // implemented
            if (strings[0].endsWith("L"))
            {
-              ascalar = SleepUtils.getScalar(Long.decode(strings[0].substring(0, strings[0].length() - 1)));
+              ascalar = SleepUtils.getScalar(Long.decode(strings[0].substring(0, strings[0].length() - 1)).longValue());
            }
            else
            {
-              ascalar = SleepUtils.getScalar(Integer.decode(strings[0]));
+              ascalar = SleepUtils.getScalar(Integer.decode(strings[0]).intValue());
            }
 
            atom    = GeneratedSteps.SValue(ascalar);
