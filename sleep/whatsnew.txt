@@ -9,7 +9,8 @@
   consistent with the sleep literal form
 - added another debug level (8) for function call tracing.  while this
   flag is set all function calls with their arguments and return value
-  will be displayed to the user as a runtime warning.  
+  will be displayed to the user as a runtime warning.  Enable with:
+  debug(debug() & 8);
 - HOES will now allow sleep data structures (arrays and hashes) to be passed
   as java.util.List and java.util.Map data structures (via an expensive
   conversion process).  This conversion only applies one way i.e. a Java List

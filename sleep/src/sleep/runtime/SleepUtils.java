@@ -34,8 +34,7 @@ import sleep.runtime.*;
 
 import java.io.*;
 
-import sleep.bridges.BridgeUtilities;
-import sleep.bridges.SleepClosure;
+import sleep.bridges.*;
 
 /** This class contains generalized utilities for instantiating/wrapping data into the sleep Scalar type. 
   * Included for free are methods for executing sleep blocks as well. 
@@ -415,9 +414,14 @@ public class SleepUtils
          {
             return scalar.toString();
          }
+         else if (scalar.objectValue() instanceof KeyValuePair)
+         {
+            KeyValuePair kvp = (KeyValuePair)scalar.objectValue();
+            return kvp.getKey().toString() + " => " + describe(kvp.getValue());
+         }
          else if (scalar.getValue() instanceof ObjectValue)
          {
-            return "[" + scalar.toString() + "]";
+            return scalar.toString();
          }
          else if (scalar.getValue() instanceof LongValue)
          {
