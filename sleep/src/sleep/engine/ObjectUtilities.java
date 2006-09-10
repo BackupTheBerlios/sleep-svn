@@ -81,42 +81,68 @@ public class ObjectUtilities
          {
              // do nothing, this argument is a give me
          }
-         else if (check[z].isArray() && scalar.getArray() != null)
+         else if (scalar.getArray() != null)
          {
-             if (check[z].getComponentType() == OBJECT_TYPE)
-             {
-                value = ARG_MATCH_MAYBE;
-             }
-             else
-             {
-                Class mytype = getArrayType(scalar, null);
+            if (check[z].isArray())
+            {
+               if (check[z].getComponentType() == OBJECT_TYPE)
+               {
+                  value = ARG_MATCH_MAYBE;
+               }
+               else
+               {
+                  Class mytype = getArrayType(scalar, null);
  
-                if (mytype == check[z].getComponentType())
-                {
-                   value = ARG_MATCH_YES;
-                }
-                else
-                {
-                   value = ARG_MATCH_NO;
-                }
-             }
+                  if (mytype == check[z].getComponentType())
+                  {
+                     value = ARG_MATCH_YES;
+                  }
+                  else
+                  {
+                     // why are we not returning this?!? a test case should be devised to test the
+                     // implications...
+                     value = ARG_MATCH_NO;
+                  }
+               }
+            }
+            else if (check[z].isAssignableFrom(java.util.List.class))
+            {
+               // would a java.util.List or java.util.Collection satisfy the argument?
+               value = ARG_MATCH_YES;
+            }
+            else if (!check[z].isInstance(scalar.objectValue()))
+            {
+               return ARG_MATCH_NO;
+            }
+         }
+         else if (scalar.getHash() != null)
+         {
+            if (check[z].isAssignableFrom(java.util.Map.class))
+            {
+               // would a java.util.Map or java.util.Collection satisfy the argument?
+               value = ARG_MATCH_YES;
+            }
+            else if (!check[z].isInstance(scalar.objectValue()))
+            {
+               return ARG_MATCH_NO;
+            }
          }
          else if (check[z].isPrimitive() && !(stemp == INT_SCALAR || stemp == DOUBLE_SCALAR || stemp == LONG_SCALAR))
          {
-             value = ARG_MATCH_MAYBE;
+            value = ARG_MATCH_MAYBE;
          }
          else if (check[z].isInterface())
          {
-             if (!SleepUtils.isFunctionScalar(scalar) && !check[z].isInstance(scalar.objectValue()))
-                  return ARG_MATCH_NO;
+            if (!SleepUtils.isFunctionScalar(scalar) && !check[z].isInstance(scalar.objectValue()))
+               return ARG_MATCH_NO;
          }
          else if (check[z] == STRING_TYPE && stemp != STRING_SCALAR)
          {
-             value = ARG_MATCH_MAYBE;
+            value = ARG_MATCH_MAYBE;
          }
          else if (!check[z].isInstance(scalar.objectValue()))
          {
-             return ARG_MATCH_NO;
+            return ARG_MATCH_NO;
          }
       }
  
@@ -177,21 +203,47 @@ public class ObjectUtilities
 
    public static Object buildArgument(Class type, Scalar value, ScriptInstance script)
    {
-      if (type.isArray() && value.getArray() != null)
+      if (type == STRING_TYPE)
       {
-         Class atype = getArrayType(value, type.getComponentType());
-
-         Object arrayV = Array.newInstance(atype, value.getArray().size());
-         Iterator i = value.getArray().scalarIterator();
-         int x = 0;
-         while (i.hasNext())
+         return value.toString();
+      }
+      else if (value.getArray() != null)
+      {
+         if (type.isArray())
          {
-            Scalar temp = (Scalar)i.next();
-            Array.set(arrayV, x, buildArgument(atype, temp, script));
-            x++;
-         }
+            Class atype = getArrayType(value, type.getComponentType());
 
-         return arrayV;
+            Object arrayV = Array.newInstance(atype, value.getArray().size());
+            Iterator i = value.getArray().scalarIterator();
+            int x = 0;
+            while (i.hasNext())
+            {
+               Scalar temp = (Scalar)i.next();
+               Array.set(arrayV, x, buildArgument(atype, temp, script));
+               x++;
+            }
+
+            return arrayV;
+         }
+         else if (type.isAssignableFrom(java.util.List.class))
+         {
+            return SleepUtils.getListFromArray(value);
+         }
+         else
+         {
+            return value.objectValue();
+         }
+      }
+      else if (value.getHash() != null)
+      {
+         if (type.isAssignableFrom(java.util.Map.class))
+         {
+            return SleepUtils.getMapFromHash(value);
+         }
+         else
+         {
+            return value.objectValue();
+         }
       }
       else if (type.isPrimitive())
       {
@@ -235,10 +287,6 @@ public class ObjectUtilities
       else if (type.isInterface() && SleepUtils.isFunctionScalar(value))
       {
          return BuildInterface(type, SleepUtils.getFunctionFromScalar(value, script), script);
-      }
-      else if (type == STRING_TYPE)
-      {
-         return value.toString();
       }
 
       return value.objectValue();
