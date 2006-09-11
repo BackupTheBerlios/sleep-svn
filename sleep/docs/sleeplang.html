@@ -806,7 +806,7 @@ an argument in sleep.  To specify a function handle simply append the subroutine
 <p>These functions are useful if you would like to easily implement your own sorting function.  For example to implement a case
 insensitive sort:</P>
 
-<pre>@array = array("Jill", "Jack", "BoB", "iReNE", "aDaWG");
+<pre>@array = @("Jill", "Jack", "BoB", "iReNE", "aDaWG");
 
 sub my_sort
 {
@@ -822,10 +822,10 @@ printAll(@array);</pre>
 <p>Sleep arrays are just arrays of scalars.  It is possible for one of the elements of a scalar array to contain another scalar 
 array (or hash for that matter).  The following sets up a multidimensional array:</p>
 
-<pre>@data = array(
-          array("a", "b", "c"),
-          array(1, 2, 3, 4),
-          array('.', '!', '#', '*')
+<pre>@data = @(
+          @("a", "b", "c"),
+          @(1, 2, 3, 4),
+          @('.', '!', '#', '*')
        );</pre>
 
 <p>In the example above @data is an array of arrays.  To access an individual element of @data:</p>
@@ -876,10 +876,10 @@ a key from a hash you can use remove(%hash, "key").</P>
 
 <h3>The Key/Value Operator</h3>
 
-<p>Hashes can quickly be created using the <code>hash()</code> function.  The hash() function takes a special kind of parameter 
-known as a key/value pair:</p>
+<p>Sleep has a literal form for dictionary data structures (hashes).  To construct a hash in place use a % followed
+by a comma separated list of key/value pairs enclosed in parantheses.  i.e.</P>
 
-<pre>%hash = hash(key1 => "this is a value", key2 => 3 * (9 % 7));</pre>
+<pre>%hash = %(key1 => "this is a value", key2 => 3 * (9 % 7));</pre>
 
 <p>The => is the key/value pair operator.  Any time a key/value pair is required as a parameter it can be specified with => or 
 as a string separating the key/value by an equal sign i.e. 'key=value'.  The => operator is special because the left hand side (key) is taken 
@@ -890,10 +890,10 @@ as-is with no evaluation by the sleep language.</p>
 <p>Multidimensional hashes work exactly the same as Sleep arrays.  It is also possible to have an array of hashes, or a hash of 
 arrays.  Sleep even allows these two data structures to be mixed and matched as you please.</p>
 
-<pre>%hash = hash(letters => array("a", "b", "c", "d"),
-             names   => hash(
-                          rsm => "Raphael Mudge",
-                          fvm => "Frances Mudge")
+<pre>%hash = %(letters => @("a", "b", "c", "d"),
+               names   => %(
+                            rsm => "Raphael Mudge",
+                            fvm => "Frances Mudge")
             );</pre>
 
 <p>When a script tries to index to a level that is deeper than has been indexed prior Sleep will create a new hash/array as 
@@ -1344,6 +1344,26 @@ while ([$scalar hasMoreTokens])
 <p>The above example breaks the string "this is a test" down by the delimeter " " using the java.util.StringTokenizer 
 class.</p>
 
+<h4>Using 3rd Party Jars</h4>
+
+<p>Sleep can also import packages from jar files not loaded in the classpath.  For example to use the JDOM XML API in
+a Sleep script one would:</p>
+
+<pre>import org.jdom.*        from: jdom.jar;
+import org.jdom.input.*  from: jdom.jar;
+import org.jdom.output.* from: jdom.jar;
+
+# load the document in
+$builder  = [new SAXBuilder];
+$document = [$builder build: @ARGV[0]];
+
+# print the document out.
+$output   = [new XMLOutputter: [Format getPrettyFormat]];
+[$output output: $document, [System out]];</pre>
+
+<p>Sleep will try to find the specified jar file (i.e. jdom.jar) using the Sleep classpath.  This value is the
+sleep.classpath accessible as systemProperties()["sleep.classpath"].</p>
+
 <h3>Sleep Interfaces</h3>
 
 <p>A neat feature of HOES is how interfaces can be quickly and easily created and passed to Java objects.  A Java interface
@@ -1405,12 +1425,15 @@ array of objects.  It is imperative that object arrays have a consistent type th
 <p>If the automatic casting is not enough, Sleep includes a <code>&amp;cast</code> function.  The <code>&amp;cast</code> 
 function will cast an @array into any Java type.  Dimensions can be specified as well.  For example:</p>
 
-<pre>@array = array("a", "b", "c", "d", "e", "f");
+<pre>@array = @("a", "b", "c", "d", "e", "f");
 $casted = cast(@array, "*", 2, 3); # create a 2x3 array</pre>
 
 <p>The example above creates an object scalar <var>$casted</var> that references a 2x3 array of Strings.  The elements of 
 $casted are (("a, "b", "c"), ("d", "e", "f")).  Note that the @array argument passed to <code>&amp;cast</code> is flattened 
 prior to casting.</p>
+
+<p>Sleep will also convert a Sleep array scalar into a java.util.List if need be.  Likewise a Sleep hash scalar
+is converted into a java.util.Map if a function requires such an argument.</p>
 
 <h3>Catching Exceptions</h3>
 
@@ -2395,7 +2418,7 @@ n-m substrings will be returned.</td>
  <tr>
   <td>$</td>
   <td>debug(level)</td>
-  <td>explicitly enables the specified debug level for this script: 0 - no debugging; 1 - show only critical errors (default); 2 - show all warnings; 4 - show first time use of non-declared variables.  any of the levels can be |'d together.</td>
+  <td>explicitly enables the specified debug level for this script: 0 - no debugging; 1 - show only critical errors (default); 2 - show all warnings; 4 - show first time use of non-declared variables; 8 - trace all function calls.  any of the levels can be |'d together.</td>
  </tr>
  <tr>
   <td>$</td>
