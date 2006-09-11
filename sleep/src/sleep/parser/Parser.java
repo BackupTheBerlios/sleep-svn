@@ -48,6 +48,7 @@ import sleep.error.*;
 import sleep.engine.Block;
 
 import java.io.*;
+import java.net.*;
 
 public class Parser
 {
@@ -69,53 +70,90 @@ public class Parser
 
    public    char       EndOfTerm  = ';';
 
-   protected LinkedList imports   = new LinkedList();
+   protected Map        imports   = new LinkedHashMap();
    protected HashMap    classes   = new HashMap();
 
+   protected HashMap    jars      = new HashMap(); /* resolved jar files, key=jar name value=ClassLoader */
+
    /** Used by hoes to import package names... */
-   public void importPackage(String packagez)
+   public void importPackage(String packagez, String from)
    {
-       if (packagez.endsWith(".*"))
-       {
-          imports.add(packagez.substring(0, packagez.length() - 2));
-       }
-       else
+       String pack, clas;
+       clas = packagez.substring(packagez.lastIndexOf(".") + 1, packagez.length());
+       pack = packagez.substring(0, packagez.lastIndexOf("."));
+
+       /* resolve and setup our class loader for the specified jar file */
+
+       if (from != null && !jars.containsKey(from))
        {
           try
           {
-             Class temp = Class.forName(packagez);
-             classes.put(packagez.substring(packagez.lastIndexOf(".") + 1, packagez.length()), temp);
+             URLClassLoader loader = new URLClassLoader(new URL[] { ParserConfig.findJarFile(from).toURL() }, Thread.currentThread().getContextClassLoader());
+             jars.put(from, loader);
           }
           catch (Exception ex) { }
        }
+
+       /* handle importing our package */
+
+ 
+       if (clas.equals("*"))
+       {
+          imports.put(pack, from);
+       }
+       else
+       {
+          Class found = findImportedClass(packagez);
+          classes.put(clas, found);
+       }
+   }
+
+   private Class resolveClass(String pack, String clas, String jar)
+   {
+//       System.out.println("Attempting to resolve: '" + pack + "' + '" + clas + "' + '" + jar + "'");
+
+       try
+       {
+          if (jar != null)
+          {
+             ClassLoader cl = (ClassLoader)jars.get(jar);
+             return Class.forName(pack + "." + clas, true, cl);
+          }
+          else
+          {
+             return Class.forName(pack + "." + clas);
+          }
+       }
+       catch (Exception ex) { }
+
+       return null;
    }
 
    public Class findImportedClass(String name)
    {
        if (classes.get(name) == null)
        {
-          Class temp;
-          try
-          {
-             temp = Class.forName(name);
-             classes.put(name, temp);
-             return temp;
-          }
-          catch (Exception ex) { }
-          
+          Class rv = null;
+          String clas, pack;
 
-          Iterator i = imports.iterator();
-          while (i.hasNext())
+          if (name.indexOf(".") > -1)
           {
-             try
-             {
-                temp = Class.forName(i.next().toString() + "." + name);
-                classes.put(name, temp);
-           
-                return temp;
-             }
-             catch (Exception ex) { }
+             clas = name.substring(name.lastIndexOf(".") + 1, name.length());
+             pack = name.substring(0, name.lastIndexOf("."));
+
+	     rv   = resolveClass(pack, clas, null);
           }
+          else
+          {
+             Iterator i = imports.entrySet().iterator();
+             while (i.hasNext() && rv == null)
+             {
+                Map.Entry en = (Map.Entry)i.next();
+                rv = resolveClass((String)en.getKey(), name, (String)en.getValue());
+             }
+          }
+
+          classes.put(name, rv);
        }
      
        return (Class)classes.get(name);
@@ -129,8 +167,9 @@ public class Parser
    /** initialize the parser with the code you want me to work with */
    public Parser(String _code)
    {
-      imports.add("java.lang");
-      imports.add("java.util");
+      importPackage("java.lang.*", null);
+      importPackage("java.util.*", null);
+      importPackage("sleep.runtime.*", null);
 
       code = _code;
    }

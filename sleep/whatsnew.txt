@@ -15,6 +15,14 @@
   as java.util.List and java.util.Map data structures (via an expensive
   conversion process).  This conversion only applies one way i.e. a Java List
   or Java Map can not be used as a Sleep array or hash.
+- added the ability to import classes from external jar files into sleep:
+  import org.jdom.* from: jdom.jar;
+  
+  Sleep also has a concept of a Sleep classpath, definable with sleep.classpath
+  or through the static methods in sleep.parser.ParserConfig.
+- updated the use() function to use the sleep classpath to search for the
+  specified jar file.
+
 
 2.1-beta 3
 ===========

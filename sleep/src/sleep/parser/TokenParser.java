@@ -586,16 +586,27 @@ public class TokenParser implements ParserConstants
 
             StringBuffer newExpr = new StringBuffer();
 
-            if (x == tokens.length) // if return is the only token, that means we have no EOT, ergo an error
-            {
-               parser.reportError("Missing terminator", new Token(newExpr.toString(), tokens[x - 1].getHint(), newExpr.toString().length()));
-               return null;
-            }
-           
             /* keep looping until we reach an end of term clause */
             while (x < strings.length && !strings[x].equals("EOT"))
             {
-               newExpr.append(strings[x]);
+               if (strings[x].equals("from:"))
+               {
+                  if (newExpr.length() == 0)
+                  {
+                     parser.reportError("Attempted to import '' from:", new Token("import from:", tokens[x].getHint(), "import from:".length()));
+                     return null;
+                  }
+                  else
+                  {
+                     myToken.add(new Token(newExpr.toString(), tokens[x].getHint()));
+                     newExpr = new StringBuffer();
+                  }
+               }
+               else
+               {
+                  newExpr.append(strings[x]);
+               }
+
                x++;
 
                if (x >= tokens.length)

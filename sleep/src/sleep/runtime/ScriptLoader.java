@@ -100,6 +100,11 @@ public class ScriptLoader
     protected LinkedList bridgess;
 
     /**
+     * path to search for jar files imported using [import * from: *] syntax
+     */
+    protected LinkedList paths;
+
+    /**
      * initializes the script loader
      */
     public ScriptLoader()

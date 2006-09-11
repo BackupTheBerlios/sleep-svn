@@ -182,12 +182,12 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           if (l.size() == 2)
           {
-             parent    = BridgeUtilities.getFile(l);
+             parent    = sleep.parser.ParserConfig.findJarFile(l.pop().toString());
              className = BridgeUtilities.getString(l, "");
           }
           else
           {
-             File a    = BridgeUtilities.getFile(l);
+             File a    = sleep.parser.ParserConfig.findJarFile(l.pop().toString());
              parent    = a.getParentFile();
              className = a.getName();
           }

@@ -23,6 +23,8 @@ package sleep.parser;
  * @see sleep.interfaces.PredicateEnvironment
  * 
  */
+import java.io.*;
+
 public class ParserConfig
 {
    /** Installs an escape constant into the sleep parser.  Any time the escape constant escape is encountered inside of a 
@@ -36,5 +38,42 @@ public class ParserConfig
    public static void addKeyword(String keyword)
    {
       Checkers.addKeyword(keyword);
+   }
+
+   /** Query the Sleep classpath.  This is a semi-colon separated list of paths where sleep
+       should search for jar files that scripts attempt to import */
+   public static String getSleepClasspath()
+   {
+      return System.getProperty("sleep.classpath", ".");
+   }
+
+   /** Set the Sleep classpath.  A semi-colon separated list of paths where sleep should search for
+       jar files that scripts attempt to import */
+   public static void setSleepClasspath(String path)
+   {
+      System.setProperty("sleep.classpath", path);
+   }
+
+   /** Search the sleep classpath for the specified file.  Returns a File object reflecting where the
+       file was found.  This method does not return null.  If the file does not exist then a File object
+       constructed with just the passed in name is returned */
+   public static File findJarFile(String name)
+   {
+       File cp = new File(name);
+
+       if (cp.exists()) { return cp; }
+
+       String[] paths = System.getProperty("sleep.classpath", ".").split(";");
+
+       for (int x = 0; x < paths.length; x++)
+       {
+          File temp = new File(paths[x], name);
+          if (temp.exists())
+          {
+             return temp;
+          }
+       }
+
+       return cp;
    }
 }

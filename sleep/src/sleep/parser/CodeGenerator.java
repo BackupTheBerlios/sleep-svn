@@ -1014,7 +1014,14 @@ public class CodeGenerator implements ParserConstants
            add(atom, tokens[1]);
            break;
          case OBJECT_IMPORT:
-           parser.importPackage(strings[0]);
+           if (strings.length == 1)
+           {
+              parser.importPackage(strings[0], null);
+           }
+           else
+           {
+              parser.importPackage(strings[0], strings[1]);
+           }
            break;           
          case EXPR_RETURN:                     // implemented
            atom = GeneratedSteps.CreateFrame();
