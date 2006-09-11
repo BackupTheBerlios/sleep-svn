@@ -22,7 +22,8 @@
   or through the static methods in sleep.parser.ParserConfig.
 - updated the use() function to use the sleep classpath to search for the
   specified jar file.
-
+- fixed lambda({}, $x => $y) sharing scalar container references (caused a 
+  change to $x inside of the closure to affect the value of $y)
 
 2.1-beta 3
 ===========

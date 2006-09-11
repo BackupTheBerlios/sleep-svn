@@ -413,7 +413,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
           while (!l.isEmpty())
           {
              KeyValuePair kvp = BridgeUtilities.getKeyValuePair(l);
-             vars.putScalar(kvp.getKey().toString(), kvp.getValue());
+             vars.putScalar(kvp.getKey().toString(), SleepUtils.getScalar(kvp.getValue()));
           }
 
           return SleepUtils.getScalar(value);
