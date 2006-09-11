@@ -96,13 +96,14 @@ public class Parser
 
        /* handle importing our package */
 
- 
        if (clas.equals("*"))
        {
           imports.put(pack, from);
        }
        else
        {
+          imports.put(packagez, from);
+         
           Class found = findImportedClass(packagez);
           classes.put(clas, found);
        }
@@ -141,7 +142,7 @@ public class Parser
              clas = name.substring(name.lastIndexOf(".") + 1, name.length());
              pack = name.substring(0, name.lastIndexOf("."));
 
-	     rv   = resolveClass(pack, clas, null);
+	     rv   = resolveClass(pack, clas, (String)imports.get(name));
           }
           else
           {
