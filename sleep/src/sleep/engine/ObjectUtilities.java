@@ -33,40 +33,48 @@ import sleep.interfaces.Function;
 
 import sleep.bridges.*;
 
+/** This class is sort of the center of the HOES universe containing several methods for mapping 
+    between Sleep and Java and resolving which mappings make sense. */
 public class ObjectUtilities
 {
    private static Class STRING_SCALAR;
    private static Class INT_SCALAR; 
    private static Class DOUBLE_SCALAR;
    private static Class LONG_SCALAR;
-   public  static Class BOOLEAN_TYPE, BYTE_TYPE, CHARACTER_TYPE, DOUBLE_TYPE, FLOAT_TYPE, INTEGER_TYPE, LONG_TYPE, STRING_TYPE, OBJECT_TYPE;
+   private static Class OBJECT_SCALAR;
+
+   /** various primitives... doo doo doo */
+   public static Class BOOLEAN_TYPE, BYTE_TYPE, CHARACTER_TYPE, DOUBLE_TYPE, FLOAT_TYPE, INTEGER_TYPE, LONG_TYPE, STRING_TYPE, OBJECT_TYPE;
 
    static
    {
-      try
-      {
-         STRING_SCALAR = Class.forName("sleep.engine.types.StringValue");
-         INT_SCALAR    = Class.forName("sleep.engine.types.IntValue");
-         DOUBLE_SCALAR = Class.forName("sleep.engine.types.DoubleValue");
-         LONG_SCALAR   = Class.forName("sleep.engine.types.LongValue");
+      STRING_SCALAR = sleep.engine.types.StringValue.class;
+      INT_SCALAR    = sleep.engine.types.IntValue.class;
+      DOUBLE_SCALAR = sleep.engine.types.DoubleValue.class;
+      LONG_SCALAR   = sleep.engine.types.LongValue.class;
+      OBJECT_SCALAR = sleep.engine.types.ObjectValue.class;
 
-         BOOLEAN_TYPE    = Class.forName("java.lang.Boolean");
-         BYTE_TYPE       = Class.forName("java.lang.Byte");
-         CHARACTER_TYPE  = Class.forName("java.lang.Character");
-         DOUBLE_TYPE     = Class.forName("java.lang.Double");
-         FLOAT_TYPE      = Class.forName("java.lang.Float");
-         INTEGER_TYPE    = Class.forName("java.lang.Integer");
-         LONG_TYPE       = Class.forName("java.lang.Long");
-         OBJECT_TYPE     = Class.forName("java.lang.Object");
-         STRING_TYPE     = Class.forName("java.lang.String");
-      }
-      catch (Exception ex) { }
+      BOOLEAN_TYPE    = java.lang.Boolean.class;
+      BYTE_TYPE       = java.lang.Byte.class;
+      CHARACTER_TYPE  = java.lang.Character.class;
+      DOUBLE_TYPE     = java.lang.Double.class;
+      FLOAT_TYPE      = java.lang.Float.class;
+      INTEGER_TYPE    = java.lang.Integer.class;
+      LONG_TYPE       = java.lang.Long.class;
+      OBJECT_TYPE     = java.lang.Object.class;
+      STRING_TYPE     = java.lang.String.class;
    }
 
-   public static final int ARG_MATCH_YES   = 1;
-   public static final int ARG_MATCH_NO    = 2;
-   public static final int ARG_MATCH_MAYBE = 3;
+   /** when looking for a Java method that matches the sleep args, we use a Yes match immediately */
+   public static final int ARG_MATCH_YES   = 3;
+  
+   /** when looking for a Java method that matches the sleep args, we immediately drop all of the no answers. */
+   public static final int ARG_MATCH_NO    = 0;
 
+   /** when looking for a Java method that matches the sleep args, we save the maybes and use them as a last resort if no yes match is found */
+   public static final int ARG_MATCH_MAYBE = 1;
+
+   /** convienence method to determine wether or not the stack of values is a safe match for the specified method signature */
    public static int isArgMatch(Class[] check, Stack arguments)
    {
       int value = ARG_MATCH_YES;
@@ -74,79 +82,157 @@ public class ObjectUtilities
       for (int z = 0; z < check.length; z++)
       {
          Scalar scalar = (Scalar)arguments.get(check.length - z - 1);
-         Class stemp   = scalar.getClass();
-         String sstring = scalar.toString();
 
-         if (SleepUtils.isEmptyScalar(scalar))
-         {
-             // do nothing, this argument is a give me
-         }
-         else if (scalar.getArray() != null)
-         {
-            if (check[z].isArray())
-            {
-               if (check[z].getComponentType() == OBJECT_TYPE)
-               {
-                  value = ARG_MATCH_MAYBE;
-               }
-               else
-               {
-                  Class mytype = getArrayType(scalar, null);
+         value = value & isArgMatch(check[z], scalar);
+
+//         System.out.println("Matching: " + scalar + "(" + scalar.getValue().getClass() + "): to " + check[z] + ": " + value);
  
-                  if (mytype == check[z].getComponentType())
-                  {
-                     value = ARG_MATCH_YES;
-                  }
-                  else
-                  {
-                     // why are we not returning this?!? a test case should be devised to test the
-                     // implications...
-                     value = ARG_MATCH_NO;
-                  }
-               }
-            }
-            else if (check[z].isAssignableFrom(java.util.List.class))
-            {
-               // would a java.util.List or java.util.Collection satisfy the argument?
-               value = ARG_MATCH_YES;
-            }
-            else if (!check[z].isInstance(scalar.objectValue()))
-            {
-               return ARG_MATCH_NO;
-            }
-         }
-         else if (scalar.getHash() != null)
-         {
-            if (check[z].isAssignableFrom(java.util.Map.class))
-            {
-               // would a java.util.Map or java.util.Collection satisfy the argument?
-               value = ARG_MATCH_YES;
-            }
-            else if (!check[z].isInstance(scalar.objectValue()))
-            {
-               return ARG_MATCH_NO;
-            }
-         }
-         else if (check[z].isPrimitive() && !(stemp == INT_SCALAR || stemp == DOUBLE_SCALAR || stemp == LONG_SCALAR))
-         {
-            value = ARG_MATCH_MAYBE;
-         }
-         else if (check[z].isInterface())
-         {
-            if (!SleepUtils.isFunctionScalar(scalar) && !check[z].isInstance(scalar.objectValue()))
-               return ARG_MATCH_NO;
-         }
-         else if (check[z] == STRING_TYPE && stemp != STRING_SCALAR)
-         {
-            value = ARG_MATCH_MAYBE;
-         }
-         else if (!check[z].isInstance(scalar.objectValue()))
+         if (value == ARG_MATCH_NO)
          {
             return ARG_MATCH_NO;
          }
       }
- 
+
       return value;
+   }
+
+   /** converts the primitive version of the specified class to a regular usable version */
+   private static Class normalizePrimitive(Class check)
+   {
+      if (check == Integer.TYPE) { check = Integer.class; }
+      else if (check == Double.TYPE)   { check = Double.class; }
+      else if (check == Long.TYPE)     { check = Long.class; }
+      else if (check == Float.TYPE)    { check = Float.class; }
+      else if (check == Boolean.TYPE)  { check = Boolean.class; }
+      else if (check == Byte.TYPE)     { check = Byte.class; }
+      else if (check == Character.TYPE) { check = Character.class; }
+      else if (check == Short.TYPE)    { check = Short.class; }
+
+      return check;
+   }
+
+   /** determined if the specified scalar can be rightfully cast to the specified class */
+   public static int isArgMatch(Class check, Scalar scalar)
+   {
+      if (SleepUtils.isEmptyScalar(scalar))
+      {
+         return ARG_MATCH_YES;
+      }
+      else if (scalar.getArray() != null)
+      {
+         if (check.isArray())
+         {
+            Class compType = check.getComponentType(); /* find the actual nuts and bolts component type so we can work with it */
+            while (compType.isArray())
+            {
+               compType = compType.getComponentType();
+            }
+
+            if (compType == OBJECT_TYPE)
+            {
+               return ARG_MATCH_MAYBE;
+            }
+            else
+            {
+               Class mytype = getArrayType(scalar, null);
+ 
+               if (mytype == compType)
+               {
+                  return ARG_MATCH_YES;
+               }
+               else
+               {
+                  return ARG_MATCH_NO;
+               }
+            }
+         }
+         else if (check.isAssignableFrom(java.util.List.class))
+         {
+            // would a java.util.List or java.util.Collection satisfy the argument?
+            return ARG_MATCH_YES;
+         }
+         else if (check.isInstance(scalar.objectValue()))
+         {
+            return ARG_MATCH_YES;
+         }
+         else
+         {
+            return ARG_MATCH_NO;
+         }
+      }
+      else if (scalar.getHash() != null)
+      {
+         if (check.isAssignableFrom(java.util.Map.class))
+         {
+            // would a java.util.Map or java.util.Collection satisfy the argument?
+            return ARG_MATCH_YES;
+         }
+         else if (check.isInstance(scalar.objectValue()))
+         {
+            return ARG_MATCH_YES;
+         }
+         else
+         {
+            return ARG_MATCH_NO;
+         }
+      }
+      else if (check.isPrimitive())
+      {
+         Class stemp = scalar.getValue().getClass();
+
+         if (stemp == INT_SCALAR && check == Integer.TYPE)
+         {
+            return ARG_MATCH_YES;
+         }
+         else if (stemp == DOUBLE_SCALAR && check == Double.TYPE)
+         {
+            return ARG_MATCH_YES;
+         }
+         else if (stemp == LONG_SCALAR && check == Long.TYPE)
+         {
+            return ARG_MATCH_YES;
+         }
+         else if (stemp == OBJECT_SCALAR)
+         {
+            check = normalizePrimitive(check);
+            return (scalar.objectValue().getClass() == check) ? ARG_MATCH_YES : ARG_MATCH_NO;
+         }
+         else
+         {
+            /* this is my lazy way of saying allow Long, Int, and Double scalar types to be considered
+               maybes... */
+            return (stemp == STRING_SCALAR) ? ARG_MATCH_NO : ARG_MATCH_MAYBE;
+         }
+      }
+      else if (check.isInterface())
+      {
+         if (SleepUtils.isFunctionScalar(scalar) || check.isInstance(scalar.objectValue()))
+         {
+            return ARG_MATCH_YES;
+         }
+         else
+         {
+            return ARG_MATCH_NO;
+         }
+      }
+      else if (check == STRING_TYPE)
+      {
+         Class stemp = scalar.getValue().getClass();
+         return (stemp == STRING_SCALAR) ? ARG_MATCH_YES : ARG_MATCH_MAYBE;
+      }
+      else if (check == OBJECT_TYPE)
+      {
+         return ARG_MATCH_MAYBE; /* we're vying for anything and this will match anything */
+      }
+      else if (check.isInstance(scalar.objectValue()))
+      {
+         Class stemp = scalar.getValue().getClass();
+         return (stemp == OBJECT_SCALAR) ? ARG_MATCH_YES : ARG_MATCH_MAYBE;
+      }
+      else
+      {
+         return ARG_MATCH_NO;
+      }
    }
 
    public static Method findMethod(Class theClass, String method, Stack arguments)
@@ -201,6 +287,42 @@ public class ObjectUtilities
       return temp;
    }
 
+   /** converts the one character class description to the specified Class type, i.e. z = boolean, c = char, b = byte, i = integer, etc.. */
+   public static Class convertDescriptionToClass(String description)
+   {
+      Class atype = null;
+
+      switch (description.charAt(0))
+      {
+         case 'z':
+            atype = Boolean.TYPE;
+            break;
+         case 'c':
+            atype = Character.TYPE;
+            break;
+         case 'b':
+            atype = Byte.TYPE;
+            break;
+         case 'h':
+            atype = Short.TYPE;
+            break;
+         case 'i':
+            atype = Integer.TYPE;
+            break;
+         case 'l':
+            atype = Long.TYPE;
+            break;
+         case 'f':
+            atype = Float.TYPE;
+            break;
+         case 'd':
+            atype = Double.TYPE;
+            break;
+      }
+
+      return atype;
+   }
+
    public static Object buildArgument(Class type, Scalar value, ScriptInstance script)
    {
       if (type == STRING_TYPE)
@@ -211,19 +333,26 @@ public class ObjectUtilities
       {
          if (type.isArray())
          {
-            Class atype = getArrayType(value, type.getComponentType());
-
-            Object arrayV = Array.newInstance(atype, value.getArray().size());
-            Iterator i = value.getArray().scalarIterator();
-            int x = 0;
-            while (i.hasNext())
+            try
             {
-               Scalar temp = (Scalar)i.next();
-               Array.set(arrayV, x, buildArgument(atype, temp, script));
-               x++;
-            }
+               Class atype = getArrayType(value, type.getComponentType());
 
-            return arrayV;
+               Object arrayV = Array.newInstance(atype, value.getArray().size());
+               Iterator i = value.getArray().scalarIterator();
+               int x = 0;
+               while (i.hasNext())
+               {
+                   Scalar temp = (Scalar)i.next();
+                   Array.set(arrayV, x, buildArgument(atype, temp, script));
+                   x++;
+               }
+
+               return arrayV;
+            }
+            catch (Exception ex)
+            {
+               throw new RuntimeException(ex.getMessage() + " - maybe the dimensions are wrong?");
+            }
          }
          else if (type.isAssignableFrom(java.util.List.class))
          {
@@ -333,7 +462,6 @@ public class ObjectUtilities
  
       return parameters;
    }
-
 
    public static Scalar BuildScalar(boolean primitives, Object value)
    {

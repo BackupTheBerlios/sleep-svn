@@ -57,7 +57,7 @@ public class ObjectAccess extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      boolean isTrace = (e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS;
+      boolean isTrace   = (e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS;
 
       Scalar result = SleepUtils.getEmptyScalar();
 

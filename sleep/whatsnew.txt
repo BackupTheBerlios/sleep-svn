@@ -2,7 +2,22 @@
 ===========
 - fixed a bug with import [path] from: [jar] not working when a package.class
   combination was specified.
+- fixed a bug where HOES was not recognizing sleep arrays as a valid argument
+  for methods/constructs expecting multidimensional arrays.
+- HOES mapping scalars to Java arguments is now a little bit stricter and more 
+  accurate.
+- added &casti(value, "t") to cast the specified value into a Java primitive type.
+- altered the semtantics for how Java Object values are converted to Sleep
+  scalar number values.  Essentially the Object is converted to a string and the
+  string is parsed with the following meaning:
+  <not a number> = 0
+  "true"         = 1
+  "false"        = 0
+  ""             = 0
+  <a number>     = <a number>
 
+  The old semantics (object hashcode) were worthless so I doubt there will be 
+  many complaints.
 
 2.1-beta 4
 ===========

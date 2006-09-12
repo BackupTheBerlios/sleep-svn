@@ -40,16 +40,9 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
   
     public BasicNumbers()
     {
-       try
-       {
-          TYPE_LONG   = Class.forName("sleep.engine.types.LongValue");
-          TYPE_INT    = Class.forName("sleep.engine.types.IntValue");
-          TYPE_DOUBLE = Class.forName("sleep.engine.types.DoubleValue");
-       }
-       catch (Exception ex)
-       {
-          ex.printStackTrace();
-       }
+       TYPE_LONG   = sleep.engine.types.LongValue.class;
+       TYPE_INT    = sleep.engine.types.IntValue.class;
+       TYPE_DOUBLE = sleep.engine.types.DoubleValue.class;
     }
 
     public boolean scriptUnloaded(ScriptInstance aScript)

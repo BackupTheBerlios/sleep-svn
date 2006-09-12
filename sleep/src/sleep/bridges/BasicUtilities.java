@@ -75,7 +75,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
         temp.put("&map",    map_f);
         temp.put("&filter",    map_f);
-        temp.put("&cast",   new f_cast());
+
+        Function f_cast = new f_cast();
+        temp.put("&cast",    f_cast);
+        temp.put("&casti",   f_cast);
 
         temp.put("&addAll", this);
         temp.put("&removeAll", this);
@@ -253,6 +256,21 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           if (type.length() == 0) { type = " "; }
 
+          if (n.equals("&casti"))
+          {
+             Class  atype = ObjectUtilities.convertDescriptionToClass(type);
+
+             if (atype != null)
+             {
+                Object tempo = ObjectUtilities.buildArgument(atype, value, si);
+                return SleepUtils.getScalar(tempo);
+             }
+             else
+             {
+                throw new RuntimeException("&casti: '" + type + "' is an invalid primitive cast identifier");
+             }
+          }
+
           if (value.getArray() == null)
           {
              if (type.charAt(0) == 'c')
@@ -291,37 +309,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           Object rv;
 
-          Class atype = null;
+          Class atype = ObjectUtilities.convertDescriptionToClass(type);
 
-          switch (type.charAt(0))
-          {
-             case 'z':
-                atype = Boolean.TYPE;
-                break;
-             case 'c':
-                atype = Character.TYPE;
-                break;
-             case 'b':
-                atype = Byte.TYPE;
-                break;
-             case 'h':
-                atype = Short.TYPE;
-                break;
-             case 'i':
-                atype = Integer.TYPE;
-                break;
-             case 'l':
-                atype = Long.TYPE;
-                break;
-             case 'f':
-                atype = Float.TYPE;
-                break;
-             case 'd':
-                atype = Double.TYPE;
-                break;
-             default:
-                atype = ObjectUtilities.getArrayType(value, ObjectUtilities.OBJECT_TYPE);
-          }
+          if (atype == null)
+              atype = ObjectUtilities.getArrayType(value, ObjectUtilities.OBJECT_TYPE);
 
           Scalar flat = BridgeUtilities.flattenArray(value, null);
 
