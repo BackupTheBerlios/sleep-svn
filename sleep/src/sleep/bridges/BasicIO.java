@@ -36,6 +36,7 @@ import sleep.bridges.io.*;
 
 import java.util.zip.*;
 import javax.crypto.*;
+import java.security.*;
 
 /** provides IO functions for the sleep language */
 public class BasicIO implements Loadable, Function
@@ -131,6 +132,67 @@ public class BasicIO implements Loadable, Function
           long    to = BridgeUtilities.getLong(l, 0);
 
           return a.wait(i.getScriptEnvironment(), to);
+       }
+       else if (n.equals("&digest"))
+       {
+          Scalar   s = BridgeUtilities.getScalar(l);
+          if (s.objectValue() != null && s.objectValue() instanceof IOObject)
+          {
+             /* do our fun stuff to setup a checksum object */
+
+             boolean isRead  = true;
+
+             String temp = BridgeUtilities.getString(l, "MD5");
+             if (temp.charAt(0) == '>')
+             {
+                isRead  = false;
+                temp    = temp.substring(1);
+             }
+             
+             IOObject io = (IOObject)s.objectValue();
+
+             try
+             {
+                if (isRead)             {
+                   DigestInputStream cis = new DigestInputStream(io.getInputStream(), MessageDigest.getInstance(temp));
+                   io.openRead(cis);
+                   return SleepUtils.getScalar(cis.getMessageDigest());
+                }
+                else
+                {
+                   DigestOutputStream cos = new DigestOutputStream(io.getOutputStream(), MessageDigest.getInstance(temp));
+                   io.openWrite(cos);
+                   return SleepUtils.getScalar(cos.getMessageDigest());
+                }
+             }
+             catch (NoSuchAlgorithmException ex)
+             {
+                i.getScriptEnvironment().flagError("&digest: no such algorithm: " + temp);
+             }
+          }
+          else if (s.objectValue() != null && s.objectValue() instanceof MessageDigest)
+          {
+             MessageDigest sum = (MessageDigest)s.objectValue();
+             return SleepUtils.getScalar(sum.digest());
+          }
+          else
+          {
+             String temp = s.toString();
+             String algo = BridgeUtilities.getString(l, "MD5");
+             try
+             {
+
+                MessageDigest doit = MessageDigest.getInstance(algo);
+                doit.update(toByteArrayNoConversion(temp), 0, temp.length());
+                return SleepUtils.getScalar(doit.digest());
+             }
+             catch (NoSuchAlgorithmException ex)
+             {
+                i.getScriptEnvironment().flagError("&digest: no such algorithm: " + algo);
+             }
+          }
+
+          return SleepUtils.getEmptyScalar();
        }
        else if (n.equals("&checksum"))
        {
@@ -456,6 +518,7 @@ public class BasicIO implements Loadable, Function
        byte        bdata[] = new byte[8]; 
        ByteBuffer  buffer  = ByteBuffer.wrap(bdata);
        int         read    = 0;
+       int         early, later;
 
        while (pattern != null)
        {
@@ -475,6 +538,42 @@ public class BasicIO implements Loadable, Function
                 in.skip(pattern.count);
              }
              catch (Exception ex) { }
+          }
+          else if (pattern.value == 'h' || pattern.value == 'H')
+          {
+             StringBuffer temps = new StringBuffer();
+
+             try
+             {
+                for (int z = 0; (z < pattern.count || pattern.count == -1); z++)
+                {
+                   read = in.read(bdata, 0, 1);
+
+                   if (read < 1) throw new EOFException();
+ 
+                   early = (buffer.get(0) & 0x00F0) >> 4;
+                   later = (buffer.get(0) & 0x000F);
+
+                   if (pattern.value == 'h')
+                   {
+                      temps.append(Integer.toHexString(later));
+                      temps.append(Integer.toHexString(early));
+                   }
+                   else
+                   {
+                      temps.append(Integer.toHexString(early));
+                      temps.append(Integer.toHexString(later));
+                   }
+                }
+             }
+             catch (Exception fex) 
+             { 
+                if (control != null) control.close();
+                temp.getArray().push(SleepUtils.getScalar(temps.toString()));       
+                return temp;
+             }
+ 
+             temp.getArray().push( SleepUtils.getScalar(temps.toString()) ); // reads in a full on string :)
           }
           else if (pattern.value == 'z' || pattern.value == 'Z' || pattern.value == 'U' || pattern.value == 'u')
           {
@@ -722,6 +821,37 @@ public class BasicIO implements Loadable, Function
                 return;
              }
           }
+          else if (pattern.value == 'h' || pattern.value == 'H')
+          {
+             try
+             {
+                StringBuffer number = new StringBuffer("FF");
+                char[] tempchars = BridgeUtilities.getString(arguments, "").toCharArray();
+
+                for (int y = 0; y < tempchars.length; y += 2)
+                {
+                   if (pattern.value == 'H')
+                   {
+                      number.setCharAt(0, tempchars[y]);
+                      number.setCharAt(1, tempchars[y+1]);
+                   }
+                   else
+                   {
+                      number.setCharAt(0, tempchars[y+1]);
+                      number.setCharAt(1, tempchars[y]);
+                   }
+
+                   buffer.putInt(0, Integer.parseInt(number.toString(), 16));
+                   out.write(bdata, 3, 1);
+                }
+             }
+             catch (Exception ex)
+             {
+                ex.printStackTrace();
+                if (control != null) control.close();
+                return;
+             }
+          }
           else
           {
              for (int z = 0; z != pattern.count && !arguments.isEmpty(); z++)
@@ -929,7 +1059,7 @@ public class BasicIO implements Loadable, Function
 
           for (int x = 0; x < data.length; x++)
           {
-             value.append((char)data[x]);
+             value.append((char)(data[x] & 0x00FF));
           }
 
           return SleepUtils.getScalar(value.toString());

@@ -27,6 +27,15 @@
 
   The CRC32 and Adler32 algorithms are supported.  With an I/O handle specifying
   a > before the algorithm name indicates that written data should be checksummed.
+- added digest capability to sleep, the function is similar to checksum except
+  the function name is &digest.  The MD5 and SHA-1 algorithms are supported.
+  This function returns a string of bytes (can be converted to hex using 
+  unpack("H*", $digest_data")[0]).
+- added H/h to the binary format templates to allow byte data to be converted
+  to/from hex characters.  The H puts the high nybble first and the h puts the
+  low nybble first.
+- fixed a bug with &pack destroying the binary string thanks to Java's lack
+  of unsigned types.
 
 2.1-beta 4  (11 Sept 06)
 ===========

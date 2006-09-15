@@ -500,6 +500,22 @@ public class SleepUtils
       return temp;
    }
 
+   /** constructs a string scalar with value x interpreted as an array of unsigned bytes */
+   public static Scalar getScalar(byte[] x)
+   {
+      Scalar temp = new Scalar();
+      StringBuffer buff = new StringBuffer(x.length);
+      for (int y = 0; y < x.length; y++)
+      {
+         char append = (char)(x[y] & 0x00FF);
+         buff.append(append);
+      }
+
+      temp.setValue(new StringValue(buff.toString()));
+ 
+      return temp;
+   }
+
    /** returns a string scalar with value x */
    public static Scalar getScalar(String x)
    {
