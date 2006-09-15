@@ -34,6 +34,9 @@ import java.io.*;
 import java.nio.*;
 import sleep.bridges.io.*;
 
+import java.util.zip.*;
+import javax.crypto.*;
+
 /** provides IO functions for the sleep language */
 public class BasicIO implements Loadable, Function
 {
@@ -94,7 +97,30 @@ public class BasicIO implements Loadable, Function
 
         temp.put("&getConsole", new getConsoleObject());
 
+        /* integrity functions */
+        temp.put("&checksum", this);
+        temp.put("&digest",   this);
+
         return true;
+    }
+
+    private static byte[] toByteArrayNoConversion(String textz)
+    {
+        char[] text = textz.toCharArray();
+        byte[] data = new byte[text.length];
+        for (int x = 0; x < text.length; x++)
+        {
+           data[x] = (byte)text[x];
+        }
+
+        return data;
+    }
+
+    private static Checksum getChecksum(String algorithm)
+    {
+       if (algorithm.equals("Adler32")) { return new Adler32(); }
+       if (algorithm.equals("CRC32")) { return new CRC32(); }
+       return null;
     }
 
     public Scalar evaluate(String n, ScriptInstance i, Stack l)
@@ -105,6 +131,52 @@ public class BasicIO implements Loadable, Function
           long    to = BridgeUtilities.getLong(l, 0);
 
           return a.wait(i.getScriptEnvironment(), to);
+       }
+       else if (n.equals("&checksum"))
+       {
+          Scalar   s = BridgeUtilities.getScalar(l);
+          if (s.objectValue() != null && s.objectValue() instanceof IOObject)
+          {
+             /* do our fun stuff to setup a checksum object */
+
+             boolean isRead  = true;
+
+             String temp = BridgeUtilities.getString(l, "CRC32");
+             if (temp.charAt(0) == '>')
+             {
+                isRead  = false;
+                temp    = temp.substring(1);
+             }
+             
+             IOObject io = (IOObject)s.objectValue();
+
+             if (isRead)
+             {
+                CheckedInputStream cis = new CheckedInputStream(io.getInputStream(), getChecksum(temp));
+                io.openRead(cis);
+                return SleepUtils.getScalar(cis.getChecksum());
+             }
+             else
+             {
+                CheckedOutputStream cos = new CheckedOutputStream(io.getOutputStream(), getChecksum(temp));
+                io.openWrite(cos);
+                return SleepUtils.getScalar(cos.getChecksum());
+             }
+          }
+          else if (s.objectValue() != null && s.objectValue() instanceof Checksum)
+          {
+             Checksum sum = (Checksum)s.objectValue();
+             return SleepUtils.getScalar(sum.getValue());
+          }
+          else
+          {
+             String temp = s.toString();
+             String algo = BridgeUtilities.getString(l, "CRC32");
+
+             Checksum doit = getChecksum(algo);
+             doit.update(toByteArrayNoConversion(temp), 0, temp.length());
+             return SleepUtils.getScalar(doit.getValue());
+          }
        }
 
        System.out.println("apparently we were wrong about '" + n + "'");

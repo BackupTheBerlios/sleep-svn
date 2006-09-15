@@ -116,6 +116,18 @@ public class IOObject
       return console;
    }
 
+   /** Returns the latest hooking point into the input stream */
+   public InputStream getInputStream()
+   {
+      return in;
+   }
+
+   /** Returns the latest hooking point into the output stream */
+   public OutputStream getOutputStream()
+   {
+      return out;
+   }
+
    /** Initializes a binary reader (a DataInputStream) and a text reader (a BufferedReader) against this input stream.  Calling this effectively makes this IOObject useable with Sleep's IO read* functions. */
    public void openRead(InputStream _in)
    {
