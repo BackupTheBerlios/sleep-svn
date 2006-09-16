@@ -36,6 +36,8 @@
   low nybble first.
 - fixed a bug with &pack destroying the binary string thanks to Java's lack
   of unsigned types.
+- When a Java byte array is returned by a HOES call, a sleep byte string will 
+  be created from this value.
 
 2.1-beta 4  (11 Sept 06)
 ===========

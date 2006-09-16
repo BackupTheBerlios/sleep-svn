@@ -468,21 +468,33 @@ public class ObjectUtilities
       if (value == null)
          return SleepUtils.getEmptyScalar();
 
-      if (value.getClass().isArray())
-      {
-         Scalar array = SleepUtils.getArrayScalar();
-         for (int x = 0; x < Array.getLength(value); x++)
-         {
-            array.getArray().push(BuildScalar(true, Array.get(value, x)));
-         }
-
-         return array;
-      }
-
       Class check = value.getClass();
+
+      if (check.isArray())
+      {
+         if (check.getComponentType() == Byte.TYPE || check.getComponentType() == BYTE_TYPE)
+         {
+            return SleepUtils.getScalar((byte[])value);            
+         }
+         else
+         {
+            Scalar array = SleepUtils.getArrayScalar();
+            for (int x = 0; x < Array.getLength(value); x++)
+            {
+               array.getArray().push(BuildScalar(true, Array.get(value, x)));
+            }
+
+            return array;
+         }
+      }
 
       if (primitives)
       {
+         if (check.isPrimitive()) 
+         { 
+            check = normalizePrimitive(check); /* just in case, shouldn't be needed typically */
+         }
+
          if (check == BOOLEAN_TYPE)
          {
             return SleepUtils.getScalar(  ((Boolean)value).booleanValue() ? 1 : 0 );
