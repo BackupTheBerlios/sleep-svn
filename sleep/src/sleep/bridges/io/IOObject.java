@@ -156,9 +156,13 @@ public class IOObject
    {
       try
       {
-         in.notifyAll();  // done to prevent a deadlock, trust me it works
-         out.notifyAll(); // done to prevent a deadlock, trust me it works
-
+         if (in != null) { in.notifyAll(); } // done to prevent a deadlock, trust me it works
+         if (out != null) { out.notifyAll(); } // done to prevent a deadlock, trust me it works
+      }
+      catch (Exception ex) { } /* we might get an illegal monitor state type exception if we don't own
+                                  the lock from this thread... in that case we move on with our lives */
+      try
+      {
          if (reader != null)
            reader.close();
 
@@ -176,7 +180,6 @@ public class IOObject
       }
       catch (Exception ex)
       {
-
       }
       finally
       {
