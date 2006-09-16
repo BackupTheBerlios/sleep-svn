@@ -22,8 +22,6 @@ import sleep.runtime.*;
 
 public class IOObject
 {
-   private static IOObject console = null;
-
    /* input pipeline */ 
 
    protected DataInputStream     readerb = null; /* used to support the binary read/write stuffz */
@@ -94,25 +92,20 @@ public class IOObject
       token = t;
    }
 
-   /** this method is no longer the preferred way for obtaining the console IOObject */
-   public static IOObject getConsole()
-   {
-      IOObject temp = new IOObject();
-      temp.openRead(System.in);
-      temp.openWrite(System.out);
-
-      return temp;
-   }
-
-   /** returns an IOObject that represents stdin/stdout */
+   /** returns an IOObject that represents stdin/stdout to Sleep's I/O API.  To set a script's console
+       object install an IOObject into a script environment under the variable name %console% */
    public static IOObject getConsole(ScriptEnvironment environment)
    {
+      IOObject console = (IOObject)environment.getEnvironment().get("%console%");
+
       if (console == null)
       {
          console = new IOObject();
          console.openRead(System.in);
          console.openWrite(System.out);
+         environment.getEnvironment().put("%console%", console);
       }
+
       return console;
    }
 

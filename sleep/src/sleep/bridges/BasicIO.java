@@ -401,7 +401,7 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject a = chooseSource(l, 1);
+          IOObject a = chooseSource(l, 1, i);
     
           String temp = a.readLine();
 
@@ -418,7 +418,7 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject a = chooseSource(l, 1);
+          IOObject a = chooseSource(l, 1, i);
 
           Scalar ar = SleepUtils.getArrayScalar();
           
@@ -436,7 +436,7 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject a = chooseSource(l, 2);
+          IOObject a = chooseSource(l, 2, i);
 
           String temp = BridgeUtilities.getString(l, "");
           a.printLine(temp);
@@ -449,7 +449,7 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance inst, Stack l)
        {
-          IOObject a       = chooseSource(l, 2);
+          IOObject a       = chooseSource(l, 2, inst);
 
           Iterator i = BridgeUtilities.getIterator(l, inst);
           while (i.hasNext())
@@ -465,7 +465,7 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject a = chooseSource(l, 2);
+          IOObject a = chooseSource(l, 2, i);
 
           String temp = BridgeUtilities.getString(l, "");
           a.print(temp);
@@ -479,14 +479,14 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject a = chooseSource(l, 1);
+          IOObject a = chooseSource(l, 1, i);
           a.sendEOF();
 
           return SleepUtils.getEmptyScalar();
        }
     }
 
-    private static IOObject chooseSource(Stack l, int args)
+    private static IOObject chooseSource(Stack l, int args, ScriptInstance i)
     {
        IOObject a;
 
@@ -496,7 +496,7 @@ public class BasicIO implements Loadable, Function
        }
        else
        {
-          a = IOObject.getConsole();
+          a = IOObject.getConsole(i.getScriptEnvironment());
        }  
 
        return a;
@@ -928,7 +928,7 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject        a = chooseSource(l, 2);
+          IOObject        a = chooseSource(l, 2, i);
           String    pattern = BridgeUtilities.getString(l, "");
 
           return ReadFormatted(pattern, a.getReader(), i.getScriptEnvironment(), a);
@@ -939,7 +939,7 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject        a = chooseSource(l, 3);
+          IOObject        a = chooseSource(l, 3, i);
           String    pattern = BridgeUtilities.getString(l, "");
 
           WriteFormatted(pattern, a.getWriter(), l, a);
@@ -951,7 +951,7 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject        a = chooseSource(l, 2);
+          IOObject        a = chooseSource(l, 2, i);
           a.getInputBuffer().mark(BridgeUtilities.getInt(l, 1024 * 10 * 10));
 
           return SleepUtils.getEmptyScalar();
@@ -964,7 +964,7 @@ public class BasicIO implements Loadable, Function
        {
           try
           {
-             IOObject        a = chooseSource(l, 1);
+             IOObject        a = chooseSource(l, 1, i);
 
              if (l.isEmpty())
              {
@@ -1001,7 +1001,7 @@ public class BasicIO implements Loadable, Function
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
           try {
-          IOObject        a = chooseSource(l, 2);
+          IOObject        a = chooseSource(l, 2, i);
           a.getInputBuffer().skip(BridgeUtilities.getLong(l, 0));
           } catch (Exception ex) { }
 
@@ -1014,7 +1014,7 @@ public class BasicIO implements Loadable, Function
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
           try {
-          IOObject        a = chooseSource(l, 1);
+          IOObject        a = chooseSource(l, 1, i);
           a.getInputBuffer().reset();
           } catch (Exception ex) { }
 
@@ -1070,7 +1070,7 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject     a = chooseSource(l, 2);
+          IOObject     a = chooseSource(l, 2, i);
           String    data = BridgeUtilities.getString(l, "");
 
           try
@@ -1095,7 +1095,7 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject         a = chooseSource(l, 2);
+          IOObject         a = chooseSource(l, 2, i);
           int             to = BridgeUtilities.getInt(l, 1);
 
           StringBuffer temp = new StringBuffer(to);
@@ -1121,7 +1121,7 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject     a = chooseSource(l, 2);
+          IOObject     a = chooseSource(l, 2, i);
           SleepClosure b = BridgeUtilities.getFunction(l, i);
 
           Thread fred = new Thread(new CallbackReader(a, i, b, BridgeUtilities.getInt(l, 0)));

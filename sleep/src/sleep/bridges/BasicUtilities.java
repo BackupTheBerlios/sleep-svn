@@ -275,7 +275,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
           {
              if (type.charAt(0) == 'c')
              {
-                return SleepUtils.getScalar(value.toString().toCharArray());
+                return SleepUtils.getScalar((Object)value.toString().toCharArray());
              }             
              else if (type.charAt(0) == 'b')
              {
@@ -289,7 +289,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
                    tempb[x] = (byte)tempc[x];
                 }
 
-                return SleepUtils.getScalar(tempb);
+                return SleepUtils.getScalar((Object)tempb);
              }             
 
              return SleepUtils.getEmptyScalar();
