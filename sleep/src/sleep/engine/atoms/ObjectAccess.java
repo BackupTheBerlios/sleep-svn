@@ -243,7 +243,7 @@ public class ObjectAccess extends Step
       {
          if (!e.getCurrentFrame().isEmpty())
          {
-            e.getScriptInstance().fireWarning("there is no method " + name + " that takes " + e.getCurrentFrame().size() + " arguments in " + theClass, getLineNumber());
+            e.getScriptInstance().fireWarning("there is no method that matches " + name + "("+SleepUtils.describe(e.getCurrentFrame()) + ") in " + theClass.getName(), getLineNumber());
          }
          else
          {

@@ -103,7 +103,7 @@ public class ObjectNew extends Step
          }
          else
          {
-            e.getScriptInstance().fireWarning("no " + e.getCurrentFrame().size() + " argument constructor exists for class " + name.getName(), getLineNumber());
+            e.getScriptInstance().fireWarning("no constructor matching "+name.getName()+"(" + SleepUtils.describe(e.getCurrentFrame()) + ")", getLineNumber());
          }
       }
       catch (InvocationTargetException ite)
