@@ -1,4 +1,4 @@
-2.1-beta 5
+2.1-beta 5  (17 Sept 06)
 ===========
 - fixed a bug with import [path] from: [jar] not working when a package.class
   combination was specified.
@@ -40,7 +40,7 @@
   be created from this value.
 - fixed a deadlock issue with fork/wait with close being called on fork while
   in the middle of a read.
-- sleep I/O now uses the IOObject stored in the environment under %consol% as
+- sleep I/O now uses the IOObject stored in the environment under %console% as
   the source for stdin/stdout (this is set to System.in and System.out by 
   default).
 

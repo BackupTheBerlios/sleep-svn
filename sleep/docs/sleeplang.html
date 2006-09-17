@@ -2184,6 +2184,21 @@ will be returned by &amp;wait.  if $handle is a process, the return value of the
  </tr>
  <tr>
   <td>$</td>
+  <td>checksum($handle, ">algorithm")</td>
+  <td>setups the specified handle so that all reads (or if > is specified in the algorithm, writes) are checksummed using the specified algorithm.  This function returns a $checksum object that can be used to obtain the final digest value.  Valid algorithms are Adler32 and CRC32</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>checksum($checksum)</td>
+  <td>returns (as a scalar long) the checksum of the handle being checksummed with $checksum</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>checksum("string", "algorithm")</td>
+  <td>returns (as a scalar long) the checksum of the specified byte string using the specified algorithm</td>
+ </tr>
+ <tr>
+  <td>$</td>
   <td>cos($scalar)</td>
   <td>returns the cosine value of angle $scalar (radians)</td>
  </tr>
@@ -2191,6 +2206,21 @@ will be returned by &amp;wait.  if $handle is a process, the return value of the
   <td>$</td>
   <td>degrees($scalar)</td>
   <td>converts the angle $scalar measured in radians to an approximately equivalent angle in degrees</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>digest($handle, ">algorithm")</td>
+  <td>setups the specified handle so that all reads (or if > is specified in the algorithm, writes) are digested using the specified algorithm.  This function returns a $digest object that can be used to obtain the final digest value.  Valid algorithms are MD5 and SHA-1</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>digest($digest)</td>
+  <td>returns (as bytes) the digest of the handle being digested with $digest</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>digest("string", "algorithm")</td>
+  <td>returns (as bytes) the digest of the specified byte string using the specified algorithm</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2414,6 +2444,12 @@ n-m substrings will be returned.</td>
   <td>$</td>
   <td>compile_closure("code", ...)</td>
   <td>compiles the specified code into a sleep closure.  key/value pairs can be specified as initial values similar to &amp;lambda.  syntax errors can be obtained with &amp;checkError()</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>casti($scalar, 't')</td>
+  <td>casts $scalar into an object scalar representing a native java value of type t where t can be b = byte, c = char, d = 
+      double, f = float, h = short, i = int, l = long, z = boolean.</td>
  </tr>
  <tr>
   <td>$</td>
@@ -3190,6 +3226,16 @@ retrieve/store binary data into a string scalar or a file.</p>
   <td>f</td>
   <td>4</td>
   <td>float (uses IEEE 754 floating-point "single format" bit layout)</td>
+ </tr>
+ <tr>
+  <td>h</td>
+  <td>1</td>
+  <td>a hex byte (low nybble first)</td>
+ </tr>
+ <tr>
+  <td>H</td>
+  <td>1</td>
+  <td>a hex byte (high nybble first)</td>
  </tr>
  <tr>
   <td>i</td>
