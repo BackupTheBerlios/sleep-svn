@@ -30,7 +30,7 @@
 - added digest capability to sleep, the function is similar to checksum except
   the function name is &digest.  The MD5 and SHA-1 algorithms are supported.
   This function returns a string of bytes (can be converted to hex using 
-  unpack("H*", $digest_data")[0]).
+  unpack("H*", $digest_data)[0]).
 - added H/h to the binary format templates to allow byte data to be converted
   to/from hex characters.  The H puts the high nybble first and the h puts the
   low nybble first.
