@@ -37,6 +37,7 @@
            <include name="sleep/console/ConsoleImplementation.java" />
            <include name="sleep/console/ConsoleProxy.java" />
            <include name="sleep/engine/Block.java" />
+           <include name="sleep/engine/ObjectUtilities.java" />
            <include name="sleep/engine/atoms/Check.java" />
            <include name="sleep/error/*.java" />
            <include name="sleep/interfaces/*.java" />

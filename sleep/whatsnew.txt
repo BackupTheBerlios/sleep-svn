@@ -1,3 +1,12 @@
+2.1-beta 6 
+===========
+- added named parameters for Sleep closures.  When a $key => value argument is
+  passed to a sleep closure the value will be installed into the local scope of
+  the function as variable $key.  This breaks the old behavior which was to 
+  convert the key/value pair into a string i.e. $key=value
+- improved function call traceing to detect when a function call failed and to
+  indicate that such an event occured.
+
 2.1-beta 5  (17 Sept 06)
 ===========
 - fixed a bug with import [path] from: [jar] not working when a package.class

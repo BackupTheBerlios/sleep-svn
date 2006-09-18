@@ -99,11 +99,9 @@ public class ObjectAccess extends Step
          {
             String args = SleepUtils.describe(e.getCurrentFrame());
 
-            result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
-
             /* construct the actual trace message */
 
-            StringBuffer trace = new StringBuffer("[&closure");
+            StringBuffer trace = new StringBuffer("[" + SleepUtils.describe(scalar));
            
             if (name != null && name.length() > 0)
             {
@@ -119,12 +117,23 @@ public class ObjectAccess extends Step
                trace.append("]");
             }
 
-            if (!SleepUtils.isEmptyScalar(result))
+            try
             {
-               trace.append(" = " + SleepUtils.describe(result));
-            }
+               result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
 
-            e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+               if (!SleepUtils.isEmptyScalar(result))
+               {
+                  trace.append(" = " + SleepUtils.describe(result));
+               }
+
+               e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+            }
+            catch (RuntimeException rex)
+            {
+               trace.append(" - FAILED!");
+               e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+               throw(rex);
+            }
          }
          else
          {
@@ -172,7 +181,6 @@ public class ObjectAccess extends Step
                if (args.length() > 0) { args = ": " + args; }
 
                parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
-               result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
 
                /* construct the actual trace message */
 
@@ -187,12 +195,23 @@ public class ObjectAccess extends Step
                   trace.append(SleepUtils.describe(scalar) + " " + name + args + "]");
                }
 
-               if (!SleepUtils.isEmptyScalar(result))
+               try
                {
-                  trace.append(" = " + SleepUtils.describe(result));
-               }
+                  result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
 
-               e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+                  if (!SleepUtils.isEmptyScalar(result))
+                  {
+                     trace.append(" = " + SleepUtils.describe(result));
+                  }
+
+                  e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+               }
+               catch (RuntimeException rex)
+               {
+                  trace.append(" - FAILED!");
+                  e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+                  throw(rex);
+               }
             }
             else
             {

@@ -60,16 +60,24 @@ public class Call extends Step
          {
              String args = SleepUtils.describe(e.getCurrentFrame());
 
-             temp = callme.evaluate(function, e.getScriptInstance(), e.getCurrentFrame());
-             e.clearReturn();
-             
-             if (SleepUtils.isEmptyScalar(temp))
+             try
              {
-                e.getScriptInstance().fireWarning(function + "(" + args + ")", getLineNumber(), true);
+                temp = callme.evaluate(function, e.getScriptInstance(), e.getCurrentFrame());
+                e.clearReturn();
+              
+                if (SleepUtils.isEmptyScalar(temp))
+                {
+                   e.getScriptInstance().fireWarning(function + "(" + args + ")", getLineNumber(), true);
+                }
+                else
+                {
+                   e.getScriptInstance().fireWarning(function + "(" + args + ") = " + SleepUtils.describe(temp), getLineNumber(), true);
+                }
              }
-             else
+             catch (RuntimeException rex)
              {
-                e.getScriptInstance().fireWarning(function + "(" + args + ") = " + SleepUtils.describe(temp), getLineNumber(), true);
+                e.getScriptInstance().fireWarning(function + "(" + args + ") - FAILED!", getLineNumber(), true);
+                throw(rex);
              }
          }
          else

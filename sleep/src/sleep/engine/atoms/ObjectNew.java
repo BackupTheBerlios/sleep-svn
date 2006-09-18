@@ -77,7 +77,6 @@ public class ObjectNew extends Step
                String args = SleepUtils.describe(e.getCurrentFrame());
 
                parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
-               result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
 
                StringBuffer trace = new StringBuffer("[new " + name.getName());
 
@@ -88,12 +87,23 @@ public class ObjectNew extends Step
 
                trace.append("]");
 
-               if (!SleepUtils.isEmptyScalar(result))
+               try
                {
-                  trace.append(" = " + SleepUtils.describe(result));
-               }
+                  result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
 
-               e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
+                  if (!SleepUtils.isEmptyScalar(result))
+                  {
+                     trace.append(" = " + SleepUtils.describe(result));
+                  }
+
+                  e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
+               }
+               catch (RuntimeException rex)
+               {
+                  trace.append(" - FAILED!");
+                  e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
+                  throw(rex);
+               }
             }
             else
             {

@@ -25,6 +25,7 @@ import java.util.*;
 import java.io.*;
 
 import sleep.engine.*;
+import sleep.engine.types.*;
 import sleep.interfaces.*;
 import sleep.runtime.*;
 
@@ -174,8 +175,26 @@ public class SleepClosure implements Function
           int name = 1;
           while (!locals.isEmpty())
           {
-             vars.setScalarLevel("$"+name, (Scalar)locals.pop(), localLevel);
-             name++;
+             Scalar lvar = (Scalar)locals.pop();
+
+             if (lvar.getValue() != null && lvar.getValue().getClass() == ObjectValue.class && lvar.getValue().objectValue() != null && lvar.getValue().objectValue().getClass() == KeyValuePair.class)
+             {
+                KeyValuePair kvp = (KeyValuePair)lvar.getValue().objectValue();
+
+                if (kvp.getKey().toString().charAt(0) != '$')
+                {
+                   throw new IllegalArgumentException("unreachable named parameter: " + kvp.getKey());
+                }
+                else
+                {
+                   vars.setScalarLevel(kvp.getKey().toString(), kvp.getValue(), localLevel);
+                }
+             } 
+             else
+             {
+                vars.setScalarLevel("$"+name, lvar, localLevel);
+                name++;
+             }
           }
 
           vars.setScalarLevel("@_", SleepUtils.getArrayScalar(new ArgumentArray(name, localLevel)), localLevel);
