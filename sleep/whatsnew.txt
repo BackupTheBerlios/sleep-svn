@@ -10,6 +10,7 @@
 - when yield is called, the local variable state is preserved until the 
   coroutine is called again (only when the coroutine is reset, i.e. exited w/o
   a yield is the local variable state dropped).
+- added an error check for attempts to pack odd length hex strings
 
 2.1-beta 5  (17 Sept 06)
 ===========

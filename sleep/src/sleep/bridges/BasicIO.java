@@ -826,7 +826,14 @@ public class BasicIO implements Loadable, Function
              try
              {
                 StringBuffer number = new StringBuffer("FF");
-                char[] tempchars = BridgeUtilities.getString(arguments, "").toCharArray();
+                String       argzz  = BridgeUtilities.getString(arguments, "");
+             
+                if ((argzz.length() % 2) != 0)
+                {
+                   throw new IllegalArgumentException("can not pack '" + argzz + "' as hex string, number of characters must be even");
+                }
+
+                char[] tempchars = argzz.toCharArray();
 
                 for (int y = 0; y < tempchars.length; y += 2)
                 {
@@ -844,6 +851,11 @@ public class BasicIO implements Loadable, Function
                    buffer.putInt(0, Integer.parseInt(number.toString(), 16));
                    out.write(bdata, 3, 1);
                 }
+             }
+             catch (IllegalArgumentException aex)
+             {
+                if (control != null) control.close();
+                throw (aex);
              }
              catch (Exception ex)
              {
