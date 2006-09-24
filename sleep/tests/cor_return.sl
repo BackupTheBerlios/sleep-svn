@@ -15,7 +15,9 @@ sub a
 
    yield 3;
   
-   yield 4;
+   return 4; # this last return is required, if this was a yield we would resume execution of this
+             # coroutine after this statement which would cause the sub to immediately return an
+             # implied $null.
 }
 
 println("Test 1: ");
@@ -35,8 +37,8 @@ println("Test 2: ");
 println(a());
 println(a());
 println(a("boogidy boogidy"));
-println(a());
 
+println(a());
 println(a());
 println(a());
 println(a());

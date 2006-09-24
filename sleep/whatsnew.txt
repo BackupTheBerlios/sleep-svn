@@ -6,6 +6,10 @@
   convert the key/value pair into a string i.e. $key=value
 - improved function call traceing to detect when a function call failed and to
   indicate that such an event occured.
+- coroutines are now allowed to call themselves in a recursive manner
+- when yield is called, the local variable state is preserved until the 
+  coroutine is called again (only when the coroutine is reset, i.e. exited w/o
+  a yield is the local variable state dropped).
 
 2.1-beta 5  (17 Sept 06)
 ===========

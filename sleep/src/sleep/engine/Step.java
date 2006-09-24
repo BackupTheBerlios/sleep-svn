@@ -30,7 +30,7 @@ The root of all atomic steps.
 </pre> */
 
 
-public abstract class Step implements Serializable
+public class Step implements Serializable
 {
    /** the script line number that this step was generated from */
    protected int  line;
@@ -57,6 +57,9 @@ public abstract class Step implements Serializable
    }
 
    /** evaluate this atomic step. */
-   public abstract Scalar evaluate(ScriptEnvironment e);
+   public Scalar evaluate(ScriptEnvironment e) 
+   {
+      return SleepUtils.getEmptyScalar();
+   }
 }
 

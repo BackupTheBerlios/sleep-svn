@@ -1058,6 +1058,15 @@ public class CodeGenerator implements ParserConstants
            {
               atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_YIELD);
               add(atom, tokens[0]);
+
+              /* for some reason, yield breaks in certain cases if a yield happens
+                 at the end of a block and no other steps come after it.  this has
+                 only reared its head once I started allowing recursive coroutines
+                 to combat the problem I've opted to introduce a null operation
+                 after each yield, this fixes the problem.  hopefully it doesn't
+                 show itself in some other way in the future.  :~( *cry* */
+              atom = GeneratedSteps.NullOperation();
+              add(atom, tokens[0]);
            }
            else
            {

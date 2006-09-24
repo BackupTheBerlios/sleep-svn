@@ -46,6 +46,12 @@ public class GeneratedSteps
        return temp;
     }
 
+    public static Step NullOperation()
+    {
+       Step temp = new Step();
+       return temp;
+    }
+
     public static Step IteratorCreate(String key, String value)
     {
        return new Iterate(key, value, Iterate.ITERATOR_CREATE);

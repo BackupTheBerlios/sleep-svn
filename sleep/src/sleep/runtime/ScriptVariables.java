@@ -207,6 +207,12 @@ public class ScriptVariables implements Serializable
        closure.removeFirst();
     }
 
+    /** makes the specified variable container active for the local scope.  once the code that is using this has finished, it really should be popped. */
+    public void pushLocalLevel(Variable localVariables)
+    {
+       locals.addFirst(localVariables);
+    }
+
     /** starts a new local variable scope.  once the code that is using this has finished, it should be popped */
     public void pushLocalLevel()
     {

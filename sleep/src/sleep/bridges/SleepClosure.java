@@ -73,13 +73,34 @@ public class SleepClosure implements Function
     Block                code;
 
     /** the owning script associated with this sleep closure */
-    ScriptInstance      owner; 
+    ScriptInstance      owner;
 
     /** the saved context of this closure */
     Stack             context;
 
     /** the meta data for this closure context */
     HashMap          metadata; 
+
+    /** saves the top level context */
+    private void saveToplevelContext(Stack _context, Variable localLevel)
+    {
+       if (!_context.isEmpty())
+       {
+          _context.push(localLevel); /* push the local vars on to the top of the context stack,
+                                        this better be popped before use!!! */
+          context.push(_context);
+       }
+    }
+
+    /** returns the top most context stack... */
+    private Stack getToplevelContext()
+    {
+       if (context.isEmpty())
+       {
+          return new Stack();
+       }
+       return (Stack)context.pop();
+    }
 
     public String toString()
     {
@@ -155,16 +176,27 @@ public class SleepClosure implements Function
        ScriptVariables   vars = si.getScriptVariables();
        ScriptEnvironment env  = si.getScriptEnvironment();
 
+       Variable          localLevel;
+
        Scalar temp; // return value of subroutine.
 
        synchronized (vars)
        {
-          env.loadContext(context, metadata);
+          Stack toplevel = getToplevelContext();
+          env.loadContext(toplevel, metadata);
 
           vars.pushClosureLevel(this);
-          vars.pushLocalLevel();
 
-          Variable localLevel = vars.getLocalVariables();
+          if (toplevel.isEmpty()) /* a normal closure call */
+          {
+             vars.pushLocalLevel();
+             localLevel = vars.getLocalVariables();
+          }
+          else /* restoring from a coroutine */
+          {
+             localLevel = (Variable)toplevel.pop();
+             vars.pushLocalLevel(localLevel);
+          }
 
           vars.setScalarLevel("$0", SleepUtils.getScalar(message), localLevel);
 
@@ -202,7 +234,7 @@ public class SleepClosure implements Function
           //
           // call the function, save the scalar that was returned. 
           //
-          if (context.isEmpty())
+          if (toplevel.isEmpty())
           {
              temp = code.evaluate(env);
           }
@@ -211,7 +243,7 @@ public class SleepClosure implements Function
              temp = env.evaluateOldContext();
           }
 
-          context = env.saveContext();
+          saveToplevelContext(env.saveContext(), localLevel);
 
           vars.popLocalLevel();
           vars.popClosureLevel();
