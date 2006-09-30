@@ -111,7 +111,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
         // closure / function handle type stuff
         temp.put("&lambda",    new lambda());
-        temp.put("&function",  new function());
+
+        function funcs = new function();
+        temp.put("&function",  funcs);
+        temp.put("&setf",      funcs);
         temp.put("&compile_closure",    new compile_closure());
         temp.put("&eval",     new eval());
         temp.put("&expr",     new expr());
@@ -368,8 +371,38 @@ public class BasicUtilities implements Function, Loadable, Predicate
     {
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
-          String temp = BridgeUtilities.getString(l, "");
-          return SleepUtils.getScalar(si.getScriptEnvironment().getFunction(temp));
+          if (n.equals("&function"))
+          {
+             String temp = BridgeUtilities.getString(l, "");
+             return SleepUtils.getScalar(si.getScriptEnvironment().getFunction(temp));
+          }
+          else if (n.equals("&setf"))
+          {
+             String   temp = BridgeUtilities.getString(l, "&eh");
+             Object   o    = BridgeUtilities.getObject(l);
+
+             if (temp.charAt(0) == '&' && (o == null || o instanceof Function))
+             {
+                if (o == null)
+                {
+                   si.getScriptEnvironment().getEnvironment().remove(temp);
+                }
+                else
+                {
+                   si.getScriptEnvironment().getEnvironment().put(temp, o);
+                }
+             }
+             else if (temp.charAt(0) != '&')
+             {
+                throw new IllegalArgumentException("&setf: invalid function name '" + temp + "'");
+             }
+             else if (o != null)
+             {
+                throw new IllegalArgumentException("&setf: can not set function " + temp + " to a " + o.getClass());
+             }
+          }
+
+          return SleepUtils.getEmptyScalar();
        }
     }
 

@@ -2,7 +2,7 @@
 # test setting of fields...
 #
 
-import org.hick.blah.SqueezeBox from: tests/data/test.jar;
+import org.hick.blah.SqueezeBox from: data/test.jar;
 
 $sb1 = [new SqueezeBox];
 $sb2 = [new SqueezeBox];

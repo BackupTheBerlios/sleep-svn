@@ -15,6 +15,8 @@
   found.
 - added a &setField(class|$object, "field", value) function for setting the 
   value of a field in a Java class or object.
+- added &setf('&function', { closure }) for setting a named closure (i.e. a 
+  subroutine).
 
 2.1-beta 5  (17 Sept 06)
 ===========
