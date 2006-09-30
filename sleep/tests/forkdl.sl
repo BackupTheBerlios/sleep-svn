@@ -1,8 +1,7 @@
 #
 # reproduce a deadlock problem with fork...
 #
-
-$REAL = 990741747; # output of UNIX crc32 command for test.jar
+$REAL = 453947233; # output of UNIX crc32 command for test.jar
 
 # third test.. the kewlest test of them all...
 

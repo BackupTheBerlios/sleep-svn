@@ -11,6 +11,10 @@
   coroutine is called again (only when the coroutine is reset, i.e. exited w/o
   a yield is the local variable state dropped).
 - added an error check for attempts to pack odd length hex strings
+- parser now throws an error if a jar file specified with import * from: is not
+  found.
+- added a &setField(class|$object, "field", value) function for setting the 
+  value of a field in a Java class or object.
 
 2.1-beta 5  (17 Sept 06)
 ===========

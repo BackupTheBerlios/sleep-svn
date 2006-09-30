@@ -2,7 +2,7 @@
 # test the digest API
 #
 
-$REAL = '17bc99c1ea48937e2f702c7ef1c5025c'; # output of UNIX md5 command for test.jar
+$REAL = '052168a92bfc545941d9352b35288ac3';# output of UNIX md5 command for test.jar
 
 # first test... digest an I/O handle :)
 

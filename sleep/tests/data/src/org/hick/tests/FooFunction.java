@@ -7,6 +7,8 @@ import java.util.*;
 
 public class FooFunction implements Function
 {
+   public static double aField = 3.0;
+
    private int calls = 0;
 
    public Scalar evaluate(String name, ScriptInstance script, Stack locals)

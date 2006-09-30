@@ -76,8 +76,10 @@ public class Parser
    protected HashMap    jars      = new HashMap(); /* resolved jar files, key=jar name value=ClassLoader */
 
    /** Used by hoes to import package names... */
-   public void importPackage(String packagez, String from)
+   public File importPackage(String packagez, String from)
    {
+       File returnValue = null;
+
        String pack, clas;
        clas = packagez.substring(packagez.lastIndexOf(".") + 1, packagez.length());
        pack = packagez.substring(0, packagez.lastIndexOf("."));
@@ -88,10 +90,12 @@ public class Parser
        {
           try
           {
-             URLClassLoader loader = new URLClassLoader(new URL[] { ParserConfig.findJarFile(from).toURL() }, Thread.currentThread().getContextClassLoader());
+             returnValue = ParserConfig.findJarFile(from);
+ 
+             URLClassLoader loader = new URLClassLoader(new URL[] { returnValue.toURL() }, Thread.currentThread().getContextClassLoader());
              jars.put(from, loader);
           }
-          catch (Exception ex) { }
+          catch (Exception ex) { ex.printStackTrace(); }
        }
 
        /* handle importing our package */
@@ -107,12 +111,12 @@ public class Parser
           Class found = findImportedClass(packagez);
           classes.put(clas, found);
        }
+
+       return returnValue;
    }
 
    private Class resolveClass(String pack, String clas, String jar)
    {
-//       System.out.println("Attempting to resolve: '" + pack + "' + '" + clas + "' + '" + jar + "'");
-
        try
        {
           if (jar != null)

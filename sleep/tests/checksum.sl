@@ -1,8 +1,7 @@
 #
 # test the checksum API
 #
-
-$REAL = 990741747; # output of UNIX crc32 command for test.jar
+$REAL = 453947233; # output of UNIX crc32 command for test.jar
 
 # first test... checksumming an I/O handle :)
 
