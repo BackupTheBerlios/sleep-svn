@@ -1,4 +1,4 @@
-2.1-beta 6 
+2.1-beta 6  (1 Oct 06)
 ===========
 - added named parameters for Sleep closures.  When a $key => value argument is
   passed to a sleep closure the value will be installed into the local scope of
