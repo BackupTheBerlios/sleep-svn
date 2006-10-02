@@ -881,9 +881,24 @@ by a comma separated list of key/value pairs enclosed in parantheses.  i.e.</P>
 
 <pre>%hash = %(key1 => "this is a value", key2 => 3 * (9 % 7));</pre>
 
-<p>The => is the key/value pair operator.  Any time a key/value pair is required as a parameter it can be specified with => or 
-as a string separating the key/value by an equal sign i.e. 'key=value'.  The => operator is special because the left hand side (key) is taken 
-as-is with no evaluation by the sleep language.</p>
+<p>The => is the key/value pair operator.  The key/value pair operator can be used with special functions to 
+specify a key/value pair.  The left hand side is never evaluated.</p>
+
+<p>Sleep subroutines (and closures) can receive named parameters using the key/value operator.  When a named 
+parameter is specified the left hand side must be equivalent to the variable to be installed into the local
+environment of the called subroutine.  Within a subroutine @_ and $1, $2, ... are not affected by a key/value
+argument.  The named parameter is simply available for immediate use.</p>
+
+<pre>sub blah
+{
+   println("My name is $first $last $+ , and I like $1");
+}
+
+blah($first => "Raphael", $last => "Mudge", "ice cream!!!");
+blah("ice cream!!!", $first => "Raphael", $last => "Mudge");
+blah($first => "Raphael", "ice cream!!!", $last => "Mudge");</pre>
+
+<p>The example above prints 'My name is Raphael Mudge, and I like ice cream!!!' three times.</p>
 
 <h3>Multidimensional Hashes/Arrays</h3>
 
@@ -1201,6 +1216,9 @@ when choosing to pass initial values.  Arrays, hashes, and object scalar data pa
 the main script environment and the forked script environment.  Changes in one environment will reflect in the other.  To
 compound things there is no synchronization to protect against both environments using the data at the same time.  In short,
 if you pass an initial value to a fork, discipline yourself to only manipulate that data from one environment.</p>
+
+<p>Sleep does provide semaphores as a synchronization primitive that can be used to lock critical sections of 
+code.  Semaphores can be used to control resources that forks attempt to access.</p>
 
 <h3>Working with Binary Data</h3>
 
@@ -1558,27 +1576,18 @@ calls on this closure are accessed just like a normal Object would be via HOES.<
 
 <h3>Coroutines</h3>
 
-<p>Another nifty trick of Sleep closures is that they can also be used as coroutines.  A coroutine is a function with
-multiple points of entry (rather than just a single point of entry as is common with subroutines).</p>
+<p>Another nifty trick of Sleep closures is that they can also be used as coroutines.  A coroutine is a function
+with multiple points of entry (rather than just a single point of entry as is common with subroutines).</p>
 
 <h4>The Yield Command</h4>
 
-<p>Sleep implements coroutines with a <b>yield</b> command.  The yield command causes the current closure to stop executing
-and to return to where it started.  Just like return you can specify a scalar with yield that will be return value of
-the current closure call.</p>
+<p>Sleep implements coroutines with a <b>yield</b> command.  The yield command causes the current closure to 
+stop executing, save its current execution state (including local variables) and to return a value.  In short
+yield works just like return except it saves the current execution state.</p>
 
-<p>What separates yield from return is next time the yielded closure is called, execution will resume from the place
-where yield was last called.</p>
-
-<p>When execution is restored local variables are not preserved.  If you want to preserve variables you will need to 
-place variables into the <b>this</b> scope for the current closure.  Arguments passed to each call on the closure
-will be available as local variables $1, $2, etc. during the current call.</p>
-
-<p>It is important to note that while coroutines can call other coroutines, a coroutine should not recursively call
-itself.  A closure turns into a coroutine once the yield keyword has been utilized.  The reason coroutines should not
-call themselves is because when yield is used the context of the closure is saved.  Next time the closure is executed
-the last used context is restored.  If a coroutine is trying to save its context while at the same time trying to 
-restore from the last execution, bad things will happen.</p>
+<p>What separates yield from return is next time the yielded closure is called, the saved execution state will be
+loaded (including local variables) and execution of the coroutine will resume from the place where yield was 
+last called.</p>
 
 <p>When the return command is used or the end of the closure is reached, the saved context will be discarded.</p>
 
@@ -2436,6 +2445,11 @@ n-m substrings will be returned.</td>
   <th>Description</th>
  </tr>  
  <tr>
+  <td></td>
+  <td>acquire($semaphore)</td>
+  <td>blocks the current thread of execution until the semaphore count is > 0, when that happens the semaphore count is decremented.</td>
+ </tr>
+ <tr>
   <td>$</td>
   <td>checkError([$scalar])</td>
   <td>returns the last error message to occur.  if a $scalar is specified : $scalar is set to the error string.  Once chekError() is called the error message is cleared.  Functions that might flag an error will be documented.</td>
@@ -2485,6 +2499,26 @@ n-m substrings will be returned.</td>
   <td></td>
   <td>local('$x $y')</td>
   <td>parses the specified string and declares all variables in the string as local variables.</td>
+ </tr>
+ <tr>
+  <td></td>
+  <td>release($semaphore)</td>
+  <td>increments the count value of the specified semaphore.</td>
+ </tr>
+ <tr>
+  <td></td>
+  <td>setf('&func_name', &closure)</td>
+  <td>sets the specified function to be bound to the specified closure.</td>
+ </tr>
+ <tr>
+  <td></td>
+  <td>setField(class|$object, "field", value)</td>
+  <td>sets a public/protected field of the specified class or instance of $object to a specified value.</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>semaphore([initial value])</td>
+  <td>constructs a $semaphore suitable for use with &amp;acquire and &amp;release.</td>
  </tr>
  <tr>
   <td></td>
