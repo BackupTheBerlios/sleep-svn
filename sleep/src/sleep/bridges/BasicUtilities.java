@@ -119,10 +119,39 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&eval",     new eval());
         temp.put("&expr",     new expr());
 
+        // synchronization primitives...
+        SyncPrimitives sync = new SyncPrimitives();
+        temp.put("&semaphore", sync);
+        temp.put("&acquire",   sync);
+        temp.put("&release",   sync);
 
         temp.put("=>",       new HashKeyValueOp());
 
         return true;
+    }
+
+    private static class SyncPrimitives implements Function 
+    {
+       public Scalar evaluate(String n, ScriptInstance si, Stack l)
+       {
+          if (n.equals("&semaphore"))
+          {
+             int initial = BridgeUtilities.getInt(l, 1);
+             return SleepUtils.getScalar(new Semaphore(initial));
+          }
+          else if (n.equals("&acquire"))
+          {
+             Semaphore sem = (Semaphore)BridgeUtilities.getObject(l);
+             sem.P();
+          }
+          else if (n.equals("&release"))
+          {
+             Semaphore sem = (Semaphore)BridgeUtilities.getObject(l);
+             sem.V();
+          }
+
+          return SleepUtils.getEmptyScalar();
+       }
     }
 
     private static class HashKeyValueOp implements Operator

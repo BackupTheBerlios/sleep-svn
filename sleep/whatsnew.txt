@@ -21,6 +21,16 @@
   just its script environment.  the implication of this is passing a closure
   to a fork will carry the closure this scope with it as well (and also the
   local scope in the case of a partially executed coroutine).
+- added semaphore synchronization primitive to the sleep language:
+
+  # initialize a semaphore
+  $semaphore = semaphore([initial count]);
+
+  # acquire the semaphore
+  acquire($semaphore);
+
+  # release the semaphore
+  release($semaphore);
 
 2.1-beta 5  (17 Sept 06)
 ===========

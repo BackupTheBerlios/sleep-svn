@@ -41,7 +41,7 @@ Test 5 has been called, executing action:
 Trace: &println('Test 5 has been called, executing action:') at line 51
 The passed in closure has been called
 Trace: &println('The passed in closure has been called') at line 55
-Trace: [&closure6961504] at line 52
-Trace: &test5($action => &closure6961504) at line 55
-Trace: &test5(action => &closure14470877) - FAILED! at line 56
+Trace: [&closure10481832] at line 52
+Trace: &test5($action => &closure10481832) at line 55
+Trace: &test5(action => &closure7388808) - FAILED! at line 56
 Warning: unreachable named parameter: action at line 56

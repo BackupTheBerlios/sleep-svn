@@ -1,32 +1,32 @@
 Trace: [java.lang.Math pow: 3, 4] = 81.0 at line 6
 81.0
-Trace: [java.io.PrintStream@a4488 println: 81.0] at line 6
+Trace: [java.io.PrintStream@199939 println: 81.0] at line 6
 Trace: &casti(1, 'z') = true at line 9
 true
-Trace: [java.io.PrintStream@a4488 println: true] at line 9
+Trace: [java.io.PrintStream@199939 println: true] at line 9
 Trace: &casti(0, 'z') = false at line 10
 false
-Trace: [java.io.PrintStream@a4488 println: false] at line 10
+Trace: [java.io.PrintStream@199939 println: false] at line 10
 Trace: &casti(1, 'd') = 1.0 at line 13
 1.0
-Trace: [java.io.PrintStream@a4488 println: 1.0] at line 13
+Trace: [java.io.PrintStream@199939 println: 1.0] at line 13
 Trace: &casti(1, 'b') = 1 at line 16
 1
-Trace: [java.io.PrintStream@a4488 println: 1] at line 16
+Trace: [java.io.PrintStream@199939 println: 1] at line 16
 Trace: &casti(100, 'f') = 100.0 at line 19
 100.0
-Trace: [java.io.PrintStream@a4488 println: 100.0] at line 19
+Trace: [java.io.PrintStream@199939 println: 100.0] at line 19
 Trace: &casti('b', 'c') = b at line 22
 b
-Trace: [java.io.PrintStream@a4488 println: b] at line 22
+Trace: [java.io.PrintStream@199939 println: b] at line 22
 Trace: &casti(63, 'i') = 63 at line 25
 63
-Trace: [java.io.PrintStream@a4488 println: 63] at line 25
+Trace: [java.io.PrintStream@199939 println: 63] at line 25
 this is a string y0
-Trace: [java.io.PrintStream@a4488 println: 'this is a string y0'] at line 28
+Trace: [java.io.PrintStream@199939 println: 'this is a string y0'] at line 28
 Trace: [new java.lang.StringBuilder: 'test'] = test at line 31
 test
-Trace: [java.io.PrintStream@a4488 println: test] at line 31
-Trace: &cast(@('a', 'b', 'c', 'd'), 'c') = [C@1d98a at line 34
+Trace: [java.io.PrintStream@199939 println: test] at line 31
+Trace: &cast(@('a', 'b', 'c', 'd'), 'c') = [C@d33a6b at line 34
 abcd
-Trace: [java.io.PrintStream@a4488 println: [C@1d98a] at line 34
+Trace: [java.io.PrintStream@199939 println: [C@d33a6b] at line 34
