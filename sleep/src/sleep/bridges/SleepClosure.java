@@ -81,6 +81,9 @@ public class SleepClosure implements Function
     /** the meta data for this closure context */
     HashMap          metadata; 
 
+    /** the closure variables referenced by this closure */
+    Variable         variables;
+
     /** saves the top level context */
     private void saveToplevelContext(Stack _context, Variable localLevel)
     {
@@ -116,10 +119,10 @@ public class SleepClosure implements Function
     /** Creates a new Sleep Closure that uses the specified variable container for its internal variables */
     public SleepClosure(ScriptInstance si, Block _code, Variable _var)
     {
-       code     = _code;
-       owner    = si;
-       context  = new Stack();
-       metadata = new HashMap();
+       code      = _code;
+       owner     = si;
+       context   = new Stack();
+       metadata  = new HashMap();
 
        _var.putScalar("$this", SleepUtils.getScalar(this));
        setVariables(_var);
@@ -140,13 +143,13 @@ public class SleepClosure implements Function
     /** Returns the variable container for this closures */
     public Variable getVariables()
     {
-       return getOwner().getScriptVariables().getClosureVariables(this);
+       return variables;
     }
 
     /** Sets the variable environment for this closure */
     public void setVariables(Variable _variables)
     {
-       getOwner().getScriptVariables().setClosureVariables(this, _variables);
+       variables = _variables; 
     }
 
     /** "Safely" calls this closure.  Use this if you are evaluating this closure from your own code. 
@@ -185,7 +188,7 @@ public class SleepClosure implements Function
           Stack toplevel = getToplevelContext();
           env.loadContext(toplevel, metadata);
 
-          vars.pushClosureLevel(this);
+          vars.pushClosureLevel(getVariables()); 
 
           if (toplevel.isEmpty()) /* a normal closure call */
           {

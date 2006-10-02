@@ -68,7 +68,6 @@ public class ScriptVariables implements Serializable
     Variable    global;   /* global variables */
     LinkedList  closure;  /* closure specific variables :) */
     LinkedList  locals;   /* local variables */
-    WeakHashMap cscopes;  /* closure scope storage */
 
     /** Initializes this ScriptVariables container using a DefaultVariable object for default variable storage */
     public ScriptVariables()
@@ -82,7 +81,6 @@ public class ScriptVariables implements Serializable
        global   = aVariableClass;
        closure  = new LinkedList();
        locals   = new LinkedList();
-       cscopes  = new WeakHashMap();
 
        pushLocalLevel();
     }
@@ -179,26 +177,19 @@ public class ScriptVariables implements Serializable
     /** returns the closure level variables for this specific script environment */
     public Variable getClosureVariables(SleepClosure closure)
     {
-       Object temp = cscopes.get(closure);
-       if (temp == null)
-       {
-          temp = global.createInternalVariableContainer();
-          cscopes.put(closure, temp);
-       }
-
-       return (Variable)temp;       
+       return closure.getVariables();
     }
 
     /** returns the closure level variables for this specific script environment */
     public void setClosureVariables(SleepClosure closure, Variable variables)
     {
-       cscopes.put(closure, variables);
+       closure.setVariables(variables);
     }
 
-    /** makes the specified closure variable scope active, once the closure has executed this should be popped */
-    public void pushClosureLevel(SleepClosure level)
+    /** pushes the specified variables into this closures level, once the closure has executed this should be popped */
+    public void pushClosureLevel(Variable variables)
     {
-       closure.addFirst(getClosureVariables(level));
+       closure.addFirst(variables);
     }
 
     /** discards the current closure variable scope */

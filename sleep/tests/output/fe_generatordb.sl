@@ -19,7 +19,7 @@ Trace: &println('7 => val: 7') at line 8
 Trace: &println('8 => val: 8') at line 8
 9 => val: 9
 Trace: &println('9 => val: 9') at line 8
-Trace: &lambda(&closure10132325, $start => 50, $stop => 60) = &closure5253145 at line 22
+Trace: &lambda(&closure1677625, $start => 50, $stop => 60) = &closure10132325 at line 22
 Testing out range stuff: 0 => 50
 Trace: &println('Testing out range stuff: 0 => 50') at line 24
 Testing out range stuff: 1 => 51

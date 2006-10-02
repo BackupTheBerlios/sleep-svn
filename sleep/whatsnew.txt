@@ -17,6 +17,10 @@
   value of a field in a Java class or object.
 - added &setf('&function', { closure }) for setting a named closure (i.e. a 
   subroutine).
+- closure this scope is now associated directly with the closure itself and not
+  just its script environment.  the implication of this is passing a closure
+  to a fork will carry the closure this scope with it as well (and also the
+  local scope in the case of a partially executed coroutine).
 
 2.1-beta 5  (17 Sept 06)
 ===========
