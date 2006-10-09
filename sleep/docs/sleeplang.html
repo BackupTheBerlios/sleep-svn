@@ -39,7 +39,7 @@ understanding of sleep and later use it as a reference.</p>
 <li><a href="#17">F - Transliteration Syntax</a></li>
 </ol>
 
-<a name="1"><h2>Scalar Variables</h2></a>
+<h2><a name="1">Scalar Variables</a></h2>
 
 <p>Variables in sleep are temporary locations in memory to store a value.  Variables in sleep are called scalars.  Scalars can be 
 strings, numbers, or even a reference to an object.</p>
@@ -83,7 +83,7 @@ times.</p>
 
 <p>Sleep also includes a set of logical operators.  These include <var>&lt;&lt;</var>, <var>&gt;&gt;</var>, <var>^</var>, 
 <var>|</var>, <var>&amp;</var>, and a 
-function <var>&amp;not()</var>.  
+function <var>&amp;not()</var>.</p>
 
 <h3>Expressions</h3>
 
@@ -226,12 +226,12 @@ created with no value.  This local variable has nothing to do with the global va
 <var>$decision</var> was then assigned the value "not guilty".  When the subroutine verdict finished executing the local variable
 <var>$decision</var> went away.  The global variable <var>$decision</var> was not touched.</p>
 
-<a name="2"><h2>If-Else Statements</h2></a>
+<h2><a name="2">If-Else Statements</a></h2>
 
 <p>If-Else statements let you compare different values and execute a certain part of the script based on the result of the 
 comparison.</p>
 
-<p>The basic format of an if-else statement is:
+<p>The basic format of an if-else statement is:</p>
 
 <pre>if (<b>v1 operator v2</b>) { <b>commands</b> }
 else if (<b>v3 operator v4</b>) { <b>commands</b> }
@@ -240,7 +240,7 @@ else { <b>commands</b> }</pre>
 <p>The ( ) parentheses enclose the comparisons while the { } brackets enclose the commands to execute.  If the comparison within 
 the ( ) parentheses is true then the following commands are executed.  If the initial comparison is false then the else statement 
 is executed.  Else statements can be followed by either a block of statements enclosed in { } brackets or by another if 
-statement.</P>
+statement.</p>
 
 <h3>The Operators</h3>
 
@@ -432,7 +432,7 @@ only if the condition is true.  The third parameter is returned if and only if t
 <var>$value</var> would be "Calculation took 1 second".  The iff example above checks if <var>$x</var> is greater than 1.  If it 
 is then "s" is returned.  Otherwise "" is returned.</p>
 
-<a name="3"><h2>Loops</h2></a>
+<h2><a name="3">Loops</a></h2>
 
 <h3>While Loops</h3>
 
@@ -520,7 +520,7 @@ command is for.</p>
 just jumps to the beginning of the loop again ignoring the current item.  Within a for loop the incremeter ($x++
 in this example) is always executed even if continue is used.</p>
 
-<a name="4"><h2>Number Crunching</h2></a>
+<h2><a name="4">Number Crunching</a></h2>
 
 <p>The Scalars -> Expressions section introduced sleep's family of numerical scalars.</p>
 
@@ -568,7 +568,7 @@ returns <code>$x - 1</code>.</p>
    
 <p><code>$x--</code> is equivalent to <code>$x = $x - 1</code>;</p>
 
-<a name="5"><h2>Subroutines</h2></a>
+<h2><a name="5">Subroutines</a></h2>
 
 <p>Subroutines in sleep are basically mini programs.  You can pass arguments to them and they can return values.</p>
 
@@ -665,7 +665,7 @@ else
 returns "my favorite color is red".   Otherwise the subroutine favoriteColor will be declared as a subroutine that returns "I 
 don't know what my favorite color is".</p>
 
-<a name="6"><h2>Arrays</h2></a>
+<h2><a name="6">Arrays</a></h2>
 
 <p>An array is a variable that holds a bunch of variables.  Arrays reference variables in numerical order.  So each variable in 
 the array has an index (or position).  Arrays in sleep always begin with the @ at symbol.   This goes for referencing array 
@@ -848,7 +848,7 @@ array (or hash for that matter).  The following sets up a multidimensional array
 
 <p>There is no limit to how many levels deep your arrays/data structures can go.  Levels do not need to be the same size.</p>
 
-<a name="7"><h2>Hashes</h2></a>
+<h2><a name="7">Hashes</a></h2>
 
 <p>Hashes are a special scalar type that can hold a bunch of variables as well.  Unlike arrays hashes reference variables with a 
 key.   Each variable in the hash has a unique key associated with it.  Hashes in sleep always begin with the % at symbol.   This 
@@ -920,7 +920,7 @@ a script attempts to index to a new level from this context then no new structur
 
 <pre>$temp = split(' ', "A B C")[1]; # $temp is now "B"</pre>
 
-<a name="8"><h2>String manipulation</h2></a>
+<h2><a name="8">String manipulation</a></h2>
 
 <p>Sleep strings come in two varieties.  Literals and parsed literals.  A literal string is a string where what you type is 
 exactly what you get.</p>
@@ -1052,7 +1052,7 @@ string.</p>
 
 <pre>$value = join("replacement value", split(<b>'pattern'</b>, "the entire string"));</pre>
 
-<a name="9"><h2>Input/Output Capabilities</h2></a>
+<h2><a name="9">Input/Output Capabilities</a></h2>
 
 <p>The sleep IO capabilities allow you to read and write data from/to files, tcp sockets, and other processes.</p>
 
@@ -1191,7 +1191,7 @@ fork(&amp;my_taskB);</pre>
 <p>When the above script executes the subroutines <code>&amp;my_taskA</code> and <code>&amp;my_taskB</code> will both execute 
 at the same time.  The output will be a seemingly random mix of Task A counting to 100 and Task B counting to 100.  This is 
 because Java lets <code>&amp;my_taskA</code> run for a little while and then it lets <code>&amp;my_taskB</code> run for a 
-little while.<p>
+little while.</p>
 
 <p>When a Sleep script forks, a completely new script environment is created.  This new script environment is mostly isolated
 (see <i>*</i>) from its parent script environment.  No variables that were visible or available in the parent environment are
@@ -1278,7 +1278,7 @@ if (checkError($error))
 message is cleared.   A scalar passed to checkError() as  an argument will have the value of the 'current' error message placed 
 into it.  In the above example checkError sets the value of $error to be a message stating why the file could not be opened.</P>
 
-<a name="10"><h2>Working with Objects</h2></a>
+<h2><a name="10">Working with Objects</a></h2>
 
 <p>A new feature in Sleep is the haphazard object extensions for Sleep (HOES).  HOES adds some new syntax for creating, 
 accessing, and working with Java objects.  This interface is brand new and is geared towards experienced programmers.  If you 
@@ -1324,7 +1324,7 @@ also illustrates an object expression being used within a normal Sleep expressio
 
 <p>You can not use a period '.' to access a message/field in an object i.e.:</p>
 
-<pre><s><font color="red">[System.out println: "test" ];</s> # wrong!</font></pre>
+<pre><font color="red"><s>[System.out println: "test" ];</s> # wrong!</font></pre>
 
 <p>To correctly access a message/field that is multiple levels deep:</p>
 
@@ -1457,7 +1457,7 @@ is converted into a java.util.Map if a function requires such an argument.</p>
 
 <p>Often times Java API's acessed via HOES can throw an "exception".  Exceptions are a mechanism used to notify programs that some type of error has occured.  You can check for an exception using the <code>checkError($scalar)</code> function.</p>
 
-<a name="10a"><h2>Sleep Closures</h2></a>
+<h2><a name="10a">Sleep Closures</a></h2>
 
 <p>Closely coupled with HOES is the concept of Sleep closures.  A closure in sleep is a block of code that contains its own 
 lexical scope.  i.e. there are variables specific to each closure instance.</P>
@@ -1501,7 +1501,7 @@ use the lambda function:</p>
 
 <p>The above creates a new closure assigned to $myfunc.  The initial value of $name inside of the closure scope is "Raffi".</p>
 
-<p>To explicitly declare a value or set of values to be within a closure scope use the function <code>this()</code>>. i.e.</P.
+<p>To explicitly declare a value or set of values to be within a closure scope use the function <code>this()</code>>. i.e.</p>
 
 <pre>$myfunc = {
    this('$a $b $c @array %hash');
@@ -1628,7 +1628,7 @@ Value is 999</pre>
 evaluate an expression each iteration of a loop where as foreach is iterating over a closure reference.  The difference is
 pretty much in the implementation, the end result is the same.</p>
 
-<a name="11"><h2>Function Library</h2></a>
+<h2><a name="11">Function Library</a></h2>
 
 <p>This appendix is a list of the application neutral built-in functions for sleep.  I expect this list to grow as time goes on.  
 Much of the functionality for sleep should in theory come from the bridges provided by the application author.</p>
@@ -2104,7 +2104,7 @@ specified as either 1 parameter per format item or a single array with an elemen
   <td>read([$handle], &closure, [n])</td>
   <td>each time text is read from $handle, &closure will be called with the $1 = to the handle and $2 = to the text.  
 specifying a n value will cause $2 to be a string of n bytes.  if n is specified sleep will try to read n bytes before 
-calling the closure.  the closure will be called for the last read even if < n bytes are in the buffer.</td>
+calling the closure.  the closure will be called for the last read even if &lt; n bytes are in the buffer.</td>
  </tr>
  <tr>
   <td>@</td>
@@ -2547,8 +2547,7 @@ n-m substrings will be returned.</td>
  </tr>
 </table>
 
-<a name="AppendixA"></a>
-<a name="12"><h2>Appendix A - System Properties</h2></a>
+<h2><a name="12">Appendix A - System Properties</a></h2>
 
 <p>This appendix contains a list of system properties available in the hash returned by the systemProperties() function.  This 
 list is not comprehensive:</p>
@@ -2604,8 +2603,7 @@ list is not comprehensive:</p>
  </tr>
 </table>
 
-<a name="AppendixB"></a>
-<a name="13"><h2>Appendix B - Wildcard Strings</h2></a>
+<h2><a name="13">Appendix B - Wildcard Strings</a></h2>
 
 <p>Sleep has the ability to determine if a string matches a specified wildcard string.  This appendix is just a quick 
 refresher.</p>
@@ -2658,8 +2656,7 @@ with this test".</p>
 <p>In the greedy example the matcher will find "this" and it will then use * for as much stuff as possible.  Taking it all the 
 way to the end of the string where "test" is.</p>
 
-<a name="AppendixC"></a>
-<a name="14"><h2>Appendix C - Regular Expression Pattern Syntax</h2></a>
+<h2><a name="14">Appendix C - Regular Expression Pattern Syntax</a></h2>
 
 <p>Think of a pattern as a description of a string.  A pattern describes what an "acceptable" string looks like.   When a string 
 is applied to a pattern, the regex engine goes through the string character by character advancing it through the pattern.  If 
@@ -2899,7 +2896,7 @@ for <code><a href="http://java.sun.com/j2se/1.4.1/docs/api/java/util/regex/Patte
  <tr><td valign="top" headers="construct posix"><tt>\p{Blank}</tt></td>
      <td headers="matches">A space or a tab: <tt>[ \t]</tt></td></tr>
  <tr><td valign="top" headers="construct posix"><tt>\p{Cntrl}</tt></td>
-     <td headers="matches">A control character: <tt>[\x00-\x1F\x7F]</td></tr>
+     <td headers="matches">A control character: <tt>[\x00-\x1F\x7F]</tt></td></tr>
  <tr><td valign="top" headers="construct posix"><tt>\p{XDigit}</tt></td>
      <td headers="matches">A hexadecimal digit: <tt>[0-9a-fA-F]</tt></td></tr>
  <tr><td valign="top" headers="construct posix"><tt>\p{Space}</tt></td>
@@ -3008,7 +3005,7 @@ for <code><a href="http://java.sun.com/j2se/1.4.1/docs/api/java/util/regex/Patte
  <tr align="left"><td colspan="2" id="quot"><b>Quotation</b></td></tr>
 
  <tr><td valign="top" headers="construct quot"><tt>\</tt></td>
-     <td headers="matches">Nothing, but quotes the following character</tt></td></tr>
+     <td headers="matches">Nothing, but quotes the following character</td></tr>
  <tr><td valign="top" headers="construct quot"><tt>\Q</tt></td>
      <td headers="matches">Nothing, but quotes all characters until <tt>\E</tt></td></tr>
  <tr><td valign="top" headers="construct quot"><tt>\E</tt></td>
@@ -3049,7 +3046,7 @@ match a single <tt>\</tt>, the regex engine requires the <tt>\\</tt> sequence.  
 would have to create a string <tt>'\\\\'</tt> which is resolved into <tt>\\</tt> which is used by the regex engine to match a 
 single <tt>\</tt>.  At least with single quoted strings one has to only worry about <tt>\\</tt> and <tt>\'</tt>.</p>
 
-<a name="15"><h2>Appendix D - Date/Time Formats</h2></a>
+<h2><a name="15">Appendix D - Date/Time Formats</a></h2>
 
 <p>Note: The following is modified from the documentation provided by Sun for the Java java.util.SimpleDateFormat class.  FYI for 
 Sun, nice job on this API - I like it.</p>
@@ -3217,7 +3214,7 @@ used.</p>
  </tr>
 </table>
 
-<a name="16"><h2>Appendix E - Binary Data Format Strings</h2></a>
+<h2><a name="16">Appendix E - Binary Data Format Strings</a></h2>
 
 <p>Binary data format strings are used in the &amp;bread, &amp;bwrite, &amp;pack, and &amp;unpack functions.  An array of byte 
 data is stored as a sleep string scalar.  Specifying a data format string with one of the above functions allows you to 
@@ -3300,7 +3297,8 @@ retrieve/store binary data into a string scalar or a file.</p>
   <td>s</td>
   <td>2</td>
   <td>short (converted to/from a sleep int)</td>
- <tr>
+ </tr>
+  <tr>
   <td>S</td>
   <td>2</td>
   <td>unsigned short (converted to/from a sleep int)</td>
@@ -3345,13 +3343,13 @@ a ! to the format character.</p>
 
 <pre>$endianess = iff(unpack('i!', pack('i+', 1))[0] == 1, "big endian", "little endian");</pre>
 
-<a name="snote"></a><p><font color="red">u/U/z/Z Note:</font> Writes using Z/U will pad until the specified count is reached.  
+<a name="snote"></a><p><font color="red">u/U/z/Z Note:</font> Writes using Z/U will pad until the specified count is reached.
 If no count is specified a \0 is guaranteed to be written.  If the string length is the same as the specified count no \0 will 
 be written.  The values z/u will write the entire string with a guaranteed \0 always (two \0's for UTF-16).  The count value 
 has no effect on z/u.  Consequently for reads, Z/U will always consume the number of characters specified in the count.  For 
 reads z/u will keep reading until a \0 is found.  U/u strings always read/write 2-byte characters.</p>
 
-<a name="17"><h2>Appendix F - Transliteration</h2></a>
+<h2><a name="17">Appendix F - Transliteration</a></h2>
 
 <p>Sleep provides a character translation utility similar to the UNIX tr command with the <code>&amp;tr</code> function..
 A transliteration consists of a pattern of characters to match and a pattern, typically of equal length, of characters to 
@@ -3370,7 +3368,7 @@ $plain  = tr($cipher, "a-z", "n-za-m");
 println("Cipher: $cipher   Plain: $plain");</pre>
 
 <p>Replacement patterns and Matcher patterns may both contain ranges.  Any range specified in either of these places will be
-expanded to all of the characters.  A range is specified as <code><i>n</i>-</i>m</i></code> where <i>n</i> is the
+expanded to all of the characters.  A range is specified as <code><i>n</i>-<i>m</i></code> where <i>n</i> is the
 starting character (A-Z, a-z, 0-9) and <i>m</i> is the ending character.  Backwards ranges are allowed as well.</p>
 
 <p>If an expanded replacement pattern is shorter than the matcher pattern, the last character of the replacement pattern
