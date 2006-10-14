@@ -26,6 +26,7 @@ import java.util.*;
 import sleep.interfaces.*;
 import sleep.engine.*;
 import sleep.runtime.*;
+import sleep.bridges.SleepClosure;
 
 public class Index extends Step
 {
@@ -90,6 +91,16 @@ public class Index extends Step
 
       if (structure.getArray() != null) { rv = structure.getArray().getAt(pos.getValue().intValue()); }
       else if (structure.getHash() != null) { rv = structure.getHash().getAt(pos); }
+      else if (structure.objectValue() != null && structure.objectValue() instanceof SleepClosure)
+      {
+         SleepClosure closure = (SleepClosure)structure.objectValue();
+
+         if (!closure.getVariables().scalarExists(pos.toString()))
+         {
+            closure.getVariables().putScalar(pos.toString(), SleepUtils.getEmptyScalar());
+         }
+         rv = closure.getVariables().getScalar(pos.toString());
+      }
       else { rv = SleepUtils.getEmptyScalar(); } // always return an empty scalar if we are not referencing a hash or an array
 
       e.FrameResult(rv);
