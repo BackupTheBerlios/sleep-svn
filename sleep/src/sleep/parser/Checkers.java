@@ -181,7 +181,7 @@ public class Checkers
 
    public static boolean isIndexableItem(String a, String b)
    {
-      return (isIndex(b) && (isFunctionCall(a) || isExpression(a) || isVariable(a) || isIndex(a)));
+      return (isIndex(b) && (isFunctionCall(a) || isExpression(a) || isVariable(a) || isIndex(a) || isFunctionReferenceToken(a)));
    }
 
    public static boolean isIndexableItem(String a)

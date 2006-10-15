@@ -91,6 +91,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("-istrue", this);    // predicate -istrue <Scalar>, determine wether or not the scalar is null or not.
         temp.put("-isarray", this);   
         temp.put("-ishash",  this); 
+        temp.put("-isfunction", this);
         temp.put("&setField", this);
      
         SetScope scopeFunctions = new SetScope();
@@ -124,6 +125,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&semaphore", sync);
         temp.put("&acquire",   sync);
         temp.put("&release",   sync);
+
+        temp.put("&invoke",    this);
 
         temp.put("=>",       new HashKeyValueOp());
 
@@ -181,6 +184,9 @@ public class BasicUtilities implements Function, Loadable, Predicate
        //   
        if (predName.equals("-istrue"))
           return value.getValue().toString().length() != 0 && !("0".equals(value.getValue().toString()));
+
+       if (predName.equals("-isfunction"))
+          return SleepUtils.isFunctionScalar(value);
 
        if (predName.equals("-isarray"))
           return value.getArray() != null;
@@ -685,6 +691,18 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
          
           return SleepUtils.getEmptyScalar();
+       }
+       else if (n.equals("&invoke")) 
+       {
+          SleepClosure c    = BridgeUtilities.getFunction(l, i);
+
+          Stack        args = new Stack();
+          Iterator iter     = BridgeUtilities.getIterator(l, i);
+          while (iter.hasNext()) { args.add(0, iter.next()); }
+
+          String message    = BridgeUtilities.getString(l, null);
+ 
+          return c.callClosure(message, i, args);
        }
        else if (n.equals("&debug"))
        {
