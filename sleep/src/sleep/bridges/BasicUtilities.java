@@ -938,7 +938,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
           Class  aClass = null;
           Object inst   = null;
 
-          if (l.size() == 3 && "==CLASS==".equals(value.toString()))
+          if ("==CLASS==".equals(value.toString()))
           {
              aClass = (Class)(BridgeUtilities.getScalar(l).objectValue());
           }
@@ -946,41 +946,42 @@ public class BasicUtilities implements Function, Loadable, Predicate
           {
              throw new IllegalArgumentException("&setField: can not set field on a null object");
           }
-          else if (l.size() == 2)
+          else
           {
              inst   = value.objectValue();
              aClass = inst.getClass();
           }
-          else
+
+          while (!l.isEmpty())
           {
-             throw new IllegalArgumentException("&setField: not enough parameters");
-          }
+             KeyValuePair pair = BridgeUtilities.getKeyValuePair(l);
 
-          String name = BridgeUtilities.getString(l, null);
-          Scalar arg  = BridgeUtilities.getScalar(l);
+             String name = pair.getKey().toString();
+             Scalar arg  = pair.getValue();
 
-          try
-          {
-             setMe = aClass.getDeclaredField(name);
-
-             if (ObjectUtilities.isArgMatch(setMe.getType(), arg) != 0)
+             try
              {
-                setMe.setAccessible(true);
-                setMe.set(inst, ObjectUtilities.buildArgument(setMe.getType(), arg, i));
+                setMe = aClass.getDeclaredField(name);
+
+                if (ObjectUtilities.isArgMatch(setMe.getType(), arg) != 0)
+                {
+                   setMe.setAccessible(true);
+                   setMe.set(inst, ObjectUtilities.buildArgument(setMe.getType(), arg, i));
+                }
+                else
+                {
+                   throw new RuntimeException("unable to convert " + SleepUtils.describe(arg) + " to a " + setMe.getType());
+                }
              }
-             else
+             catch (NoSuchFieldException fex)
              {
-                throw new RuntimeException("unable to convert " + SleepUtils.describe(arg) + " to a " + setMe.getType());
+                throw new RuntimeException("no field named " + name + " in " + aClass);
              }
-          }
-          catch (NoSuchFieldException fex)
-          {
-             throw new RuntimeException("no field named " + name + " in " + aClass);
-          }
-          catch (RuntimeException rex) { throw (rex); }
-          catch (Exception ex)
-          {
-             throw new RuntimeException("cannot set " + name + " in " + aClass + ": " + ex.getMessage());
+             catch (RuntimeException rex) { throw (rex); }
+             catch (Exception ex)
+             {
+                throw new RuntimeException("cannot set " + name + " in " + aClass + ": " + ex.getMessage());
+             }
           }
        }
 

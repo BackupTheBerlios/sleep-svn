@@ -11,6 +11,10 @@
 - added -isfunction predicate to check if a scalar contains a function or not
 - added &invoke(&function, @args, [message]) to invoke a function with @args
   passed as individual arguments.
+- updated &setField to accept key/value pair arguments where the key specifies
+  the field to update and the argument the value, any number of args can be
+  specified.  this breaks to behavor set in 2.1-b6
+
 
 2.1-beta 6  (1 Oct 06)
 ===========
