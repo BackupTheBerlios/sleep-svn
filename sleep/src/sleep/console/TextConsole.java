@@ -24,6 +24,20 @@ public class TextConsole implements ConsoleProxy
          {
              System.out.println(SleepUtils.SLEEP_VERSION + " (" + SleepUtils.SLEEP_RELEASE + ")");
              return;
+         } 
+         else if (args[0].equals("-help") || args[0].equals("--help") || args[0].equals("-h"))
+         {
+             System.out.println(SleepUtils.SLEEP_VERSION + " (" + SleepUtils.SLEEP_RELEASE + ")");
+             System.out.println("Usage: java [properties] -jar sleep.jar [options] [-|file]");
+             System.out.println("       properties:");
+             System.out.println("         -Dsleep.debug=<debug level>");
+             System.out.println("         -Dsleep.classpath=<path to locate 3rd party jars from>");
+             System.out.println("       options:");
+             System.out.println("         -v --version   display version information");
+             System.out.println("         -h --help      display this help message");
+             System.out.println("       file:");
+             System.out.println("         specify a '-' to read script from STDIN");
+             return;
          }
          
          //
@@ -38,7 +52,15 @@ public class TextConsole implements ConsoleProxy
 
          try
          {
-            ScriptInstance script = loader.loadScript(args[0]);     // load the script, parse it, etc.
+            ScriptInstance script;
+            if (args[0].equals("-"))
+            {
+                script = loader.loadScript("STDIN", System.in);
+            }
+            else
+            {
+                script = loader.loadScript(args[0]);     // load the script, parse it, etc.
+            }
             script.getScriptVariables().putScalar("@ARGV", array);  // set @ARGV to be our array of command line arguments
 
             if (System.getProperty("sleep.debug") != null)

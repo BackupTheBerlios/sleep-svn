@@ -14,7 +14,8 @@
 - updated &setField to accept key/value pair arguments where the key specifies
   the field to update and the argument the value, any number of args can be
   specified.  this breaks to behavor set in 2.1-b6
-
+- added a -h/--help command line option (:
+- specifying a - on the sleep command line reads the script from STDIN
 
 2.1-beta 6  (1 Oct 06)
 ===========
