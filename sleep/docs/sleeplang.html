@@ -382,6 +382,10 @@ character.</p>
   <td>is the specified value a scalar array</td>
  </tr>
  <tr>
+  <td>-isfunction</td>
+  <td>does the specified scalar hold a function</td>
+ </tr>
+ <tr>
   <td>-ishash</td>
   <td>is the specified value a scalar hash</td>
  </tr>
@@ -1514,6 +1518,22 @@ use the lambda function:</p>
 <p>Another special variable available within closures is the <var>$this</var> variable.  <var>$this</var> refers to "this" 
 closure.</p>
 
+<h4>Indexing Closures</h4>
+
+<p>The index operation applied to a closure obtains a value from the closure's "this" scope.</p>
+
+<pre>sub life_universe_and_everything
+{
+   this('$answer');
+   $answer = 42;
+}
+
+life_universe_and_everything(); # nothing is available until 
+                                # the function actually executes
+
+println("What is the meaning of it all? " . &life_universe_and_everything['$answer']);
+&life_universe_and_everything['$question'] = "Unknown?!?";</pre>
+
 <h3>Accumulator Example</h3>
 
 <p>This first example is a Sleep Accumulator Generator.  An Accumulator Generator is a function that takes a parameter
@@ -2491,6 +2511,11 @@ n-m substrings will be returned.</td>
   <td>parses the specified string and declares all variables in the string as global variables.</td>
  </tr>
  <tr>
+  <td>$</td>
+  <td>invoke(&amp;closure, @args, ["message"])</td>
+  <td>invokes the specified closure using the specified array for each individual argument.  the message parameter ($0) can be specified as well.</td>
+ </tr>
+ <tr> 
   <td>&amp;</td>
   <td>lambda(&amp;closure,&nbsp;$key&nbsp;=&gt;&nbsp;"value",&nbsp;...)</td>
   <td>copies &amp;closure into a new closure.  The closure environment is initialized with all of the key/value pair arguments.</td>
@@ -2512,8 +2537,8 @@ n-m substrings will be returned.</td>
  </tr>
  <tr>
   <td></td>
-  <td>setField(class|$object, "field", value)</td>
-  <td>sets a public/protected field of the specified class or instance of $object to a specified value.</td>
+  <td>setField(class|$object, field => value, ...)</td>
+  <td>sets any number of public/protected fields of the specified class or instance of $object to a corresponding value.</td>
  </tr>
  <tr>
   <td>$</td>

@@ -14,7 +14,7 @@ $count = 0;
 
 foreach $var (@files)
 {
-   $c = `wc --lines $var`;
+   $c = `wc -l $var`;
    $c = join("", split(/ /, $c));
    @t = split(/\./, $c);
    $count += $t[0];

@@ -1,5 +1,5 @@
  ------- -------------------- ---------   ---------------  ------- ---------
-Sleep - 2.1 beta 6 - README   
+Sleep - 2.1 beta 7 - README   
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 "You got the language, all you need now is the O'Reilly book".  That is
@@ -88,6 +88,10 @@ To build full JavaDoc for Sleep (all classes):
 To launch the sleep console (see docs/console.txt for more information):
 
 [raffi@beardsley ~/sleep/bin]$ java -jar sleep.jar
+
+For Sleep interpreter usage information:
+
+[raffi@beardsley ~/sleep/bin]$ java -jar sleep.jar --help
 
 To launch a sleep script from the command line:
 
