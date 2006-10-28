@@ -899,8 +899,11 @@ public class BasicIO implements Loadable, Function
                         out.write(bdata, 0, 2);
                         break;
                       case 'i':
-                      case 'I':
                         buffer.putInt(0, temp.intValue());
+                        out.write(bdata, 0, 4);
+                        break;
+                      case 'I':
+                        buffer.putInt(0, (int)temp.longValue());
                         out.write(bdata, 0, 4);
                         break;
                       case 'f':
