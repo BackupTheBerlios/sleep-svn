@@ -9,6 +9,8 @@
 - added a sanity check to the assignment step, checks for a "corrupted"
   assignment stack, most commonly caused by forgetting to terminate the 
   assigned expression with a semicolon.
+- added BridgeUtilities.extractNamedParameters(Stack args) to extract all
+  named parameters from a stack of arguments.
 
 2.1-beta 7  (15 Oct 06)
 ===========
