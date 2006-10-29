@@ -32,6 +32,9 @@ import sleep.runtime.*;
 /** The Sleep Closure class.  This class represents a Function object that is also a self contained closure */
 public class SleepClosure implements Function
 {
+    private static int ccount;
+    private int id;
+
     private class ClosureIterator implements Iterator
     {
        protected Scalar            current;
@@ -107,7 +110,7 @@ public class SleepClosure implements Function
 
     public String toString()
     {
-       return "&closure" + hashCode();
+       return "&closure" + id + ":" + code.getApproximateLineRange();
     }
 
     /** Creates a new Sleep Closure, with a brand new set of internal variables.  Don't be afraid, you can call this constructor from your code. */
@@ -126,6 +129,10 @@ public class SleepClosure implements Function
 
        _var.putScalar("$this", SleepUtils.getScalar(this));
        setVariables(_var);
+
+       ccount = (ccount + 1) % Short.MAX_VALUE;
+
+       id = ccount;
     }
 
     /** Returns the owning script instance */

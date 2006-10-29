@@ -11,6 +11,9 @@
   assigned expression with a semicolon.
 - added BridgeUtilities.extractNamedParameters(Stack args) to extract all
   named parameters from a stack of arguments.
+- changed string representation of closures to represent: 
+  &closureX:N-M where X represents the instantiation number (i.e. closure 3)
+  and N-M represents the line range where the closure was declared
 
 2.1-beta 7  (15 Oct 06)
 ===========
