@@ -5,8 +5,10 @@
   "bigger" than a normal java integer).  
 - fixed a parser ambiguity with hash literals i.e. %(...) and arithmetic
   consisting of ... % (...).  both now work as they should.
-- added a method to BridgeUtilities to extract all named parameters from an
-  argument stack.
+- fixed assignment loops creating an extra non-needed stack frame
+- added a sanity check to the assignment step, checks for a "corrupted"
+  assignment stack, most commonly caused by forgetting to terminate the 
+  assigned expression with a semicolon.
 
 2.1-beta 7  (15 Oct 06)
 ===========

@@ -12,7 +12,6 @@ sub inorder
       while $x (inorder([$1 left]))
       {
          yield $x;
-         local('$x');
       }
 
       yield [$1 label];

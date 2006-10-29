@@ -59,6 +59,11 @@ public class Assign extends Step
    {
       Scalar putv, value;
 
+      if (e.getCurrentFrame().size() > 1)
+      {
+         throw new RuntimeException("assignment is corrupted, did you forget a semicolon?");
+      }
+
       // evaluate our left hand side (assign to) value
 
       e.CreateFrame();

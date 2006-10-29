@@ -813,13 +813,25 @@ public class CodeGenerator implements ParserConstants
            // handle the assignment step please (Assign will push the RHS onto the stack)
            backup();
 
-           atom = GeneratedSteps.CreateFrame(); /* overall create the frame please */
-           add(atom, tokens[0]);
-        
-           parseBlock(new Token(strings[1] + " = " + strings[2] + ";", tokens[2].getHint()));
+           // assign:
+           // 1 = $var
+           // 2 = (expression) to assign, you know?!?
+
+           atom = GeneratedSteps.CreateFrame();
+           add(atom, tokens[2]);
+
+           parseIdea(tokens[2]);
+
+           backup();
+           parseIdea(tokens[1]);
+
+           atom = GeneratedSteps.Assign(restore());
+           add(atom, tokens[2]);
+
+           // end assign...
            
            // push $null onto the current frame as well...
-           add(GeneratedSteps.SValue(SleepUtils.getEmptyScalar()), tokens[2]);
+           add(GeneratedSteps.SValue(SleepUtils.getEmptyScalar()), tokens[2]); // for comparisons sake
 
            a = restore();
 
