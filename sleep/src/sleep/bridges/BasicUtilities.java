@@ -80,6 +80,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&cast",    f_cast);
         temp.put("&casti",   f_cast);
 
+        temp.put("&putAll", this);
+
         temp.put("&addAll", this);
         temp.put("&removeAll", this);
         temp.put("&retainAll", this);
@@ -954,6 +956,29 @@ public class BasicUtilities implements Function, Loadable, Predicate
              temp.setValue(value.getHash().keys());
              return temp;
           }
+       }
+       else if (n.equals("&putAll"))
+       {
+          if (value.getHash() != null)
+          {
+             Iterator keys   = BridgeUtilities.getIterator(l, i);
+             Iterator values = l.isEmpty() ? keys : BridgeUtilities.getIterator(l, i);
+
+             while (keys.hasNext())
+             {
+                Scalar blah = value.getHash().getAt((Scalar)keys.next());
+                if (values.hasNext())
+                {
+                   blah.setValue((Scalar)values.next());
+                }
+                else
+                {
+                   blah.setValue(SleepUtils.getEmptyScalar());
+                }
+             }
+          }
+
+          return value;
        }
        else if (n.equals("&values")) // &values(%hash)
        {

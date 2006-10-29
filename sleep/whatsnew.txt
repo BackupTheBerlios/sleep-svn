@@ -24,6 +24,8 @@
   to set the debug level of a script.
 - one can now specify a $this => &closure with &lambda to force the new closure
   to use the closure scope/environment of the specified &closure
+- added a &putAll(%hash, &/@, [&/@]) to populate the passed in hash from the
+  passed in iterator(s).
 
 2.1-beta 7  (15 Oct 06)
 ===========
