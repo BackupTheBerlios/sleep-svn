@@ -19,6 +19,8 @@
   environment => &closure - accepts a closure whose this scope is to be used
      in lieu of the closures normal environment.  
   message => "some string" - the message value to send to the called function
+- updated the sleep console with an ehanced 'help' command and a command 'debug'
+  to set the debug level of a script.
 
 2.1-beta 7  (15 Oct 06)
 ===========

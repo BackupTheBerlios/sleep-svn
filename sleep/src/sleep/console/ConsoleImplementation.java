@@ -180,6 +180,10 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
              {
                 getProxy().consolePrintln(SleepUtils.SLEEP_VERSION + " (" + SleepUtils.SLEEP_RELEASE + ")");
              }
+             else if (command.equals("help") && args != null)
+             {
+                help(args);
+             }
              else if (command.equals("help"))
              {
                 help();
@@ -191,6 +195,22 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
              else if (command.equals("list"))
              {
                 list();
+             }
+             else if (command.equals("debug") && args != null) 
+             {
+                String[] splits = args.split(" ");
+                if (splits.length == 2)
+                {
+                   debug(splits[0], Integer.parseInt(splits[1]));
+                }
+                else if (splits.length == 1)
+                {
+                   debug(null, Integer.parseInt(splits[0]));
+                }
+                else
+                {
+                   getProxy().consolePrintln("Invalid usage: debug [script] <level>");
+                }
              }
              else if (command.equals("load") && args != null)
              {
@@ -206,7 +226,7 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
              }
              else if (command.equals("x") && args != null)
              {
-                eval("println(" + args + ");");
+                getProxy().consolePrintln(eval("return " + args + ";"));
              }
              else if (command.equals("quit") || command.equals("exit") || command.equals("done"))
              {
@@ -232,27 +252,82 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
 
    private void help()
    {
+       getProxy().consolePrintln("debug [script] <level>");
        getProxy().consolePrintln("env [functions/other] [regex filter]");
-       getProxy().consolePrintln("   dumps the shared environment, filters output with specified regex");
-       getProxy().consolePrintln("help");
-       getProxy().consolePrintln("   displays this message");
+       getProxy().consolePrintln("help [command]");
        getProxy().consolePrintln("interact");
-       getProxy().consolePrintln("   enters the console into interactive mode.");
        getProxy().consolePrintln("list");
-       getProxy().consolePrintln("   lists all of the currently loaded scripts");
        getProxy().consolePrintln("load <file>");
-       getProxy().consolePrintln("   loads a script file into the script loader");
        getProxy().consolePrintln("unload <file>");
-       getProxy().consolePrintln("   unloads a script file from the script loader");
        getProxy().consolePrintln("tree [key]");
-       getProxy().consolePrintln("   displays the Abstract Syntax Tree for the specified key");
        getProxy().consolePrintln("quit");
-       getProxy().consolePrintln("   stops the console");
        getProxy().consolePrintln("version");
-       getProxy().consolePrintln("   display the current Sleep version");
        getProxy().consolePrintln("x <expression>");
-       getProxy().consolePrintln("   evaluates a sleep expression and displays the value");
 
+   }
+
+   private void help(String command)
+   {
+       if (command.equals("debug"))
+       {
+          getProxy().consolePrintln("debug [script] <level>");
+          getProxy().consolePrintln("   sets the debug level for the specified script");
+          getProxy().consolePrintln("   1 - show critical errors");
+          getProxy().consolePrintln("   2 - show warnings");
+          getProxy().consolePrintln("   4 - strict mode, complain about non-declared variables");
+          getProxy().consolePrintln("   8 - trace all function calls");
+          getProxy().consolePrintln("   to combine options, add their numbers together");
+       }
+       else if (command.equals("env"))
+       {
+          getProxy().consolePrintln("env [functions/other] [regex filter]");
+          getProxy().consolePrintln("   dumps the shared environment, filters output with specified regex");
+       }
+       else if (command.equals("interact"))
+       {
+          getProxy().consolePrintln("interact");
+          getProxy().consolePrintln("   enters the console into interactive mode.");
+       }
+       else if (command.equals("list"))
+       {
+          getProxy().consolePrintln("list");
+          getProxy().consolePrintln("   lists all of the currently loaded scripts");
+       }
+       else if (command.equals("load"))
+       {
+          getProxy().consolePrintln("load <file>");
+          getProxy().consolePrintln("   loads a script file into the script loader");
+       }
+       else if (command.equals("unload"))
+       {
+          getProxy().consolePrintln("unload <file>");
+          getProxy().consolePrintln("   unloads a script file from the script loader");
+       }
+       else if (command.equals("tree"))
+       {
+          getProxy().consolePrintln("tree [key]");
+          getProxy().consolePrintln("   displays the Abstract Syntax Tree for the specified key");
+       }
+       else if (command.equals("quit"))
+       {
+          getProxy().consolePrintln("quit");
+          getProxy().consolePrintln("   stops the console");
+       }
+       else if (command.equals("version"))
+       {
+          getProxy().consolePrintln("version");
+          getProxy().consolePrintln("   display the current Sleep version");
+       }
+       else if (command.equals("x"))
+       {
+          getProxy().consolePrintln("x <expression>");
+          getProxy().consolePrintln("   evaluates a sleep expression and displays the value");
+       }
+       else
+       {
+          getProxy().consolePrintln("help [command]");
+          getProxy().consolePrintln("   displays a help message for the specified command");
+       }
    }
 
    private void load(String file)
@@ -260,6 +335,12 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        try
        {
           ScriptInstance script = loader.loadScript(file, sharedEnvironment);
+
+          if (System.getProperty("sleep.debug") != null)
+          {
+             script.setDebugFlags(Integer.parseInt(System.getProperty("sleep.debug")));
+          }
+
           script.runScript();
        }
        catch (YourCodeSucksException yex)
@@ -380,6 +461,29 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        }
    }
 
+   private void debug(String item, int level)
+   {
+       if (item == null)
+       {
+          System.setProperty("sleep.debug", ""+level);
+          getProxy().consolePrintln("Default debug level set");
+       }
+       else
+       {
+          HashMap temp = loader.getScriptsByKey();
+
+          if (temp.get(getFullScript(item)) != null)
+          {
+             ((ScriptInstance)temp.get(getFullScript(item))).setDebugFlags(level);
+             getProxy().consolePrintln("Debug level set for "+item);
+          }
+          else
+          {
+             getProxy().consolePrintln("Could not find script "+item+" to set debug level for");
+          }
+       }
+   }
+
    private void interact()
    {
        interact = true;
@@ -388,13 +492,19 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        getProxy().consolePrintln("Type Ctrl+D or 'done' on a line by itself to leave interactive mode.");
    }
 
-   private void eval (String expression)
+   private Scalar eval (String expression)
    {
        try
        {
           Block parsed = SleepUtils.ParseCode(expression.toString());
           script = loader.loadScript("<interact mode>", parsed, sharedEnvironment);
-          script.runScript();
+
+          if (System.getProperty("sleep.debug") != null)
+          {
+             script.setDebugFlags(Integer.parseInt(System.getProperty("sleep.debug")));
+          }
+
+          return script.runScript();
        }
        catch (YourCodeSucksException yex)
        {
@@ -404,6 +514,8 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        {
           getProxy().consolePrintln("Oops, an error occured with " + expression + ": " + ex.toString());
        }
+
+       return null;
    }
 
    /** a convienence method that formats and writes each syntax error to the proxy output */
