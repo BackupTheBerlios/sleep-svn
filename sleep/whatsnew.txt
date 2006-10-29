@@ -14,6 +14,11 @@
 - changed string representation of closures to represent: 
   &closureX:N-M where X represents the instantiation number (i.e. closure 3)
   and N-M represents the line range where the closure was declared
+- updated &invoke to accept the following named parameters:
+  parameter => %() - accepts a hashmap of $scalars to send as named parameters
+  environment => &closure - accepts a closure whose this scope is to be used
+     in lieu of the closures normal environment.  
+  message => "some string" - the message value to send to the called function
 
 2.1-beta 7  (15 Oct 06)
 ===========

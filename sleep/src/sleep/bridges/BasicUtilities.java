@@ -694,15 +694,47 @@ public class BasicUtilities implements Function, Loadable, Predicate
        }
        else if (n.equals("&invoke")) 
        {
-          SleepClosure c    = BridgeUtilities.getFunction(l, i);
+          Map params = BridgeUtilities.extractNamedParameters(l);
 
+          SleepClosure c    = BridgeUtilities.getFunction(l, i);
           Stack        args = new Stack();
           Iterator iter     = BridgeUtilities.getIterator(l, i);
           while (iter.hasNext()) { args.add(0, iter.next()); }
 
           String message    = BridgeUtilities.getString(l, null);
+
+          /* parameters option */
+          if (params.containsKey("parameters"))
+          {
+             Scalar   h = (Scalar)params.get("parameters");
+
+             Iterator it = h.getHash().keys().scalarIterator();
+             while (it.hasNext())
+             {
+                Scalar key = (Scalar)it.next();
+                KeyValuePair temp = new KeyValuePair(key, h.getHash().getAt(key));
+                args.add(0, SleepUtils.getScalar(temp));
+             }
+          }
+
+          /* message option */
+          if (params.containsKey("message"))
+          {
+             message = params.get("message").toString();
+          }
  
-          return c.callClosure(message, i, args);
+          Variable old = c.getVariables();
+
+          /* environment option */
+          if (params.containsKey("environment"))
+          {
+             SleepClosure t = (SleepClosure)((Scalar)params.get("environment")).objectValue();
+             c.setVariables(t.getVariables());
+          }
+
+          Scalar rv = c.callClosure(message, i, args);
+          c.setVariables(old);
+          return rv;
        }
        else if (n.equals("&debug"))
        {
