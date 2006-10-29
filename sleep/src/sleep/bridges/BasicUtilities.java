@@ -473,7 +473,16 @@ public class BasicUtilities implements Function, Loadable, Predicate
           while (!l.isEmpty())
           {
              KeyValuePair kvp = BridgeUtilities.getKeyValuePair(l);
-             vars.putScalar(kvp.getKey().toString(), SleepUtils.getScalar(kvp.getValue()));
+
+             if (kvp.getKey().toString().equals("$this"))
+             {
+                SleepClosure c = (SleepClosure)kvp.getValue().objectValue();
+                value.setVariables(c.getVariables());
+             }
+             else
+             {
+                vars.putScalar(kvp.getKey().toString(), SleepUtils.getScalar(kvp.getValue()));
+             }
           }
 
           return SleepUtils.getScalar(value);
@@ -726,9 +735,9 @@ public class BasicUtilities implements Function, Loadable, Predicate
           Variable old = c.getVariables();
 
           /* environment option */
-          if (params.containsKey("environment"))
+          if (params.containsKey("$this"))
           {
-             SleepClosure t = (SleepClosure)((Scalar)params.get("environment")).objectValue();
+             SleepClosure t = (SleepClosure)((Scalar)params.get("$this")).objectValue();
              c.setVariables(t.getVariables());
           }
 

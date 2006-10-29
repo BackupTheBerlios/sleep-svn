@@ -24,9 +24,9 @@ sub bar
 bar();
 bar();
 
-invoke(&foo, @("a", "b", "c"), "test", environment => &bar, 
+invoke(&foo, @("a", "b", "c"), "test", $this => &bar, 
                   message => "blah", parameters => %($foo => "foo!", $bar => "bar!"));
-invoke(&foo, @("x", "y", "z"), "test", environment => &bar, 
+invoke(&foo, @("x", "y", "z"), "test", $this => &bar, 
                   parameters => %($foo => "fool!", $bar => "barl!"));
 
 bar();

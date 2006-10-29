@@ -16,11 +16,14 @@
   and N-M represents the line range where the closure was declared
 - updated &invoke to accept the following named parameters:
   parameter => %() - accepts a hashmap of $scalars to send as named parameters
-  environment => &closure - accepts a closure whose this scope is to be used
-     in lieu of the closures normal environment.  
+  $this => &closure - accepts a closure to use as $this when executing the
+     function.  essentially forces the called function to share environments
+     with &closure for the duration of the execution.
   message => "some string" - the message value to send to the called function
 - updated the sleep console with an ehanced 'help' command and a command 'debug'
   to set the debug level of a script.
+- one can now specify a $this => &closure with &lambda to force the new closure
+  to use the closure scope/environment of the specified &closure
 
 2.1-beta 7  (15 Oct 06)
 ===========
