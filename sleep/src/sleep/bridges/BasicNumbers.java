@@ -79,7 +79,12 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        temp.put("/", this);
        temp.put("*", this);
        temp.put("**", this); // exponentation
-       temp.put("%", this);
+
+       /* why "% "?  we had an amibiguity with %() to initialize hash literals and n % (expr) 
+          for normal math ops.  the initial parser in the case of mod will preserve one bit of
+          whitespace to try to prevent mass hysteria and confusion to the parser for determining
+          wether an op is being used or a hash literal is being initialized */
+       temp.put("% ", this);
 
        temp.put("<<", this);
        temp.put(">>", this);
@@ -293,7 +298,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
           if (o.equals("-")) { return SleepUtils.getScalar(a - b); }
           if (o.equals("*")) { return SleepUtils.getScalar(a * b); }
           if (o.equals("/")) { return SleepUtils.getScalar(a / b); }
-          if (o.equals("%")) { return SleepUtils.getScalar(a % b); }
+          if (o.equals("% ")) { return SleepUtils.getScalar(a % b); }
           if (o.equals("**")) { return SleepUtils.getScalar(Math.pow((double)a, (double)b)); }
        }
        else if (right.getClass() == TYPE_LONG || left.getClass() == TYPE_LONG)
@@ -305,7 +310,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
           if (o.equals("-")) { return SleepUtils.getScalar(a - b); }
           if (o.equals("*")) { return SleepUtils.getScalar(a * b); }
           if (o.equals("/")) { return SleepUtils.getScalar(a / b); }
-          if (o.equals("%")) { return SleepUtils.getScalar(a % b); }
+          if (o.equals("% ")) { return SleepUtils.getScalar(a % b); }
           if (o.equals("**")) { return SleepUtils.getScalar(Math.pow((double)a, (double)b)); }
           if (o.equals(">>"))  { return SleepUtils.getScalar(a >> b); }
           if (o.equals("<<"))  { return SleepUtils.getScalar(a << b); }
@@ -322,7 +327,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
           if (o.equals("-")) { return SleepUtils.getScalar(a - b); }
           if (o.equals("*")) { return SleepUtils.getScalar(a * b); }
           if (o.equals("/")) { return SleepUtils.getScalar(a / b); }
-          if (o.equals("%")) { return SleepUtils.getScalar(a % b); }
+          if (o.equals("% ")) { return SleepUtils.getScalar(a % b); }
           if (o.equals("**")) { return SleepUtils.getScalar(Math.pow((double)a, (double)b)); }
           if (o.equals(">>"))  { return SleepUtils.getScalar(a >> b); }
           if (o.equals("<<"))  { return SleepUtils.getScalar(a << b); }

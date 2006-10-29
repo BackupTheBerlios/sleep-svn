@@ -317,7 +317,19 @@ public class LexicalAnalyzer
          {
              if (aTerm.length() > 0)
              {
-                newTerm = new Token(trim(parser, aTerm.toString()), iterator.getLineNumber());
+                /* why is this happening here, you may be asking.  Well for the sake of future generations
+                   I introduced a nasty ambiguity creating a function %() for intializing hashes which of
+                   course to my friendly top down parser is easily mistaken with 3 % (some expr) for doing
+                   typical modulus operations.  So if there is whitespace following the % char then I preserve
+                   it so the parser can differentiate a hash literal from a MOD math operation. */
+                if (aTerm.length() == 1 && aTerm.charAt(0) == '%')
+                {
+                   newTerm = new Token("% ", iterator.getLineNumber());
+                }
+                else
+                {
+                   newTerm = new Token(trim(parser, aTerm.toString()), iterator.getLineNumber());
+                }
                 terms.add(newTerm);
                 aTerm = new StringBuffer();
              }

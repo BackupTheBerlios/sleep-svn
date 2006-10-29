@@ -3,6 +3,8 @@
 - when packing an unsigned integer the argument is now interpreted as a long
   (and cast to an int) rather than an int (since an unsigned integer can be
   "bigger" than a normal java integer).  
+- fixed a parser ambiguity with hash literals i.e. %(...) and arithmetic
+  consisting of ... % (...).  both now work as they should.
 
 2.1-beta 7  (15 Oct 06)
 ===========
