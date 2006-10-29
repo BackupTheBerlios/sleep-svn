@@ -5,6 +5,8 @@
   "bigger" than a normal java integer).  
 - fixed a parser ambiguity with hash literals i.e. %(...) and arithmetic
   consisting of ... % (...).  both now work as they should.
+- added a method to BridgeUtilities to extract all named parameters from an
+  argument stack.
 
 2.1-beta 7  (15 Oct 06)
 ===========

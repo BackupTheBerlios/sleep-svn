@@ -22,10 +22,9 @@
 package sleep.bridges;
 
 import sleep.runtime.*;
-import java.util.Stack;
 import java.io.File;
 import sleep.interfaces.Function;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * A bridge is a class that bridges your applications API and sleep.  Bridges are created using interfaces from the sleep.interfaces package.  Arguments are passed to bridges generally in a java.util.Stack form.  The Stack of arguments contains sleep Scalar objects.  The BridgeUtilities makes it safer and easier for you to extract Java types from arguments.
@@ -96,6 +95,26 @@ public class BridgeUtilities
          return defaultValue;
 
       return ((Scalar)arguments.pop()).doubleValue();
+   }
+
+   /** extracts all named parameters from the argument stack.  this method returns a Map whose keys are strings
+       and values are Scalars. */
+   public static Map extractNamedParameters(Stack args)
+   {
+      Map rv = new HashMap();
+      Iterator i = args.iterator();
+      while (i.hasNext())
+      {
+         Scalar temp = (Scalar)i.next();
+         if (temp.objectValue() != null && temp.objectValue().getClass() == KeyValuePair.class)
+         {
+            i.remove();
+            KeyValuePair value = (KeyValuePair)temp.objectValue();
+            rv.put(value.getKey().toString(), value.getValue());
+         }
+      }
+
+      return rv;
    }
 
    /** grabs a scalar iterator, this can come from either an array or a closure called continuously until $null is returned. */
