@@ -26,6 +26,8 @@
   to use the closure scope/environment of the specified &closure
 - added a &putAll(%hash, &/@, [&/@]) to populate the passed in hash from the
   passed in iterator(s).
+- updated &exec to allow specification of a starting directory and environment:
+  $handle = &exec("command args", [%environment], ["starting directory/"]);
 - readb now returns a $null if the read failed to return any data
 
 2.1-beta 7  (15 Oct 06)
