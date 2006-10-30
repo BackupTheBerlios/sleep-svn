@@ -1,5 +1,5 @@
  ------- -------------------- ---------   ---------------  ------- ---------
-Sleep - 2.1 beta 7 - README   
+Sleep - 2.1 beta 8 - README   
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 "You got the language, all you need now is the O'Reilly book".  That is

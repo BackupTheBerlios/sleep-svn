@@ -1999,6 +1999,13 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
   <td>returns a sleep string array of all the keys in %hash</td>
  </tr>
  <tr>
+  <td>%</td>
+  <td>putAll(%hash, @|&amp;, [@|&amp;])</td>
+  <td>populates the hash with the specified iterators.  If only one iterator is specified then the second argument
+  is assumed to be the same as the first.  The first iterator is iterated over to obtain the keys for the hash
+  and the second iterator is iterated over to obtain the values.</td>
+ </tr>
+ <tr>
   <td></td>
   <td>remove(%hash, $key, ...)</td>
   <td>removes all specified keys from %hash</td>
@@ -2512,13 +2519,13 @@ n-m substrings will be returned.</td>
  </tr>
  <tr>
   <td>$</td>
-  <td>invoke(&amp;closure, @args, ["message"])</td>
-  <td>invokes the specified closure using the specified array for each individual argument.  the message parameter ($0) can be specified as well.</td>
+  <td>invoke(&amp;closure, @args, ["message"], ...)</td>
+  <td>invokes the specified closure using the specified array for each individual argument.  the message parameter ($0) can be specified as well.  Optional named parameters include <i>message</i>, <i>$this</i> which specifies the closure scope to execute with, and <i>parameter</i> which is a hash of all key/value pairs to pass to the function.</td>
  </tr>
  <tr> 
   <td>&amp;</td>
   <td>lambda(&amp;closure,&nbsp;$key&nbsp;=&gt;&nbsp;"value",&nbsp;...)</td>
-  <td>copies &amp;closure into a new closure.  The closure environment is initialized with all of the key/value pair arguments.</td>
+  <td>copies &amp;closure into a new closure.  The closure environment is initialized with all of the key/value pair arguments.  If <var>$this</var> => &amp;closure is specified then the resulting closure will share a <var>$this</var> scope with the specified &amp;closure.</td>
  </tr>
  <tr>
   <td></td>

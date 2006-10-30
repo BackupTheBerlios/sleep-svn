@@ -26,6 +26,14 @@ sleep.console.TextConsole.
 Console Commands
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
+debug [script] <level>
+   Sets the default debug level or sets the debug level for the specified 
+   script.  Debug levels include:
+   1 - show all errors
+   2 - show all warnings normally available with checkError()
+   4 - flag a warning when an undeclared variable is used for the first time
+   8 - trace all function calls
+
 env [functions/other] [regex filter]
    Dumps the shared environment.  This includes all functions, operators, and
    predicates and where they are registered too.  The regex filter allows one
