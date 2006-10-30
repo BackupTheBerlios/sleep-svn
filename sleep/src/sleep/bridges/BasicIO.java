@@ -263,10 +263,43 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          String a = ((Scalar)l.pop()).toString();
+          String   command  = BridgeUtilities.getString(l, null);
+          String[] envp     = null;
+          File     start    = null;
+
+          if (!l.isEmpty())
+          {
+             if (SleepUtils.isEmptyScalar((Scalar)l.peek()))
+             {
+                l.pop();
+             }
+             else
+             {
+                ScalarHash env  = BridgeUtilities.getHash(l);
+                Iterator   keys = env.keys().scalarIterator();
+                envp = new String[env.keys().size()];
+                for (int x = 0; x < envp.length; x++)
+                {
+                   Scalar key = (Scalar)keys.next();
+                   envp[x] = key.toString() + "=" + env.getAt(key);
+                }
+             }
+          }
+
+          if (!l.isEmpty() && !SleepUtils.isEmptyScalar((Scalar)l.peek()))
+          {
+             if (SleepUtils.isEmptyScalar((Scalar)l.peek()))
+             {
+                l.pop();
+             }
+             else
+             {
+                start = BridgeUtilities.getFile(l); 
+             }
+          }
 
           ProcessObject temp = new ProcessObject();
-          temp.open(a, i.getScriptEnvironment());
+          temp.open(command, envp, start, i.getScriptEnvironment());
 
           return SleepUtils.getScalar(temp);
        }
@@ -1127,6 +1160,8 @@ public class BasicIO implements Loadable, Function
              a.close();
              i.getScriptEnvironment().flagError(ex.toString());
           }
+
+          if (temp.length() == 0) { return SleepUtils.getEmptyScalar(); }
 
           return SleepUtils.getScalar(temp.toString());
        }

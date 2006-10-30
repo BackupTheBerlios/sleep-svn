@@ -13,7 +13,7 @@ public class ProcessObject extends IOObject
       return process;
    }
 
-   public void open(String command, ScriptEnvironment env)
+   public void open(String command, String[] environment, File startDir, ScriptEnvironment env)
    {
       try
       {
@@ -25,13 +25,14 @@ public class ProcessObject extends IOObject
             command = command + args;
          }
 
-         process = Runtime.getRuntime().exec(command);
+         process = Runtime.getRuntime().exec(command, environment, startDir);
 
          openRead(process.getInputStream());
          openWrite(process.getOutputStream());
       }
       catch (Exception ex)
       {
+         ex.printStackTrace();
          env.flagError(ex.toString());
       }
    }

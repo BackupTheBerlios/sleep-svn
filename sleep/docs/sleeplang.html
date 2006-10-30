@@ -2067,8 +2067,8 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
  </tr>
  <tr>
   <td>$</td>
-  <td>exec("command")</td>
-  <td>executes the specified command and returns a $handle.  Check for issues executing a process with checkError()</td>
+  <td>exec("command", [%env], ["directory"])</td>
+  <td>executes the specified command and returns a $handle.  Check for issues executing a process with checkError().  If $null is specified for either the environment (%env) or the starting "directory" then the process will inherit the current processes settings.</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2141,7 +2141,7 @@ calling the closure.  the closure will be called for the last read even if &lt; 
  <tr>
   <td>$</td>
   <td>readb([$handle], n)</td>
-  <td>reads n bytes from $handle</td>
+  <td>reads n bytes from $handle.  If 0 bytes are read <var>$null</var> will be returned.</td>
  </tr>
  <tr>
   <td>$</td>
