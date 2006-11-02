@@ -16,7 +16,7 @@ import java.io.Serializable;
  * <p>In the above example MyScalarType is an instance that implements the ScalarType interface.</p>
  * 
  */
-public interface ScalarType extends Serializable
+public interface ScalarType extends java.io.Serializable
 {
    /** create a clone of this scalar's value.  It is important to note that you should return a copy here unless you really want 
        scalars of your scalar type to be passed by reference. */

@@ -41,7 +41,7 @@ import sleep.runtime.ScriptInstance;
  * of the method as the value of the accessed scalar.</p>
  * 
  */
-public interface Variable
+public interface Variable extends java.io.Serializable
 {
     /** true if a scalar named key exists in this variable environment */
     public boolean    scalarExists(String key); 

@@ -17,7 +17,7 @@ import java.util.*;
  * <p>Keep in mind when implementing the interface below that you are defining the interface to a dictionary style
  * data structure.</p>
  */
-public interface ScalarHash
+public interface ScalarHash extends java.io.Serializable
 {
    /** Retrieves a scalar from the hashtable.  If a scalar key does not exist then the key should be created with a 
        value of $null.  This $null or empty scalar value should be returned by the function.  This is how values are

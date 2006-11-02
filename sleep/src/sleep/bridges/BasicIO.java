@@ -78,6 +78,10 @@ public class BasicIO implements Loadable, Function
         temp.put("&bread",      new bread());
         temp.put("&bwrite",     new bwrite());
 
+        // object io functions
+        temp.put("&readObject",      this);
+        temp.put("&writeObject",     this);
+
         temp.put("&pack",       new pack());
         temp.put("&unpack",     new unpack());
 
@@ -132,6 +136,34 @@ public class BasicIO implements Loadable, Function
           long    to = BridgeUtilities.getLong(l, 0);
 
           return a.wait(i.getScriptEnvironment(), to);
+       }
+       else if (n.equals("&writeObject"))
+       {
+          IOObject a = chooseSource(l, 2, i);
+          Scalar   b = (Scalar)l.pop();
+          try
+          {
+             ObjectOutputStream ois = new ObjectOutputStream(a.getWriter());
+             ois.writeObject(b);
+          }
+          catch (Exception ex)
+          {
+             i.getScriptEnvironment().flagError("&writeObject: " + ex.toString());
+          }
+       }
+       else if (n.equals("&readObject"))
+       {
+          IOObject a = chooseSource(l, 1, i);
+          try
+          {
+             ObjectInputStream ois = new ObjectInputStream(a.getReader());
+             Scalar value = (Scalar)ois.readObject();
+             return value;
+          }
+          catch (Exception ex)
+          {
+             i.getScriptEnvironment().flagError("&readObject: " + ex.toString());
+          }
        }
        else if (n.equals("&digest"))
        {
@@ -240,8 +272,6 @@ public class BasicIO implements Loadable, Function
              return SleepUtils.getScalar(doit.getValue());
           }
        }
-
-       System.out.println("apparently we were wrong about '" + n + "'");
 
        return SleepUtils.getEmptyScalar();
     }

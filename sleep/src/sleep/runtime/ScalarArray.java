@@ -13,7 +13,7 @@ import java.util.*;
  * <p>When implementing the following interface, keep in mind you are implementing an
  * interface to an array data structure.</p>
  */
-public interface ScalarArray
+public interface ScalarArray extends java.io.Serializable
 {
    public Scalar   pop();
    public Scalar   push(Scalar value);

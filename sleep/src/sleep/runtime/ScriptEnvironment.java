@@ -214,7 +214,7 @@ public class ScriptEnvironment implements Serializable
     // ******** Context Management **********
     //
     
-    protected static class Context
+    protected static class Context implements Serializable
     {
        public Block block;
        public Step  last;       

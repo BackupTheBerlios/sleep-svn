@@ -61,17 +61,6 @@ public class SleepClosure implements Function
        return new ClosureIterator();
     }
 
-    public static Class CLOSURE_CLASS;
-
-    static
-    {
-       try
-       {
-          CLOSURE_CLASS = Class.forName("sleep.bridges.SleepClosure");
-       }
-       catch (Exception ex) { }
-    }
-
     /** the block of code associated with this sleep closure */
     Block                code;
 
@@ -111,6 +100,12 @@ public class SleepClosure implements Function
     public String toString()
     {
        return "&closure" + id + ":" + code.getApproximateLineRange();
+    }
+
+    /** This is here for the sake of serialization */
+    private SleepClosure()
+    {
+
     }
 
     /** Creates a new Sleep Closure, with a brand new set of internal variables.  Don't be afraid, you can call this constructor from your code. */
@@ -183,6 +178,8 @@ public class SleepClosure implements Function
     /** Evaluates the closure, use callClosure instead. */
     public Scalar evaluate(String message, ScriptInstance si, Stack locals)
     {
+       if (owner == null) { owner = si; }
+
        ScriptVariables   vars = si.getScriptVariables();
        ScriptEnvironment env  = si.getScriptEnvironment();
 
@@ -261,5 +258,25 @@ public class SleepClosure implements Function
 
        return temp;
     }
+
+    private void writeObject(ObjectOutputStream out) throws IOException
+    {
+       out.writeInt(id);
+       out.writeObject(code);
+       out.writeObject(context);
+       out.writeObject(metadata);
+       out.writeObject(variables);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+       id        = in.readInt();
+       code      = (Block)in.readObject();
+       context   = (Stack)in.readObject();
+       metadata  = (HashMap)in.readObject();
+       variables = (Variable)in.readObject();
+       owner     = null;
+    }
 }
+
 
