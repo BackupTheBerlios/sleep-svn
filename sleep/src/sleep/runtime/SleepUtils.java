@@ -304,7 +304,7 @@ public class SleepUtils
    /** returns true if the passed in scalar value is equivalent to the empty scalar or null */
    public static boolean isEmptyScalar(Scalar value)
    {
-      return (value == null || value.getValue() == nullScalar);
+      return (value == null || value.getActualValue() == nullScalar);
    }
 
    /** Determines if the passed in scalar represents a "function" value.  True iff the scalar contains a closure reference. */

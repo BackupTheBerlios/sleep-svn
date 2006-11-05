@@ -78,6 +78,13 @@ public class Scalar implements Serializable
    protected ScalarArray array = null;
    protected ScalarHash  hash  = null;
 
+   /** Returns the actual non-array/non-hash value this scalar contains.  This is mainly for use by internal sleep
+       classes that do not want to accidentally convert a hash/array to a string. */
+   public ScalarType getActualValue()
+   {
+      return value;
+   }
+
    /** Returns the container for the scalars value.  If this is an array or hash scalar then they will be converted to a string 
        scalar and returned.  If this scalar is completely null then null will be returned which will mess up the interpreter 
        somewhere */
