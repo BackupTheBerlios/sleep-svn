@@ -152,6 +152,7 @@ public class BasicIO implements Loadable, Function
              catch (Exception ex)
              {
                 i.getScriptEnvironment().flagError("&writeObject(" + SleepUtils.describe(SleepUtils.getScalar(a)) + ", " + SleepUtils.describe(b) + "): " + ex.toString());
+                a.close();
              }
           }
        }
@@ -167,6 +168,7 @@ public class BasicIO implements Loadable, Function
           catch (Exception ex)
           {
              i.getScriptEnvironment().flagError("&readObject: " + ex.toString());
+             a.close();
           }
        }
        else if (n.equals("&digest"))

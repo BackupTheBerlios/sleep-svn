@@ -12,6 +12,13 @@
 - added &consume($handle, n bytes) to read and discard up to n bytes from the 
   specified handle.  (differs from skip which just seeks ahead and discards
   n bytes).
+- IO errors in read/write functions now uniformly close the read/write 
+  portions of the IO handle.
+- remove &getFilePath as the function essentially did nothing but return
+  the value passed to it (I was a little over-ambitious when bridging
+  java.io.File awhile back).
+- ls() with no parameters now returns the file system roots (same as 
+  listRoots()).
 
 2.1-beta 8  (29 Oct 06)
 ===========

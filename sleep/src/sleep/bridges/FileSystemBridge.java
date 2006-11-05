@@ -38,11 +38,10 @@ public class FileSystemBridge implements Loadable
         temp.put("&getFileName",     new getFileName());
         temp.put("&getFileProper",   new getFileProper());
         temp.put("&getFileParent",   new getFileParent());
-        temp.put("&getFilePath",     new getFilePath());
         temp.put("&lastModified",    new lastModified());
         temp.put("&lof",             new lof());
         temp.put("&ls",              new listFiles());
-        temp.put("&listRoots",       new listRoots());
+        temp.put("&listRoots",       temp.get("&ls"));
         temp.put("&mkdir",           new mkdir());
         temp.put("&rename",          new rename());
         temp.put("&setLastModified", new setLastModified());
@@ -180,15 +179,6 @@ public class FileSystemBridge implements Loadable
        }
     }
 
-    private static class getFilePath implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
-           File a = BridgeUtilities.getFile(l);
-           return SleepUtils.getScalar(a.getPath());
-       }
-    }
-
     private static class lastModified implements Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
@@ -211,9 +201,17 @@ public class FileSystemBridge implements Loadable
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-           File a = BridgeUtilities.getFile(l);
-
-           File[] files = a.listFiles();
+           File[] files;
+ 
+           if (l.isEmpty())
+           {
+              files = File.listRoots();
+           }
+           else
+           {
+              File a = BridgeUtilities.getFile(l);
+              files = a.listFiles();
+           }
            LinkedList temp = new LinkedList();
 
            if (files != null)
@@ -222,22 +220,6 @@ public class FileSystemBridge implements Loadable
               {
                  temp.add(files[x].getAbsolutePath());
               }
-           }
-
-           return SleepUtils.getArrayWrapper(temp);
-       }
-    }
-
-    private static class listRoots implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
-           File[] files = File.listRoots();
-
-           LinkedList temp = new LinkedList();
-           for (int x = 0; x < files.length; x++)
-           {
-              temp.add(files[x].getAbsolutePath());
            }
 
            return SleepUtils.getArrayWrapper(temp);

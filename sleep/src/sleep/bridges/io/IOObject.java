@@ -218,8 +218,7 @@ public class IOObject
       }
       catch (Exception ex) 
       { 
-         readerb = null;
-         reader  = null;
+         close();
       }
 
       return null;
@@ -287,7 +286,7 @@ public class IOObject
          }
          catch (Exception ex)
          {
-            writerb = null;
+            close();
          }
       }
    }
