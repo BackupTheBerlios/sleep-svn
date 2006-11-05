@@ -73,6 +73,7 @@ public class BasicIO implements Loadable, Function
 
         // binary i/o functions :)
         temp.put("&readb",      new readb());
+        temp.put("&consume",    temp.get("&readb"));
         temp.put("&writeb",     new writeb());
 
         temp.put("&bread",      new bread());
@@ -1179,19 +1180,15 @@ public class BasicIO implements Loadable, Function
           IOObject         a = chooseSource(l, 2, i);
           int             to = BridgeUtilities.getInt(l, 1);
 
-          byte[] temp = new byte[to];
+          byte[] temp = a.getBuffer(to);
+
+          int read = 0;
 
           try
           {
-             int read = 0;
              while (read < to)
              {
                 read += a.getReader().read(temp, read, to - read);
-             }
-
-             if (read > 0)
-             {
-                return SleepUtils.getScalar(temp);
              }
           }
           catch (Exception ex)
@@ -1200,6 +1197,10 @@ public class BasicIO implements Loadable, Function
              i.getScriptEnvironment().flagError(ex.toString());
           }
 
+          if (read > 0)
+          {
+             return n.equals("&consume") ? SleepUtils.getScalar(read) : SleepUtils.getScalar(temp);
+          }
           return SleepUtils.getEmptyScalar();
        }
     }

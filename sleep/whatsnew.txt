@@ -9,7 +9,9 @@
   any significant size.  A null check in the Index operator was inadvertently
   converting the entire data structure to a string each time an index op
   occured.  thanks to Marty for making me aware of this one.
-- greatly enhanced the performance of &readb.
+- added &consume($handle, n bytes) to read and discard up to n bytes from the 
+  specified handle.  (differs from skip which just seeks ahead and discards
+  n bytes).
 
 2.1-beta 8  (29 Oct 06)
 ===========
