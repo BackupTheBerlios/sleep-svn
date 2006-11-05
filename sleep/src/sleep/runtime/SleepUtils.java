@@ -507,7 +507,7 @@ public class SleepUtils
       StringBuffer buff = new StringBuffer(x.length);
       for (int y = 0; y < x.length; y++)
       {
-         char append = (char)(x[y] & 0x00FF);
+         char append = (char)(x[y] & 0xFF);
          buff.append(append);
       }
 

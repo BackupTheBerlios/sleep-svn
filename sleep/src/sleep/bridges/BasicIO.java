@@ -140,15 +140,18 @@ public class BasicIO implements Loadable, Function
        else if (n.equals("&writeObject"))
        {
           IOObject a = chooseSource(l, 2, i);
-          Scalar   b = (Scalar)l.pop();
-          try
+          while (!l.isEmpty())
           {
-             ObjectOutputStream ois = new ObjectOutputStream(a.getWriter());
-             ois.writeObject(b);
-          }
-          catch (Exception ex)
-          {
-             i.getScriptEnvironment().flagError("&writeObject: " + ex.toString());
+             Scalar   b = (Scalar)l.pop();
+             try
+             {
+                ObjectOutputStream ois = new ObjectOutputStream(a.getWriter());
+                ois.writeObject(b);
+             }
+             catch (Exception ex)
+             {
+                i.getScriptEnvironment().flagError("&writeObject(" + SleepUtils.describe(SleepUtils.getScalar(a)) + ", " + SleepUtils.describe(b) + "): " + ex.toString());
+             }
           }
        }
        else if (n.equals("&readObject"))
@@ -1176,13 +1179,19 @@ public class BasicIO implements Loadable, Function
           IOObject         a = chooseSource(l, 2, i);
           int             to = BridgeUtilities.getInt(l, 1);
 
-          StringBuffer temp = new StringBuffer(to);
+          byte[] temp = new byte[to];
 
           try
           {
-             for (int x = 0; x < to && a.getReader() != null; x++)
+             int read = 0;
+             while (read < to)
              {
-                temp.append((char)a.getReader().readUnsignedByte());
+                read += a.getReader().read(temp, read, to - read);
+             }
+
+             if (read > 0)
+             {
+                return SleepUtils.getScalar(temp);
              }
           }
           catch (Exception ex)
@@ -1191,9 +1200,7 @@ public class BasicIO implements Loadable, Function
              i.getScriptEnvironment().flagError(ex.toString());
           }
 
-          if (temp.length() == 0) { return SleepUtils.getEmptyScalar(); }
-
-          return SleepUtils.getScalar(temp.toString());
+          return SleepUtils.getEmptyScalar();
        }
     }
 
