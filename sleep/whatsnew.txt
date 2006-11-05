@@ -5,6 +5,10 @@
   read/write scalars to a handle.   if you think about what is possible
   with closures/coroutines and friends then you are thinking right.  this
   should scare you.
+- fixed a nasty nasty (x 1000) performance issue with hashes and arrays of
+  any significant size.  A null check in the Index operator was inadvertently
+  converting the entire data structure to a string each time an index 
+  occured.  thanks to Marty for making me aware of this one.
 
 2.1-beta 8  (29 Oct 06)
 ===========
