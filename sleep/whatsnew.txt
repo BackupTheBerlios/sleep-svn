@@ -17,8 +17,8 @@
 - remove &getFilePath as the function essentially did nothing but return
   the value passed to it (I was a little over-ambitious when bridging
   java.io.File awhile back).
-- ls() with no parameters now returns the file system roots (same as 
-  listRoots()).
+- ls() with no parameters now returns the listing of files/dirs in the
+  current directory.
 
 2.1-beta 8  (29 Oct 06)
 ===========

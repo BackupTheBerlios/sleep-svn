@@ -12,7 +12,7 @@ import sleep.runtime.*;
 import java.io.*;
 
 /** provides a bridge for accessing the local file system */
-public class FileSystemBridge implements Loadable
+public class FileSystemBridge implements Loadable, Function
 {
     public boolean scriptUnloaded(ScriptInstance aScript)
     {
@@ -32,8 +32,8 @@ public class FileSystemBridge implements Loadable
         temp.put("-isHidden",   new _isHidden());
 
         // functions
-        temp.put("&createNewFile",   new createNewFile());
-        temp.put("&deleteFile",      new deleteFile());
+        temp.put("&createNewFile",   this);
+        temp.put("&deleteFile",      this);
         temp.put("&getCurrentDirectory",     new getActiveDir());
         temp.put("&getFileName",     new getFileName());
         temp.put("&getFileProper",   new getFileProper());
@@ -42,18 +42,18 @@ public class FileSystemBridge implements Loadable
         temp.put("&lof",             new lof());
         temp.put("&ls",              new listFiles());
         temp.put("&listRoots",       temp.get("&ls"));
-        temp.put("&mkdir",           new mkdir());
-        temp.put("&rename",          new rename());
-        temp.put("&setLastModified", new setLastModified());
-        temp.put("&setReadOnly",     new setReadOnly());
+        temp.put("&mkdir",           this);
+        temp.put("&rename",          this);
+        temp.put("&setLastModified", this);
+        temp.put("&setReadOnly",     this);
 
         return true;
     }
 
-    private static class createNewFile implements Function
+    public Scalar evaluate(String n, ScriptInstance i, Stack l)
     {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
+        if (n.equals("&createNewFile"))
+        {
            try
            {
               File a = BridgeUtilities.getFile(l);
@@ -63,42 +63,34 @@ public class FileSystemBridge implements Loadable
               }
            }
            catch (Exception ex) { i.getScriptEnvironment().flagError(ex.getMessage()); }
-
-           return SleepUtils.getEmptyScalar();
-       }
-    }
-
-    private static class mkdir implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
+        }
+        else if (n.equals("&deleteFile"))
+        {
+           File a = BridgeUtilities.getFile(l);
+           if (a.delete())
+           {
+              return SleepUtils.getScalar(1);
+           }
+        }
+        else if (n.equals("&mkdir"))
+        {
            File a = BridgeUtilities.getFile(l);
            if (a.mkdirs())
            {
               return SleepUtils.getScalar(1);
            }
-           return SleepUtils.getEmptyScalar();
-       }
-    }
-
-    private static class rename implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
+        }
+        else if (n.equals("&rename"))
+        {
            File a = BridgeUtilities.getFile(l);
            File b = BridgeUtilities.getFile(l);
            if (a.renameTo(b))
            {
               return SleepUtils.getScalar(1);
            }
-           return SleepUtils.getEmptyScalar();
-       }
-    }
-
-    private static class setLastModified implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
+        }
+        else if (n.equals("&setLastModified"))
+        {
            File a = BridgeUtilities.getFile(l);
            long b = BridgeUtilities.getLong(l);
 
@@ -106,14 +98,9 @@ public class FileSystemBridge implements Loadable
            {
               return SleepUtils.getScalar(1);
            }
-           return SleepUtils.getEmptyScalar();
-       }
-    }
-
-    private static class setReadOnly implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
+        }
+        else if (n.equals("&setReadOnly"))
+        {
            File a = BridgeUtilities.getFile(l);
 
            if (a.setReadOnly())
@@ -121,20 +108,9 @@ public class FileSystemBridge implements Loadable
               return SleepUtils.getScalar(1);
            }
            return SleepUtils.getEmptyScalar();
-       }
-    }
+        }
 
-    private static class deleteFile implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
-           File a = BridgeUtilities.getFile(l);
-           if (a.delete())
-           {
-              return SleepUtils.getScalar(1);
-           }
-           return SleepUtils.getEmptyScalar();
-       }
+        return SleepUtils.getEmptyScalar();
     }
 
     private static class getActiveDir implements Function
@@ -203,9 +179,14 @@ public class FileSystemBridge implements Loadable
        {
            File[] files;
  
-           if (l.isEmpty())
+           if (l.isEmpty() && n.equals("&listRoots"))
            {
               files = File.listRoots();
+           }
+           else if (l.isEmpty() && n.equals("&ls"))
+           {
+              File a = new File("").getAbsoluteFile();
+              files = a.listFiles();
            }
            else
            {
