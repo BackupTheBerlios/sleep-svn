@@ -192,6 +192,10 @@ public class ObjectUtilities
          {
             return ARG_MATCH_YES;
          }
+         else if (check == Character.TYPE && stemp == STRING_SCALAR && scalar.getValue().toString().length() == 1)
+         {
+            return ARG_MATCH_YES;
+         }
          else if (stemp == OBJECT_SCALAR)
          {
             check = normalizePrimitive(check);

@@ -25,6 +25,8 @@
   should be parsed and checked for syntax errors but not run.
 - &add now behaves as documented, if no index is specified then the value
   is added to the beginning of the array (and not the end as in push).
+- HOES method resolution now matches 1 character sleep strings as Java 
+  characters.
 
 2.1-beta 8  (29 Oct 06)
 ===========
