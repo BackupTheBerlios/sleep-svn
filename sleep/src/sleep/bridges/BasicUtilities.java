@@ -822,7 +822,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
        else if (n.equals("&add") && value.getArray() != null)
        {
           Scalar item = BridgeUtilities.getScalar(l);
-          int index = BridgeUtilities.getInt(l, value.getArray().size());  
+          int index = BridgeUtilities.getInt(l, 0);  
           return value.getArray().add(SleepUtils.getScalar(item), index);
        }
        else if (n.equals("&pop"))

@@ -33,7 +33,7 @@ $val = search(@array, { if ($1 eq "c") { return "found c! $1 at $2"; } }, 4);
 println("Check: $val");
 
 println("Test 5");
-add(@array, "test");
+push(@array, "test");
 add(@array, "test 2", 3);
 printAll(@array);
 
