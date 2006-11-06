@@ -188,7 +188,9 @@ public class ScriptInstance implements Serializable, Runnable
     {
         ScriptInstance si = new ScriptInstance(variables.getGlobalVariables().createInternalVariableContainer(), environment.getEnvironment());
         si.setName("fork of " + getName());
-
+        si.setDebugFlags(getDebugFlags());
+        si.watchers = watchers;
+ 
         return si;
     }
 

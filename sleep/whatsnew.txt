@@ -31,6 +31,9 @@
   will return the last element of @array.
 - added more descriptive error messages for out of bounds exceptions and
   null pointer exceptions.
+- fork() now inherits parent scripts debug settings and error watchers,
+  before if an error happened in a fork it would be silently ignored. doh!
+
 
 2.1-beta 8  (29 Oct 06)
 ===========
