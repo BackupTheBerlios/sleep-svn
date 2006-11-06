@@ -685,6 +685,9 @@ elements individually and referencing the array as a whole.</p>
 <var>@foo[3]</var> is set to "Michelangelo".  <var>@foo[3]</var> is now equivalent to a normal string scalar that has the value 
 "Michelangelo".</p>
 
+<p>When referencing an array with the index operator, it is acceptable to use negative indices.  For example to reference the
+last element of <var>@foo</var> one could use <code>@foo[-1]</code>.</p>
+
 <p>Arrays can be assigned to each other as well.   As stated in the Scalars section assigning an array to another array just 
 copies the reference.   Both <var>@array</var>'s will point to the same data.  A change in one array will affect the other 
 array.</p>
@@ -1680,7 +1683,6 @@ as many arguments as you are willing to specify.</p>
   <th width="240">Function</th>
   <th>Description</th>
  </tr>  
-
  <tr>
   <td>$</td>
   <td>add(@array, $scalar, [index])</td>
@@ -1924,11 +1926,6 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
  </tr>
  <tr>
   <td>$</td>
-  <td>getFilePath("/path/file")</td>
-  <td>returns the file path extracted from the full path</td>
- </tr>
- <tr>
-  <td>$</td>
   <td>getFileProper("path", "file", ...)</td>
   <td>combines /path and files into an appropriate filename and path for the current platform.</td>
  </tr>
@@ -1949,8 +1946,8 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
  </tr>
  <tr>
   <td>@</td>
-  <td>ls("directory")</td>
-  <td>gets a list of all the files in the specified directory</td>
+  <td>ls(["directory"])</td>
+  <td>gets a list of all the files in the specified directory.  if no directory is specified, the current directory is listed.</td>
  </tr>
  <tr>
   <td></td>
@@ -2067,6 +2064,12 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
  </tr>
  <tr>
   <td>$</td>
+  <td>consume($handle, n, [buffer size])</td>
+  <td>reads and discards up to n bytes from the specified handle.  this is useful for causing data to be read and processed without the expensive conversion process
+      to sleep strings (i.e. when one wants to digest or checksum a file)</td>
+ </tr>
+ <tr>
+  <td>$</td>
   <td>exec("command", [%env], ["directory"])</td>
   <td>executes the specified command and returns a $handle.  Check for issues executing a process with checkError().  If $null is specified for either the environment (%env) or the starting "directory" then the process will inherit the current processes settings.</td>
  </tr>
@@ -2149,6 +2152,11 @@ calling the closure.  the closure will be called for the last read even if &lt; 
   <td>reads a single line of text from the specified handle</td>
  </tr>
  <tr>
+  <td>$</td>
+  <td>readObject([$handle])</td>
+  <td>reads a serialized scalar back from the specified handle</td>
+ </tr>
+ <tr>
   <td></td>
   <td>reset([$handle])</td>
   <td>resets this IO stream back to the last mark</td>
@@ -2174,6 +2182,11 @@ will be returned by &amp;wait.  if $handle is a process, the return value of the
   <td></td>
   <td>writeb([$handle], "string")</td>
   <td>writes the byte data of "string" to $handle</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>writeObject([$handle], $scalar, ...)</td>
+  <td>serializes and writes all of the scalar arguments out to the specified handle</td>
  </tr>
 </table>
 
