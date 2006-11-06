@@ -33,7 +33,9 @@
   null pointer exceptions.
 - fork() now inherits parent scripts debug settings and error watchers,
   before if an error happened in a fork it would be silently ignored. doh!
-
+- &use is now much more aggressive with its error reporting.  if the class
+  is not found or if the specified jar file is not found a runtime warning
+  is fired.
 
 2.1-beta 8  (29 Oct 06)
 ===========

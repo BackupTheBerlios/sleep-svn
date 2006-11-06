@@ -232,8 +232,14 @@ public class BasicUtilities implements Function, Loadable, Predicate
           else
           {
              File a    = sleep.parser.ParserConfig.findJarFile(l.pop().toString());
+
              parent    = a.getParentFile();
              className = a.getName();
+          }
+
+          if (parent != null && !parent.exists())
+          {
+             throw new IllegalArgumentException("&use: could not locate jar file '" + parent + "'");
           }
 
           Class bridge;
@@ -266,7 +272,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
           catch (Exception ex)
           {
-             si.getScriptEnvironment().flagError(ex.toString());
+             throw new RuntimeException(ex.toString());
           }
 
           return SleepUtils.getEmptyScalar();
