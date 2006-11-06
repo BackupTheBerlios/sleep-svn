@@ -260,14 +260,17 @@ public class Checkers
 
    public static final boolean isNumber (String temp)
    {
-      if (temp.endsWith("L"))
-      {
-         temp = temp.substring(0, temp.length() - 1);
-      }
-
       try
       {
-         Long.decode(temp);
+         if (temp.endsWith("L"))
+         {
+            temp = temp.substring(0, temp.length() - 1);
+            Long.decode(temp);
+         }
+         else
+         {
+            Integer.decode(temp);
+         }
       }
       catch (Exception hex) 
       {

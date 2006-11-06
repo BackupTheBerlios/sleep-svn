@@ -140,7 +140,7 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
              }
              else if (input.equals("."))
              { 
-                eval(code.toString());
+                eval(code.toString(), code.toString());
                 code = new StringBuffer();                                
              }
              else
@@ -226,7 +226,7 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
              }
              else if (command.equals("x") && args != null)
              {
-                Scalar value = eval("return " + args + ";");
+                Scalar value = eval("return " + args + ";", args);
                 if (value != null) { getProxy().consolePrintln(value + ""); }
              }
              else if (command.equals("quit") || command.equals("exit") || command.equals("done"))
@@ -493,7 +493,7 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        getProxy().consolePrintln("Type Ctrl+D or 'done' on a line by itself to leave interactive mode.");
    }
 
-   private Scalar eval (String expression)
+   private Scalar eval (String expression, String original)
    {
        try
        {
@@ -513,8 +513,8 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        }
        catch (Exception ex)
        {
-          getProxy().consolePrintln("Oops, an error occured with " + expression + ": " + ex.toString());
-       }
+          getProxy().consolePrintln("error with " + original + ": " + ex.toString());
+       } 
 
        return null;
    }

@@ -27,6 +27,10 @@
   is added to the beginning of the array (and not the end as in push).
 - HOES method resolution now matches 1 character sleep strings as Java 
   characters.
+- the index operator now normalizes negative array indices i.e. @array[-1]
+  will return the last element of @array.
+- added more descriptive error messages for out of bounds exceptions and
+  null pointer exceptions.
 
 2.1-beta 8  (29 Oct 06)
 ===========

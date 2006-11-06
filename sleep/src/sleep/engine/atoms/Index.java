@@ -89,7 +89,21 @@ public class Index extends Step
          pos = (Scalar)(e.getCurrentFrame().pop());
       e.KillFrame();
 
-      if (structure.getArray() != null) { rv = structure.getArray().getAt(pos.getValue().intValue()); }
+      if (structure.getArray() != null) 
+      { 
+          int posv = pos.getValue().intValue();
+
+          if (posv < 0)
+          {
+             int size = structure.getArray().size();
+             while (posv < 0)
+             {
+                posv += size;
+             }
+          }
+          
+          rv = structure.getArray().getAt(posv); 
+      }
       else if (structure.getHash() != null) { rv = structure.getHash().getAt(pos); }
       else if (structure.objectValue() != null && structure.objectValue() instanceof SleepClosure)
       {

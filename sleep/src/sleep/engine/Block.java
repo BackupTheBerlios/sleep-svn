@@ -149,6 +149,16 @@ public class Block implements Serializable
               environment.getScriptInstance().fireWarning(aex.getMessage(), temp.getLineNumber());
               return SleepUtils.getEmptyScalar();
            }
+           catch (ArrayIndexOutOfBoundsException aix)
+           {
+              environment.getScriptInstance().fireWarning("attempted an invalid index", temp.getLineNumber());
+              return SleepUtils.getEmptyScalar();
+           }
+           catch (NullPointerException nex)
+           {
+              environment.getScriptInstance().fireWarning("null value error", temp.getLineNumber());
+              return SleepUtils.getEmptyScalar();
+           }
            catch (RuntimeException rex)
            {
               environment.getScriptInstance().fireWarning(rex.getMessage(), temp.getLineNumber());
