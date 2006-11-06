@@ -226,7 +226,8 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
              }
              else if (command.equals("x") && args != null)
              {
-                getProxy().consolePrintln(eval("return " + args + ";"));
+                Scalar value = eval("return " + args + ";");
+                if (value != null) { getProxy().consolePrintln(value + ""); }
              }
              else if (command.equals("quit") || command.equals("exit") || command.equals("done"))
              {

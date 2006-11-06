@@ -19,6 +19,8 @@
   java.io.File awhile back).
 - ls() with no parameters now returns the listing of files/dirs in the
   current directory.
+- fixed a bug with 'x' crashing the sleep console when the expression 
+  had a syntax error.
 
 2.1-beta 8  (29 Oct 06)
 ===========
