@@ -1,4 +1,4 @@
-2.1-beta 9
+2.1-beta 9  (6 Nov 06)
 ===========
 - made sleep data structures and sleepclosure all serializable.
 - added &readObject([$handle]) and &writeObject([$handle], $object) to
