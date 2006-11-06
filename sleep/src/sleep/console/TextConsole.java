@@ -20,6 +20,9 @@ public class TextConsole implements ConsoleProxy
 
       if (args.length > 0)
       {
+         boolean check = false;
+         int     start = 0;
+
          if (args[0].equals("-version") || args[0].equals("--version") || args[0].equals("-v"))
          {
              System.out.println(SleepUtils.SLEEP_VERSION + " (" + SleepUtils.SLEEP_RELEASE + ")");
@@ -33,18 +36,25 @@ public class TextConsole implements ConsoleProxy
              System.out.println("         -Dsleep.debug=<debug level>");
              System.out.println("         -Dsleep.classpath=<path to locate 3rd party jars from>");
              System.out.println("       options:");
+             System.out.println("         -c --check     check the syntax of the specified file");
              System.out.println("         -v --version   display version information");
              System.out.println("         -h --help      display this help message");
              System.out.println("       file:");
              System.out.println("         specify a '-' to read script from STDIN");
              return;
          }
+         else if (args[0].equals("--check") || args[0].equals("-c"))
+         {
+             start = 1;
+             check = true;
+         }
          
          //
          // put all of our command line arguments into an array scalar
          //
+
          Scalar array = SleepUtils.getArrayScalar();
-         for (int x = 1; x < args.length; x++)
+         for (int x = start + 1; x < args.length; x++)
          {
 
             array.getArray().push(SleepUtils.getScalar(args[x]));
@@ -53,13 +63,13 @@ public class TextConsole implements ConsoleProxy
          try
          {
             ScriptInstance script;
-            if (args[0].equals("-"))
+            if (args[start].equals("-"))
             {
                 script = loader.loadScript("STDIN", System.in);
             }
             else
             {
-                script = loader.loadScript(args[0]);     // load the script, parse it, etc.
+                script = loader.loadScript(args[start]);     // load the script, parse it, etc.
             }
             script.getScriptVariables().putScalar("@ARGV", array);  // set @ARGV to be our array of command line arguments
 
@@ -68,7 +78,14 @@ public class TextConsole implements ConsoleProxy
                script.setDebugFlags(Integer.parseInt(System.getProperty("sleep.debug")));
             }
 
-            script.runScript();                                     // run the script...
+            if (check)
+            {
+               System.out.println(args[start] + " syntax OK");    
+            }
+            else
+            {
+               script.runScript();                                     // run the script...
+            }
          } 
          catch (YourCodeSucksException yex)
          {
