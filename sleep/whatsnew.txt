@@ -2,6 +2,8 @@
 ===========
 - added sizeof("data format") to return the size (in bytes) of the
   data structure represented by the specified format string. 
+- attempting an invalid useage of the index op now fires a runtime
+  warning notifying the scripter of what happened.
 
 2.1-beta 9  (6 Nov 06)
 ===========

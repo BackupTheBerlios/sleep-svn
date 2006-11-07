@@ -115,7 +115,10 @@ public class Index extends Step
          }
          rv = closure.getVariables().getScalar(pos.toString());
       }
-      else { rv = SleepUtils.getEmptyScalar(); } // always return an empty scalar if we are not referencing a hash or an array
+      else 
+      { 
+         throw new IllegalArgumentException("invalid use of index operator: " + SleepUtils.describe(structure) + "[" + SleepUtils.describe(pos) + "]");
+      } 
 
       e.FrameResult(rv);
       return null;
