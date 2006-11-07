@@ -9,6 +9,7 @@ public class DataPattern
    public DataPattern next  = null;
    public int         count = 1;
    public char        value = ' ';
+   public int         size  = 0;
    public ByteOrder   order = ByteOrder.BIG_ENDIAN;
 
    private static HashMap patternCache = new HashMap();
@@ -22,7 +23,7 @@ public class DataPattern
       while (pattern != null)
       {
          if (pattern.count > 0)
-           count += pattern.count;
+           count += pattern.count * pattern.size;
 
          pattern = pattern.next;
       }
@@ -60,9 +61,40 @@ public class DataPattern
             count = new StringBuffer(3);
             temp.value = format.charAt(x);
 
-            if (format.charAt(x) == 'z' || format.charAt(x) == 'Z' || format.charAt(x) == 'u' || format.charAt(x) == 'U')
+            switch (temp.value)
             {
-               temp.count = -1;
+               case 'b':
+               case 'B':
+               case 'C':
+               case 'h':
+               case 'H':
+               case 'x':
+                 temp.size = 1;
+                 break;
+               case 'u':
+               case 'U':
+                 temp.count = -1;
+                 temp.size = 2;
+                 break;
+               case 'z':
+               case 'Z':
+                 temp.count = -1;
+                 temp.size = 1;
+                 break;
+               case 'c':
+               case 's':
+               case 'S':
+                 temp.size = 2;
+                 break;
+               case 'i':
+               case 'I':
+               case 'f':
+                 temp.size = 4;
+                 break;
+               case 'd':
+               case 'l':
+                 temp.size = 8;
+                 break;  
             }
          }
          else if (format.charAt(x) == '*')

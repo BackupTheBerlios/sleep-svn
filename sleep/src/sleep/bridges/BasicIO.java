@@ -82,6 +82,7 @@ public class BasicIO implements Loadable, Function
         // object io functions
         temp.put("&readObject",      this);
         temp.put("&writeObject",     this);
+        temp.put("&sizeof", this);
 
         temp.put("&pack",       new pack());
         temp.put("&unpack",     new unpack());
@@ -231,6 +232,10 @@ public class BasicIO implements Loadable, Function
           }
 
           return SleepUtils.getEmptyScalar();
+       }
+       else if (n.equals("&sizeof"))
+       {
+          return SleepUtils.getScalar(DataPattern.EstimateSize(BridgeUtilities.getString(l, "")));
        }
        else if (n.equals("&checksum"))
        {
@@ -1134,7 +1139,7 @@ public class BasicIO implements Loadable, Function
        {
           String    pattern = BridgeUtilities.getString(l, "");
 
-          ByteArrayOutputStream temp = new ByteArrayOutputStream(DataPattern.EstimateSize(pattern));
+          ByteArrayOutputStream temp = new ByteArrayOutputStream(DataPattern.EstimateSize(pattern) + 128);
          
           WriteFormatted(pattern, new DataOutputStream(temp), l, null);
 
