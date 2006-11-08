@@ -514,7 +514,7 @@ public class CodeGenerator implements ParserConstants
                         try
                         {
                            int codepoint = Integer.parseInt(c.substring(x + 2, x + 6), 16);
-                           c = c.substring(0, x) + ((char)codepoint)  + c.substring(x + 6, c.length());
+                           c = c.substring(0, x) + ((char)codepoint) + c.substring(x + 6, c.length());
                         }
                         catch (NumberFormatException nex)
                         {
