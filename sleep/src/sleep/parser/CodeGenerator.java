@@ -503,6 +503,44 @@ public class CodeGenerator implements ParserConstants
                      c = c.substring(0, x) + replacedValue + c.substring(x + 2, c.length());
                      x += replacedValue.length() - 1;
                   }
+                  else if (c.charAt(x+1) == 'u')
+                  {
+                     if ((x + 5) >= c.length())
+                     {
+                        parser.reportError("not enough remaning characters for \\uXXXX",  tokens[0]);
+                     }
+                     else
+                     {
+                        try
+                        {
+                           int codepoint = Integer.parseInt(c.substring(x + 2, x + 6), 16);
+                           c = c.substring(0, x) + ((char)codepoint)  + c.substring(x + 6, c.length());
+                        }
+                        catch (NumberFormatException nex)
+                        {
+                           parser.reportError("invalid unicode escape \\u"+c.substring(x + 2, x + 6)+" - must be hex digits", tokens[0]);
+                        }
+                     }
+                  }
+                  else if (c.charAt(x+1) == 'x')
+                  {
+                     if ((x + 3) >= c.length())
+                     {
+                        parser.reportError("not enough remaning characters for \\xXX",  tokens[0]);
+                     }
+                     else
+                     {
+                        try
+                        {
+                           int codepoint = Integer.parseInt(c.substring(x + 2, x + 4), 16);
+                           c = c.substring(0, x) + ((char)codepoint)  + c.substring(x + 4, c.length());
+                        }
+                        catch (NumberFormatException nex)
+                        {
+                           parser.reportError("invalid unicode escape \\x"+c.substring(x + 2, x + 4)+" - must be hex digits", tokens[0]);
+                        }
+                     }
+                  }
                   else  // default behavior is to skip over the character...
                   {
                      c = c.substring(0, x)+c.substring(x+1, c.length());
