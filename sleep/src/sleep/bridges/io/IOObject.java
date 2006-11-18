@@ -13,25 +13,29 @@ import sleep.runtime.*;
  *
  *  <p>The pipeline for reading data looks like this:</p>
  *
- *  <pre>DataInputStream <- BufferedInputStream <- Original Input Stream</pre>
+ *  <pre>... <- DataInputStream <- BufferedInputStream <- Original Input Stream</pre>
  *
  *  <p>The pipeline for writing data is:</p>
  *
- *  <pre>DataOutputStream -> Original Output Stream</pre>
+ *  <pre>... -> DataOutputStream -> Original Output Stream</pre>
  */
 
 public class IOObject
 {
    /* input pipeline */ 
 
+   protected InputStreamReader   readeru = null; /* a buffered reader, pHEAR */
    protected DataInputStream     readerb = null; /* used to support the binary read/write stuffz */
    protected BufferedInputStream reader  = null; /* used to support mark and reset functionality y0 */
    protected InputStream         in      = null; /* the original stream, love it, hold it... yeah right */
 
    /* output pipeline */
 
-   protected DataOutputStream writerb = null; /* high level method for writing stuff out, fun fun fun */
-   protected OutputStream     out     = null; /* original output stream */
+   protected OutputStreamWriter  writeru = null;
+   protected DataOutputStream    writerb = null; /* high level method for writing stuff out, fun fun fun */
+   protected OutputStream        out     = null; /* original output stream */
+
+   /* other fun stuff <3 */  
 
    protected Thread           thread  = null;
    protected Scalar           token   = null;
@@ -53,6 +57,31 @@ public class IOObject
    {
       return null;
    }
+
+   /** set the charset to be used for all unicode aware reads/writes from/to this stream */
+   public void setEncoding(String name) throws UnsupportedEncodingException
+   {
+      if (name == null)
+      {
+         if (writerb != null)
+         {
+            writeru = new OutputStreamWriter(writerb, name);
+         }
+      }
+      else
+      {
+         if (writerb != null)
+         {
+            writeru = new OutputStreamWriter(writerb, name);
+         }
+
+         if (readerb != null)
+         {
+            readeru = new InputStreamReader(readerb, name);
+         }
+      }
+   }
+
 
    /** set the thread used for this IOObject (currently used to allow a script to wait() on the threads completion) */
    public void setThread(Thread t)
@@ -142,6 +171,7 @@ public class IOObject
       {
          reader  = new BufferedInputStream(in);
          readerb = new DataInputStream(reader);
+         readeru = new InputStreamReader(readerb);
       }
    }
 
@@ -153,6 +183,7 @@ public class IOObject
       if (out != null)
       {
          writerb = new DataOutputStream(out);
+         writeru = new OutputStreamWriter(writerb);
       }
    }
 
@@ -168,6 +199,12 @@ public class IOObject
                                   the lock from this thread... in that case we move on with our lives */
       try
       {
+         if (readeru != null)
+           readeru.close();
+
+         if (writeru != null)
+           writeru.close();
+
          if (reader != null)
            reader.close();
 
@@ -190,20 +227,68 @@ public class IOObject
       }
       finally
       {
-         in     = null;
-         out    = null;
-         reader = null;
+         in      = null;
+         out     = null;
+         reader  = null;
          readerb = null;
          writerb = null;
+         readeru = null;
+         writeru = null;
       }
    }
+
+   private boolean stripTheLineSeparator = false;
 
    /** Reads in a line of text */
    public String readLine()
    {
       try
       {
-         if (readerb != null)
+         if (readeru != null)
+         {
+            StringBuffer rv = new StringBuffer(8192);
+            
+            int temp = readeru.read();
+         
+            /* remember a line can terminate with any of the following: \r, \n, or \r\n */
+            if (stripTheLineSeparator && temp == '\n') 
+            {
+               temp = readeru.read();
+            }
+   
+            stripTheLineSeparator = false;
+
+            while (temp != -1)
+            {
+               if (temp == '\n')
+               {
+                  return rv.toString();
+               }
+               else if (temp == '\r')
+               {
+                  stripTheLineSeparator = true;
+                  return rv.toString();
+               }
+               else
+               { 
+                  rv.append((char)temp);
+               }
+ 
+               temp = readeru.read();
+            }
+
+            close();
+
+            if (rv.length() > 0)
+            {
+               return rv.toString();
+            }
+            else
+            {
+               return null;
+            }
+         }
+         else if (readerb != null)
          {
             String temp = readerb.readLine(); /* deprecated, I know, but it has the behavior I want */
 
@@ -273,21 +358,26 @@ public class IOObject
    /** Prints out a line of text with no newline character appended */
    public void print(String text)
    {
-      if (writerb != null)
+      try
       {
-         try
+         if (writeru != null)
+         {
+            writeru.write(text, 0, text.length());
+            writeru.flush();
+         }
+         else if (writerb != null)
          {
             for (int x = 0; x < text.length(); x++)
             {
                writerb.writeByte((byte)text.charAt(x));
             }
 
-            writerb.flush(); /* we don't know if the underlying stream does this or not, so we'll force it */
+            writerb.flush(); 
          }
-         catch (Exception ex)
-         {
-            close();
-         }
+      }
+      catch (Exception ex)
+      {
+         close();
       }
    }
 }
