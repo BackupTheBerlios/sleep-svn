@@ -61,24 +61,14 @@ public class IOObject
    /** set the charset to be used for all unicode aware reads/writes from/to this stream */
    public void setEncoding(String name) throws UnsupportedEncodingException
    {
-      if (name == null)
+      if (writerb != null)
       {
-         if (writerb != null)
-         {
-            writeru = new OutputStreamWriter(writerb, name);
-         }
+         writeru = new OutputStreamWriter(writerb, name);
       }
-      else
-      {
-         if (writerb != null)
-         {
-            writeru = new OutputStreamWriter(writerb, name);
-         }
 
-         if (readerb != null)
-         {
-            readeru = new InputStreamReader(readerb, name);
-         }
+      if (readerb != null)
+      {
+         readeru = new InputStreamReader(readerb, name);
       }
    }
 
@@ -288,17 +278,32 @@ public class IOObject
                return null;
             }
          }
-         else if (readerb != null)
+      }
+      catch (Exception ex) 
+      { 
+         close();
+      }
+
+      return null;
+   }
+
+   /** Reads in a character of text and returns as a string. */
+   public String readCharacter()
+   {
+      try
+      {
+         if (readeru != null)
          {
-            String temp = readerb.readLine(); /* deprecated, I know, but it has the behavior I want */
-
-            if (temp == null)
+            int temp = readeru.read();
+         
+            if (temp == -1)
             {
-               readerb = null;
-               reader  = null;
+               close();
             }
-
-            return temp;
+            else
+            {
+               return (char)temp + "";
+            }
          }
       }
       catch (Exception ex) 
@@ -364,15 +369,6 @@ public class IOObject
          {
             writeru.write(text, 0, text.length());
             writeru.flush();
-         }
-         else if (writerb != null)
-         {
-            for (int x = 0; x < text.length(); x++)
-            {
-               writerb.writeByte((byte)text.charAt(x));
-            }
-
-            writerb.flush(); 
          }
       }
       catch (Exception ex)

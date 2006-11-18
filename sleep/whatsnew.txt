@@ -7,6 +7,11 @@
 - added \x and \u escapes for parsed literal strings... \xXX allows a
   char to be specified and \uXXXX allows a unicode char to be specified.
   X is expected to be a valid hex character.
+- updated println, readln, read, readAll, and printAll to be unicode
+  aware, the platform encoding is used by default.
+- added &setEncoding($handle, "charset name") to set the encoding to use
+  with the specified handle.
+- added &readc($handle) for reading a single character from an I/O handle.
 
 2.1-beta 9  (6 Nov 06)
 ===========

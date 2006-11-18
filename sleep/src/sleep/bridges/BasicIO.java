@@ -70,6 +70,7 @@ public class BasicIO implements Loadable, Function
         temp.put("&read",       new read());
         temp.put("&readln",     new readln());
         temp.put("&readAll",    new readAll());
+        temp.put("&readc",      this);
 
         // binary i/o functions :)
         temp.put("&readb",      new readb());
@@ -95,6 +96,8 @@ public class BasicIO implements Loadable, Function
 
         // typical ASCII'sh output functions
         temp.put("&print",      new print());
+
+        temp.put("&setEncoding", this);
 
         println f_println = new println();
         temp.put("&println",    f_println);
@@ -236,6 +239,25 @@ public class BasicIO implements Loadable, Function
        else if (n.equals("&sizeof"))
        {
           return SleepUtils.getScalar(DataPattern.EstimateSize(BridgeUtilities.getString(l, "")));
+       }
+       else if (n.equals("&setEncoding"))
+       {
+          IOObject a    = chooseSource(l, 1, i);
+          String   name = BridgeUtilities.getString(l, "");
+ 
+          try
+          {
+             a.setEncoding(name);
+          }
+          catch (Exception ex)
+          {
+             throw new IllegalArgumentException("&setEncoding: specified a non-existent encoding '" + name + "'");
+          }
+       }
+       else if (n.equals("&readc"))
+       {
+          IOObject a    = chooseSource(l, 1, i);
+          return SleepUtils.getScalar(a.readCharacter());
        }
        else if (n.equals("&checksum"))
        {
