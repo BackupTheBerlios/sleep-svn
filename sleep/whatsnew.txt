@@ -6,7 +6,7 @@
   warning notifying the scripter of what happened.
 - added \x and \u escapes for parsed literal strings... \xXX allows a
   char to be specified and \uXXXX allows a unicode char to be specified.
-  X is expected to be a hex byte.
+  X is expected to be a valid hex character.
 
 2.1-beta 9  (6 Nov 06)
 ===========
