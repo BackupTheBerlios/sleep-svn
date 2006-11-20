@@ -12,6 +12,8 @@
 - added &setEncoding($handle, "charset name") to set the encoding to use
   with the specified handle.
 - added &readc($handle) for reading a single character from an I/O handle.
+- oops, parser no longer assumes a bareword in a expression is a function
+  reference.  should stop some frustrating errors :)
 
 2.1-beta 9  (6 Nov 06)
 ===========

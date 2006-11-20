@@ -405,7 +405,7 @@ public class TokenParser implements ParserConstants
             myToken.setType(IDEA_EXPR);
             myToken.add(tokens[x]);
          }
-         else if (Checkers.isFunction(strings[x]))
+         else if (Checkers.isFunction(strings[x]) && Checkers.isFunctionReferenceToken(strings[x]))
          {
             myToken.setType(IDEA_FUNC);
             myToken.add(tokens[x]);
