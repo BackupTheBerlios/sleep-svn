@@ -74,7 +74,7 @@ public class BasicIO implements Loadable, Function
 
         // binary i/o functions :)
         temp.put("&readb",      new readb());
-        temp.put("&consume",    temp.get("&readb"));
+        temp.put("&consume",    new consume());
         temp.put("&writeb",     new writeb());
 
         temp.put("&bread",      new bread());
@@ -1228,7 +1228,47 @@ public class BasicIO implements Loadable, Function
 
           if (read > 0)
           {
-             return n.equals("&consume") ? SleepUtils.getScalar(read) : SleepUtils.getScalar(temp);
+             return SleepUtils.getScalar(temp);
+          }
+          return SleepUtils.getEmptyScalar();
+       }
+    }
+
+    private static class consume implements Function
+    {
+       public Scalar evaluate(String n, ScriptInstance i, Stack l)
+       {
+          IOObject         a = chooseSource(l, 2, i);
+          int             to = BridgeUtilities.getInt(l, 1);
+          int           size = BridgeUtilities.getInt(l, 1024 * 32); /* 32K buffer anyone */
+
+          byte[] temp = a.getBuffer(size);
+
+          int read = 0;
+
+          try
+          {
+             while (read < to)
+             {
+                if ((to - read) < size)
+                {
+                   read += a.getReader().read(temp, read, to - read);
+                }
+                else
+                {
+                   read += a.getReader().read(temp, read, size);
+                }
+             }
+          }
+          catch (Exception ex)
+          {
+             a.close();
+             i.getScriptEnvironment().flagError(ex.toString());
+          }
+
+          if (read > 0)
+          {
+             return SleepUtils.getScalar(read);
           }
           return SleepUtils.getEmptyScalar();
        }
