@@ -29,11 +29,18 @@ import sleep.runtime.*;
 
 public class Assign extends Step
 {
-   Block variable;
+   Block   variable = null;
+   Operate operator = null;
     
+   public Assign(Block var, Operate op)
+   {
+      operator = op;
+      variable = var;
+   }
+
    public Assign(Block var)
    {
-      variable = var;
+      this(var, null);
    }
 
    public String toString(String prefix)
@@ -70,10 +77,19 @@ public class Assign extends Step
          variable.evaluate(e);
          putv  = (Scalar)(e.getCurrentFrame().pop());
       e.KillFrame();
- 
-      value = (Scalar)(e.getCurrentFrame().pop());
-      putv.setValue(value);    
 
+      value = (Scalar)(e.getCurrentFrame().pop());
+
+      if (operator != null)
+      {
+         e.CreateFrame();
+         e.getCurrentFrame().push(value); // rhs
+         e.getCurrentFrame().push(putv);  // lhs - operate expects vars in a weird order.
+         operator.evaluate(e);
+         value = (Scalar)e.getCurrentFrame().pop();
+      }
+
+      putv.setValue(value);    
       e.FrameResult(value);
       return null;
    }

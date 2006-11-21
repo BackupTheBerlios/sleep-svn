@@ -62,7 +62,7 @@ public class LexicalAnalyzer
    // using this effectively removes the white space requirement for said built in operator.  
    private static boolean isBuiltInOperator(char f, StringBuffer aTerm, StringIterator iter)
    {
-      if (f == '.' && (aTerm.length() <= 0 || !(Character.isDigit(aTerm.charAt(aTerm.length() - 1)) && aTerm.charAt(0) != '$')))
+      if (f == '.' && (aTerm.length() <= 0 || !(Character.isDigit(aTerm.charAt(aTerm.length() - 1)) && aTerm.charAt(0) != '$')) && !iter.isNextChar('='))
       {
          return true;
       }

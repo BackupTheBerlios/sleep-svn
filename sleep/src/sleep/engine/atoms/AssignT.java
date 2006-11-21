@@ -29,6 +29,18 @@ import sleep.runtime.*;
 
 public class AssignT extends Step
 {
+   protected Operate operator;
+
+   public AssignT(Operate op)
+   {
+      operator = op;
+   }
+
+   public AssignT()
+   {
+      this(null);
+   }
+
    public String toString(String prefix)
    {
       StringBuffer temp = new StringBuffer();
@@ -51,23 +63,50 @@ public class AssignT extends Step
    {
       Scalar   putv;
       Scalar   value;
-      Stack    variables = e.getCurrentFrame();
+      Iterator variter = null;
 
-      Scalar   scalar = (Scalar)variables.pop();
+      Scalar scalar    = (Scalar)e.getCurrentFrame().pop(); /* source of our values */
+      Scalar check     = (Scalar)e.getCurrentFrame().peek();
+
+      if (e.getCurrentFrame().size() == 1 && check.getArray() != null && operator != null)
+      {
+         variter = check.getArray().scalarIterator();
+      }
+      else
+      {
+         variter = e.getCurrentFrame().iterator();
+      }
 
       if (scalar.getArray() == null)
       {
-         Iterator i = variables.iterator();
+         Iterator i = variter;
          while (i.hasNext())
          {
-            ((Scalar)i.next()).setValue(scalar.getValue()); // copying of value or ref handled by Scalar class
+            putv = (Scalar)i.next();
+
+            if (operator != null)
+            {
+               e.CreateFrame();
+               e.CreateFrame();
+               e.getCurrentFrame().push(scalar); // rhs
+               e.getCurrentFrame().push(putv);  // lhs - operate expects vars in a weird order.
+               operator.evaluate(e);
+               putv.setValue((Scalar)e.getCurrentFrame().pop());
+               e.KillFrame(); // need two frames, one for the operator atomic step and another
+                              // to avoid a concurrent modification exception.
+            }
+            else
+            {
+               putv.setValue(scalar); // copying of value or ref handled by Scalar class
+            }
          }          
          e.KillFrame();
          return null;
       }
 
+      try {
       Iterator values = scalar.getArray().scalarIterator();
-      Iterator putvs  = variables.iterator();
+      Iterator putvs  = variter;
 
       while (putvs.hasNext())
       {
@@ -81,11 +120,22 @@ public class AssignT extends Step
          {
             value = SleepUtils.getEmptyScalar();
          }
+
+         if (operator != null)
+         {
+            e.CreateFrame();
+            e.CreateFrame();
+            e.getCurrentFrame().push(value); // rhs
+            e.getCurrentFrame().push(putv);  // lhs - operate expects vars in a weird order.
+            operator.evaluate(e);
+            value = (Scalar)e.getCurrentFrame().pop();
+            e.KillFrame(); // see explanation above...
+         }
  
          putv.setValue(value);
       }
 
-      e.FrameResult(scalar);
+      e.FrameResult(scalar); } catch (Exception ex) { ex.printStackTrace(); }
       return null;
    }
 }

@@ -100,9 +100,21 @@ public class GeneratedSteps
        return temp;
     }
 
+    public static Step AssignAndOperate(Block variable, String operator)
+    {
+       Step temp = new Assign(variable, new Operate(operator));
+       return temp;
+    }
+
     public static Step AssignT()
     {
        Step temp = new AssignT();
+       return temp;
+    }
+
+    public static Step AssignTupleAndOperate(String operator)
+    {
+       Step temp = new AssignT(new Operate(operator));
        return temp;
     }
 

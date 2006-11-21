@@ -14,6 +14,20 @@
 - added &readc($handle) for reading a single character from an I/O handle.
 - oops, parser no longer assumes a bareword in a expression is a function
   reference.  should stop some frustrating errors :)
+- fixed a silly bug with tuple assignment where hash right hand side was
+  being converted to a string before being assinged to the individual
+  elements.
+- added assignment ops i.e. +=, -=, *=, /=, &=, |=, ^=, <<=, >>=, and .=
+  using these ops will assign the result of the op applied to the assignment 
+  value and the right hand side.  this works as expected with normal
+  and tuple assignment.
+- using a tuple assignment op has a special case called expand array: 
+  a single array value specified within a tuple will be expanded as if each 
+  of its elements were specified within the expression i.e.:
+  (@a) += @(3, 4); will be equivalent to: (@a[0], @a[1]) += @(3, 4)
+
+  this does not apply to normal tuple assignment. the same effect can be
+  achieved with the &copy function.
 
 2.1-beta 9  (6 Nov 06)
 ===========

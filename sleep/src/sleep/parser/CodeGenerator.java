@@ -879,6 +879,7 @@ public class CodeGenerator implements ParserConstants
 
            break;
          case EXPR_ASSIGNMENT_T:                                  // implemented
+         case EXPR_ASSIGNMENT_T_OP:
            atom = GeneratedSteps.CreateFrame();
            add(atom, tokens[0]);
 
@@ -892,10 +893,18 @@ public class CodeGenerator implements ParserConstants
 
            parseIdea(tokens[2]);
 
-           atom = GeneratedSteps.AssignT();
+           if (datum.getType() == EXPR_ASSIGNMENT_T_OP)
+           {
+              atom = GeneratedSteps.AssignTupleAndOperate(strings[1].substring(0, strings[1].length() - 1));
+           }
+           else
+           {
+              atom = GeneratedSteps.AssignT();
+           }
            add(atom, tokens[0]);
            break;
          case EXPR_ASSIGNMENT:                                  // implemented
+         case EXPR_ASSIGNMENT_OP:                                  // implemented
            atom = GeneratedSteps.CreateFrame();
            add(atom, tokens[2]);
 
@@ -904,7 +913,14 @@ public class CodeGenerator implements ParserConstants
            backup();
            parseIdea(tokens[0]);
 
-           atom = GeneratedSteps.Assign(restore());
+           if (datum.getType() == EXPR_ASSIGNMENT_OP)
+           {
+              atom = GeneratedSteps.AssignAndOperate(restore(), strings[1].substring(0, strings[1].length() - 1));
+           }
+           else
+           {
+              atom = GeneratedSteps.Assign(restore());
+           }
            add(atom, tokens[2]);
            break;
          case EXPR_IF_ELSE:                                // done

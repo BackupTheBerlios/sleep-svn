@@ -7,6 +7,8 @@ public interface ParserConstants
    public static final int EXPR_WHILE_SPECIAL   = 101;       
    public static final int EXPR_ASSIGNMENT      = 200;
    public static final int EXPR_ASSIGNMENT_T    = 202;
+   public static final int EXPR_ASSIGNMENT_OP   = 203;
+   public static final int EXPR_ASSIGNMENT_T_OP = 204;
    public static final int EXPR_IF              = 300;
    public static final int EXPR_IF_ELSE         = 301;
    public static final int EXPR_FOREACH         = 400;

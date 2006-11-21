@@ -53,6 +53,11 @@ public class StringIterator
       return position - begin;
    }
 
+   public boolean isNextChar(char n)
+   {
+      return hasNext() && text[position] == n;
+   }
+
    public char next()
    {
       char current = text[position];
