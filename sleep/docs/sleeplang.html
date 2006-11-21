@@ -572,6 +572,16 @@ returns <code>$x - 1</code>.</p>
    
 <p><code>$x--</code> is equivalent to <code>$x = $x - 1</code>;</p>
 
+<h3>Assignment Operations</h3>
+
+<p>Sleep has a special form of the assignment called an assignment operator.  This is essentially
+the combination of an operator and an assignment in one step. i.e.:</p>
+
+<code>$x += 3;</code>
+
+<p>The example above is equivalent to <code>$x = $x + 3;</code>.  The following are valid assignment
+operations: <code>+=</code>, <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>&amp;=</code>, <code>|=</code>, <code>^=</code>, <code>&lt;&lt;=</code>, <code>&gt;&gt;=</code>, and <code>.=</code>.</p>
+
 <h2><a name="5">Subroutines</a></h2>
 
 <p>Subroutines in sleep are basically mini programs.  You can pass arguments to them and they can return values.</p>
@@ -759,6 +769,29 @@ second element, and <var>$z</var> will be set to the third element.</p>
 
 <P>If the value on the right hand side of the = assignment is not an array, then the above will act exactly as if <var>$x</var>, 
 <var>$y</var>, and <var>$z</var> had been assigned to the specified value individually.</P>
+
+<p>Assignment operations work with tuple assignment as well.  i.e.:</p>
+
+<code>($x, $y, $z) += 3; # add 3 to $x, $y, and $z</code>
+
+<p>You can also special a right hand side array with an assignment op.  In this case each value
+of the right hand side array will be applied to the corresponding value within the tuple:</p>
+
+<code>($x, $y, $z) *= @(2, 3, 4); # $x = $x * 2; $y = $y * 3; etc..</code>
+
+<h4>Expand Array</h4>
+
+<p>Assignment operators used in conjunction with tuples have one special case.  This is the
+array expansion case.  When a single array is specified within the tuple then the array values
+are expanded within the tuple as if you had type <code>(@array[0], @array[1], ...)</code>.  The
+rest of the rules for tuple assignment apply from this point out.  This has some neat implications.
+For example to add two arrays:</p>
+
+<pre>@a = @(1, 2, 3);
+@b = @(4, 5, 6);
+(@a) += @b;</pre>
+
+<p>The value of <var>@a</var> is now: @(5, 7, 9).</p>
 
 <h3>Sorting</h3>
 
@@ -996,10 +1029,20 @@ special meanings.  Initial special meanings include:</p>
   <td>tab character</td>
  </tr>
  <tr>
+  <td>\u####</td>
+  <td>16 bit unicode character i.e. "\u0063" is "c"</td>
+ </tr>
+ <tr>
+  <td>\x##</td>
+  <td>8 bit character i.e. "\x6A" is "j"</td>
+ </tr>
+ <tr>
   <td>\\</td>
   <td>back slash \ character</td>
  </tr>
 </table>
+
+<p>Speaking of escapes, parsed literals allow two forms of character literals.  A <code>\x</code> followed by two hex nibbles specifies one character.  16-bit unicode characters can be specified with <code>\u</code> followed by four hex nibbles.</p>
 
 <h3>Regular Expressions</h3>
 
@@ -1103,6 +1146,13 @@ println.</p>
 
 <p>Remember that sleep is a cross platform scripting language.  As a convention use the / forward slash character as a path 
 separator so that your scripts will work in a platform neutral way.</p>
+
+<h4>Unicode Support</h4>
+
+<p>Sleep is unicode friendly.  &amp;println, &amp;print, &amp;readc, &amp;readln, and &amp;read will
+convert read in data using the platforms default charset.  If this is a problem use &amp;readb and
+&amp;writeb to read and write raw bytes from the handle.  To change the charset encoder/decoder for a 
+handle use the &amp;setEncoding function.</p>
 
 <h3>Callback Reading</h3>
 
@@ -2148,6 +2198,11 @@ calling the closure.  the closure will be called for the last read even if &lt; 
  </tr>
  <tr>
   <td>$</td>
+  <td>readc([$handle])</td>
+  <td>reads a single character from the specified handle</td>
+ </tr>
+ <tr>
+  <td>$</td>
   <td>readln([$handle])</td>
   <td>reads a single line of text from the specified handle</td>
  </tr>
@@ -2160,6 +2215,11 @@ calling the closure.  the closure will be called for the last read even if &lt; 
   <td></td>
   <td>reset([$handle])</td>
   <td>resets this IO stream back to the last mark</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>setEncoding($handle, "charset name")</td>
+  <td>sets the character set to encode/decode written/read characters with the specified handle.</td>
  </tr>
  <tr>
   <td>$</td>

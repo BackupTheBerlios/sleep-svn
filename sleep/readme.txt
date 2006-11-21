@@ -1,5 +1,5 @@
  ------- -------------------- ---------   ---------------  ------- ---------
-Sleep - 2.1 beta 9 - README   
+Sleep - 2.1 beta 10 - README   
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 "You got the language, all you need now is the O'Reilly book".  That is
@@ -96,6 +96,13 @@ For Sleep interpreter usage information:
 To launch a sleep script from the command line:
 
 [raffi@beardsley ~/sleep/bin]$ java -jar sleep.jar filename.sl
+
+When sleep scripts are run directly on the command line, arguments are
+placed into the @ARGV variable.
+
+To launch a sleep script from the command line (without -jar):
+
+[raffi@beardsley ~/sleep/bin]$ java -classpath sleep.jar sleep.console.TextConsole filename.sl
 
 When sleep scripts are run directly on the command line, arguments are
 placed into the @ARGV variable.

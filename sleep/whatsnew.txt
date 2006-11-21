@@ -4,9 +4,9 @@
   data structure represented by the specified format string. 
 - attempting an invalid usage of the index op now fires a runtime
   warning notifying the scripter of what happened.
-- added \x and \u escapes for parsed literal strings... \xXX allows a
-  char to be specified and \uXXXX allows a unicode char to be specified.
-  X is expected to be a valid hex character.
+- added \x and \u escapes for parsed literal strings... \x## allows a
+  char to be specified and \u#### allows a unicode char to be specified.
+  # is expected to be a valid hex character.
 - updated println, readln, read, readAll, and printAll to be unicode
   aware, the platform encoding is used by default.
 - added &setEncoding($handle, "charset name") to set the encoding to use
