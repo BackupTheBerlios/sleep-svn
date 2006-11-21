@@ -1252,11 +1252,11 @@ public class BasicIO implements Loadable, Function
              {
                 if ((to - read) < size)
                 {
-                   read += a.getReader().read(temp, read, to - read);
+                   read += a.getReader().read(temp, 0, to - read);
                 }
                 else
                 {
-                   read += a.getReader().read(temp, read, size);
+                   read += a.getReader().read(temp, 0, size);
                 }
              }
           }
