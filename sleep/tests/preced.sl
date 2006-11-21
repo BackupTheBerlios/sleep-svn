@@ -28,6 +28,10 @@ println("\$x = $x $+ ; \$y = $y $+ ; \$z = $z");
 ($x, $y, $z) <<= 2;
 println("\$x = $x $+ ; \$y = $y $+ ; \$z = $z");
 
+($x, $y, $z) = @(7, 8, 9);
+($x, $y, $z) &= 5;
+println("&= result: \$x = $x $+ ; \$y = $y $+ ; \$z = $z");
+
 @a = @(10, 12, 14);
 
 # special case... one element..
