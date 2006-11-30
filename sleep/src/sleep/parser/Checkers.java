@@ -131,7 +131,7 @@ public class Checkers
 
    public static boolean isFunctionReferenceToken(String a)
    {
-      return (a.charAt(0) == '&');
+      return (a.charAt(0) == '&' && a.length() > 1 && !a.equals("&&"));
    }
 
    public static final boolean isVariable (String temp)
