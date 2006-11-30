@@ -6,6 +6,9 @@
   immediately by a newline was not being "terminated"
 - fixed a bug with && and & followed by a HOES expression being mistaken 
   for a function reference token.
+- added &unlambda function that works exactly like &lambda except it does
+  not create a new closure (rather it manipulates the this scope of the
+  passed in closure and returns the passed in closure).
 
 2.1-beta 10 (20 Nov 06)
 ===========
