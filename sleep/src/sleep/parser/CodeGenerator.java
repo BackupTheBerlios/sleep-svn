@@ -480,6 +480,9 @@ public class CodeGenerator implements ParserConstants
          case EXPR_EVAL_STRING:
          case IDEA_STRING: // implemented -- parsed literals, one of my favorite features in sleep
            int startz = 0; 
+
+           int lineno = tokens[0].getHint();
+
            String c = ParserUtilities.extract(strings[0]);
             
            Stack vals, blocks, aligns;
@@ -490,6 +493,8 @@ public class CodeGenerator implements ParserConstants
            int catpos = -1; // last position of a concatenation..
            for (int x = 0; x < c.length(); x++)
            {
+               char check = c.charAt(x);
+ 
                //
                // check for an escape constant or just to skip over a character
                //
@@ -507,7 +512,7 @@ public class CodeGenerator implements ParserConstants
                   {
                      if ((x + 5) >= c.length())
                      {
-                        parser.reportError("not enough remaning characters for \\uXXXX",  tokens[0]);
+                        parser.reportError("not enough remaning characters for \\uXXXX",  tokens[0].copy(lineno));
                      }
                      else
                      {
@@ -518,7 +523,7 @@ public class CodeGenerator implements ParserConstants
                         }
                         catch (NumberFormatException nex)
                         {
-                           parser.reportError("invalid unicode escape \\u"+c.substring(x + 2, x + 6)+" - must be hex digits", tokens[0]);
+                           parser.reportError("invalid unicode escape \\u"+c.substring(x + 2, x + 6)+" - must be hex digits", tokens[0].copy(lineno));
                         }
                      }
                   }
@@ -526,7 +531,7 @@ public class CodeGenerator implements ParserConstants
                   {
                      if ((x + 3) >= c.length())
                      {
-                        parser.reportError("not enough remaning characters for \\xXX",  tokens[0]);
+                        parser.reportError("not enough remaning characters for \\xXX",  tokens[0].copy(lineno));
                      }
                      else
                      {
@@ -537,7 +542,7 @@ public class CodeGenerator implements ParserConstants
                         }
                         catch (NumberFormatException nex)
                         {
-                           parser.reportError("invalid unicode escape \\x"+c.substring(x + 2, x + 4)+" - must be hex digits", tokens[0]);
+                           parser.reportError("invalid unicode escape \\x"+c.substring(x + 2, x + 4)+" - must be hex digits", tokens[0].copy(lineno));
                         }
                      }
                   }
@@ -551,11 +556,11 @@ public class CodeGenerator implements ParserConstants
                //
                // check for the end of our variable...
                //
-               if (x < c.length() && isVar && (c.charAt(x) == ' ' || c.charAt(x) == '$'))
+               if (x < c.length() && isVar && (c.charAt(x) == ' ' || c.charAt(x) == '\n' || c.charAt(x) == '\t' || c.charAt(x) == '$'))
                {
                   String varname = c.substring(startz, x);
                    
-                  String[] ops = LexicalAnalyzer.CreateTerms(parser, new StringIterator(varname, tokens[0].getHint())).getStrings();
+                  String[] ops = LexicalAnalyzer.CreateTerms(parser, new StringIterator(varname, lineno)).getStrings();
                   String align;
                   if (ops.length == 3)
                   {
@@ -568,13 +573,13 @@ public class CodeGenerator implements ParserConstants
                      if (align.length() > 0)
                      {
                         backup();
-                        parseIdea(new Token(align, tokens[0].getHint()));
+                        parseIdea(new Token(align, lineno));
                         aligns.push(restore());
                      }
                      else
                      {
                         aligns.push(null);
-                        parser.reportError("Empty alignment specification for " + varname,  tokens[0]);
+                        parser.reportError("Empty alignment specification for " + varname,  tokens[0].copy(lineno));
                      }
                   }
                   else
@@ -583,7 +588,7 @@ public class CodeGenerator implements ParserConstants
                   }
 
                   backup();
-                  parseIdea(new Token(varname, tokens[0].getHint()));
+                  parseIdea(new Token(varname, lineno));
                   blocks.push(restore());
 
                   startz = x;
@@ -612,7 +617,7 @@ public class CodeGenerator implements ParserConstants
                      }
                      else
                      {
-                        parser.reportError("$+ operator found at beginning of string", tokens[0]);
+                        parser.reportError("$+ operator found at beginning of string", tokens[0].copy(lineno));
                      }
                   }
                   else
@@ -631,6 +636,10 @@ public class CodeGenerator implements ParserConstants
                      }
                   }
                }
+
+               if (check == '\n') { 
+                  lineno++; 
+               }
            } 
 
            if (!isVar)
@@ -641,7 +650,7 @@ public class CodeGenerator implements ParserConstants
            else
            {
               String   varname = c.substring(startz, c.length());
-              String[] ops     = LexicalAnalyzer.CreateTerms(parser, new StringIterator(varname, tokens[0].getHint())).getStrings();
+              String[] ops     = LexicalAnalyzer.CreateTerms(parser, new StringIterator(varname, lineno)).getStrings();
               String   align;
 
               if (ops.length == 3)
@@ -655,13 +664,13 @@ public class CodeGenerator implements ParserConstants
                  if (align.length() > 0)
                  {
                     backup();
-                    parseIdea(new Token(align, tokens[0].getHint()));
+                    parseIdea(new Token(align, lineno));
                     aligns.push(restore());
                  }
                  else
                  {
                     aligns.push(null);
-                    parser.reportError("Empty alignment specification for " + varname,  tokens[0]);
+                    parser.reportError("Empty alignment specification for " + varname,  tokens[0].copy(lineno));
                  }
               }
               else
@@ -670,7 +679,7 @@ public class CodeGenerator implements ParserConstants
               }
 
               backup();
-              parseIdea(new Token(varname, tokens[0].getHint()));
+              parseIdea(new Token(varname, lineno));
               blocks.push(restore());
            }
 

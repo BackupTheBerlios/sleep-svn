@@ -50,6 +50,11 @@ public class Token
       return marker;
    }
 
+   public Token copy(int _hint)
+   {
+      return new Token(term, _hint);
+   }
+ 
    public Token copy(String text)
    {
       return new Token(text, getHint());

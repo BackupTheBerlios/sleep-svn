@@ -1,3 +1,10 @@
+2.1-beta 11
+===========
+- multline parsed literals now make a more sincere effort to track which 
+  line number a variable was encountered at.
+- fixed a bug with multi-line parsed literals where a variable followed 
+  immediately by a newline was not being "terminated"
+
 2.1-beta 10 (20 Nov 06)
 ===========
 - added sizeof("data format") to return the size (in bytes) of the
