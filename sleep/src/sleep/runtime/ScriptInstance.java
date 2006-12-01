@@ -23,8 +23,6 @@
 
 package sleep.runtime;
 
-import java.io.Serializable;
-
 import sleep.runtime.Scalar;
 import sleep.engine.Block;
 
@@ -42,10 +40,8 @@ import sleep.error.*;
 import sleep.parser.Parser;
 import sleep.parser.ParserUtilities;
 
-import java.util.Hashtable;
-import java.util.Stack;
-import java.util.LinkedList;
-import java.util.Iterator;
+import java.util.*;
+import java.io.*;
 
 /** Every piece of information related to a loaded script.  This includes the scripts runtime environment, code in compiled 
   * form, variable information, and listeners for runtime issues.
@@ -86,6 +82,10 @@ public class ScriptInstance implements Serializable, Runnable
     /** fire a runtime warning describing each function call */
     public static final int DEBUG_TRACE_CALLS    = 8;
 
+    /** forces function call tracing to occur (for the sake of profiling a script) but supresses
+        all runtime warnings as a result of the tracing */
+    public static final int DEBUG_TRACE_PROFILE_ONLY  = 8 | 16;
+
     /** track all of the flagged debug options for this script (set to DEBUG_SHOW_ERRORS by default) */
     protected int debug = DEBUG_SHOW_ERRORS;
 
@@ -101,6 +101,9 @@ public class ScriptInstance implements Serializable, Runnable
         return debug;
     }
 
+    /** Constructs a script instance, if the parameter is null a default implementation will be used.
+        By specifying the same shared Hashtable container for all scripts, such scripts can be made to
+        environment information */
     public ScriptInstance(Hashtable environmentToShare)
     {
         this((Variable)null, environmentToShare);
@@ -182,6 +185,95 @@ public class ScriptInstance implements Serializable, Runnable
         return temp;
     }
  
+    /** A container for a profile statistic about a sleep function */
+    public static class ProfilerStatistic implements Comparable
+    {
+        /** the line number within the script this information is valid for */
+        public int lineNo;
+
+        /** the name of the function call */
+        public String functionName;
+
+        /** the total number of ticks consumed by this function call */
+        public long ticks = 0;
+
+        /** the total number of times this function has been called */
+        public long calls = 0;
+
+        /** used to compare this statistic to other statistics for the sake of sorting */
+        public int compareTo(Object o)
+        {
+           return (int)(((ProfilerStatistic)o).ticks - ticks);
+        }
+
+        /** returns a string in the form of (total time used in seconds)s (total calls made) @(line number) (function description) */ 
+        public String toString()
+        {
+           return (ticks / 1000.0) + "s " + calls + " " + functionName;
+        }
+    }
+
+    /** A container for profile statistics */
+    protected Map statistics;
+
+    /** this function is used internally by the sleep interpreter to collect profiler statistics
+        when DEBUG_TRACE_CALLS or DEBUG_TRACE_PROFILE_ONLY is enabled */
+    public void collect(String function, int lineNo, long ticks)
+    {
+       if (statistics == null) { statistics = new HashMap(); }
+
+       ProfilerStatistic stats = (ProfilerStatistic)statistics.get(function);
+
+       if (stats == null)
+       {
+          stats = new ProfilerStatistic();
+//          stats.lineNo = lineNo;
+          stats.functionName = function;
+
+          statistics.put(function, stats);
+       }
+
+       stats.ticks += ticks;
+       stats.calls ++;
+    }
+
+    /** a quick way to check if we are profiling and not tracing the script steps */
+    public boolean isProfileOnly()
+    {
+       return (getDebugFlags() & DEBUG_TRACE_PROFILE_ONLY) == DEBUG_TRACE_PROFILE_ONLY;
+    }
+
+    /** Returns a sorted (in order of total ticks used) list of function call statistics for this
+        script environment.  The list contains ScriptInstance.ProfileStatistic objects. 
+        Note!!! For Sleep to provide profiler statistics, DEBUG_TRACE_CALLS or DEBUG_TRACE_PROFILE_ONLY must be enabled! */
+    public List getProfilerStatistics()
+    {
+        if (statistics != null)
+        {
+           List values = new LinkedList(statistics.values());
+           Collections.sort(values);
+
+           return values;
+        }
+        else
+        {
+           return new LinkedList();
+        }
+    }
+
+    /** Dumps the profiler statistics to the specified stream */
+    public void printProfileStatistics(OutputStream out)
+    {
+        PrintWriter pout = new PrintWriter(out, true);
+
+        Iterator i = getProfilerStatistics().iterator();
+        while (i.hasNext())
+        {
+           String temp = i.next().toString();
+           pout.println(temp);
+        }
+    }
+
     /** Creates a forked script instance.  This does not work like fork in an operating system.  Variables are not copied, period.
         The idea is to create a fork that shares the same environment as this script instance. */
     public ScriptInstance fork()
@@ -270,7 +362,7 @@ public class ScriptInstance implements Serializable, Runnable
     /** Fire a runtime script warning */
     public void fireWarning(String message, int line, boolean isTrace)
     {
-       if (debug != DEBUG_NONE)
+       if (debug != DEBUG_NONE && (!isTrace || (getDebugFlags() & DEBUG_TRACE_PROFILE_ONLY) != DEBUG_TRACE_PROFILE_ONLY))
        {
           ScriptWarning temp = new ScriptWarning(this, message, line, isTrace);
 
@@ -282,5 +374,6 @@ public class ScriptInstance implements Serializable, Runnable
        }
     }
 }
+
 
 

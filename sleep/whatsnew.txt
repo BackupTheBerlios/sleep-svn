@@ -9,6 +9,11 @@
 - added &unlambda function that works exactly like &lambda except it does
   not create a new closure (rather it manipulates the this scope of the
   passed in closure and returns the passed in closure).
+- added a profiler to sleep...  I know, you should be scared.  Use the
+  DEBUG_TRACE_CALLS (8) or DEBUG_TRACE_PROFILE_ONLY (24) debug options to
+  enable it.  Profiler statistics are available in the ScriptInstance class
+  with the getProfilerStatistics method.  Scripts can access their profiler
+  statistics with the &profile() function which returns an array.  
 
 2.1-beta 10 (20 Nov 06)
 ===========

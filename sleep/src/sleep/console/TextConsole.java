@@ -56,7 +56,6 @@ public class TextConsole implements ConsoleProxy
          Scalar array = SleepUtils.getArrayScalar();
          for (int x = start + 1; x < args.length; x++)
          {
-
             array.getArray().push(SleepUtils.getScalar(args[x]));
          }
 
@@ -86,7 +85,7 @@ public class TextConsole implements ConsoleProxy
             {
                script.runScript();                                     // run the script...
             }
-         } 
+         }
          catch (YourCodeSucksException yex)
          {
             // deal with all of our syntax errors, I'm using the console as a convienence

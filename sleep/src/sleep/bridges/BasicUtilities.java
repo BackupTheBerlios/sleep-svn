@@ -103,6 +103,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&global",     scopeFunctions);
 
         temp.put("&debug", this);
+        temp.put("&profile", this);
 
         temp.put("&reverse",  new reverse());      // @array2 = &reverse(@array) 
         temp.put("&removeAt", new removeAt());   // not safe within foreach loops yada yada yada...
@@ -761,6 +762,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
           Scalar rv = c.callClosure(message, i, args);
           c.setVariables(old);
           return rv;
+       }
+       else if (n.equals("&profile"))
+       {
+          return SleepUtils.getArrayWrapper(i.getProfilerStatistics());
        }
        else if (n.equals("&debug"))
        {

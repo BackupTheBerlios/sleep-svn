@@ -74,39 +74,56 @@ public class ObjectNew extends Step
 
             if (isTrace)
             {
-               String args = SleepUtils.describe(e.getCurrentFrame());
-
-               parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
-
-               StringBuffer trace = new StringBuffer("[new " + name.getName());
-
-               if (args.length() > 0)
+               if (e.getScriptInstance().isProfileOnly())
                {
-                  trace.append(": " + args);
-               }
+                  long stat = System.currentTimeMillis();
 
-               trace.append("]");
-
-               try
-               {
+                  parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
                   result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
 
-                  if (!SleepUtils.isEmptyScalar(result))
+                  stat = System.currentTimeMillis() - stat;
+                  e.getScriptInstance().collect(theConstructor.toString(), getLineNumber(), stat);
+               }
+               else
+               {
+                  String args = SleepUtils.describe(e.getCurrentFrame());
+
+                  long stat = System.currentTimeMillis();
+                  parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
+ 
+                  StringBuffer trace = new StringBuffer("[new " + name.getName());
+
+                  if (args.length() > 0)
                   {
-                     trace.append(" = " + SleepUtils.describe(result));
+                     trace.append(": " + args);
                   }
 
-                  e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
-               }
-               catch (RuntimeException rex)
-               {
-                  trace.append(" - FAILED!");
-                  e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
-                  throw(rex);
+                  trace.append("]");
+
+                  try
+                  {
+                     result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
+
+                     stat = System.currentTimeMillis() - stat;
+                     e.getScriptInstance().collect(theConstructor.toString(), getLineNumber(), stat);
+
+                     if (!SleepUtils.isEmptyScalar(result))
+                     {
+                        trace.append(" = " + SleepUtils.describe(result));
+                     }
+
+                     e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
+                  }
+                  catch (RuntimeException rex)
+                  {
+                     trace.append(" - FAILED!");
+                     e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
+                     throw(rex);
+                  }
                }
             }
             else
-            {
+            { 
                parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
                result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
             }

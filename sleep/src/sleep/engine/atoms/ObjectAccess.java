@@ -97,42 +97,55 @@ public class ObjectAccess extends Step
 
          if (isTrace)
          {
-            String args = SleepUtils.describe(e.getCurrentFrame());
-
-            /* construct the actual trace message */
-
-            StringBuffer trace = new StringBuffer("[" + SleepUtils.describe(scalar));
-           
-            if (name != null && name.length() > 0)
+            if (e.getScriptInstance().isProfileOnly())
             {
-               trace.append(" " + name);
-            }
-
-            if (args.length() > 0)
-            {
-               trace.append(": " + args + "]");
+               long stat = System.currentTimeMillis();
+               result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
+               stat = System.currentTimeMillis() - stat;
+               e.getScriptInstance().collect(SleepUtils.describe(scalar), getLineNumber(), stat);
             }
             else
             {
-               trace.append("]");
-            }
+               String args = SleepUtils.describe(e.getCurrentFrame());
 
-            try
-            {
-               result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
-
-               if (!SleepUtils.isEmptyScalar(result))
+               /* construct the actual trace message */
+   
+               StringBuffer trace = new StringBuffer("[" + SleepUtils.describe(scalar));
+            
+               if (name != null && name.length() > 0)
                {
-                  trace.append(" = " + SleepUtils.describe(result));
+                  trace.append(" " + name);
                }
 
-               e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
-            }
-            catch (RuntimeException rex)
-            {
-               trace.append(" - FAILED!");
-               e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
-               throw(rex);
+               if (args.length() > 0)
+               {
+                  trace.append(": " + args + "]");
+               }
+               else
+               {
+                  trace.append("]");
+               }
+
+               try
+               {
+                  long stat = System.currentTimeMillis();
+                  result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
+                  stat = System.currentTimeMillis() - stat;
+                  e.getScriptInstance().collect(SleepUtils.describe(scalar), getLineNumber(), stat);
+
+                  if (!SleepUtils.isEmptyScalar(result))
+                  {
+                     trace.append(" = " + SleepUtils.describe(result));
+                  }
+
+                  e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+               }
+               catch (RuntimeException rex)
+               {
+                  trace.append(" - FAILED!");
+                  e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+                  throw(rex);
+               }
             }
          }
          else
@@ -176,41 +189,59 @@ public class ObjectAccess extends Step
 
             if (isTrace)
             {
-               String args = SleepUtils.describe(e.getCurrentFrame());
-
-               if (args.length() > 0) { args = ": " + args; }
-
-               parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
-
-               /* construct the actual trace message */
-
-               StringBuffer trace = new StringBuffer("[");
-
-               if (scalar == null)
+               if (e.getScriptInstance().isProfileOnly())
                {
-                  trace.append(theClass.getName() + " " + name + args + "]");
+                  long stat = System.currentTimeMillis();
+
+                  parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
+                  result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
+
+                  stat = System.currentTimeMillis() - stat;
+                  e.getScriptInstance().collect(theMethod.toString(), getLineNumber(), stat);
                }
                else
                {
-                  trace.append(SleepUtils.describe(scalar) + " " + name + args + "]");
-               }
+                  String args = SleepUtils.describe(e.getCurrentFrame());
 
-               try
-               {
-                  result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
+                  if (args.length() > 0) { args = ": " + args; }
 
-                  if (!SleepUtils.isEmptyScalar(result))
+                  parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
+
+                  long stat = System.currentTimeMillis();
+
+                  /* construct the actual trace message */
+
+                  StringBuffer trace = new StringBuffer("[");
+
+                  if (scalar == null)
                   {
-                     trace.append(" = " + SleepUtils.describe(result));
+                     trace.append(theClass.getName() + " " + name + args + "]");
+                  }
+                  else
+                  {
+                     trace.append(SleepUtils.describe(scalar) + " " + name + args + "]");
                   }
 
-                  e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
-               }
-               catch (RuntimeException rex)
-               {
-                  trace.append(" - FAILED!");
-                  e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
-                  throw(rex);
+                  try
+                  {
+                     result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
+
+                     stat = System.currentTimeMillis() - stat;
+                     e.getScriptInstance().collect(theMethod.toString(), getLineNumber(), stat);
+
+                     if (!SleepUtils.isEmptyScalar(result))
+                     {
+                        trace.append(" = " + SleepUtils.describe(result));
+                     }
+
+                     e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+                  }
+                  catch (RuntimeException rex)
+                  {
+                     trace.append(" - FAILED!");
+                     e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+                     throw(rex);
+                  }
                }
             }
             else
