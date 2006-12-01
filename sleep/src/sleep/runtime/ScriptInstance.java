@@ -188,9 +188,6 @@ public class ScriptInstance implements Serializable, Runnable
     /** A container for a profile statistic about a sleep function */
     public static class ProfilerStatistic implements Comparable
     {
-        /** the line number within the script this information is valid for */
-        public int lineNo;
-
         /** the name of the function call */
         public String functionName;
 
@@ -213,21 +210,23 @@ public class ScriptInstance implements Serializable, Runnable
         }
     }
 
-    /** A container for profile statistics */
-    protected Map statistics;
-
     /** this function is used internally by the sleep interpreter to collect profiler statistics
         when DEBUG_TRACE_CALLS or DEBUG_TRACE_PROFILE_ONLY is enabled */
     public void collect(String function, int lineNo, long ticks)
     {
-       if (statistics == null) { statistics = new HashMap(); }
+       Map statistics = (Map)getScriptEnvironment().getEnvironment().get("%statistics%");
+
+       if (statistics == null) 
+       {
+          statistics = new HashMap();
+          getScriptEnvironment().getEnvironment().put("%statistics%", statistics);
+       }
 
        ProfilerStatistic stats = (ProfilerStatistic)statistics.get(function);
 
        if (stats == null)
        {
           stats = new ProfilerStatistic();
-//          stats.lineNo = lineNo;
           stats.functionName = function;
 
           statistics.put(function, stats);
@@ -248,6 +247,8 @@ public class ScriptInstance implements Serializable, Runnable
         Note!!! For Sleep to provide profiler statistics, DEBUG_TRACE_CALLS or DEBUG_TRACE_PROFILE_ONLY must be enabled! */
     public List getProfilerStatistics()
     {
+        Map statistics = (Map)getScriptEnvironment().getEnvironment().get("%statistics%");
+
         if (statistics != null)
         {
            List values = new LinkedList(statistics.values());
