@@ -97,6 +97,16 @@ public class SleepClosure implements Function
        return (Stack)context.pop();
     }
 
+    public String toStringGeneric()
+    {
+       if (owner != null)
+       {
+          return "&closure[" + new File(owner.getName()).getName() + ":" + code.getApproximateLineRange() + "]";
+       }
+
+       return "&closure[unknown:" + code.getApproximateLineRange() + "]";
+    }
+
     public String toString()
     {
        return "&closure" + id + ":" + code.getApproximateLineRange();

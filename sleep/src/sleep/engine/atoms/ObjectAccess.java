@@ -102,7 +102,7 @@ public class ObjectAccess extends Step
                long stat = System.currentTimeMillis();
                result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
                stat = System.currentTimeMillis() - stat;
-               e.getScriptInstance().collect(SleepUtils.describe(scalar), getLineNumber(), stat);
+               e.getScriptInstance().collect(((SleepClosure)scalar.objectValue()).toStringGeneric(), getLineNumber(), stat);
             }
             else
             {
@@ -131,7 +131,7 @@ public class ObjectAccess extends Step
                   long stat = System.currentTimeMillis();
                   result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
                   stat = System.currentTimeMillis() - stat;
-                  e.getScriptInstance().collect(SleepUtils.describe(scalar), getLineNumber(), stat);
+                  e.getScriptInstance().collect(((SleepClosure)scalar.objectValue()).toStringGeneric(), getLineNumber(), stat);
 
                   if (!SleepUtils.isEmptyScalar(result))
                   {

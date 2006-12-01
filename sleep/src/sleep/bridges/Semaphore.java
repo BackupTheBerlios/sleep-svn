@@ -49,4 +49,10 @@ public class Semaphore
          notify();
       }
    }
+
+   /** returns a nice string representation of this semaphore */
+   public String toString()
+   {
+      return "[Semaphore: " + count + "]";
+   } 
 }

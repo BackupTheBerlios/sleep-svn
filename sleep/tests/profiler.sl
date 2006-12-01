@@ -16,6 +16,9 @@ println("string length is: $x");
 println([{ return "this is a closure call!: " . fact(10.0); }]);
 
 @stats = profile();
+
+@stats = reverse(sort({ return [$1 calls] <=> [$2 calls]; }, copy(@stats)));
+
 foreach $var (@stats)
 {
    # $var is a ScriptInstance.ProfilerStatistic object, it accepts
