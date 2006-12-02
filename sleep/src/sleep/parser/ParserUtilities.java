@@ -87,12 +87,13 @@ public class ParserUtilities
        while (i.hasNext())
        {
           Token temp = (Token)i.next();
-          hint       = temp.getHint();
+          hint       = hint == -1 ? temp.getHint() : hint;
 
           if (temp.toString().equals("EOT"))
           {
              rv.add(new Token(current.toString(), hint));
              current = new StringBuffer();
+             hint    = -1; /* reset hint to prevent line # skew */
           }
           else
           {

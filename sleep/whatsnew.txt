@@ -14,6 +14,8 @@
   enable it.  Profiler statistics are available in the ScriptInstance class
   with the getProfilerStatistics method.  Scripts can access their profiler
   statistics with the &profile() function which returns an array.  
+- fixed a line number skew issue with multi-line tokens passed as parameters
+  to a function/expression.  
 
 2.1-beta 10 (20 Nov 06)
 ===========
