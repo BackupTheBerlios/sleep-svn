@@ -75,5 +75,10 @@ public class Step implements Serializable
    {
       return SleepUtils.getEmptyScalar();
    }
+
+   public String toString()
+   {
+      return "[null op]\n";
+   }
 }
 

@@ -21,6 +21,7 @@ public class TextConsole implements ConsoleProxy
       if (args.length > 0)
       {
          boolean check = false;
+         boolean ast   = false;
          int     start = 0;
 
          if (args[0].equals("-version") || args[0].equals("--version") || args[0].equals("-v"))
@@ -36,6 +37,7 @@ public class TextConsole implements ConsoleProxy
              System.out.println("         -Dsleep.debug=<debug level>");
              System.out.println("         -Dsleep.classpath=<path to locate 3rd party jars from>");
              System.out.println("       options:");
+             System.out.println("         -a --ast       display the abstract syntax tree of the specified file");
              System.out.println("         -c --check     check the syntax of the specified file");
              System.out.println("         -v --version   display version information");
              System.out.println("         -h --help      display this help message");
@@ -47,6 +49,11 @@ public class TextConsole implements ConsoleProxy
          {
              start = 1;
              check = true;
+         }
+         else if (args[0].equals("--ast") || args[0].equals("-a"))
+         {
+             start = 1;
+             ast   = true;
          }
          
          //
@@ -81,6 +88,10 @@ public class TextConsole implements ConsoleProxy
             {
                System.out.println(args[start] + " syntax OK");    
             }
+            else if (ast)
+            {
+               System.out.println(script.getRunnableBlock());
+            } 
             else
             {
                script.runScript();                                     // run the script...
