@@ -20,6 +20,8 @@
   a closure originated.
 - added a -a/--ast command line option to dump the abstract syntax tree
   for the specified script.  
+- fixed a coroutine bug where consecutive yields happening within a nested
+  block were not properly saving the nested context.
 
 2.1-beta 10 (20 Nov 06)
 ===========

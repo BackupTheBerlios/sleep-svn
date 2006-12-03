@@ -288,6 +288,14 @@ public class ScriptEnvironment implements Serializable
        {
           Context temp = (Context)i.next();
           rv = temp.block.evaluate(this, temp.last);
+
+          if (isReturn() && getFlowControlRequest() == FLOW_CONTROL_YIELD)
+          {
+             while (i.hasNext())
+             {
+                context.add(i.next()); /* adding the remaining context so it doesn't get lost */
+             } 
+          }
        }
 
        return rv;
