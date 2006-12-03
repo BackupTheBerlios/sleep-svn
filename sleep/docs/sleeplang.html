@@ -2568,7 +2568,7 @@ n-m substrings will be returned.</td>
  <tr>
   <td>$</td>
   <td>debug(level)</td>
-  <td>explicitly enables the specified debug level for this script: 0 - no debugging; 1 - show only critical errors (default); 2 - show all warnings; 4 - show first time use of non-declared variables; 8 - trace all function calls.  any of the levels can be |'d together.</td>
+  <td>explicitly enables the specified debug level for this script: 0 - no debugging; 1 - show only critical errors (default); 2 - show all warnings; 4 - show first time use of non-declared variables; 8 - trace all function calls (collects profiler statistics) or 24 - trace only for the purpose of collecting profiler statistics.  any of the levels can be |'d together.</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2606,6 +2606,11 @@ n-m substrings will be returned.</td>
   <td>parses the specified string and declares all variables in the string as local variables.</td>
  </tr>
  <tr>
+  <td>@</td>
+  <td>profile()</td>
+  <td>returns the profiler statistics for the current script environment.  Profile statistics will only be collected if DEBUG_TRACE_CALLS (8) or DEBUG_TRACE_PROFILE_ONLY (24) is set.</td>
+ </tr>
+ <tr>
   <td></td>
   <td>release($semaphore)</td>
   <td>increments the count value of the specified semaphore.</td>
@@ -2639,6 +2644,11 @@ n-m substrings will be returned.</td>
   <td></td>
   <td>this('$x $y')</td>
   <td>parses the specified string and declares all variables in the string as variables specific to the current closure.</td>
+ </tr>
+ <tr> 
+  <td>&amp;</td>
+  <td>unlambda(&amp;closure,&nbsp;$key&nbsp;=&gt;&nbsp;"value",&nbsp;...)</td>
+  <td>The specified closure's environment is updated with all of the key/value pair arguments.  Returns the specified closure.</td>
  </tr>
  <tr>
   <td></td>

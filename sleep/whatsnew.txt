@@ -1,4 +1,4 @@
-2.1-beta 11
+2.1-beta 11  (3 Dec 06)
 ===========
 - multi-line parsed literals now make a more sincere effort to track which 
   line number a variable was encountered at.
