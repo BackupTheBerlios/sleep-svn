@@ -79,25 +79,51 @@ public class Block implements Serializable
        return -1;
     }
 
-    /** Returns an approximate range of line numbers for the steps in this block object.  Useful for formatting error messages in script warnings and such. */
-    public String getApproximateLineRange()
+    /** return the highest line number associated with this block */
+    public int getHighLineNumber()
     {
        int high = 0;
-       int low  = Integer.MAX_VALUE;
  
-       int n;
+       int m;
        Step temp = first;
        while (temp != null)
        {
-          n = temp.getLineNumber();
-          if (n < low)
-              low = n;
+          m = temp.getHighLineNumber();
 
-          if (n > high)
-              high = n;
+          if (m > high)
+              high = m;
 
           temp = temp.next;
        }
+
+       return high;
+    }
+
+    /** return the lowest line number associated with this block */
+    public int getLowLineNumber()
+    {
+       int low = Integer.MAX_VALUE;
+ 
+       int m;
+       Step temp = first;
+       while (temp != null)
+       {
+          m = temp.getHighLineNumber();
+
+          if (m < low)
+              low = m;
+
+          temp = temp.next;
+       }
+
+       return low;
+    }
+
+    /** Returns an approximate range of line numbers for the steps in this block object.  Useful for formatting error messages in script warnings and such. */
+    public String getApproximateLineRange()
+    {
+       int low  = getLowLineNumber();
+       int high = getHighLineNumber();
 
        if (low == high)
           return low + "";

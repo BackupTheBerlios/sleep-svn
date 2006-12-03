@@ -64,6 +64,13 @@ public class Decide extends Step
       return temp.toString();
    }
 
+   public int getHighLineNumber()
+   {
+      int x = iftrue.getHighLineNumber(); 
+      int y = iffalse.getHighLineNumber();
+      return x > y ? x : y;
+   }
+
    public void setChoices(Block t, Block f)
    {
       iftrue  = t;

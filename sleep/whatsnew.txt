@@ -16,6 +16,8 @@
   statistics with the &profile() function which returns an array.  
 - fixed a line number skew issue with multi-line tokens passed as parameters
   to a function/expression.  
+- fixed a line number skew issue when approximating the line numbers where
+  a closure originated.
 
 2.1-beta 10 (20 Nov 06)
 ===========

@@ -74,6 +74,11 @@ public class Goto extends Step
       iftrue = t;
    }
 
+   public int getHighLineNumber()
+   {
+      return iftrue.getHighLineNumber();
+   }
+
    public Scalar evaluate(ScriptEnvironment e)
    {
       while (!e.isReturn() && start.check(e))

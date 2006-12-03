@@ -50,6 +50,20 @@ public class Step implements Serializable
       line = _line;
    }
 
+   /** returns the last line number that this step is associated with (assuming it is
+       associated with multiple lines */
+   public int getHighLineNumber()
+   {
+      return getLineNumber();
+   }
+
+   /** returns the first line number that this step is associated with (assuming it is
+       associated with multiple lines */
+   public int getLowLineNumber()
+   {
+      return getLineNumber();
+   }
+
    /** returns the line number this step is associated with */
    public int getLineNumber()
    {
