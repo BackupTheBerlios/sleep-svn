@@ -1,9 +1,9 @@
 2.1-beta 11
 ===========
-- multline parsed literals now make a more sincere effort to track which 
+- multi-line parsed literals now make a more sincere effort to track which 
   line number a variable was encountered at.
 - fixed a bug with multi-line parsed literals where a variable followed 
-  immediately by a newline was not being "terminated"
+  immediately by a tab or newline was not being "terminated"
 - fixed a bug with && and & followed by a HOES expression being mistaken 
   for a function reference token.
 - added &unlambda function that works exactly like &lambda except it does

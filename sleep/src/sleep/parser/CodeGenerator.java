@@ -1154,8 +1154,17 @@ public class CodeGenerator implements ParserConstants
                  to combat the problem I've opted to introduce a null operation
                  after each yield, this fixes the problem.  hopefully it doesn't
                  show itself in some other way in the future.  :~( *cry* */
-              atom = GeneratedSteps.NullOperation();
-              add(atom, tokens[0]);
+//              atom = GeneratedSteps.NullOperation();
+//              add(atom, tokens[0]);
+
+              /* I've modified the evaluateOldContext method of ScriptEnvironment
+                 to realize when the current script is being interrupted in the
+                 middle of evaluating an old context, when this happens the 
+                 unevaluated portions of the old context are saved along with the
+                 current context.  I think this eliminates the need for the null
+                 operation.  If coroutines break for some reason in the future feel
+                 free to uncomment the two lines above (my original hacky fix for
+                 the situation described in this comment */
            }
            else
            {
