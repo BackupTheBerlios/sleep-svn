@@ -305,9 +305,9 @@ public class TokenParser implements ParserConstants
                }
  
                // make our nice new tokens...  and ship it off.
-               statement.add(new Token(lhs.toString(), tokens[x].getHint()));
+               statement.add(new Token(lhs.toString(), tokens[start].getHint()));
                statement.add(tokens[x]);
-               statement.add(new Token(rhs.toString(), tokens[x].getHint()));
+               statement.add(new Token(rhs.toString(), tokens[x + 1].getHint()));
 
                return r;
            }
@@ -349,6 +349,7 @@ public class TokenParser implements ParserConstants
                   myToken.add(tokens[x]);
                   myToken.add(tokens[x+1]);
   
+                  int hint = tokens[x+2].getHint();
                   StringBuffer otherTerms = new StringBuffer(strings[x+2]);
                   x += 3;
                   while ((x < tokens.length) && !strings[x].equals("EOT"))
@@ -357,7 +358,7 @@ public class TokenParser implements ParserConstants
                      otherTerms.append(strings[x]);
                      x++;
                   }
-                  myToken.add(new Token(otherTerms.toString(), tokens[x-1].getHint()));
+                  myToken.add(new Token(otherTerms.toString(), hint));
                }
                else
                {
@@ -560,6 +561,8 @@ public class TokenParser implements ParserConstants
                return null;
             }
            
+            int hint = tokens[x].getHint();
+
             /* keep looping until we reach an end of term clause */
             while (x < strings.length && !strings[x].equals("EOT"))
             {
@@ -575,7 +578,7 @@ public class TokenParser implements ParserConstants
             }
 
             if (newExpr.length() > 0)
-               myToken.add(new Token(newExpr.toString(), tokens[x].getHint()));
+               myToken.add(new Token(newExpr.toString(), hint));
          }
          // import statement :)
          else if ( (x + 1) < tokens.length && Checkers.isImportStatement(strings[x], strings[x+1])  )

@@ -1,3 +1,7 @@
+2.1-beta 12
+===========
+- fixed yet another flurry of line number skew issues.  argh, make it stop!
+
 2.1-beta 11  (3 Dec 06)
 ===========
 - multi-line parsed literals now make a more sincere effort to track which 
