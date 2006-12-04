@@ -108,7 +108,7 @@ public class Block implements Serializable
        Step temp = first;
        while (temp != null)
        {
-          m = temp.getHighLineNumber();
+          m = temp.getLowLineNumber();
 
           if (m < low)
               low = m;
