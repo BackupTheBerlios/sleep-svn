@@ -110,7 +110,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&shift",    new shift());   // not safe within foreach loops yada yada yada...
 
         temp.put("&systemProperties",    new systemProperties());
-        temp.put("&use",    new f_use());
+        temp.put("&use",     new f_use());
+        temp.put("&include", temp.get("&use"));
         temp.put("&checkError",    new checkError());
 
         // closure / function handle type stuff
@@ -241,36 +242,60 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           if (parent != null && !parent.exists())
           {
-             throw new IllegalArgumentException("&use: could not locate jar file '" + parent + "'");
+             throw new IllegalArgumentException(n + ": could not locate jar file '" + parent + "'");
           }
-
-          Class bridge;
 
           try
           {
-             if (parent != null)
+             if (n.equals("&use"))
              {
-                URLClassLoader loader = new URLClassLoader(new URL[] { parent.toURL() });
-                bridge = Class.forName(className, true, loader);
+                Class bridge;
+
+                if (parent != null)
+                {
+                   URLClassLoader loader = new URLClassLoader(new URL[] { parent.toURL() });
+                   bridge = Class.forName(className, true, loader);
+                }
+                else
+                {
+                   bridge = Class.forName(className);
+                }
+
+                Loadable temp;
+
+                if (bridges.get(bridge) == null)
+                {
+                   temp = (Loadable)bridge.newInstance();
+                   bridges.put(bridge, temp);
+                }
+                else
+                {
+                   temp = (Loadable)bridges.get(bridge);
+                }
+
+                temp.scriptLoaded(si);
              }
              else
              {
-                bridge = Class.forName(className);
-             }
+                ScriptInstance script;
+                ScriptLoader   sloader = (ScriptLoader)si.getScriptEnvironment().getEnvironment().get("(isloaded)");
 
-             Loadable temp;
+                System.out.println(sloader);
 
-             if (bridges.get(bridge) == null)
-             {
-                temp = (Loadable)bridge.newInstance();
-                bridges.put(bridge, temp);
-             }
-             else
-             {
-                temp = (Loadable)bridges.get(bridge);
-             }
+                if (parent != null)
+                {
+                   URLClassLoader loader = new URLClassLoader(new URL[] { parent.toURL() });
+                   script = sloader.loadScript(new File(parent, className).getAbsolutePath(), loader.getResourceAsStream(className), si.getScriptEnvironment().getEnvironment());
+                }
+                else
+                {
+                   script = sloader.loadScript(new File(className), si.getScriptEnvironment().getEnvironment());
+                }
 
-             temp.scriptLoaded(si);
+                script.setScriptVariables(si.getScriptVariables()); /* ensure included scripts share vars */
+          
+                script.runScript();
+             }
           }
           catch (Exception ex)
           {
