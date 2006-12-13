@@ -2,6 +2,9 @@
 ===========
 - fixed yet another flurry of line number skew issues.  argh, make it stop!
 - renamed &unlambda to &let, this name makes much more sense
+- added APIs to the script loader class to compile a script without the
+  overhead related to loading the script.  This is useful when a script is
+  going to be run in the environment of another script.
 
 2.1-beta 11  (3 Dec 06)
 ===========

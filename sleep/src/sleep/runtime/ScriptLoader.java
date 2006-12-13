@@ -40,7 +40,7 @@ import java.util.*;
 /**
  * <p>The ScriptLoader is a convienence container for instantiating and managing ScriptInstances.</p>
  *
- * <p>To load a script from a file and run it:</P
+ * <h2>To load a script from a file and run it:</h2>
  *
  * <pre>
  * ScriptLoader   loader = new ScriptLoader();
@@ -68,6 +68,19 @@ import java.util.*;
  * ScriptLoader loader = new ScriptLoader()
  * loader.addSpecificBridge(new MyLoadableBridge());
  * </pre>
+ *
+ * <h2>There is a difference between "loading" and "compiling" a script:</h2>
+ *
+ * <p>This class contains several methods to either load or compile a script.  Loading a script instantiates a script environment,
+ * registers the script with the script loader, and registers all of the appropriate bridges with the script on top of compiling
+ * the script.</p>
+ *
+ * <p>To compile a script means to produce a runnable Block of code.  On its own a Block is not really runnable as a script 
+ * environment is needed.  For functions like eval(), include(), etc.. it makes sense to compile a script as one may want to run
+ * the block of code within the environment of the calling script.  Using the compile method saves on the overhead of unnecessary
+ * script environment creation and bridge registration.</p>
+ *
+ * <p>Hopefully this helped to clarify things. :)</p>
  *
  * @see sleep.interfaces.Loadable
  * @see ScriptInstance
@@ -297,32 +310,18 @@ public class ScriptLoader
         return BLOCK_CACHE != null && BLOCK_CACHE.containsKey(name);
     }
 
+    /** loads the specified script */
     public ScriptInstance loadScript(String name, String code, Hashtable env) throws YourCodeSucksException
     {
-        if (isCacheHit(name)) {
-            //System.out.println("BLOCK CACHE HIT FOR: " + name);
-            return loadScript(name, (Block) BLOCK_CACHE.get(name), env);
-        } else {
-            Parser temp = new Parser(code);
-            temp.parse();
-
-            if (BLOCK_CACHE != null)
-                BLOCK_CACHE.put(name, temp.getRunnableBlock());
-
-            return loadScript(name, temp.getRunnableBlock(), env);
-        }
+        return loadScript(name, compileScript(name, code), env);
     }
 
-    public ScriptInstance loadScript(String name, InputStream stream) throws YourCodeSucksException, IOException
-    {
-        return loadScript(name, stream, null);
-    }
-
-    public ScriptInstance loadScript(String name, InputStream stream, Hashtable env) throws YourCodeSucksException, IOException
+    /** compiles a script using the specified stream as a source */
+    public Block compileScript(String name, InputStream stream) throws YourCodeSucksException, IOException
     {
         if (isCacheHit(name)) {
             stream.close();
-            return loadScript(name, "", env);
+            return compileScript(name, "");
         }
 
         StringBuffer code = new StringBuffer("");
@@ -338,7 +337,55 @@ public class ScriptLoader
         in.close();
         stream.close();
 
-        return loadScript(name, code.toString(), env);
+        return compileScript(name, code.toString());
+    }
+
+    /**
+     * compiles the specified script file
+     */
+    public Block compileScript(File file) throws IOException, YourCodeSucksException
+    {
+        return compileScript(file.getAbsolutePath(), new FileInputStream(file));
+    }
+
+    /**
+     * compiles the specified script file
+     */
+    public Block compileScript(String fileName) throws IOException, YourCodeSucksException
+    {
+        return compileScript(new File(fileName));
+    }
+
+    /** compiles the specified script into a runnable block */
+    public Block compileScript(String name, String code) throws YourCodeSucksException
+    {
+        if (isCacheHit(name)) 
+        {
+            //System.out.println("BLOCK CACHE HIT FOR: " + name);
+            return (Block) BLOCK_CACHE.get(name);
+        } 
+        else 
+        {
+            Parser temp = new Parser(code);
+            temp.parse();
+
+            if (BLOCK_CACHE != null)
+                BLOCK_CACHE.put(name, temp.getRunnableBlock());
+
+            return temp.getRunnableBlock();
+        }
+    }
+
+    /** loads a script from the specified inputstream */
+    public ScriptInstance loadScript(String name, InputStream stream) throws YourCodeSucksException, IOException
+    {
+        return loadScript(name, stream, null);
+    }
+
+    /** loads a script from the specified input stream using the specified hashtable as a shared environment */
+    public ScriptInstance loadScript(String name, InputStream stream, Hashtable env) throws YourCodeSucksException, IOException
+    {
+        return loadScript(name, compileScript(name, stream), env);
     }
 
     /**

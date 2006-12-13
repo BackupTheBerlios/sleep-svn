@@ -285,16 +285,14 @@ public class BasicUtilities implements Function, Loadable, Predicate
                 if (parent != null)
                 {
                    URLClassLoader loader = new URLClassLoader(new URL[] { parent.toURL() });
-                   script = sloader.loadScript(new File(parent, className).getAbsolutePath(), loader.getResourceAsStream(className), si.getScriptEnvironment().getEnvironment());
+                   script = sloader.loadScript(new File(parent, className).getAbsolutePath(), loader.getResourceAsStream(className));
                 }
                 else
                 {
-                   script = sloader.loadScript(new File(className), si.getScriptEnvironment().getEnvironment());
+                   script = sloader.loadScript(new File(className));
                 }
 
-                script.setScriptVariables(si.getScriptVariables()); /* ensure included scripts share vars */
-          
-                script.runScript();
+                SleepUtils.runCode(script.getRunnableBlock(), si.getScriptEnvironment());
              }
           }
           catch (Exception ex)
