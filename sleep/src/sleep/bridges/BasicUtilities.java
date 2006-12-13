@@ -116,7 +116,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
         // closure / function handle type stuff
         temp.put("&lambda",    new lambda());
-        temp.put("&unlambda",    temp.get("&lambda"));
+        temp.put("&let",    temp.get("&lambda"));
 
         function funcs = new function();
         temp.put("&function",  funcs);

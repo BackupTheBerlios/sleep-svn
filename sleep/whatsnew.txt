@@ -1,6 +1,7 @@
 2.1-beta 12
 ===========
 - fixed yet another flurry of line number skew issues.  argh, make it stop!
+- renamed &unlambda to &let, this name makes much more sense
 
 2.1-beta 11  (3 Dec 06)
 ===========

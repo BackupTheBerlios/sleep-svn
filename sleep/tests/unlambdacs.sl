@@ -7,8 +7,8 @@ sub foo
    println("Value: $bar");
 }
 
-unlambda(&foo, $bar => "example 1");
+let(&foo, $bar => "example 1");
 foo();
 
-[unlambda(&foo, $bar => "example 2")];
+[let(&foo, $bar => "example 2")];
 foo();
