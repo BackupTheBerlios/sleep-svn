@@ -40,7 +40,7 @@ import java.util.*;
 /**
  * <p>The ScriptLoader is a convienence container for instantiating and managing ScriptInstances.</p>
  *
- * <h2>To load a script from a file and run it:</h2>
+ * <h3>To load a script from a file and run it:</h3>
  *
  * <pre>
  * ScriptLoader   loader = new ScriptLoader();
@@ -69,7 +69,7 @@ import java.util.*;
  * loader.addSpecificBridge(new MyLoadableBridge());
  * </pre>
  *
- * <h2>There is a difference between "loading" and "compiling" a script:</h2>
+ * <h3>There is a difference between "loading" and "compiling" a script:</h3>
  *
  * <p>This class contains several methods to either load or compile a script.  Loading a script instantiates a script environment,
  * registers the script with the script loader, and registers all of the appropriate bridges with the script on top of compiling

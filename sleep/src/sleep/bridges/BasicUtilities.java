@@ -277,7 +277,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
              }
              else
              {
-                ScriptInstance script;
+                Block          script;
                 ScriptLoader   sloader = (ScriptLoader)si.getScriptEnvironment().getEnvironment().get("(isloaded)");
 
                 System.out.println(sloader);
@@ -285,14 +285,14 @@ public class BasicUtilities implements Function, Loadable, Predicate
                 if (parent != null)
                 {
                    URLClassLoader loader = new URLClassLoader(new URL[] { parent.toURL() });
-                   script = sloader.loadScript(new File(parent, className).getAbsolutePath(), loader.getResourceAsStream(className));
+                   script = sloader.compileScript(new File(parent, className).getAbsolutePath(), loader.getResourceAsStream(className));
                 }
                 else
                 {
-                   script = sloader.loadScript(new File(className));
+                   script = sloader.compileScript(new File(className));
                 }
 
-                SleepUtils.runCode(script.getRunnableBlock(), si.getScriptEnvironment());
+                SleepUtils.runCode(script, si.getScriptEnvironment());
              }
           }
           catch (Exception ex)
