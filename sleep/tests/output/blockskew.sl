@@ -1,3 +1,3 @@
-&closure1:6-9
-&closure2:14-17
-&closure3:22-29
+&closure[blockskew.sl:6-9]#1
+&closure[blockskew.sl:14-17]#2
+&closure[blockskew.sl:22-29]#3

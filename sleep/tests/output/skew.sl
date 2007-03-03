@@ -1,5 +1,5 @@
-Warning: variable '$2' not declared at line 14
-Warning: variable '$1' not declared at line 10
+Warning: variable '$2' not declared at skew.sl:14
+Warning: variable '$1' not declared at skew.sl:10
 
    some stuff here: 
    some more stuff
@@ -8,4 +8,4 @@ Warning: variable '$1' not declared at line 10
    
 
    
-Warning: variable '$x' not declared at line 21
+Warning: variable '$x' not declared at skew.sl:21

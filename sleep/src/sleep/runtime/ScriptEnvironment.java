@@ -381,6 +381,27 @@ public class ScriptEnvironment implements Serializable
        rv      = null;
     }
 
+    /** how many stacks does this damned class include? */
+    protected Stack sources = new Stack(); 
+
+    /** push source information onto the source stack */
+    public void pushSource(String s) 
+    {
+       sources.push(s);
+    }
+
+    /** obtain the filename of the current source of execution */
+    public String getCurrentSource()
+    {
+       return sources.peek() + "";
+    }
+ 
+    /** remove the latest source information from the source stack */
+    public void popSource()
+    {
+       sources.pop();
+    }
+
     //
     // stuff related to frame management
     //

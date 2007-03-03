@@ -97,19 +97,17 @@ public class SleepClosure implements Function
        return (Stack)context.pop();
     }
 
+    /** Returns a generic string version of this closure without id information */
     public String toStringGeneric()
     {
-       if (owner != null)
-       {
-          return "&closure[" + new File(owner.getName()).getName() + ":" + code.getApproximateLineRange() + "]";
-       }
-
-       return "&closure[unknown:" + code.getApproximateLineRange() + "]";
+       return "&closure[" + code.getSourceLocation() + "]";
     }
 
+    
+    /** Information about this closure in the form of &closure[<source file>:<line range>]#<instance number> */
     public String toString()
     {
-       return "&closure" + id + ":" + code.getApproximateLineRange();
+       return toStringGeneric() + "#" + id;
     }
 
     /** This is here for the sake of serialization */

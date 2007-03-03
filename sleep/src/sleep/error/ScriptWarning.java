@@ -15,6 +15,7 @@ public class ScriptWarning
    protected String         message; 
    protected int            line;
    protected boolean        trace;
+   protected String         source;
 
    public ScriptWarning(ScriptInstance _script, String _message, int _line)
    {
@@ -27,6 +28,7 @@ public class ScriptWarning
       message = _message;
       line    = _line;
       trace   = _trace;
+      source  = script.getScriptEnvironment().getCurrentSource();
    }
 
    /** is this a trace message for one of the trace debug options */
@@ -39,6 +41,19 @@ public class ScriptWarning
    public ScriptInstance getSource()
    {
       return script;
+   }
+ 
+   /** returns a nicely formatted string representation of this runtime warning. */
+   public String toString()
+   {
+      if (isDebugTrace())
+      {
+         return "Trace: " + getMessage() + " at " + getNameShort() + ":" + getLineNumber();
+      }
+      else
+      {
+         return "Warning: " + getMessage() + " at " + getNameShort() + ":" + getLineNumber();
+      }
    }
 
    /** returns a short synopsis of what the warnng is */
@@ -56,13 +71,13 @@ public class ScriptWarning
    /** returns the full path for the source script */
    public String getScriptName()
    {
-      return getSource().getName();
+      return source;
    }
 
    /** returns just the filename of the source script */
    public String getNameShort()
    {
-      return new File(getSource().getName()).getName();
+      return new File(getScriptName()).getName();
    }
 }
 

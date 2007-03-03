@@ -64,7 +64,7 @@ public class SleepUtils
    /** Parses the specified code into a runnable block. */
    public static Block ParseCode(String code) throws sleep.error.YourCodeSucksException
    {
-       Parser parser = new Parser(code);
+       Parser parser = new Parser("eval", code);
        parser.parse();
 
        return parser.getRunnableBlock();

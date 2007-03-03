@@ -58,6 +58,7 @@ public class Parser
    private static final boolean DEBUG_TPARSER  = false;
 
    protected String     code; /** the actual "code" for the script file. */
+   protected String     name; /** an identifier for the script file. */
 
    protected LinkedList comments   = new LinkedList(); /** a list of all of the comments from the script file */
    protected LinkedList errors     = new LinkedList(); /** a list of all of the parser errors */
@@ -172,11 +173,18 @@ public class Parser
    /** initialize the parser with the code you want me to work with */
    public Parser(String _code)
    {
+      this("unknown", _code);
+   }
+
+   /** initialize the parser with the code you want me to work with */
+   public Parser(String _name, String _code)
+   {
       importPackage("java.lang.*", null);
       importPackage("java.util.*", null);
       importPackage("sleep.runtime.*", null);
 
       code = _code;
+      name = _name;
    }
 
    public void addStatement(Statement state)
@@ -187,6 +195,12 @@ public class Parser
    public LinkedList getStatements()
    {
       return statements;
+   }
+
+   /** returns the identifier representing the source of the script we're parsing */
+   public String getName()
+   {
+      return name;
    }
 
    public void parse() throws YourCodeSucksException

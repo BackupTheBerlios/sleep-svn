@@ -49,8 +49,19 @@ import sleep.runtime.*;
  */
 public class Block implements Serializable
 {
+    /** our first step in this block */
     protected Step  first;
+
+    /** our last step in this block */
     protected Step  last;
+
+    /** an identifier/tag/whatever identifying the source of this block (i.e. somescript.sl) */
+    protected String source = "unknown";   
+
+    public Block(String _src)
+    {
+       source = _src;
+    }
 
     public String toString(String prefix)
     { 
@@ -68,6 +79,12 @@ public class Block implements Serializable
     public String toString()
     {
        return toString("");
+    }
+
+    /** Returns the source identifier for this block */
+    public String getSource()
+    {
+       return source;
     }
 
     /** Returns an approximated line number for the steps in this block object...  returns -1 if no code is in this block (unlikely) */
@@ -131,6 +148,12 @@ public class Block implements Serializable
        return low + "-" + high;
     }
 
+    /** Returns a string representation of where in the source code this block originated from */
+    public String getSourceLocation()
+    {
+       return (new File(source).getName()) + ":" + getApproximateLineRange();
+    }
+
     public void add(Step n)
     {
        if (first == null)
@@ -163,6 +186,8 @@ public class Block implements Serializable
            return environment.getReturnValue();
         }
 
+        environment.pushSource(source);
+
         Step temp = start;
         while (temp != null)
         {
@@ -170,33 +195,33 @@ public class Block implements Serializable
            {
               temp.evaluate(environment);
            }
-           catch (IllegalArgumentException aex)
-           {
-              environment.getScriptInstance().fireWarning(aex.getMessage(), temp.getLineNumber());
-              return SleepUtils.getEmptyScalar();
-           }
-           catch (ArrayIndexOutOfBoundsException aix)
-           {
-              environment.getScriptInstance().fireWarning("attempted an invalid index", temp.getLineNumber());
-              return SleepUtils.getEmptyScalar();
-           }
-           catch (NullPointerException nex)
-           {
-              environment.getScriptInstance().fireWarning("null value error", temp.getLineNumber());
-              return SleepUtils.getEmptyScalar();
-           }
-           catch (RuntimeException rex)
-           {
-              environment.getScriptInstance().fireWarning(rex.getMessage(), temp.getLineNumber());
-              return SleepUtils.getEmptyScalar();
-           }
            catch (Exception ex)
            {
-              environment.getScriptInstance().fireWarning(ex.toString(), temp.getLineNumber());
-              ex.printStackTrace(System.out);
+              if (ex instanceof IllegalArgumentException)
+              {
+                 environment.getScriptInstance().fireWarning(ex.getMessage(), temp.getLineNumber());
+              }
+              else if (ex instanceof ArrayIndexOutOfBoundsException)
+              {
+                 environment.getScriptInstance().fireWarning("attempted an invalid index", temp.getLineNumber());
+              }
+              else if (ex instanceof NullPointerException)
+              {
+                 environment.getScriptInstance().fireWarning("null value error", temp.getLineNumber());
+              }
+              else if (ex instanceof RuntimeException)
+              {
+                 environment.getScriptInstance().fireWarning(ex.getMessage(), temp.getLineNumber());
+              }
+              else
+              {
+                 environment.getScriptInstance().fireWarning(ex.toString(), temp.getLineNumber());
+                 ex.printStackTrace(System.out);
+              }
 
+              environment.popSource();
               return SleepUtils.getEmptyScalar();
-           }
+           } 
 
            if (environment.isReturn())
            {
@@ -222,6 +247,7 @@ public class Block implements Serializable
               }
               else
               {
+                 environment.popSource();
                  return environment.getReturnValue();
               }
            }
@@ -229,6 +255,7 @@ public class Block implements Serializable
            temp = temp.next;
         }
 
+        environment.popSource();
         return SleepUtils.getEmptyScalar(); 
     }
 }

@@ -5,6 +5,9 @@
 - added APIs to the script loader class to compile a script without the
   overhead related to loading the script.  This is useful when a script is
   going to be run in the environment of another script.
+- improved tracking of source file information for blocks of code.  error
+  messages and closure string representations will now accurately represent
+  the code's origin information.
 
 2.1-beta 11  (3 Dec 06)
 ===========

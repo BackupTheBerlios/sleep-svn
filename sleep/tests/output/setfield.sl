@@ -48,8 +48,8 @@ aStringField 'the rain in spain, falls mainly on the plain' and aDoubleField = 5
 instance members:
 instanceStringField 'squeeze box 2' instanceBooleanField = true
 ------------------------------------------------------------
-Warning: no field named nofield in class org.hick.blah.SqueezeBox at line 45
-Warning: unable to convert 'false and true?' to a boolean at line 49
+Warning: no field named nofield in class org.hick.blah.SqueezeBox at setfield.sl:45
+Warning: unable to convert 'false and true?' to a boolean at setfield.sl:49
 34
 56
 Done?

@@ -32,7 +32,7 @@ $temp[1][2] = 9
 $temp[1][3] = 10
 $temp[1][4] = 11
 $temp[1][5] = 12
-Warning: &cast: specified dimensions 18 is not equal to total array elements 12 at line 116
+Warning: &cast: specified dimensions 18 is not equal to total array elements 12 at native_arrays.sl:116
 Still going...
 <--------------------------------------------------->
 temp[0] = t

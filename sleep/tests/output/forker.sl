@@ -1,3 +1,3 @@
-Trace: &check('within fork') at line 9
-Trace: &fork(&closure2:9) = sleep.bridges.io.IOObject@bf053f at line 8
-Trace: &check('outside of fork') at line 12
+Trace: &check('within fork') at forker.sl:9
+Trace: &fork(&closure[forker.sl:9]#2) = sleep.bridges.io.IOObject@1551b0 at forker.sl:8
+Trace: &check('outside of fork') at forker.sl:12

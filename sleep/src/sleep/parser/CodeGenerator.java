@@ -86,7 +86,7 @@ public class CodeGenerator implements ParserConstants
    public void backup()
    {
       BACKUP_BLOCKS.push(CURRENT_BLOCK);
-      CURRENT_BLOCK = new Block();
+      CURRENT_BLOCK = new Block(parser.getName());
    }
 
    public Block restore()
@@ -100,7 +100,7 @@ public class CodeGenerator implements ParserConstants
    {
       parser = _parser;
 
-      CURRENT_BLOCK = new Block();
+      CURRENT_BLOCK = new Block(parser.getName());
       BACKUP_BLOCKS = new Stack();
    }
 

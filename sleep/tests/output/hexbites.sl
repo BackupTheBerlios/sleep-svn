@@ -20,4 +20,4 @@ high -> 7   : 205
 high -> 8   : 239
 high: 000123456789abcdef
 ....: 001032547698badcfe
-Warning: can not pack '0001234567890ABCDEF' as hex string, number of characters must be even at line 38
+Warning: can not pack '0001234567890ABCDEF' as hex string, number of characters must be even at hexbites.sl:38

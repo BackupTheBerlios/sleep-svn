@@ -366,7 +366,7 @@ public class ScriptLoader
         } 
         else 
         {
-            Parser temp = new Parser(code);
+            Parser temp = new Parser(name, code);
             temp.parse();
 
             if (BLOCK_CACHE != null)

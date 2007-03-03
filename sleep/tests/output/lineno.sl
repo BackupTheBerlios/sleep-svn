@@ -1,3 +1,3 @@
-Warning: variable '$xxx' not declared at line 12
-Warning: variable '$x' not declared at line 5
-Warning: variable '$zzz' not declared at line 16
+Warning: variable '$xxx' not declared at lineno.sl:12
+Warning: variable '$x' not declared at lineno.sl:5
+Warning: variable '$zzz' not declared at lineno.sl:16
