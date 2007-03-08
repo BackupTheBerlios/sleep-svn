@@ -43,7 +43,7 @@ public class SValue extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      e.getCurrentFrame().push(value);
+      e.getCurrentFrame().push(SleepUtils.getScalar(value));
       return value;
    }
 }

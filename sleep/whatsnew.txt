@@ -12,6 +12,9 @@
   included code is included as if it is part of the current source file.
 
   include(["/path-to/jar-file.jar"], "directory/filename.sl");
+- SValue atomic step now returns a copy of the scalar literal and not a
+  reference to the scalar.  This prevents constants from being "changed"
+  on accident.
 
 2.1-beta 11  (3 Dec 06)
 ===========
