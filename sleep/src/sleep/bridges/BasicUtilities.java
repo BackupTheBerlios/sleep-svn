@@ -28,7 +28,7 @@ import sleep.engine.*;
 import sleep.interfaces.*;
 import sleep.runtime.*;
 
-import java.io.File;
+import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -242,7 +242,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           if (parent != null && !parent.exists())
           {
-             throw new IllegalArgumentException(n + ": could not locate jar file '" + parent + "'");
+             throw new IllegalArgumentException(n + ": could not locate source '" + parent + "'");
           }
 
           try
@@ -279,21 +279,32 @@ public class BasicUtilities implements Function, Loadable, Predicate
              {
                 Block          script;
                 ScriptLoader   sloader = (ScriptLoader)si.getScriptEnvironment().getEnvironment().get("(isloaded)");
-
-                System.out.println(sloader);
-
+                InputStream    istream;
+         
                 if (parent != null)
                 {
                    URLClassLoader loader = new URLClassLoader(new URL[] { parent.toURL() });
-                   script = sloader.compileScript(new File(parent, className).getAbsolutePath(), loader.getResourceAsStream(className));
+                   istream = loader.getResourceAsStream(className);
                 }
                 else
                 {
-                   script = sloader.compileScript(new File(className));
+                   istream = new FileInputStream(new File(className));
                 }
 
-                SleepUtils.runCode(script, si.getScriptEnvironment());
+                if (istream != null)
+                {
+                   script = sloader.compileScript(className, istream);
+                   SleepUtils.runCode(script, si.getScriptEnvironment());
+                }
+                else
+                {
+                   throw new IOException("unable to locate " + className + " from: " + parent);
+                }
              }
+          }
+          catch (YourCodeSucksException yex)
+          {
+             throw new RuntimeException(className + ": " + yex.getMessage());
           }
           catch (Exception ex)
           {

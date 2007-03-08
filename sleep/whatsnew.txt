@@ -8,6 +8,10 @@
 - improved tracking of source file information for blocks of code.  error
   messages and closure string representations will now accurately represent
   the code's origin information.
+- added an &include function for including code from other sleep scripts.
+  included code is included as if it is part of the current source file.
+
+  include(["/path-to/jar-file.jar"], "directory/filename.sl");
 
 2.1-beta 11  (3 Dec 06)
 ===========
