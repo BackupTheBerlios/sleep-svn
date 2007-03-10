@@ -22,6 +22,8 @@ public class TextConsole implements ConsoleProxy
       {
          boolean check = false;
          boolean ast   = false;
+         boolean eval  = false;
+         boolean expr  = false;
          int     start = 0;
 
          if (args[0].equals("-version") || args[0].equals("--version") || args[0].equals("-v"))
@@ -32,15 +34,17 @@ public class TextConsole implements ConsoleProxy
          else if (args[0].equals("-help") || args[0].equals("--help") || args[0].equals("-h"))
          {
              System.out.println(SleepUtils.SLEEP_VERSION + " (" + SleepUtils.SLEEP_RELEASE + ")");
-             System.out.println("Usage: java [properties] -jar sleep.jar [options] [-|file]");
+             System.out.println("Usage: java [properties] -jar sleep.jar [options] [-|file|expression]");
              System.out.println("       properties:");
              System.out.println("         -Dsleep.debug=<debug level>");
              System.out.println("         -Dsleep.classpath=<path to locate 3rd party jars from>");
              System.out.println("       options:");
-             System.out.println("         -a --ast       display the abstract syntax tree of the specified file");
+             System.out.println("         -a --ast       display the abstract syntax tree of the specified script");
              System.out.println("         -c --check     check the syntax of the specified file");
-             System.out.println("         -v --version   display version information");
+             System.out.println("         -e --eval      evaluate a script as specified on command line");
              System.out.println("         -h --help      display this help message");
+             System.out.println("         -v --version   display version information");
+             System.out.println("         -x --expr      evaluate an expression as specified on the command line");
              System.out.println("       file:");
              System.out.println("         specify a '-' to read script from STDIN");
              return;
@@ -54,6 +58,17 @@ public class TextConsole implements ConsoleProxy
          {
              start = 1;
              ast   = true;
+         }
+
+         if (args[start].equals("--eval") || args[start].equals("-e"))
+         {
+             start++;
+             eval  = true;
+         }
+         else if (args[start].equals("--expr") || args[start].equals("-x"))
+         {
+             start++;
+             expr  = true;
          }
          
          //
@@ -69,7 +84,16 @@ public class TextConsole implements ConsoleProxy
          try
          {
             ScriptInstance script;
-            if (args[start].equals("-"))
+
+            if (eval)
+            {
+                script = loader.loadScript(args[start - 1], args[start], new Hashtable());
+            }
+            else if (expr)
+            {
+                script = loader.loadScript(args[start - 1], "println(" + args[start] + ");", new Hashtable());
+            }
+            else if (args[start].equals("-"))
             {
                 script = loader.loadScript("STDIN", System.in);
             }
@@ -77,6 +101,7 @@ public class TextConsole implements ConsoleProxy
             {
                 script = loader.loadScript(args[start]);     // load the script, parse it, etc.
             }
+
             script.getScriptVariables().putScalar("@ARGV", array);  // set @ARGV to be our array of command line arguments
 
             if (System.getProperty("sleep.debug") != null)

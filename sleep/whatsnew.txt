@@ -15,6 +15,9 @@
 - SValue atomic step now returns a copy of the scalar literal and not a
   reference to the scalar.  This prevents constants from being "changed"
   on accident.
+- Added a -e|--eval and -x|--expr command line options to sleep.jar; these
+  options allow whole scripts/expressions to be specified on the command 
+  line for evaluation.
 
 2.1-beta 11  (3 Dec 06)
 ===========
