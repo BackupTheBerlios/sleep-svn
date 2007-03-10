@@ -636,9 +636,9 @@ public class BasicStrings implements Loadable
       int length = str.length();
       int start, end;
 
-
       start = (_start < 0 ? _start + length : _start) % length;
-      end   = (_end < 0 ? _end + length : _end) % (length + 1);
+      end   = (_end < 0 ? _end + length : _end);
+      end   = end <= length ? end : length;
 
       if (start >= end)
       {

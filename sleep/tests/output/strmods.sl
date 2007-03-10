@@ -9,7 +9,7 @@ t a si sihttset a si sihttset a si sihttset a si sihttset a si sihttset a si sih
 --): gnirts elbisrever a si siht++
 string
 string
-Warning: &mid: illegal substring('++this is a reversible string :)--', -11 -> 23, 89 -> 19) indices at strmods.sl:42
+Warning: &substr: illegal substring('++this is a reversible string :)--', -11 -> 23, -15 -> 19) indices at strmods.sl:42
 2
 2
 2

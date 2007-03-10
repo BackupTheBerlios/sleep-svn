@@ -10,7 +10,6 @@
   the code's origin information.
 - added an &include function for including code from other sleep scripts.
   included code is included as if it is part of the current source file.
-
   include(["/path-to/jar-file.jar"], "directory/filename.sl");
 - SValue atomic step now returns a copy of the scalar literal and not a
   reference to the scalar.  This prevents constants from being "changed"

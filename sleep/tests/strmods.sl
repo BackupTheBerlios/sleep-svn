@@ -39,7 +39,7 @@ println(substr($str, -11, -5));
 
 println(mid($str, -11, 6));
 
-[{ println(mid($str, -11, 100)); }];
+[{ println(substr($str, -11, -15)); }];
 
 for ($x = 0; $x < 25; $x++)
 {

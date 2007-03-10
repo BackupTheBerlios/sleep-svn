@@ -6,8 +6,8 @@ Trace: &println('This is foo() - :)') at include.sl:13
 Trace: &foo() at injar.sl:9
 Done with injar.sl -- Harf... bish
 Trace: &println('Done with injar.sl -- Harf... bish') at injar.sl:12
-Trace: &substr('test', 8, 20) - FAILED! at injar.sl:17
-Warning: &substr: illegal substring('test', 8 -> 0, 20 -> 0) indices at injar.sl:17
+Trace: &substr('test', 8, 20) = 'test' at injar.sl:17
+Warning: variable '$x' not declared at injar.sl:17
 Trace: &debug(7) = 7 at include.sl:19
 Eh?!? Hello from injar.sl
 Warning: scripts/errors1.sl: 3 error(s): Mismatched Parentheses - missing close paren at 9; Mismatched Braces - missing close brace at 6; Runaway string at 9 at include.sl:24
