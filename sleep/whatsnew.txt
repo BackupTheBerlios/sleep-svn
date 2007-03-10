@@ -18,6 +18,10 @@
 - Added a -e|--eval and -x|--expr command line options to sleep.jar; these
   options allow whole scripts/expressions to be specified on the command 
   line for evaluation.
+- Updated &indexOf to accept an optional start parameter.
+- Updated numerous string functions to allow negative indice parameters.
+  &left, &right, &mid, &replaceAt, &strrep, &charAt, &substr, &indexOf
+  
 
 2.1-beta 11  (3 Dec 06)
 ===========

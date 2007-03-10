@@ -289,9 +289,7 @@ public class BasicStrings implements Loadable
            String temp  = l.pop().toString();
            int    value = ((Scalar)l.pop()).intValue();
 
-           if (value >= temp.length()) { return SleepUtils.getScalar(temp); }
-
-           return SleepUtils.getScalar(temp.substring(0, value));
+           return SleepUtils.getScalar(substring(n, temp, 0, value));
         }
     }
 
@@ -323,9 +321,7 @@ public class BasicStrings implements Loadable
            String temp  = l.pop().toString();
            int    value = ((Scalar)l.pop()).intValue();
 
-           if (value >= temp.length()) { return SleepUtils.getScalar(temp); }
-
-           return SleepUtils.getScalar(temp.substring(temp.length() - value, temp.length()));
+           return SleepUtils.getScalar(substring(n, temp, 0 - value, temp.length()));
         }
     }
 
@@ -333,7 +329,7 @@ public class BasicStrings implements Loadable
     {
         public Scalar evaluate(String n, ScriptInstance i, Stack l)
         {
-           return SleepUtils.getScalar((int)l.pop().toString().charAt(0));
+           return SleepUtils.getScalar((int)(BridgeUtilities.getString(l, "\u0000").charAt(0)));
         }
     }
 
@@ -404,7 +400,7 @@ public class BasicStrings implements Loadable
         {
            StringBuffer work    = new StringBuffer(BridgeUtilities.getString(l, ""));
            String       nstr    = BridgeUtilities.getString(l, "");
-           int          index   = BridgeUtilities.getInt(l, 0);
+           int          index   = normalize(BridgeUtilities.getInt(l, 0), work.length());
            int          nchar   = BridgeUtilities.getInt(l, nstr.length());
 
            work.delete(index, index + nchar);
@@ -432,7 +428,7 @@ public class BasicStrings implements Loadable
               stop  = BridgeUtilities.getInt(l, value.length());
            }
                     
-           return SleepUtils.getScalar(value.substring(start, stop));
+           return SleepUtils.getScalar(substring(n, value, start, stop));
         }
     }
 
@@ -442,8 +438,9 @@ public class BasicStrings implements Loadable
         {
            String value = l.pop().toString();
            String item  = l.pop().toString();
-          
-           return SleepUtils.getScalar(value.indexOf(item));
+           int    start = normalize(BridgeUtilities.getInt(l, 0), value.length());
+                  
+           return SleepUtils.getScalar(value.indexOf(item, start));
         }
     }
 
@@ -454,7 +451,7 @@ public class BasicStrings implements Loadable
            String value = l.pop().toString();
            int    start = BridgeUtilities.getInt(l);
           
-           return SleepUtils.getScalar(value.charAt(start) + "");
+           return SleepUtils.getScalar(charAt(value, start) + "");
         }
     }
 
@@ -632,4 +629,38 @@ public class BasicStrings implements Loadable
         }
     }
 
+   /** Normalizes the start/end parameters based on the length of the string and returns a substring.  Strings normalized
+       in this way will be able to accept negative indices for their parameters. */
+   private static final String substring(String func, String str, int _start, int _end)
+   {
+      int length = str.length();
+      int start, end;
+
+
+      start = (_start < 0 ? _start + length : _start) % length;
+      end   = (_end < 0 ? _end + length : _end) % (length + 1);
+
+      if (start >= end)
+      {
+         throw new IllegalArgumentException(func + ": illegal substring('" + str + "', " + _start + " -> " + start + ", " + _end + " -> " + end + ") indices");
+      }
+
+      return str.substring(start, end);
+   }
+
+   /** normalizes the value based on the string length */
+   private static final int normalize(int value, int length)
+   {
+      return (value < 0 ? value + length : value) % length;
+   }
+
+   /** Normalizes the start parameter based on the length of the string and returns a character.  Functions with
+       parameters normalized in this way will be able to accept nagative indices for their parameters */
+   private static final char charAt(String str, int start)
+   {
+      int length = str.length();
+
+      start = (start < 0 ? start + length : start) % length;
+      return str.charAt(start);
+   }
 }
