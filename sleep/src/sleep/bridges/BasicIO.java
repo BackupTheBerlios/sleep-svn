@@ -1042,7 +1042,7 @@ public class BasicIO implements Loadable, Function
           IOObject        a = chooseSource(l, 2, i);
           String    pattern = BridgeUtilities.getString(l, "");
 
-          return ReadFormatted(pattern, a.getReader(), i.getScriptEnvironment(), a);
+          return a.getReader() != null ? ReadFormatted(pattern, a.getReader(), i.getScriptEnvironment(), a) : SleepUtils.getEmptyScalar();
        }
     }
 
@@ -1165,15 +1165,7 @@ public class BasicIO implements Loadable, Function
          
           WriteFormatted(pattern, new DataOutputStream(temp), l, null);
 
-          StringBuffer value = new StringBuffer();
-          byte[] data = temp.toByteArray();
-
-          for (int x = 0; x < data.length; x++)
-          {
-             value.append((char)(data[x] & 0x00FF));
-          }
-
-          return SleepUtils.getScalar(value.toString());
+          return SleepUtils.getScalar(temp.toByteArray(), temp.size());
        }
     }
 
@@ -1208,27 +1200,36 @@ public class BasicIO implements Loadable, Function
        {
           IOObject         a = chooseSource(l, 2, i);
           int             to = BridgeUtilities.getInt(l, 1);
+          int           last = 0;
 
-          byte[] temp = a.getBuffer(to);
-
-          int read = 0;
-
-          try
+          if (a.getReader() != null)
           {
-             while (read < to)
+             byte[] temp = a.getBuffer(to);
+   
+             int read = 0;
+
+             try
              {
-                read += a.getReader().read(temp, read, to - read);
-             }
-          }
-          catch (Exception ex)
-          {
-             a.close();
-             i.getScriptEnvironment().flagError(ex.toString());
-          }
+                while (read < to)
+                {
+                   last = a.getReader().read(temp, read, to - read);
 
-          if (read > 0)
-          {
-             return SleepUtils.getScalar(temp);
+                   if (last == -1) { break; }
+                   read += last;
+                } 
+             }
+             catch (Exception ex)
+             {
+                a.close();
+                i.getScriptEnvironment().flagError(ex.toString());
+
+                ex.printStackTrace();
+             }
+
+             if (read > 0)
+             {
+                return SleepUtils.getScalar(temp, read);
+             }
           }
           return SleepUtils.getEmptyScalar();
        }
@@ -1241,34 +1242,42 @@ public class BasicIO implements Loadable, Function
           IOObject         a = chooseSource(l, 2, i);
           int             to = BridgeUtilities.getInt(l, 1);
           int           size = BridgeUtilities.getInt(l, 1024 * 32); /* 32K buffer anyone */
+          int           last = 0;
 
-          byte[] temp = a.getBuffer(size);
-
-          int read = 0;
-
-          try
+          if (a.getReader() != null)
           {
-             while (read < to)
+             byte[] temp = a.getBuffer(size);
+  
+             int read = 0;
+ 
+             try
              {
-                if ((to - read) < size)
+                while (read < to)
                 {
-                   read += a.getReader().read(temp, 0, to - read);
-                }
-                else
-                {
-                   read += a.getReader().read(temp, 0, size);
+                   if ((to - read) < size)
+                   {
+                      last = a.getReader().read(temp, 0, to - read);
+                   }
+                   else
+                   {
+                      last = a.getReader().read(temp, 0, size);
+                   }
+
+                   if (last == -1) { break; }
+
+                   read += last;
                 }
              }
-          }
-          catch (Exception ex)
-          {
-             a.close();
-             i.getScriptEnvironment().flagError(ex.toString());
-          }
+             catch (Exception ex)
+             {
+                a.close();
+                i.getScriptEnvironment().flagError(ex.toString());
+             }
 
-          if (read > 0)
-          {
-             return SleepUtils.getScalar(read);
+             if (read > 0)
+             {
+                return SleepUtils.getScalar(read);
+             }
           }
           return SleepUtils.getEmptyScalar();
        }

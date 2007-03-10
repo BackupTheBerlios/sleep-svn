@@ -503,9 +503,15 @@ public class SleepUtils
    /** constructs a string scalar with value x interpreted as an array of unsigned bytes */
    public static Scalar getScalar(byte[] x)
    {
+      return getScalar(x, x.length);
+   }
+
+   /** constructs a string scalar with value x interpreted as an array of unsigned bytes */
+   public static Scalar getScalar(byte[] x, int length)
+   {
       Scalar temp = new Scalar();
-      StringBuffer buff = new StringBuffer(x.length);
-      for (int y = 0; y < x.length; y++)
+      StringBuffer buff = new StringBuffer(length);
+      for (int y = 0; y < length; y++)
       {
          char append = (char)(x[y] & 0xFF);
          buff.append(append);

@@ -20,7 +20,10 @@
 - Updated &indexOf to accept an optional start parameter.
 - Updated numerous string functions to allow negative indice parameters.
   &left, &right, &mid, &replaceAt, &strrep, &charAt, &substr, &indexOf
-  
+- added a check to &readb to see if the handle is closed prior to attempting
+  a read.  If the handle is closed $null is returned.
+- fixed bugs in &readb that come about when reading in the last chunk of 
+  data that is usually smaller than the total buffer size.  
 
 2.1-beta 11  (3 Dec 06)
 ===========
