@@ -335,9 +335,20 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          String   command  = BridgeUtilities.getString(l, null);
-          String[] envp     = null;
-          File     start    = null;
+          Scalar   cmd      = l.isEmpty() ? SleepUtils.getEmptyScalar() : (Scalar)l.pop();
+          String   command[];
+
+          if (cmd.getArray() != null)
+          {
+             command = (String[])(SleepUtils.getListFromArray(cmd.getArray()).toArray(new String[0])); 
+          }
+          else
+          {
+             command = cmd.toString().split("\\s");
+          }
+
+          String[] envp      = null;
+          File     start     = null;
 
           if (!l.isEmpty())
           {
@@ -828,8 +839,14 @@ public class BasicIO implements Loadable, Function
 
                         value = SleepUtils.getScalar(buffer.getLong(0)); // turns the byte into an int
                         break;
+
+                      case 'o':
+                        ObjectInputStream ois = new ObjectInputStream(in);
+                        value = (Scalar)ois.readObject();
+                        break;
+
                       default:
-                        env.getScriptInstance().fireWarning("Erroneous file pattern character: " + pattern.value, -1);
+                        env.flagError("unknown file pattern character: " + pattern.value);
                    }
                 }
                 catch (Exception ex) 
@@ -1023,6 +1040,9 @@ public class BasicIO implements Loadable, Function
                         buffer.putLong(0, temp.longValue());
                         out.write(bdata, 0, 8);
                         break;
+                      case 'o':
+                        ObjectOutputStream oos = new ObjectOutputStream(out);
+                        oos.writeObject(temp);
                       default:
                    }
                 }

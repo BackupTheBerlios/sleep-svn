@@ -13,16 +13,14 @@ public class ProcessObject extends IOObject
       return process;
    }
 
-   public void open(String command, String[] environment, File startDir, ScriptEnvironment env)
+   public void open(String command[], String[] environment, File startDir, ScriptEnvironment env)
    {
       try
       {
-         if (command.indexOf(' ') > -1)
+         if (command.length > 0)
          {
             String args;
-            args    = command.substring(command.indexOf(' '), command.length());
-            command = command.substring(0, command.indexOf(' ')).replace('/', File.separatorChar);
-            command = command + args;
+            command[0] = command[0].replace('/', File.separatorChar);
          }
 
          process = Runtime.getRuntime().exec(command, environment, startDir);

@@ -29,6 +29,10 @@
   to allocate a writeable buffer.  the first time &closef is called the
   buffer will flip to a readable buffer.  the second time all the resources
   will be cleared.
+- pack/unpack/bwrite/bread can now parse sleep scalars with the 'o' format
+- added another form of &exec that allows the command/arguments to be
+  specified as an array.  useful for including arguments with spaces in
+  them.
 
 2.1-beta 11  (3 Dec 06)
 ===========

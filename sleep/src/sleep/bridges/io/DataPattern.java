@@ -69,6 +69,7 @@ public class DataPattern
                case 'h':
                case 'H':
                case 'x':
+               case 'o':
                  temp.size = 1;
                  break;
                case 'u':
