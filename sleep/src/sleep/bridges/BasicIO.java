@@ -62,6 +62,8 @@ public class BasicIO implements Loadable, Function
         temp.put("&listen",     f);
         temp.put("&exec",       new exec());
         temp.put("&fork",       new fork());
+        temp.put("&allocate",   this);
+
         temp.put("&sleep",      new sleep());
 
         temp.put("&closef",     new closef());
@@ -174,6 +176,13 @@ public class BasicIO implements Loadable, Function
              i.getScriptEnvironment().flagError("&readObject: " + ex.toString());
              a.close();
           }
+       }
+       else if (n.equals("&allocate"))
+       {
+          int capacity = BridgeUtilities.getInt(l, 1024 * 32); // 32K initial buffer by default
+          BufferObject temp = new BufferObject();
+          temp.allocate(capacity);
+          return SleepUtils.getScalar(temp);
        }
        else if (n.equals("&digest"))
        {

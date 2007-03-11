@@ -24,6 +24,11 @@
   a read.  If the handle is closed $null is returned.
 - fixed bugs in &readb that come about when reading in the last chunk of 
   data that is usually smaller than the total buffer size.  
+- added a new I/O handle type: the buffer.  this can be used to construct
+  and manipulate very large strings of data in memory.  use &allocate()
+  to allocate a writeable buffer.  the first time &closef is called the
+  buffer will flip to a readable buffer.  the second time all the resources
+  will be cleared.
 
 2.1-beta 11  (3 Dec 06)
 ===========
