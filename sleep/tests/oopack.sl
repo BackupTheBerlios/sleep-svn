@@ -8,7 +8,7 @@ debug(7);
 
 $x = pack("o3", "this is a test", 3, { println("doit!"); });
 
-println(strlen($x));
+# println(strlen($x));
 
 ($str, $num, $func) = unpack("o*", $x);
 
