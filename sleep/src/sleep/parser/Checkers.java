@@ -321,6 +321,11 @@ public class Checkers
    {
       return (a.charAt(0) == '#' && a.charAt(a.length() - 1) == '\n');
    }
+
+   public static final boolean isEndOfVar(char n)
+   {
+      return n == ' ' || n == '\t' || n == '\n' || n == '$' || n == '\\';
+   }
 }
 
 

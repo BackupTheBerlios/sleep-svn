@@ -268,6 +268,11 @@ public class Parser
       errors.add(new SyntaxError(description, responsible.toString(), responsible.getHint()));
    }
 
+   public void reportErrorWithMarker(String description, Token responsible)
+   {
+      errors.add(new SyntaxError(description, responsible.toString(), responsible.getHint(), responsible.getMarker()));
+   }
+
    public void reportError(SyntaxError error)
    {
       errors.add(error);

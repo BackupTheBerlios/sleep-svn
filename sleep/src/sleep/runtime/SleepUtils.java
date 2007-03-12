@@ -49,7 +49,7 @@ import sleep.bridges.*;
 public class SleepUtils
 {
    /** A date stamp of this Sleep release in YYYYMMDD format */
-   public static final int    SLEEP_RELEASE = 20061203;
+   public static final int    SLEEP_RELEASE = 20070311;
 
    /** A string description of this Sleep release */
    public static final String SLEEP_VERSION = "Sleep 2.1";

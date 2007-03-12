@@ -1,4 +1,4 @@
-2.1-beta 12
+2.1-beta 12  (11 Mar 07)
 ===========
 - fixed yet another flurry of line number skew issues.  argh, make it stop!
 - renamed &unlambda to &let, this name makes much more sense
@@ -33,6 +33,10 @@
 - added another form of &exec that allows the command/arguments to be
   specified as an array.  useful for including arguments with spaces in
   them.
+- rewrote parsed literal parser and atomic step to fix several bugs
+  ... strings ending with a $ will no longer see the $ stripped off
+  ... \\\" is now \" as expected
+- added a &byteAt function which works like &charAt except it returns an int
 
 2.1-beta 11  (3 Dec 06)
 ===========

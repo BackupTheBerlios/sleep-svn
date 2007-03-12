@@ -60,6 +60,7 @@ public class BasicStrings implements Loadable
         temp.put("&right",  new func_right());
 
         temp.put("&charAt",  new func_charAt());
+        temp.put("&byteAt",  temp.get("&charAt"));
         temp.put("&uc",      new func_uc());
         temp.put("&lc",      new func_lc());
 
@@ -451,7 +452,14 @@ public class BasicStrings implements Loadable
            String value = l.pop().toString();
            int    start = BridgeUtilities.getInt(l);
           
-           return SleepUtils.getScalar(charAt(value, start) + "");
+           if (n.equals("&charAt"))
+           {
+              return SleepUtils.getScalar(charAt(value, start) + "");
+           }
+           else
+           {
+              return SleepUtils.getScalar((int)charAt(value, start));
+           }
         }
     }
 

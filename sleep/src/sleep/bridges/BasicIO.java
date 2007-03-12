@@ -839,7 +839,6 @@ public class BasicIO implements Loadable, Function
 
                         value = SleepUtils.getScalar(buffer.getLong(0)); // turns the byte into an int
                         break;
-
                       case 'o':
                         ObjectInputStream ois = new ObjectInputStream(in);
                         value = (Scalar)ois.readObject();
@@ -868,7 +867,7 @@ public class BasicIO implements Loadable, Function
        return temp;
     }
 
-    private static void WriteFormatted(String format, OutputStream out, Stack arguments, IOObject control)
+    private static void WriteFormatted(String format, OutputStream out, ScriptEnvironment env, Stack arguments, IOObject control)
     {
        DataPattern pattern  = DataPattern.Parse(format);
 
@@ -879,7 +878,7 @@ public class BasicIO implements Loadable, Function
           while (i.hasNext())
               temp.push(i.next());
 
-          WriteFormatted(format, out, temp, control);
+          WriteFormatted(format, out, env, temp, control);
           return;
        }
 
@@ -1041,8 +1040,17 @@ public class BasicIO implements Loadable, Function
                         out.write(bdata, 0, 8);
                         break;
                       case 'o':
-                        ObjectOutputStream oos = new ObjectOutputStream(out);
-                        oos.writeObject(temp);
+                        try
+                        {
+                           ObjectOutputStream oos = new ObjectOutputStream(out);
+                           oos.writeObject(temp);
+                        }
+                        catch (Exception ex)
+                        {
+                           env.flagError("Could not serialize " + SleepUtils.describe(temp) + ": " + ex.toString());
+                           if (control != null) control.close();
+                           return;
+                        }
                       default:
                    }
                 }
@@ -1082,7 +1090,7 @@ public class BasicIO implements Loadable, Function
           IOObject        a = chooseSource(l, 3, i);
           String    pattern = BridgeUtilities.getString(l, "");
 
-          WriteFormatted(pattern, a.getWriter(), l, a);
+          WriteFormatted(pattern, a.getWriter(), i.getScriptEnvironment(), l, a);
           return SleepUtils.getEmptyScalar();
        }
     }
@@ -1192,7 +1200,7 @@ public class BasicIO implements Loadable, Function
 
           ByteArrayOutputStream temp = new ByteArrayOutputStream(DataPattern.EstimateSize(pattern) + 128);
          
-          WriteFormatted(pattern, new DataOutputStream(temp), l, null);
+          WriteFormatted(pattern, new DataOutputStream(temp), i.getScriptEnvironment(), l, null);
 
           return SleepUtils.getScalar(temp.toByteArray(), temp.size());
        }

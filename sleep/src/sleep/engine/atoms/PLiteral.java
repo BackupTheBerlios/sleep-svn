@@ -1,25 +1,3 @@
-/*
-   SLEEP - Simple Language for Environment Extension Purposes
- .-------------------------.
- | sleep.engine.atoms.PLiteral |__________________________________________________
- |                                                                            |
-   Author: Raphael Mudge (rsmudge@mtu.edu)
-           http://www.csl.mtu.edu/~rsmudge/
-
-   Description: This class contains an implementation of an atomic Step for
-     the sleep scripting.  
-
-   Documentation:
-
-   Changelog:
-   11/17/2002 - this class was refactored out of Step and put in its own file.
-
-   * This software is distributed under the artistic license, see license.txt
-     for more information. *
-
- |____________________________________________________________________________|
- */
-
 package sleep.engine.atoms;
 
 import java.util.*;
@@ -27,11 +5,10 @@ import sleep.interfaces.*;
 import sleep.engine.*;
 import sleep.runtime.*;
 
+import java.io.Serializable;
+
 public class PLiteral extends Step
 {
-   String[] fragments;
-   Block[] code;
-   Block[] align;
    String evaluator;
 
    public String toString(String prefix)
@@ -39,27 +16,29 @@ public class PLiteral extends Step
       StringBuffer temp = new StringBuffer();
       temp.append(prefix);
       temp.append("[Parsed Literal]  "+evaluator+"\n");
-      for (int x = 0; x < fragments.length; x++)
+
+      Iterator i = fragments.iterator();
+
+      while (i.hasNext())
       {
-          temp.append(prefix);
-          temp.append("   [Element]: ");
-          temp.append(fragments[x]);
-          temp.append("\n");
+         Fragment f = (Fragment)i.next();
 
-          if (x < code.length)
-          {
-             temp.append(prefix);
-             temp.append("   [Access variable]\n");
-             temp.append(code[x].toString(prefix+"      "));
-
-             if (align[x] != null)
-             { 
-                temp.append(prefix);
-                temp.append("      [Align variable]\n");
-                temp.append(align[x].toString(prefix+"         ")); 
-             }
-          }
+         switch (f.type)
+         {
+            case STRING_FRAGMENT:
+              temp.append("   [Element]: " + f.element + "\n");
+              break;
+            case ALIGN_FRAGMENT:
+              temp.append("   [Align Next Value]\n");
+              temp.append(((Block)f.element).toString(prefix+"      ")); 
+              break;
+            case VAR_FRAGMENT:
+              temp.append("   [Access Variable]\n");
+              temp.append(((Block)f.element).toString(prefix+"      ")); 
+              break;
+         }
       }
+
       return temp.toString();
    }
 
@@ -68,11 +47,8 @@ public class PLiteral extends Step
        return toString("");
    }
 
-   public PLiteral(String[] frag, Block[] c, Block[] a, String _evaluator)
+   public PLiteral(String _evaluator)
    {
-       fragments = frag;
-       code = c;
-       align = a;
        evaluator = _evaluator;
    }
 
@@ -95,45 +71,72 @@ public class PLiteral extends Step
       return rv;
    }
 
-   protected String buildString(ScriptEnvironment e)
+   public static final int STRING_FRAGMENT = 1;
+   public static final int ALIGN_FRAGMENT  = 2;
+   public static final int VAR_FRAGMENT    = 3;
+  
+   private static final class Fragment implements Serializable
+   {
+      public Object element;
+      public int    type;
+   }
+
+   private List fragments = new LinkedList();
+
+   public void addFragment(int type, Object element)
+   {
+      Fragment f = new Fragment();
+      f.element  = element;
+      f.type     = type;
+      fragments.add(f);
+   }
+
+   private String buildString(ScriptEnvironment e)
    {
       e.CreateFrame();
 
-      StringBuffer value = new StringBuffer();
-      for (int x = 0; x < fragments.length; x++) 
+      StringBuffer result = new StringBuffer();
+      int          align  = 0;
+
+      String       temp;
+      Iterator i = fragments.iterator();
+
+      while (i.hasNext())
       {
-          value.append(fragments[x]);
-          if (x < code.length)
-          {
-             code[x].evaluate(e);
-             if (align[x] != null)
-             {
-                String temp = ((Scalar)e.getCurrentFrame().pop()).getValue().toString();
-                align[x].evaluate(e);
-                int al = ((Scalar)e.getCurrentFrame().pop()).getValue().intValue();
-                if (temp != null)
-                {
-                   for (int z = 0 - temp.length(); z > al; z--)
-                   {
-                      value.append(" ");
-                   }
-                   value.append(temp);
-                   for (int y = temp.length(); y < al; y++)
-                   {
-                      value.append(" ");
-                   }
-                }
-             }
-             else
-             {
-                value = value.append(((Scalar)e.getCurrentFrame().pop()).getValue().toString());
-             }
-          }
+         Fragment f = (Fragment)i.next();
+
+         switch (f.type)
+         {
+            case STRING_FRAGMENT:
+              result.append(f.element);
+              break;
+            case ALIGN_FRAGMENT:
+              ((Block)f.element).evaluate(e);
+              align = ((Scalar)e.getCurrentFrame().pop()).getValue().intValue();
+              break;
+            case VAR_FRAGMENT:
+              ((Block)f.element).evaluate(e);
+              temp  = ((Scalar)e.getCurrentFrame().pop()).getValue().toString();
+
+              for (int z = 0 - temp.length(); z > align; z--)
+              {
+                 result.append(" ");
+              }
+
+              result.append(temp);
+
+              for (int y = temp.length(); y < align; y++)
+              {
+                 result.append(" ");
+              }
+
+              align = 0;              
+              break;
+         }
       }
 
       e.KillFrame();
-
-      return value.toString();
+      return result.toString();
    }
 }
 

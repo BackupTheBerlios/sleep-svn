@@ -479,239 +479,169 @@ public class CodeGenerator implements ParserConstants
            break;
          case EXPR_EVAL_STRING:
          case IDEA_STRING: // implemented -- parsed literals, one of my favorite features in sleep
-           int startz = 0; 
+           boolean isVar = false; // is the current buffer d a varname or not?
 
-           int lineno = tokens[0].getHint();
+           String varname, align; // some temp vars we'll use later...
+           
+           StringBuffer d = new StringBuffer(); // the string buffer where we will dump our results.
 
-           String c = ParserUtilities.extract(strings[0]);
-            
-           Stack vals, blocks, aligns;
-           vals   = new Stack();
-           blocks = new Stack();
-           aligns = new Stack();
-           boolean isVar = false;
-           int catpos = -1; // last position of a concatenation..
-           for (int x = 0; x < c.length(); x++)
-           {
-               char check = c.charAt(x);
+           PLiteral  machine;
+           machine = (PLiteral)(datum.getType() == EXPR_EVAL_STRING ? GeneratedSteps.PLiteral("%BACKQUOTE%") : GeneratedSteps.PLiteral(null));
  
-               //
-               // check for an escape constant or just to skip over a character
-               //
-               if (c.charAt(x) == '\\' && (x + 1) < c.length())
-               {
-                  String lookAhead = ( new Character(c.charAt(x+1)) ).toString();
+           StringIterator si = new StringIterator(ParserUtilities.extract(strings[0]), tokens[0].getHint());
+   
+           while (si.hasNext())
+           {
+              char current = si.next();
 
-                  if (escape_constants.containsKey(lookAhead))
-                  {
-                     String replacedValue = (String)escape_constants.get(lookAhead);
-                     c = c.substring(0, x) + replacedValue + c.substring(x + 2, c.length());
-                     x += replacedValue.length() - 1;
-                  }
-                  else if (c.charAt(x+1) == 'u')
-                  {
-                     if ((x + 5) >= c.length())
+              if (current == '\\' && si.hasNext())
+              {
+                 current  = si.next();
+                 mutilate = current + ""; 
+                
+                 if (escape_constants.containsKey(mutilate))
+                 {
+                     d.append(escape_constants.get(mutilate));
+                 }
+                 else if (current == 'u')
+                 {
+                     if (!si.hasNext(4))    
                      {
-                        parser.reportError("not enough remaning characters for \\uXXXX",  tokens[0].copy(lineno));
+                        parser.reportErrorWithMarker("not enough remaining characters for \\uXXXX", si.getErrorToken());
                      }
                      else
                      {
+                        mutilate = si.next(4);
+
                         try
                         {
-                           int codepoint = Integer.parseInt(c.substring(x + 2, x + 6), 16);
-                           c = c.substring(0, x) + ((char)codepoint) + c.substring(x + 6, c.length());
+                           int codepoint = Integer.parseInt(mutilate, 16);
+                           d.append((char)codepoint);
                         }
                         catch (NumberFormatException nex)
                         {
-                           parser.reportError("invalid unicode escape \\u"+c.substring(x + 2, x + 6)+" - must be hex digits", tokens[0].copy(lineno));
+                           parser.reportErrorWithMarker("invalid unicode escape \\u"+mutilate+" - must be hex digits", si.getErrorToken());
                         }
                      }
                   }
-                  else if (c.charAt(x+1) == 'x')
+                  else if (current == 'x')
                   {
-                     if ((x + 3) >= c.length())
+                     if (!si.hasNext(2))
                      {
-                        parser.reportError("not enough remaning characters for \\xXX",  tokens[0].copy(lineno));
+                        parser.reportErrorWithMarker("not enough remaining characters for \\xXX", si.getErrorToken());
                      }
                      else
                      {
+                        mutilate = si.next(2);
+
                         try
                         {
-                           int codepoint = Integer.parseInt(c.substring(x + 2, x + 4), 16);
-                           c = c.substring(0, x) + ((char)codepoint)  + c.substring(x + 4, c.length());
+                           int codepoint = Integer.parseInt(mutilate, 16);
+                           d.append((char)codepoint);
                         }
                         catch (NumberFormatException nex)
                         {
-                           parser.reportError("invalid unicode escape \\x"+c.substring(x + 2, x + 4)+" - must be hex digits", tokens[0].copy(lineno));
+                           parser.reportErrorWithMarker("invalid unicode escape \\x"+mutilate+" - must be hex digits", si.getErrorToken());
                         }
                      }
                   }
-                  else  // default behavior is to skip over the character...
+                  else
                   {
-                     c = c.substring(0, x)+c.substring(x+1, c.length());
-                     x += 1;
+                     // default behavior is to append the current character ignoring the previous escape.
+                     d.append(current);  
                   }
-               }
+              }
+              else if (current == ' ' && si.isNextString("$+ "))
+              {
+                  si.skip(3);
+              }
+              else if (current == '$' && si.isNextChar('+'))
+              {
+                  parser.reportErrorWithMarker("operator $+ must be surrounded with whitespace", si.getErrorToken());
+              }
+              else if (isVar && (Checkers.isEndOfVar(si.peek()) || !si.hasNext()))
+              {
+                  d.append(current);
 
-               //
-               // check for the end of our variable...
-               //
-               if (x < c.length() && isVar && (c.charAt(x) == ' ' || c.charAt(x) == '\n' || c.charAt(x) == '\t' || c.charAt(x) == '$'))
-               {
-                  String varname = c.substring(startz, x);
-                   
-                  String[] ops = LexicalAnalyzer.CreateTerms(parser, new StringIterator(varname, lineno)).getStrings();
-                  String align;
+                  String[] ops = LexicalAnalyzer.CreateTerms(parser, new StringIterator(d.toString(), si.getLineNumber())).getStrings();
+                  
                   if (ops.length == 3)
                   {
                      // ^--- check if our varref has the form $[whatever]varname
                      // in which case we are taking advantage of the align operator inside
                      // parsed literal strings.
+
                      varname = ops[0] + ops[2];
                      align   = ParserUtilities.extract(ops[1]);
 
                      if (align.length() > 0)
                      {
                         backup();
-                        parseIdea(new Token(align, lineno));
-                        aligns.push(restore());
+                        parseIdea(new Token(align, si.getLineNumber()));
+                        machine.addFragment(PLiteral.ALIGN_FRAGMENT, restore());
                      }
                      else
                      {
-                        aligns.push(null);
-                        parser.reportError("Empty alignment specification for " + varname,  tokens[0].copy(lineno));
+                        parser.reportErrorWithMarker("Empty alignment specification for " + varname, si.getErrorToken());
                      }
                   }
                   else
                   {
-                     aligns.push(null);
+                     varname = d.toString();
                   }
 
                   backup();
-                  parseIdea(new Token(varname, lineno));
-                  blocks.push(restore());
+                  parseIdea(new Token(varname, si.getLineNumber()));
+                  machine.addFragment(PLiteral.VAR_FRAGMENT, restore());
 
-                  startz = x;
-                  isVar = false;
-               }
-            
-               //
-               // check for the beginning of a new variable
-               //
-               if (  x < c.length() && c.charAt(x) == '$' && ( x == 0 || c.charAt(x - 1) != '\\' || x == catpos )  ) 
-               {
-                  //
-                  // Check if character is the start of a scalar.  If it is then push the preceding
-                  // string onto the stack.  We also make sure the preceding char is not a backslash so
-                  // a scalar can be escaped.
-                  //
-                  if ((x + 3) < c.length() && c.charAt(x+1) == '+' && c.charAt(x+2) == ' ')
-                  {
-                     if (x > 0)
-                     {
-                        // we are looking for the $+ operator here, if it is present then this scalar
-                        // is meant to just concatenate this string together. 
-                        c = c.substring(0, x - 1) + c.substring(x+3, c.length());
-                        x = x - 2;
-                        catpos = x + 1;
-                     }
-                     else
-                     {
-                        parser.reportError("$+ operator found at beginning of string", tokens[0].copy(lineno));
-                     }
-                  }
-                  else
-                  {
-                     isVar = true;
-                     vals.push(c.substring(startz, x));
-                     startz = x; 
-
-                     // - give the alignment stuff a little bit of a jumpstart...
-                     if ((x + 1) < c.length() && c.charAt(x + 1) == '[')
-                     {
-                        while (x < c.length() && c.charAt(x) != ']')
-                        {
-                           x++;
-                        }
-                     }
-                  }
-               }
-
-               if (check == '\n') { 
-                  lineno++; 
-               }
-           } 
-
-           if (!isVar)
-           {
-              vals.push(c.substring(startz, c.length()));
-              aligns.push(null);
-           }
-           else
-           {
-              String   varname = c.substring(startz, c.length());
-              String[] ops     = LexicalAnalyzer.CreateTerms(parser, new StringIterator(varname, lineno)).getStrings();
-              String   align;
-
-              if (ops.length == 3)
+                  isVar   = false;
+                  d       = new StringBuffer();
+              }
+              else if (current == '$' && !Checkers.isEndOfVar(si.peek()) && si.hasNext())
               {
-                 // check if our varref has the form $[whatever]varname
-                 // in which case we are taking advantage of the align operator inside
-                 // parsed literal strings.
-                 varname = ops[0] + ops[2];
-                 align   = ParserUtilities.extract(ops[1]);
-  
-                 if (align.length() > 0)
-                 {
-                    backup();
-                    parseIdea(new Token(align, lineno));
-                    aligns.push(restore());
-                 }
-                 else
-                 {
-                    aligns.push(null);
-                    parser.reportError("Empty alignment specification for " + varname,  tokens[0].copy(lineno));
-                 }
+                  machine.addFragment(PLiteral.STRING_FRAGMENT, d.toString());
+                  d = new StringBuffer();
+                  d.append('$');
+
+                  isVar = true;
+
+                  if (si.isNextChar('['))
+                  {
+                     int count = 0;
+                     do
+                     {
+                        current = si.next();
+                        if (current == '[')
+                            count++;
+
+                        if (current == ']')
+                            count--;
+
+                        d.append(current);
+                     } while (si.hasNext() && count > 0);
+
+                     if (count != 0)
+                     {
+                        parser.reportErrorWithMarker("missing close brace for variable alignment", si.getErrorToken());
+                        isVar = false;
+                     }
+                     else if (!si.hasNext() || Checkers.isEndOfVar(si.peek()))
+                     {
+                        parser.reportErrorWithMarker("can not align an empty variable", si.getErrorToken());
+                        isVar = false;
+                     }
+                  }
               }
               else
               {
-                 aligns.push(null);
+                  d.append(current);
               }
 
-              backup();
-              parseIdea(new Token(varname, lineno));
-              blocks.push(restore());
+              if (!si.hasNext() && d.length() > 0)
+                 machine.addFragment(PLiteral.STRING_FRAGMENT, d.toString());
            }
 
-           Block[]  tempbl = new Block[blocks.size()];
-           Block[]  tempal = new Block[aligns.size()];
-           String[] tempst = new String[vals.size()];
-
-           for (int x = 0; x < tempbl.length; x++)
-           {
-              tempbl[x] = (Block)(blocks.get(x));
-           }
-
-           for (int x = 0; x < tempst.length; x++)
-           {
-              tempst[x] = (String)(vals.get(x));
-           }
-
-           for (int x = 0; x < tempal.length; x++)
-           {
-              tempal[x] = (Block)(aligns.get(x));
-           }
-
-           if (datum.getType() == EXPR_EVAL_STRING)
-           {
-              atom = GeneratedSteps.PLiteral(tempst, tempbl, tempal, "%BACKQUOTE%");
-           }
-           else
-           {
-              atom = GeneratedSteps.PLiteral(tempst, tempbl, tempal, null);
-           }
-
-           add(atom, tokens[0]);
+           add(machine, tokens[0]);
            break;
          case HACK_INC: // implemented
            mutilate = strings[0].substring(0, strings[0].length() - 2);
@@ -797,7 +727,7 @@ public class CodeGenerator implements ParserConstants
 
               if (termsAr.length != 3)
               {
-                 parser.reportError("iff(condition, value_t, value_f): invalid form.", tokens[0].copy(strings[0] + strings[1]));
+                 parser.reportErrorWithMarker("iff(condition, value_t, value_f): invalid form.", tokens[0].copy(strings[0] + strings[1]));
                  break;
               }
 

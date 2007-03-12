@@ -19,7 +19,7 @@
 97
 98
 99
-Done!@#
+Done!@#$
 X:    0
    Y: 0
    Y: 1
@@ -86,7 +86,7 @@ X:    2
    Y: 97
    Y: 98
    Y: 99
-Done Again!@#
+Done Again!@#$
 a
 b
 Skipping: c

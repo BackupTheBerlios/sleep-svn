@@ -88,9 +88,9 @@ public class GeneratedSteps
        return temp;
     }
  
-    public static Step PLiteral(String[] fragments, Block[] code, Block[] align, String evaluator)
+    public static Step PLiteral(String evaluator)
     {
-       Step temp = new PLiteral(fragments, code, align, evaluator);
+       Step temp = new PLiteral(evaluator);
        return temp;
     }
 

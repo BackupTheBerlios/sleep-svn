@@ -27,14 +27,26 @@ public class StringIterator
       lineNo = _lineNo;
    }
 
+   /** check that there is another character out there for us to get */
    public boolean hasNext()
    {
       return position < text.length;
    }
 
+   /** check that there are at least n chars we can still get */
+   public boolean hasNext(int n)
+   {
+      return (position + n - 1) < text.length;
+   }
+
    public int getLineNumber()
    {
       return lineNo;
+   }
+
+   public Token getErrorToken()
+   {
+      return new Token(getEntireLine(), getLineNumber(), getLineMarker());
    }
   
    public String getEntireLine()
@@ -53,11 +65,41 @@ public class StringIterator
       return position - begin;
    }
 
+   public boolean isNextString(String n)
+   {
+      return ((position + n.length()) <= text.length) && texts.substring(position, position + n.length()).equals(n);
+   }
+
    public boolean isNextChar(char n)
    {
       return hasNext() && text[position] == n;
    }
 
+   public char peek()
+   {
+      return hasNext() ? text[position] : (char)0; 
+   }
+
+   /** does a direct skip of n characters, use only when you know what the chars are.. this will not increment the line number counter */
+   public void skip(int n)
+   {
+      position += n;
+   }
+
+   /** returns the string consisting of the next n characters. */
+   public String next(int n)
+   {
+      StringBuffer buffer = new StringBuffer();
+
+      for (int x = 0; x < n; x++)
+      {
+         buffer.append(next());
+      }
+
+      return buffer.toString();
+   }
+
+   /** moves the iterator forward one char */
    public char next()
    {
       char current = text[position];
