@@ -622,7 +622,7 @@ public class CodeGenerator implements ParserConstants
 
                      if (count != 0)
                      {
-                        parser.reportErrorWithMarker("missing close brace for variable alignment", si.getErrorToken());
+                        parser.reportError("missing close brace for variable alignment", new Token(d.toString(), si.getLineNumber()));
                         isVar = false;
                      }
                      else if (!si.hasNext() || Checkers.isEndOfVar(si.peek()))
