@@ -104,6 +104,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
         temp.put("&debug", this);
         temp.put("&profile", this);
+        temp.put("&getStackTrace", this);
 
         temp.put("&reverse",  new reverse());      // @array2 = &reverse(@array) 
         temp.put("&removeAt", new removeAt());   // not safe within foreach loops yada yada yada...
@@ -800,6 +801,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
        else if (n.equals("&profile"))
        {
           return SleepUtils.getArrayWrapper(i.getProfilerStatistics());
+       }
+       else if (n.equals("&getStackTrace"))
+       {
+          return SleepUtils.getArrayWrapper(i.getStackTrace());
        }
        else if (n.equals("&debug"))
        {

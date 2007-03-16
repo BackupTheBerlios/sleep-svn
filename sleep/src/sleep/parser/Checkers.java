@@ -57,6 +57,9 @@ public class Checkers
       keywords.put("break",    Boolean.TRUE);
       keywords.put("continue", Boolean.TRUE);
       keywords.put("yield",    Boolean.TRUE);
+      keywords.put("throw",    Boolean.TRUE);
+      keywords.put("try",      Boolean.TRUE);
+      keywords.put("catch",    Boolean.TRUE);
    }
 
    public static boolean isIfStatement(String a, String b, String c)
@@ -226,6 +229,11 @@ public class Checkers
        return (a.equals("for") && isExpression(b) && isBlock(c));
    }
 
+   public static final boolean isTryCatch (String a, String b, String c, String d, String e)
+   {
+       return a.equals("try") && c.equals("catch") && isBlock(b) && isBlock(e) && isScalar(d);
+   }
+  
    public static final boolean isForeach (String a, String b, String c, String d)
    {
        return (a.equals("foreach") && isVariable(b) && isExpression(c) && isBlock(d));
@@ -240,7 +248,7 @@ public class Checkers
    {
        // halt and done are kind of jIRC related... when you write the scripting language you
        // can do whatever you want...
-       return  (temp.equals("return") || temp.equals("done") || temp.equals("halt") || temp.equals("break") || temp.equals("yield") || temp.equals("continue"));
+       return  (temp.equals("return") || temp.equals("done") || temp.equals("halt") || temp.equals("break") || temp.equals("yield") || temp.equals("continue") || temp.equals("throw"));
    }
 
    public static final boolean isString (String item)

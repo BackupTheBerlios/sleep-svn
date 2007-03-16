@@ -28,6 +28,18 @@ import java.io.Serializable;
 /** A class providing static methods for constructing an atomic step of a specific type */
 public class GeneratedSteps
 {
+    public static Step PopTry()
+    {
+       Step temp = new PopTry();
+       return temp;
+    }
+ 
+    public static Step Try(Block owner, Block handler, String var)
+    {
+       Step temp = new Try(owner, handler, var);
+       return temp;
+    }
+
     public static Step Operate(String oper)
     {
        Step temp = new Operate(oper);
@@ -43,12 +55,6 @@ public class GeneratedSteps
     public static Step SValue(Scalar value)
     {
        Step temp = new SValue(value);
-       return temp;
-    }
-
-    public static Step NullOperation()
-    {
-       Step temp = new Step();
        return temp;
     }
 

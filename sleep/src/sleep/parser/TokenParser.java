@@ -468,7 +468,6 @@ public class TokenParser implements ParserConstants
       Statement myToken;
       int check;
 
-
       for (int x = 0; x < tokens.length; x++)
       {
     	 myToken = new Statement();
@@ -484,6 +483,16 @@ public class TokenParser implements ParserConstants
             myToken.add(tokens[x+4]);
             myToken.add(tokens[x+5]);
             x += 5;
+         }
+         else if ((x + 4) < tokens.length && Checkers.isTryCatch(strings[x], strings[x+1], strings[x+2], strings[x+3], strings[x+4]))
+         {
+            myToken.setType(EXPR_TRYCATCH);
+            myToken.add(tokens[x]); 
+            myToken.add(tokens[x+1]);
+            myToken.add(tokens[x+2]);
+            myToken.add(tokens[x+3]);
+            myToken.add(tokens[x+4]);
+            x += 4;
          }
          else if ((x + 3) < tokens.length && Checkers.isSpecialWhile(strings[x], strings[x+1], strings[x+2], strings[x+3]))
          {
@@ -627,6 +636,10 @@ public class TokenParser implements ParserConstants
             myToken.setType(IDEA_EXPR_I);
             myToken.add(tokens[x]);
          }
+         else if (strings[x].equals("EOT")) /* do this before the binding stuff to prevent problems, k */
+         {
+            // do nothing.
+         }
          // a bind predicate structure
          else if ((x + 2) < tokens.length && Checkers.isBindPredicate(strings[x], strings[x+1], strings[x+2]))
          {
@@ -674,10 +687,6 @@ public class TokenParser implements ParserConstants
          {
             myToken.setType(IDEA_FUNC);
             myToken.add(tokens[x]);
-         }
-         else if (strings[x].equals("EOT"))
-         {
-            // do nothing.
          }
          // a bind filter structure
          else if ((x + 3) < tokens.length && Checkers.isBindFilter(strings[x], strings[x+1], strings[x+2], strings[x+3]))

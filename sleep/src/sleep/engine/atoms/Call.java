@@ -70,6 +70,7 @@ public class Call extends Step
              {
                 String args = SleepUtils.describe(e.getCurrentFrame());
 
+                String message = function + "(" + args + ")";
                 try
                 {
                    long stat = System.currentTimeMillis();
@@ -80,16 +81,17 @@ public class Call extends Step
                 
                    if (SleepUtils.isEmptyScalar(temp))
                    {
-                      e.getScriptInstance().fireWarning(function + "(" + args + ")", getLineNumber(), true);
+                      e.getScriptInstance().fireWarning(message, getLineNumber(), true);
                    }
                    else
                    {
-                      e.getScriptInstance().fireWarning(function + "(" + args + ") = " + SleepUtils.describe(temp), getLineNumber(), true);
+                      e.getScriptInstance().fireWarning(message + " = " + SleepUtils.describe(temp), getLineNumber(), true);
                    }
                 }
                 catch (RuntimeException rex)
                 {
-                   e.getScriptInstance().fireWarning(function + "(" + args + ") - FAILED!", getLineNumber(), true);
+                   // add an e.killFrame() ?!?
+                   e.getScriptInstance().fireWarning(message + " - FAILED!", getLineNumber(), true);
                    throw(rex);
                 }
              }

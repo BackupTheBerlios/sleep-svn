@@ -26,14 +26,14 @@ public class PLiteral extends Step
          switch (f.type)
          {
             case STRING_FRAGMENT:
-              temp.append("   [Element]: " + f.element + "\n");
+              temp.append(prefix + "   [Element]: " + f.element + "\n");
               break;
             case ALIGN_FRAGMENT:
-              temp.append("   [Align Next Value]\n");
+              temp.append(prefix + "   [Align Next Value]\n");
               temp.append(((Block)f.element).toString(prefix+"      ")); 
               break;
             case VAR_FRAGMENT:
-              temp.append("   [Access Variable]\n");
+              temp.append(prefix + "   [Access Variable]\n");
               temp.append(((Block)f.element).toString(prefix+"      ")); 
               break;
          }

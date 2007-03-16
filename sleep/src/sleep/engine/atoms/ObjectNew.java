@@ -87,8 +87,6 @@ public class ObjectNew extends Step
                else
                {
                   String args = SleepUtils.describe(e.getCurrentFrame());
-
-                  long stat = System.currentTimeMillis();
                   parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
  
                   StringBuffer trace = new StringBuffer("[new " + name.getName());
@@ -102,6 +100,7 @@ public class ObjectNew extends Step
 
                   try
                   {
+                     long stat = System.currentTimeMillis();
                      result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
 
                      stat = System.currentTimeMillis() - stat;

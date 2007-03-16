@@ -697,6 +697,39 @@ public class CodeGenerator implements ParserConstants
            atom = GeneratedSteps.Bind(strings[0], nameBlock, restore());
            add(atom, tokens[0]);
            break; 
+         case EXPR_TRYCATCH: 
+           //
+           // [TRYCATCH]: try | BLOCK | catch | VAR | BLOCK
+           // 
+
+           // now parse the code we want to try as if nothing special ever occured.
+           backup();
+
+              /* do the normal version of this, the code we want to "try" */
+           parseBlock(ParserUtilities.extract(tokens[1]));
+
+              /* pop the handler */
+           atom = GeneratedSteps.PopTry();
+           add(atom, tokens[4]);
+
+           a = restore();
+
+           // setup the thrown value handler and the stuff to install it...
+           backup();
+
+              /* pop the handler [ensure this happens first thing in our handler block] */
+           atom = GeneratedSteps.PopTry();
+           add(atom, tokens[4]);
+
+              /* parse the handler */
+           parseBlock(ParserUtilities.extract(tokens[4]));
+
+           b = restore();
+
+           // add this try/catch bits to the current block
+           atom = GeneratedSteps.Try(a, b, strings[3]);
+           add(atom, tokens[0]);
+           break;
          case EXPR_BLOCK:  // implemented
            parseBlock(ParserUtilities.extract(tokens[0]));
            break;
@@ -1071,6 +1104,11 @@ public class CodeGenerator implements ParserConstants
            else if (strings[0].equals("continue"))
            {
               atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_CONTINUE);
+              add(atom, tokens[0]);
+           }
+           else if (strings[0].equals("throw"))
+           {
+              atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_THROW);
               add(atom, tokens[0]);
            }
            else if (strings[0].equals("yield"))

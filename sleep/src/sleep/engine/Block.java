@@ -176,6 +176,16 @@ public class Block implements Serializable
         return evaluate(environment, first);
     }
 
+    /** handle an exception raised by a script / java object */
+    private void handleException(ScriptEnvironment environment)
+    {
+        if (environment.isResponsible(this))
+        {
+           Block doit = environment.getExceptionHandler();
+           doit.evaluate(environment);
+        }
+    }
+
     /** evaluates this block of code.  please note that if the block has a return statement and the method clearReturn() is not 
         called on the corresponding script environment chaos will ensue.  use SleepUtils.runCode() to safely execute a block of
         code.  don't call this method yourself.  okay? */
@@ -183,6 +193,13 @@ public class Block implements Serializable
     {
         if (environment.isReturn())
         {
+           if (environment.isThrownValue())
+           {
+              environment.pushSource(source); /* may not be necessary, but then again, maybe they are... used for stack traces */
+              handleException(environment);
+              environment.popSource();
+           }
+
            return environment.getReturnValue();
         }
 
@@ -244,6 +261,13 @@ public class Block implements Serializable
               {
                  environment.getScriptInstance().fireWarning(environment.getDebugString(), temp.getLineNumber());
                  /** get debug string clears the debug interrupt! */
+              }
+              else if (environment.isThrownValue())
+              {
+                 handleException(environment);
+                 environment.popSource();
+                 return environment.getReturnValue(); /* we do this because the exception will get cleared and after that
+                                                         there may be a return value */
               }
               else
               {

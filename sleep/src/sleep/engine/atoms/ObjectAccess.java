@@ -142,6 +142,7 @@ public class ObjectAccess extends Step
                }
                catch (RuntimeException rex)
                {
+                  /** execute a kill frame here?!? */
                   trace.append(" - FAILED!");
                   e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
                   throw(rex);
@@ -207,8 +208,6 @@ public class ObjectAccess extends Step
 
                   parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
 
-                  long stat = System.currentTimeMillis();
-
                   /* construct the actual trace message */
 
                   StringBuffer trace = new StringBuffer("[");
@@ -224,8 +223,8 @@ public class ObjectAccess extends Step
 
                   try
                   {
+                     long stat = System.currentTimeMillis();
                      result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
-
                      stat = System.currentTimeMillis() - stat;
                      e.getScriptInstance().collect(theMethod.toString(), getLineNumber(), stat);
 

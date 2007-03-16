@@ -216,8 +216,9 @@ public class ScriptEnvironment implements Serializable
     
     protected static class Context implements Serializable
     {
-       public Block block;
-       public Step  last;       
+       public Block            block;
+       public Step             last;       
+       public ExceptionContext handler;
     }
 
     protected Stack    context      = new Stack();
@@ -273,6 +274,12 @@ public class ScriptEnvironment implements Serializable
        Context temp = new Context();
        temp.block = b;
        temp.last  = s;
+
+       if (isResponsible(b))
+       {
+          temp.handler = popExceptionContext();
+       }
+
        context.add(temp);
     }
 
@@ -287,6 +294,10 @@ public class ScriptEnvironment implements Serializable
        while (i.hasNext())
        {
           Context temp = (Context)i.next();
+
+          if (temp.handler != null)
+              installExceptionHandler(temp.handler);
+
           rv = temp.block.evaluate(this, temp.last);
 
           if (isReturn() && getFlowControlRequest() == FLOW_CONTROL_YIELD)
@@ -310,12 +321,89 @@ public class ScriptEnvironment implements Serializable
 
        return cstack;
     }
+ 
+    //
+    // ******** Exception Management **********
+    //
+
+    protected static class ExceptionContext implements Serializable
+    {
+       public Block  owner;
+       public String varname;
+       public Block  handler;
+    }
+
+    protected ExceptionContext currentHandler = null;
+    protected Stack            exhandlers     = new Stack(); /* exception handlers */
+
+    public boolean isExceptionHandlerInstalled()
+    {
+       return currentHandler != null;
+    }
+
+    public boolean isResponsible(Block block)
+    {
+       return currentHandler != null && currentHandler.owner == block;
+    }
+
+    public void installExceptionHandler(ExceptionContext exc)
+    {
+       if (currentHandler != null)
+          exhandlers.push(currentHandler);
+
+       currentHandler = exc;
+    }
+
+    public void installExceptionHandler(Block owner, Block handler, String varname)
+    {
+       ExceptionContext c = new ExceptionContext();
+       c.owner   = owner;
+       c.handler = handler;
+       c.varname = varname;
+
+       installExceptionHandler(c);
+    }
+
+    /** if there is no handler, we'll just get the message which will clear the thrown message as well */
+    public Scalar getExceptionMessage()
+    {
+       request     &= ~FLOW_CONTROL_THROW;       
+       Scalar temp  = rv;
+       rv           = null;
+       return temp;
+    }
+
+    /** preps and returns the current exception handler... */
+    public Block getExceptionHandler()
+    {
+       request     &= ~FLOW_CONTROL_THROW;       
+       Block  doit  = currentHandler.handler;
+       putScalar(currentHandler.varname, rv);
+       rv           = null;
+       return doit;
+    }
+
+    public ExceptionContext popExceptionContext()
+    {
+       ExceptionContext old = currentHandler;
+
+       if (exhandlers.isEmpty())
+       {
+          currentHandler = null;
+       }
+       else
+       {
+          currentHandler = (ExceptionContext)exhandlers.pop();
+       }
+
+       return old;
+    }
 
     //
     // ******** Flow Control **********
     //
 
-    /** currently no flow contrl change has been requested */
+    /** currently no flow control change has been requested */
     public static final int FLOW_CONTROL_NONE     = 0;
 
     /** request a return from the current function */
@@ -325,19 +413,29 @@ public class ScriptEnvironment implements Serializable
     public static final int FLOW_CONTROL_BREAK    = 2;
 
     /** adding a continue keyword as people keep demanding it */
-    public static final int FLOW_CONTROL_CONTINUE = 3;
+    public static final int FLOW_CONTROL_CONTINUE = 4;
 
     /** adding a yield keyword */
-    public static final int FLOW_CONTROL_YIELD    = 4;
+    public static final int FLOW_CONTROL_YIELD    = 8;
 
-    protected boolean isDebugInterrupt  = false;
+    /** adding a throw keyword -- sleep is now useable :) */
+    public static final int FLOW_CONTROL_THROW    = 16;
+
+    /** a special case for debugs and such */ 
+    public static final int FLOW_CONTROL_DEBUG    = 32;
+ 
     protected String  debugString       = "";
     protected Scalar rv      = null;
     protected int    request = 0;
 
+    public boolean isThrownValue()
+    {
+       return (request & FLOW_CONTROL_THROW) == FLOW_CONTROL_THROW;
+    }
+
     public boolean isDebugInterrupt()
     {
-       return isDebugInterrupt;
+       return (request & FLOW_CONTROL_DEBUG) == FLOW_CONTROL_DEBUG;
     }
 
     public Scalar getReturnValue()
@@ -347,7 +445,7 @@ public class ScriptEnvironment implements Serializable
 
     public boolean isReturn()
     {
-       return request != FLOW_CONTROL_NONE || isDebugInterrupt;
+       return request != FLOW_CONTROL_NONE;
     }
 
     public int getFlowControlRequest()
@@ -357,14 +455,14 @@ public class ScriptEnvironment implements Serializable
 
     public String getDebugString()
     {
-       isDebugInterrupt = false;
+       request &= ~FLOW_CONTROL_DEBUG;
        return debugString;
     }
 
     /** fires this debug message via a runtime warning complete with line number of current step */
     public void showDebugMessage(String message)
     {
-       isDebugInterrupt = true;
+       request |= FLOW_CONTROL_DEBUG;
        debugString = message;
     }
 
@@ -377,8 +475,10 @@ public class ScriptEnvironment implements Serializable
 
     public void clearReturn()
     {
-       request = FLOW_CONTROL_NONE;
-       rv      = null;
+       request = FLOW_CONTROL_NONE | (request & (FLOW_CONTROL_THROW | FLOW_CONTROL_DEBUG));
+
+       if (!isThrownValue())
+           rv      = null;
     }
 
     /** how many stacks does this damned class include? */

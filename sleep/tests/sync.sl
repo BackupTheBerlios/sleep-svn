@@ -4,9 +4,11 @@
 
 $mutex = semaphore();
 
-$handle = fork({
+acquire($mutex);
 
-  acquire($mutex);
+$handle = fork({
+  [Thread yield];
+
   for ($x = 0; $x < 10; $x++)
   {
      println("fork: $x");

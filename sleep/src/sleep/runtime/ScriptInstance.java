@@ -84,7 +84,11 @@ public class ScriptInstance implements Serializable, Runnable
 
     /** forces function call tracing to occur (for the sake of profiling a script) but supresses
         all runtime warnings as a result of the tracing */
-    public static final int DEBUG_TRACE_PROFILE_ONLY  = 8 | 16;
+    public static final int DEBUG_TRACE_PROFILE_ONLY = 8 | 16;
+
+    /** users shouldn't need to flag this, it is just a general method of saying we're suppressing
+        trace messages... */
+    protected static final int DEBUG_TRACE_SUPPRESS = 16;
 
     /** track all of the flagged debug options for this script (set to DEBUG_SHOW_ERRORS by default) */
     protected int debug = DEBUG_SHOW_ERRORS;
@@ -185,8 +189,64 @@ public class ScriptInstance implements Serializable, Runnable
         return temp;
     }
  
+    /** A container for Sleep strack trace elements. */
+    public static class SleepStackElement implements Serializable
+    {
+        public String sourcefile;
+        public String description;
+        public int    lineNumber;
+
+        public String toString()
+        {
+           return "   " + (new File(sourcefile).getName()) + ":" + lineNumber + " " + description;
+        }
+    }
+ 
+    /** Records a stack frame into this environments stack trace tracker thingie. */
+    public void recordStackFrame(String description, int lineNumber)
+    {
+       if (description == null) return;
+
+       List strace = (List)getScriptEnvironment().getEnvironment().get("%strace%");
+
+       if (strace == null) 
+       {
+          strace = new LinkedList();
+          getScriptEnvironment().getEnvironment().put("%strace%", strace);
+       }
+
+       SleepStackElement stat = new SleepStackElement();
+       stat.sourcefile  = getScriptEnvironment().getCurrentSource();
+       stat.description = description;
+       stat.lineNumber  = lineNumber;
+
+       strace.add(0, stat);
+    }
+
+    /** Removes the top element of the stack trace */
+    public void popStackFrame()
+    {
+       List strace = (List)getScriptEnvironment().getEnvironment().get("%strace%");
+       if (strace != null) 
+       {
+          strace.clear();
+       }
+    }
+
+    /** Returns the last stack trace.  Each element of the list is a ScriptInstance.SleepStackElement object.  
+        First element is the top of the trace, last element is the origin of the trace. */
+    public List getStackTrace()
+    {
+       List strace = (List)getScriptEnvironment().getEnvironment().get("%strace%");
+       if (strace == null)
+       {
+          strace = new LinkedList();
+       }
+       return strace;
+    }
+
     /** A container for a profile statistic about a sleep function */
-    public static class ProfilerStatistic implements Comparable
+    public static class ProfilerStatistic implements Comparable, Serializable
     {
         /** the name of the function call */
         public String functionName;
@@ -363,7 +423,7 @@ public class ScriptInstance implements Serializable, Runnable
     /** Fire a runtime script warning */
     public void fireWarning(String message, int line, boolean isTrace)
     {
-       if (debug != DEBUG_NONE && (!isTrace || (getDebugFlags() & DEBUG_TRACE_PROFILE_ONLY) != DEBUG_TRACE_PROFILE_ONLY))
+       if (debug != DEBUG_NONE && (!isTrace || (getDebugFlags() & DEBUG_TRACE_SUPPRESS) != DEBUG_TRACE_SUPPRESS))
        {
           ScriptWarning temp = new ScriptWarning(this, message, line, isTrace);
 

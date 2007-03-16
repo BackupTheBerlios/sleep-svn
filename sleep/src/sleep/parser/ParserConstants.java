@@ -14,13 +14,13 @@ public interface ParserConstants
    public static final int EXPR_FOREACH         = 400;
    public static final int EXPR_FOR             = 401;
    public static final int EXPR_FOREACH_SPECIAL = 402;
+   public static final int EXPR_TRYCATCH	= 403;
    public static final int EXPR_RETURN          = 500;
    public static final int EXPR_BREAK           = 501;
    public static final int EXPR_BIND            = 502;
    public static final int EXPR_ESCAPE          = 503;
    public static final int EXPR_BIND_PRED       = 504;
    public static final int EXPR_BIND_FILTER     = 505;
-
    public static final int EXPR_EVAL_STRING     = 506; // used for `backtick` strings that do something cool :)
  
    public static final int IDEA_EXPR            = 601;

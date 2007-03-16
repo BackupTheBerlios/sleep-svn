@@ -30,7 +30,7 @@ The root of all atomic steps.
 </pre> */
 
 
-public class Step implements Serializable
+public abstract class Step implements Serializable
 {
    /** the script line number that this step was generated from */
    protected int  line;
@@ -43,7 +43,7 @@ public class Step implements Serializable
    {
       return prefix+toString();
    }
-
+ 
    /** convience method for the code generator to set the line number. */
    public void setInfo(int _line)
    {
