@@ -10,5 +10,5 @@ Trace: &substr('test', 8, 20) = 'test' at injar.sl:17
 Warning: variable '$x' not declared at injar.sl:17
 Trace: &debug(7) = 7 at include.sl:19
 Eh?!? Hello from injar.sl
-Warning: scripts/errors1.sl: 3 error(s): Mismatched Parentheses - missing close paren at 9; Mismatched Braces - missing close brace at 6; Runaway string at 9 at include.sl:24
-Warning: java.io.IOException: unable to locate scripts/does_not_exist.sl from: data/scripts.jar at include.sl:27
+Warning: checkError(): YourCodeSucksException: 3 error(s): Mismatched Parentheses - missing close paren at 9; Mismatched Braces - missing close brace at 6; Runaway string at 9 at include.sl:24
+Warning: checkError(): java.io.IOException: unable to locate scripts/does_not_exist.sl from: data/scripts.jar at include.sl:27

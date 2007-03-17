@@ -229,7 +229,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           if (parent != null && !parent.exists())
           {
-             throw new IllegalArgumentException(n + ": could not locate source '" + parent + "'");
+             si.getScriptEnvironment().flagError(new IllegalArgumentException(n + ": could not locate source '" + parent + "'"));
+             return SleepUtils.getEmptyScalar();
           }
 
           try
@@ -291,11 +292,11 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
           catch (YourCodeSucksException yex)
           {
-             throw new RuntimeException(className + ": " + yex.getMessage());
+             si.getScriptEnvironment().flagError(yex);             
           }
           catch (Exception ex)
           {
-             throw new RuntimeException(ex.toString());
+             si.getScriptEnvironment().flagError(ex);             
           }
 
           return SleepUtils.getEmptyScalar();

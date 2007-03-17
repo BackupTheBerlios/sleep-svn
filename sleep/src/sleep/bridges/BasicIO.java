@@ -845,7 +845,7 @@ public class BasicIO implements Loadable, Function
                         break;
 
                       default:
-                        env.flagError(new Exception("unknown file pattern character: " + pattern.value));
+                        env.showDebugMessage("unknown file pattern character: " + pattern.value);
                    }
                 }
                 catch (Exception ex) 
