@@ -54,7 +54,7 @@ public class ArgumentArray extends sleep.engine.types.ArrayContainer
 
        public Scalar   pop() { check(); return super.pop(); }
        public Scalar   push(Scalar value) { check(); return super.push(value); }
-       public int      size() { return sz; }
+       public int      size() { if (values == null) { return sz; } else { return super.size(); } }
        public Scalar   getAt(int index) { check(); return super.getAt(index); }
        public Iterator scalarIterator() { check(); return super.scalarIterator(); }
        public Scalar   add(Scalar value, int index) { check(); return super.add(value, index); }

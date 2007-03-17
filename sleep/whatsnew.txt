@@ -35,6 +35,9 @@
   somewhat less descriptive but on the other hand you can fully inspect them
   for whatever additional details you want.
 - fixed a bug preventing use of increment/decrement ops in expression context
+- fixed a bug causing @_ to return the same size value no matter how many
+  modifications had been made to the array (thanks to Ralph Becker for 
+  finding this one).
 
 2.1-beta 12  (11 Mar 07)
 ===========
