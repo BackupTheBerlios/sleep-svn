@@ -54,7 +54,7 @@ public class Return extends Step
             e.flagReturn(temp, ScriptEnvironment.FLOW_CONTROL_THROW);
          }
       }
-      else if (return_type == ScriptEnvironment.FLOW_CONTROL_BREAK)
+      else if (return_type == ScriptEnvironment.FLOW_CONTROL_BREAK || return_type == ScriptEnvironment.FLOW_CONTROL_CONTINUE)
       {
          e.flagReturn(null, return_type);
       }

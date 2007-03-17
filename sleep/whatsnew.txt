@@ -40,6 +40,8 @@
   finding this one).
 - made a small (possibly negligible) performance optimization to Sleep's
   scalar value transfer code.
+- fixed frame leaks that can occur when a Java exception interrupts the 
+  calling of a function.
 
 2.1-beta 12  (11 Mar 07)
 ===========

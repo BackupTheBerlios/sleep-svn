@@ -19,7 +19,7 @@ println([{ return "this is a closure call!: " . fact(10.0); }]);
 
 @stats = reverse(sort({ return [$1 calls] <=> [$2 calls]; }, copy(@stats)));
 
-foreach $var (@stats)
+foreach $var (sort({ return [$2 calls] <=> [$1 calls]; }, sort({ return [$1 functionName] cmp [$2 functionName]; }, @stats)))
 {
    # $var is a ScriptInstance.ProfilerStatistic object, it accepts
    # the following messages:

@@ -229,8 +229,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           if (parent != null && !parent.exists())
           {
-             si.getScriptEnvironment().flagError(new IllegalArgumentException(n + ": could not locate source '" + parent + "'"));
-             return SleepUtils.getEmptyScalar();
+             throw new IllegalArgumentException(n + ": could not locate source '" + parent + "'");
           }
 
           try

@@ -94,7 +94,7 @@ public class Call extends Step
                 }
                 catch (RuntimeException rex)
                 {
-                   // add an e.killFrame() ?!?
+                   e.KillFrame();
                    e.getScriptInstance().fireWarning(message + " - FAILED!", getLineNumber(), true);
                    throw(rex);
                 }
@@ -102,8 +102,16 @@ public class Call extends Step
          }
          else
          {
-             temp = callme.evaluate(function, e.getScriptInstance(), e.getCurrentFrame());
-             e.clearReturn();
+             try
+             {
+                temp = callme.evaluate(function, e.getScriptInstance(), e.getCurrentFrame());
+                e.clearReturn();
+             }
+             catch (RuntimeException rex)
+             {
+                e.KillFrame();
+                throw(rex);
+             }
          }
 
          if (e.isThrownValue())
