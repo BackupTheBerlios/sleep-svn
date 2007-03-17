@@ -95,6 +95,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("-ishash",  this); 
         temp.put("-isfunction", this);
         temp.put("&setField", this);
+
+        temp.put("&exit", this);
      
         SetScope scopeFunctions = new SetScope();
 
@@ -665,7 +667,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
           catch (YourCodeSucksException ex)
           {
-             i.getScriptEnvironment().flagError(ex.getMessage());
+             i.getScriptEnvironment().flagError(ex);
              return SleepUtils.getEmptyScalar();
           }
        }
@@ -694,7 +696,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
           catch (YourCodeSucksException ex)
           {
-             i.getScriptEnvironment().flagError(ex.getMessage());
+             i.getScriptEnvironment().flagError(ex);
              return SleepUtils.getEmptyScalar();
           }
        }
@@ -713,7 +715,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
           catch (YourCodeSucksException ex)
           {
-             i.getScriptEnvironment().flagError(ex.getMessage());
+             i.getScriptEnvironment().flagError(ex);
              return SleepUtils.getEmptyScalar();
           }
        }
@@ -1044,6 +1046,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
              return temp;
           }
+       }
+       else if (n.equals("&exit"))
+       {
+          i.getScriptEnvironment().flagReturn(null, ScriptEnvironment.FLOW_CONTROL_THROW); /* a null throw will exit the interpreter */
        }
        else if (n.equals("&setField"))
        {

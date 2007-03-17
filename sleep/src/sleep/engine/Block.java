@@ -270,9 +270,13 @@ public class Block implements Serializable
                     /* if no handler is installed we will fire a warning and then flag a return of $null so at least the
                        current function fails for not installing a handler */
 
-                    environment.getScriptInstance().fireWarning("Uncaught exception: " + environment.getExceptionMessage(), temp.getLineNumber());
-                    environment.getScriptInstance().clearStackTrace();
-                    environment.flagReturn(null, ScriptEnvironment.FLOW_CONTROL_RETURN); 
+                    if (!SleepUtils.isEmptyScalar(environment.getReturnValue()))
+                    {
+                       environment.getScriptInstance().fireWarning("Uncaught exception: " + environment.getExceptionMessage(), temp.getLineNumber());
+
+                       /* the empty throw will cause the current script environment to essentially "exit" */
+                       environment.flagReturn(null, ScriptEnvironment.FLOW_CONTROL_THROW);
+                    }
                  }
                  else
                  {

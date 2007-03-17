@@ -46,8 +46,13 @@ public class Return extends Step
    {
       if (return_type == ScriptEnvironment.FLOW_CONTROL_THROW)
       {
-         e.getScriptInstance().recordStackFrame("<origin of exception>", getLineNumber());
-         e.flagReturn((Scalar)e.getCurrentFrame().pop(), ScriptEnvironment.FLOW_CONTROL_THROW);
+         Scalar temp = (Scalar)e.getCurrentFrame().pop();
+         if (!SleepUtils.isEmptyScalar(temp))
+         {
+            e.getScriptInstance().clearStackTrace();
+            e.getScriptInstance().recordStackFrame("<origin of exception>", getLineNumber());
+            e.flagReturn(temp, ScriptEnvironment.FLOW_CONTROL_THROW);
+         }
       }
       else if (return_type == ScriptEnvironment.FLOW_CONTROL_BREAK)
       {

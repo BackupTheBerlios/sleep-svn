@@ -226,6 +226,7 @@ public class ScriptEnvironment implements Serializable
        public Block            block;
        public Step             last;       
        public ExceptionContext handler;
+       public boolean          moreHandlers;
     }
 
     protected Stack    context      = new Stack();
@@ -285,6 +286,17 @@ public class ScriptEnvironment implements Serializable
        if (isResponsible(b))
        {
           temp.handler = popExceptionContext();
+          Iterator i = context.iterator();
+          while (i.hasNext())
+          {  /* semi inefficient but there should be so few handlers per context this shouldn't be much of an issue */
+             Context c = (Context)i.next();
+             c.moreHandlers = true;
+          }
+       }
+       else
+       {
+          temp.moreHandlers = moreHandlers; /* if a context is already executing then it will know better than we do
+                                               wether there are more handlers in the current context or not */
        }
 
        context.add(temp);
@@ -305,6 +317,8 @@ public class ScriptEnvironment implements Serializable
           if (temp.handler != null)
               installExceptionHandler(temp.handler);
 
+          moreHandlers = temp.moreHandlers;
+
           rv = temp.block.evaluate(this, temp.last);
 
           if (isReturn() && getFlowControlRequest() == FLOW_CONTROL_YIELD)
@@ -316,6 +330,7 @@ public class ScriptEnvironment implements Serializable
           }
        }
 
+       moreHandlers = false;
        return rv;
     }
 
@@ -342,10 +357,11 @@ public class ScriptEnvironment implements Serializable
 
     protected ExceptionContext currentHandler = null;
     protected Stack            exhandlers     = new Stack(); /* exception handlers */
+    protected boolean          moreHandlers   = false;
 
     public boolean isExceptionHandlerInstalled()
     {
-       return currentHandler != null;
+       return currentHandler != null || moreHandlers;
     }
 
     public boolean isResponsible(Block block)
@@ -480,6 +496,16 @@ public class ScriptEnvironment implements Serializable
        request = type_of_flow;
     }
 
+    /** Resets the script environment to include clearing the return of all flags (including thrown exceptions) */
+    public void resetEnvironment()
+    {
+       errorMessage = null;
+       request = FLOW_CONTROL_NONE;
+       rv      = null;
+       getScriptInstance().clearStackTrace(); /* no one else is going to use it, right?!? */
+    }
+
+    /** Clears the return value from the last executed function. */
     public void clearReturn()
     {
        request = FLOW_CONTROL_NONE | (request & (FLOW_CONTROL_THROW | FLOW_CONTROL_DEBUG));

@@ -16,3 +16,4 @@ foo(): $c is &closure[tcatch2.sl:8]#7
 --- e. pre throw :)
 --- g. outermost catch block
 0. Caught: this is being thrown because I can!!!
+this outermost block isn't hosed, is it?

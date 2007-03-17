@@ -1,26 +1,3 @@
-/*
-   SLEEP - Simple Language for Environment Extension Purposes
- .----------------------------.
- | sleep.runtime.SleepUtils   |_______________________________________________
- |                                                                            |
-   Author: Raphael Mudge (rsmudge@mtu.edu)
-           http://www.csl.mtu.edu/~rsmudge/
-
-   Description: 
-     Provides utility functions for the following:
-     1. loading a script and retreiving a ScriptInstance object
-     2. calling a function on a given ScriptInstance object
-     3. creating a sleep Scalar object based on a normal java object
-
-   Documentation:
-
-   Changelog:
-
-   * This software is distributed under the artistic license, see license.txt
-     for more information. *
-
- |____________________________________________________________________________|
- */
 package sleep.runtime;
  
 import java.util.*;
@@ -80,7 +57,7 @@ public class SleepUtils
    public static Scalar runCode(Block code, ScriptEnvironment env)
    {
        Scalar temp = code.evaluate(env);
-       env.clearReturn();                 /* if we're going to call a function that returns
+       env.resetEnvironment();             /* if we're going to call a function that returns
                                              something then we are obligated to clear its return
                                              value when its done running... */
        return temp;
@@ -98,9 +75,9 @@ public class SleepUtils
    public static Scalar runCode(Function func, String name, ScriptInstance script, Stack locals)
    {
        Scalar temp = func.evaluate(name, script, locals);
-       script.getScriptEnvironment().clearReturn();  /* if we're going to call a function that returns
-                                                        something then we are obligated to clear its return
-                                                        value when its done running... */
+       script.getScriptEnvironment().resetEnvironment(); /* if we're going to call a function that returns
+                                                            something then we are obligated to clear its return
+                                                            value when its done running... */
        if (temp == null)
           return SleepUtils.getEmptyScalar();
 

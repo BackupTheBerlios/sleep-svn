@@ -28,7 +28,8 @@
   compatability with older scripts that rely on the checkError() scheme. 
   With this option scripters can choose to use try/catch blocks for all run
   of the mill error handling.  (see how it all fits together now?)
-
+- added an &exit() function to force Sleep to stop processing within the
+  current script environment.
 
 2.1-beta 12  (11 Mar 07)
 ===========

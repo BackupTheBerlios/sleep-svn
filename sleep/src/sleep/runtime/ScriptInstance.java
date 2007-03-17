@@ -235,10 +235,12 @@ public class ScriptInstance implements Serializable, Runnable
     }
 
     /** Returns the last stack trace.  Each element of the list is a ScriptInstance.SleepStackElement object.  
-        First element is the top of the trace, last element is the origin of the trace. */
+        First element is the top of the trace, last element is the origin of the trace.  This function also
+        clears the stack trace. */
     public List getStackTrace()
     {
        List strace = (List)getScriptEnvironment().getEnvironment().get("%strace%");
+       clearStackTrace(); /* clear the old stack trace */
        if (strace == null)
        {
           strace = new LinkedList();
@@ -373,7 +375,7 @@ public class ScriptInstance implements Serializable, Runnable
         return script;
     }
 
-    /** Calls a subroutine/built-in function using this scripts */
+    /** Calls a subroutine/built-in function using this script. */
     public Scalar callFunction(String funcName, Stack parameters)
     {
        Function myfunction = getScriptEnvironment().getFunction(funcName);
@@ -384,7 +386,7 @@ public class ScriptInstance implements Serializable, Runnable
        }
 
        Scalar evil = myfunction.evaluate(funcName, this, parameters);
-       getScriptEnvironment().clearReturn();
+       getScriptEnvironment().resetEnvironment();
 
        return evil;
     }

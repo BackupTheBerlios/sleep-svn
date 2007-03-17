@@ -1224,7 +1224,7 @@ public class BasicIO implements Loadable, Function
           catch (Exception ex)
           {
              a.close();
-             i.getScriptEnvironment().flagError(ex.toString());
+             i.getScriptEnvironment().flagError(ex);
           }
 
           return SleepUtils.getEmptyScalar();
@@ -1258,7 +1258,7 @@ public class BasicIO implements Loadable, Function
              catch (Exception ex)
              {
                 a.close();
-                i.getScriptEnvironment().flagError(ex.toString());
+                i.getScriptEnvironment().flagError(ex);
 
                 ex.printStackTrace();
              }
@@ -1308,7 +1308,7 @@ public class BasicIO implements Loadable, Function
              catch (Exception ex)
              {
                 a.close();
-                i.getScriptEnvironment().flagError(ex.toString());
+                i.getScriptEnvironment().flagError(ex);
              }
 
              if (read > 0)
@@ -1406,7 +1406,7 @@ public class BasicIO implements Loadable, Function
                 }
 
                 source.close();
-                script.getScriptEnvironment().flagError(ex.toString());
+                script.getScriptEnvironment().flagError(ex);
              }
           }
        }

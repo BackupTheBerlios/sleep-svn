@@ -109,6 +109,8 @@ sub bee
       yield "g. outermost catch block";
       println("0. Caught: $exception");
    }
+
+   println("this outermost block isn't hosed, is it?");
 }
 
 while $test (bee())
