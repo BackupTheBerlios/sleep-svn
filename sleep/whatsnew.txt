@@ -42,6 +42,9 @@
   scalar value transfer code.
 - fixed frame leaks that can occur when a Java exception interrupts the 
   calling of a function.
+- added yet another option to help with debugging: watch('$x $y $z')
+  this function will ensure a warning is fired every time the scalar
+  container held by the specified variables receives a new value.
 
 2.1-beta 12  (11 Mar 07)
 ===========

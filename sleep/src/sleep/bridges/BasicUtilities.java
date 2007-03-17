@@ -104,6 +104,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&this",     scopeFunctions);
         temp.put("&global",     scopeFunctions);
 
+        temp.put("&watch", this);
+
         temp.put("&debug", this);
         temp.put("&profile", this);
         temp.put("&getStackTrace", this);
@@ -739,6 +741,26 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
          
           return SleepUtils.getEmptyScalar();
+       }
+       else if (n.equals("&watch"))
+       {
+          Variable level;
+          String temp = BridgeUtilities.getString(l, "");       
+          String vars[] = temp.split(" "); 
+          for (int x = 0; x < vars.length; x++)
+          {
+             level = i.getScriptVariables().getScalarLevel(vars[x], i);
+             if (level != null)
+             {
+                WatchScalar watch = new WatchScalar(vars[x], i.getScriptEnvironment());
+                watch.setValue(level.getScalar(vars[x]));
+                i.getScriptVariables().setScalarLevel(vars[x], watch, level);
+             }
+             else
+             {
+                throw new IllegalArgumentException(vars[x] + " must already exist in a scope prior to watching");
+             }
+          }
        }
        else if (n.equals("&invoke")) 
        {
