@@ -13,7 +13,7 @@ public class IntValue implements ScalarType
 
    public ScalarType copyValue()
    {
-      return new IntValue(value);
+      return this;
    }
 
    public int intValue()

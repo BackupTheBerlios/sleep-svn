@@ -13,7 +13,7 @@ public class StringValue implements ScalarType
 
    public ScalarType copyValue()
    {
-      return new StringValue(value);
+      return this;
    }
 
    /** does nothing for now... */

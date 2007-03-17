@@ -13,7 +13,7 @@ public class LongValue implements ScalarType
 
    public ScalarType copyValue()
    {
-      return new LongValue(value);
+      return this;
    }
 
    public int intValue()
