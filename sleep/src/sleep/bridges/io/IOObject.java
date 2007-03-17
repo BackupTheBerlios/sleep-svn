@@ -95,13 +95,13 @@ public class IOObject
 
             if (getThread().isAlive())
             {
-               env.flagError("wait on object timed out");
+               env.flagError(new IOException("wait on object timed out"));
                return SleepUtils.getEmptyScalar();
             }
          }
          catch (Exception ex)
          {
-            env.flagError("wait on object failed: " + ex.getMessage());
+            env.flagError(ex);
             return SleepUtils.getEmptyScalar();
          }
       }

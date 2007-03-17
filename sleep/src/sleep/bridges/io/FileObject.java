@@ -37,7 +37,7 @@ public class FileObject extends IOObject
       }
       catch (Exception ex)
       {
-         env.flagError(ex.toString());
+         env.flagError(ex);
       }
    }
 }

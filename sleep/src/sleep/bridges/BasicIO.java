@@ -157,7 +157,7 @@ public class BasicIO implements Loadable, Function
              }
              catch (Exception ex)
              {
-                i.getScriptEnvironment().flagError("&writeObject(" + SleepUtils.describe(SleepUtils.getScalar(a)) + ", " + SleepUtils.describe(b) + "): " + ex.toString());
+                i.getScriptEnvironment().flagError(ex);
                 a.close();
              }
           }
@@ -173,7 +173,7 @@ public class BasicIO implements Loadable, Function
           }
           catch (Exception ex)
           {
-             i.getScriptEnvironment().flagError("&readObject: " + ex.toString());
+             i.getScriptEnvironment().flagError(ex);
              a.close();
           }
        }
@@ -218,7 +218,7 @@ public class BasicIO implements Loadable, Function
              }
              catch (NoSuchAlgorithmException ex)
              {
-                i.getScriptEnvironment().flagError("&digest: no such algorithm: " + temp);
+                i.getScriptEnvironment().flagError(ex);
              }
           }
           else if (s.objectValue() != null && s.objectValue() instanceof MessageDigest)
@@ -239,7 +239,7 @@ public class BasicIO implements Loadable, Function
              }
              catch (NoSuchAlgorithmException ex)
              {
-                i.getScriptEnvironment().flagError("&digest: no such algorithm: " + algo);
+                i.getScriptEnvironment().flagError(ex);
              }
           }
 
@@ -453,7 +453,7 @@ public class BasicIO implements Loadable, Function
           }
           catch (Exception ex)
           {
-             i.getScriptEnvironment().flagError(ex.toString());
+             i.getScriptEnvironment().flagError(ex);
           }
 
           return SleepUtils.getScalar(parent_io);
@@ -845,7 +845,7 @@ public class BasicIO implements Loadable, Function
                         break;
 
                       default:
-                        env.flagError("unknown file pattern character: " + pattern.value);
+                        env.flagError(new Exception("unknown file pattern character: " + pattern.value));
                    }
                 }
                 catch (Exception ex) 
@@ -1047,7 +1047,7 @@ public class BasicIO implements Loadable, Function
                         }
                         catch (Exception ex)
                         {
-                           env.flagError("Could not serialize " + SleepUtils.describe(temp) + ": " + ex.toString());
+                           env.flagError(ex);
                            if (control != null) control.close();
                            return;
                         }

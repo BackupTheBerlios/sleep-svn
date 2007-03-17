@@ -30,6 +30,10 @@
   of the mill error handling.  (see how it all fits together now?)
 - added an &exit() function to force Sleep to stop processing within the
   current script environment.
+- updated sleep library to force functions to pass exceptions for consumption
+  by checkError() in lieu of strings.  This means the error messages are
+  somewhat less descriptive but on the other hand you can fully inspect them
+  for whatever additional details you want.
 
 2.1-beta 12  (11 Mar 07)
 ===========

@@ -30,7 +30,7 @@ public class SocketObject extends IOObject
       }
       catch (Exception ex)
       {
-         env.flagError(ex.toString());
+         env.flagError(ex);
       }
    }
 
@@ -108,7 +108,7 @@ public class SocketObject extends IOObject
       }
       catch (Exception ex)
       {
-         env.flagError(ex.toString());
+         env.flagError(ex);
       }
 
       try

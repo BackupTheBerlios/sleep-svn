@@ -62,7 +62,7 @@ public class FileSystemBridge implements Loadable, Function
                  return SleepUtils.getScalar(1);
               }
            }
-           catch (Exception ex) { i.getScriptEnvironment().flagError(ex.getMessage()); }
+           catch (Exception ex) { i.getScriptEnvironment().flagError(ex); }
         }
         else if (n.equals("&deleteFile"))
         {

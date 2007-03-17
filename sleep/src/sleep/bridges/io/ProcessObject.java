@@ -30,8 +30,7 @@ public class ProcessObject extends IOObject
       }
       catch (Exception ex)
       {
-         ex.printStackTrace();
-         env.flagError(ex.toString());
+         env.flagError(ex);
       }
    }
 
@@ -49,7 +48,7 @@ public class ProcessObject extends IOObject
       }
       catch (Exception ex)
       {
-         env.flagError("wait for process failed: " + ex);
+         env.flagError(ex);
       }
 
       return SleepUtils.getEmptyScalar();

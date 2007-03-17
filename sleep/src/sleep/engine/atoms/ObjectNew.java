@@ -149,12 +149,10 @@ public class ObjectNew extends Step
       }
       catch (InstantiationException iex)
       {
-         e.flagError("unable to instantiate abstract class " + name.getName());
          e.getScriptInstance().fireWarning("unable to instantiate abstract class " + name.getName(), getLineNumber());
       }
       catch (Exception iax)
       {
-         e.flagError(iax.toString());
          e.getScriptInstance().fireWarning(iax.toString(), getLineNumber());
       }
 
