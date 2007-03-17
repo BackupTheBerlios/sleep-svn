@@ -29,9 +29,9 @@ import sleep.runtime.*;
 
 public class CreateFrame extends Step
 {
-   public String toString()
+   public String toString(String prefix)
    {
-      return "[Create Frame]\n";
+      return prefix + "[Create Frame]\n";
    } 
 
    public Scalar evaluate(ScriptEnvironment e)

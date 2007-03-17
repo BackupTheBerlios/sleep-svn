@@ -36,9 +36,9 @@ public class Operate extends Step
        oper = o;
    }
 
-   public String toString()
+   public String toString(String prefix)
    {
-       return "[Operator]: "+oper+"\n";
+       return prefix + "[Operator]: "+oper+"\n";
    }
 
    //

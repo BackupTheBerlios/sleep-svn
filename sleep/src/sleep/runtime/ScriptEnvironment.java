@@ -100,25 +100,32 @@ public class ScriptEnvironment implements Serializable
     }
 
     /** stored error message... */
-    protected String errorMessage = null;
+    protected Object errorMessage = null;
 
     /** A utility for bridge writers to flag an error.  flags an error that script writers can then check for with checkError().  
         Currently used by the IO bridge openf, exec, and connect functions.  Major errors should bubble up as exceptions.  Small 
         stuff like being unable to open a certain file should be flagged this way. */
-    public void flagError(String message)
+    public void flagError(Object message)
     {
        errorMessage = message;
-
+        
        if ((getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_SHOW_WARNINGS) == ScriptInstance.DEBUG_SHOW_WARNINGS)
        {
-          showDebugMessage("checkError(): " + message);
+          if ((getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_THROW_WARNINGS) == ScriptInstance.DEBUG_THROW_WARNINGS)
+          {
+             flagReturn(checkError(), FLOW_CONTROL_THROW);
+          }
+          else
+          {
+             showDebugMessage("checkError(): " + message);
+          }
        }
     }
 
     /** once an error is checked using this function, it is cleared, the orignal error message is returned as well */
-    public String checkError()
+    public Scalar checkError()
     {
-       String temp  = errorMessage;
+       Scalar temp  = SleepUtils.getScalar(errorMessage);
        errorMessage = null;
        return temp;
     }

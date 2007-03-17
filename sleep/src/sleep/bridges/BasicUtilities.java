@@ -113,7 +113,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&systemProperties",    new systemProperties());
         temp.put("&use",     new f_use());
         temp.put("&include", temp.get("&use"));
-        temp.put("&checkError",    new checkError());
+        temp.put("&checkError", this);
 
         // closure / function handle type stuff
         temp.put("&lambda",    new lambda());
@@ -201,22 +201,6 @@ public class BasicUtilities implements Function, Loadable, Predicate
           return value.getHash() != null;
 
        return false;
-    }
-
-    private static class checkError implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance si, Stack l)
-       {
-          Scalar value = BridgeUtilities.getScalar(l);
-
-          String temp  = si.getScriptEnvironment().checkError();
-
-          if (temp == null)
-              return SleepUtils.getEmptyScalar();
-
-          value.setValue(SleepUtils.getScalar(temp));           
-          return value;
-       }
     }
 
     private static class f_use implements Function
@@ -396,7 +380,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
           Class atype = ObjectUtilities.convertDescriptionToClass(type);
 
           if (atype == null)
-              atype = ObjectUtilities.getArrayType(value, ObjectUtilities.OBJECT_TYPE);
+              atype = ObjectUtilities.getArrayType(value, Object.class);
 
           Scalar flat = BridgeUtilities.flattenArray(value, null);
 
@@ -797,6 +781,12 @@ public class BasicUtilities implements Function, Loadable, Predicate
           Scalar rv = c.callClosure(message, i, args);
           c.setVariables(old);
           return rv;
+       }
+       else if (n.equals("&checkError"))
+       {
+          Scalar value = BridgeUtilities.getScalar(l);
+          value.setValue(i.getScriptEnvironment().checkError());           
+          return value;
        }
        else if (n.equals("&profile"))
        {

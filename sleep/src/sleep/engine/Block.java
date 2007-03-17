@@ -183,6 +183,7 @@ public class Block implements Serializable
         {
            Block doit = environment.getExceptionHandler();
            doit.evaluate(environment);
+           environment.getScriptInstance().clearStackTrace();
         }
     }
 
@@ -264,7 +265,20 @@ public class Block implements Serializable
               }
               else if (environment.isThrownValue())
               {
-                 handleException(environment);
+                 if (!environment.isExceptionHandlerInstalled())
+                 {
+                    /* if no handler is installed we will fire a warning and then flag a return of $null so at least the
+                       current function fails for not installing a handler */
+
+                    environment.getScriptInstance().fireWarning("Uncaught exception: " + environment.getExceptionMessage(), temp.getLineNumber());
+                    environment.getScriptInstance().clearStackTrace();
+                    environment.flagReturn(null, ScriptEnvironment.FLOW_CONTROL_RETURN); 
+                 }
+                 else
+                 {
+                    handleException(environment);
+                 }
+
                  environment.popSource();
                  return environment.getReturnValue(); /* we do this because the exception will get cleared and after that
                                                          there may be a return value */

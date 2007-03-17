@@ -50,8 +50,7 @@ public class Assign extends Step
       temp.append(prefix);
       temp.append("[Assign]:\n");
      
-      temp.append(prefix);
-      temp.append(variable.toString("   "));
+      temp.append(variable.toString(prefix + "   "));
 
       return temp.toString();
    }

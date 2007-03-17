@@ -32,9 +32,9 @@ public class CreateClosure extends Step
 {
    Block  block = null;
 
-   public String toString()
+   public String toString(String prefix)
    {
-      return "[Create Closure]\n" + block.toString("   ");
+      return prefix + "[Create Closure]\n" + block.toString(prefix + "   ");
    }
 
    public CreateClosure(Block _block)

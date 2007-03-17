@@ -31,9 +31,9 @@ public class SValue extends Step
 {
    Scalar value;
 
-   public String toString()
+   public String toString(String prefix)
    {
-      return "[Scalar]: "+value+"\n";
+      return prefix + "[Scalar]: "+value+"\n";
    }
   
    public SValue(Scalar v)

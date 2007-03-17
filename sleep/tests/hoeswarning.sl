@@ -5,7 +5,7 @@ $long  = [Long    valueOf: "4782378478324474fjjsdfjsdjkfjk3"];
 
 if (checkError($error))
 {
-   println("Trouble converting long: $error");
+   println("Trouble converting long: $error from: " . [$error getClass]);
 }
 
 #

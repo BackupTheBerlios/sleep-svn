@@ -113,6 +113,12 @@ public class ObjectNew extends Step
 
                      e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
                   }
+                  catch (InvocationTargetException ite)
+                  {
+                     ObjectUtilities.handleExceptionFromJava(ite.getCause(), e, theConstructor + "", getLineNumber());
+                     trace.append(" - FAILED!");
+                     e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
+                  }
                   catch (RuntimeException rex)
                   {
                      trace.append(" - FAILED!");
@@ -134,15 +140,7 @@ public class ObjectNew extends Step
       }
       catch (InvocationTargetException ite)
       {
-         Throwable yex = ite;
- 
-         while (yex.getCause() != null)
-         {
-            yex = yex.getCause();
-         }
-
-         e.flagError(yex.toString());
-         e.getScriptInstance().fireWarning(yex.toString(), getLineNumber());
+         ObjectUtilities.handleExceptionFromJava(ite.getCause(), e, theConstructor + "", getLineNumber());
       }
       catch (IllegalArgumentException aex)
       {

@@ -1,5 +1,34 @@
 2.1-beta 13
 ===========
+- trace debug option now reports the parameters for a HOES call even if an
+  exception is thrown.
+- psuedo objects now make an attempt to convert the returned scalar to the
+  java type expected by the method.  (oops, oversight on my part :))
+- Sleep's flag error function now accepts and returns an Object value. This
+  has big implications as checkError($error) can now return the original
+  error causing Object (i.e. a descendent of Throwable) that can be 
+  manipulated with HOES.  But oh wait... there is more...
+- added a try/catch blocks to Sleep.  try/catch blocks are used to catch
+  exceptions thrown by sleep scripts and the sleep interpreter.  the
+  syntax is:
+
+  try { ... } catch $varname { ... }
+
+  try try/catch system works as you would expect, if an exception is thrown
+  Sleep will jump to the top level try and execute the corresponding catch
+  block filling in $varname with the exception that was thrown.
+- added a getStackTrace() method that returns an array of the sleep stack
+  trace caused by the latest exception.
+- added a throw keyword that works quite similiarly to return except it
+  throws a message (or exception).  Any arbitrary scalar can be used with
+  throw.
+- added a new debug option (DEBUG_THROW_WARNINGS) to force anything flagged 
+  for retrieval via checkError(...) to be thrown as an exception within Sleep.  
+  The number is 34.  This is put in place to prevent breaking backwards
+  compatability with older scripts that rely on the checkError() scheme. 
+  With this option scripters can choose to use try/catch blocks for all run
+  of the mill error handling.  (see how it all fits together now?)
+
 
 2.1-beta 12  (11 Mar 07)
 ===========

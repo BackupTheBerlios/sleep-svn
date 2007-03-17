@@ -38,15 +38,11 @@ public class Index extends Step
       StringBuffer temp = new StringBuffer();
 
       temp.append(prefix);
-      temp.append("[SCALAR INDEX]: "+value+"\n");
+      temp.append("[Scalar index]: "+value+"\n");
 
       if (index != null)
       {
-         temp.append(prefix);
-         temp.append("   [INDEX]:     \n");
-
-         temp.append(prefix);
-         temp.append(index.toString("      "));
+         temp.append(index.toString(prefix + "   "));
       }
 
       return temp.toString();

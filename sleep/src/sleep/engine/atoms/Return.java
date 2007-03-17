@@ -37,14 +37,19 @@ public class Return extends Step
       return_type = type;
    }
 
-   public String toString()
+   public String toString(String prefix)
    {
-      return "[Return]: " + return_type + " \n";
+      return prefix + "[Return]: " + return_type + " \n";
    }
-
+  
    public Scalar evaluate(ScriptEnvironment e)
    {
-      if (return_type == ScriptEnvironment.FLOW_CONTROL_BREAK)
+      if (return_type == ScriptEnvironment.FLOW_CONTROL_THROW)
+      {
+         e.getScriptInstance().recordStackFrame("<origin of exception>", getLineNumber());
+         e.flagReturn((Scalar)e.getCurrentFrame().pop(), ScriptEnvironment.FLOW_CONTROL_THROW);
+      }
+      else if (return_type == ScriptEnvironment.FLOW_CONTROL_BREAK)
       {
          e.flagReturn(null, return_type);
       }

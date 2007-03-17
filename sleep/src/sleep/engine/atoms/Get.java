@@ -36,9 +36,9 @@ public class Get extends Step
       value = v;
    }
 
-   public String toString()
+   public String toString(String prefix)
    {
-      return "[Get Item]: "+value+"\n";
+      return prefix + "[Get Item]: "+value+"\n";
    }
 
    public Scalar evaluate(ScriptEnvironment e)

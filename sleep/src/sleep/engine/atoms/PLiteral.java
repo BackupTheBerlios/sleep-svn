@@ -26,7 +26,7 @@ public class PLiteral extends Step
          switch (f.type)
          {
             case STRING_FRAGMENT:
-              temp.append(prefix + "   [Element]: " + f.element + "\n");
+              temp.append(prefix + "   [String]: " + f.element + "\n");
               break;
             case ALIGN_FRAGMENT:
               temp.append(prefix + "   [Align Next Value]\n");
@@ -40,11 +40,6 @@ public class PLiteral extends Step
       }
 
       return temp.toString();
-   }
-
-   public String toString()
-   {
-       return toString("");
    }
 
    public PLiteral(String _evaluator)

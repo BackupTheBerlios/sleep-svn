@@ -37,9 +37,9 @@ public class Call extends Step
       function = f;
    }
 
-   public String toString()
+   public String toString(String prefix)
    {
-      return "[Function Call]: "+function+"\n";
+      return prefix + "[Function Call]: "+function+"\n";
    }
   
    // Pre Condition:
@@ -79,7 +79,11 @@ public class Call extends Step
                    stat = System.currentTimeMillis() - stat;
                    e.getScriptInstance().collect(function, getLineNumber(), stat); /* add to the profiler, plz */
                 
-                   if (SleepUtils.isEmptyScalar(temp))
+                   if (e.isThrownValue())
+                   {
+                      e.getScriptInstance().fireWarning(message + " - FAILED!", getLineNumber(), true);
+                   }
+                   else if (SleepUtils.isEmptyScalar(temp))
                    {
                       e.getScriptInstance().fireWarning(message, getLineNumber(), true);
                    }
@@ -100,6 +104,11 @@ public class Call extends Step
          {
              temp = callme.evaluate(function, e.getScriptInstance(), e.getCurrentFrame());
              e.clearReturn();
+         }
+
+         if (e.isThrownValue())
+         {
+             e.getScriptInstance().recordStackFrame(function + "()", getLineNumber());
          }
       }
       else

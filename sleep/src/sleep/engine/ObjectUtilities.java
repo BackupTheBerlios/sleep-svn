@@ -43,9 +43,6 @@ public class ObjectUtilities
    private static Class LONG_SCALAR;
    private static Class OBJECT_SCALAR;
 
-   /** various primitives... doo doo doo */
-   public static Class BOOLEAN_TYPE, BYTE_TYPE, CHARACTER_TYPE, DOUBLE_TYPE, FLOAT_TYPE, INTEGER_TYPE, LONG_TYPE, STRING_TYPE, OBJECT_TYPE;
-
    static
    {
       STRING_SCALAR = sleep.engine.types.StringValue.class;
@@ -53,16 +50,6 @@ public class ObjectUtilities
       DOUBLE_SCALAR = sleep.engine.types.DoubleValue.class;
       LONG_SCALAR   = sleep.engine.types.LongValue.class;
       OBJECT_SCALAR = sleep.engine.types.ObjectValue.class;
-
-      BOOLEAN_TYPE    = java.lang.Boolean.class;
-      BYTE_TYPE       = java.lang.Byte.class;
-      CHARACTER_TYPE  = java.lang.Character.class;
-      DOUBLE_TYPE     = java.lang.Double.class;
-      FLOAT_TYPE      = java.lang.Float.class;
-      INTEGER_TYPE    = java.lang.Integer.class;
-      LONG_TYPE       = java.lang.Long.class;
-      OBJECT_TYPE     = java.lang.Object.class;
-      STRING_TYPE     = java.lang.String.class;
    }
 
    /** when looking for a Java method that matches the sleep args, we use a Yes match immediately */
@@ -128,7 +115,7 @@ public class ObjectUtilities
                compType = compType.getComponentType();
             }
 
-            if (compType == OBJECT_TYPE)
+            if (compType == Object.class)
             {
                return ARG_MATCH_MAYBE;
             }
@@ -219,12 +206,12 @@ public class ObjectUtilities
             return ARG_MATCH_NO;
          }
       }
-      else if (check == STRING_TYPE)
+      else if (check == String.class)
       {
          Class stemp = scalar.getValue().getClass();
          return (stemp == STRING_SCALAR) ? ARG_MATCH_YES : ARG_MATCH_MAYBE;
       }
-      else if (check == OBJECT_TYPE)
+      else if (check == Object.class)
       {
          return ARG_MATCH_MAYBE; /* we're vying for anything and this will match anything */
       }
@@ -329,7 +316,7 @@ public class ObjectUtilities
 
    public static Object buildArgument(Class type, Scalar value, ScriptInstance script)
    {
-      if (type == STRING_TYPE)
+      if (type == String.class)
       {
          return value.toString();
       }
@@ -476,7 +463,7 @@ public class ObjectUtilities
 
       if (check.isArray())
       {
-         if (check.getComponentType() == Byte.TYPE || check.getComponentType() == BYTE_TYPE)
+         if (check.getComponentType() == Byte.TYPE || check.getComponentType() == Byte.class)
          {
             return SleepUtils.getScalar((byte[])value);            
          }
@@ -499,37 +486,37 @@ public class ObjectUtilities
             check = normalizePrimitive(check); /* just in case, shouldn't be needed typically */
          }
 
-         if (check == BOOLEAN_TYPE)
+         if (check == Boolean.class)
          {
             return SleepUtils.getScalar(  ((Boolean)value).booleanValue() ? 1 : 0 );
          }
-         else if (check == BYTE_TYPE)
+         else if (check == Byte.class)
          {
             return SleepUtils.getScalar(  (int)( ((Byte)value).byteValue() )  );
          }
-         else if (check == CHARACTER_TYPE)
+         else if (check == Character.class)
          {
             return SleepUtils.getScalar(  value.toString()  );
          }
-         else if (check == DOUBLE_TYPE)
+         else if (check == Double.class)
          {
             return SleepUtils.getScalar(  ((Double)value).doubleValue()   );
          }
-         else if (check == FLOAT_TYPE)
+         else if (check == Float.class)
          {
             return SleepUtils.getScalar(  (double)( ((Float)value).floatValue() )  );
          }
-         else if (check == INTEGER_TYPE)
+         else if (check == Integer.class)
          {
             return SleepUtils.getScalar(  ((Integer)value).intValue()   );
          }
-         else if (check == LONG_TYPE)
+         else if (check == Long.class)
          {
             return SleepUtils.getScalar(  ((Long)value).longValue()   );
          }
       }
 
-      if (check == STRING_TYPE)
+      if (check == String.class)
       {
          return SleepUtils.getScalar(value.toString());
       }
@@ -557,7 +544,7 @@ public class ObjectUtilities
          script      = _script;
       }
 
-      public Object invoke(Object proxy, Method method, Object[] args)
+      public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
       {
          Stack temp = new Stack();
 
@@ -569,11 +556,29 @@ public class ObjectUtilities
             }
          }
 
+         script.getScriptEnvironment().installExceptionHandler(null, null, null);
          Scalar value = func.evaluate(method.getName(), script, temp); 
+         script.getScriptEnvironment().popExceptionContext();
          script.getScriptEnvironment().clearReturn();
+ 
+         if (script.getScriptEnvironment().isThrownValue())
+         {
+            script.recordStackFrame(func + " as " + method.toString(), "<internal>", 0);
+
+            Object exvalue = (script.getScriptEnvironment().getExceptionMessage()).objectValue();
+           
+            if (exvalue instanceof Throwable)
+            {
+               throw (Throwable)exvalue;
+            }
+            else
+            {
+               throw new RuntimeException(exvalue.toString());
+            }
+         }        
 
          if (value != null)
-            return value.objectValue();
+            return buildArgument(method.getReturnType(), value, script);
 
          return null;
       }
@@ -582,7 +587,7 @@ public class ObjectUtilities
    /** Determines the primitive type of the specified array.  Primitive Sleep values (int, long, double) will return the appropriate Number.TYPE class.  This is an important distinction as Double.TYPE != new Double().getClass() */
    public static Class getArrayType(Scalar value, Class defaultc)
    {
-      if (value.getArray() != null && value.getArray().size() > 0 && (defaultc == null || defaultc == sleep.engine.ObjectUtilities.OBJECT_TYPE))
+      if (value.getArray() != null && value.getArray().size() > 0 && (defaultc == null || defaultc == Object.class))
       {
           for (int x = 0; x < value.getArray().size(); x++)
           {
@@ -614,5 +619,20 @@ public class ObjectUtilities
       }
 
       return defaultc;
+   }
+
+   /** Standard method to handle a Java exception from a HOES call.  Basically this places the exception into Sleep's 
+       throw mechanism and collects the stack frame. */
+   public static void handleExceptionFromJava(Throwable ex, ScriptEnvironment env, String description, int lineNumber)
+   {
+      if (ex != null)
+      {                  
+         env.flagError(ex);
+ 
+         if (env.isThrownValue() && description != null && description.length() > 0)
+         {
+            env.getScriptInstance().recordStackFrame(description, lineNumber);
+         }
+      }
    }
 }

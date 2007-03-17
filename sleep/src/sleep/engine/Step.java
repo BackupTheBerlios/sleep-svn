@@ -78,7 +78,7 @@ public abstract class Step implements Serializable
 
    public String toString()
    {
-      return "[null op]\n";
+      return toString("");
    }
 }
 

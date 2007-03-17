@@ -536,7 +536,8 @@ public class BasicStrings implements Loadable
            locals.push(b);
            locals.push(a);
 
-           Scalar temp = SleepUtils.runCode(func, "&sort", script, locals);
+           Scalar temp = func.evaluate("&sort", script, locals);
+           script.getScriptEnvironment().clearReturn();
 
            return temp.intValue();
         }

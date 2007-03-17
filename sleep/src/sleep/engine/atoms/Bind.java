@@ -44,13 +44,13 @@ public class Bind extends Step
       temp.append("   [Name]:       \n");
 
       temp.append(prefix);
-      temp.append(name.toString("      "));
+      temp.append(name.toString(prefix + "      "));
 
       temp.append(prefix);
       temp.append("   [Code]:       \n");
 
       temp.append(prefix);
-      temp.append(code.toString("      "));
+      temp.append(code.toString(prefix + "      "));
 
       return temp.toString();
    }

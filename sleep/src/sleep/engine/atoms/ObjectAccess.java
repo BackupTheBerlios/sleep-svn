@@ -157,6 +157,11 @@ public class ObjectAccess extends Step
          e.clearReturn(); // this has to be done or else bad things will happen when the closure returns stuff
          // ^-- evaluate, is this really necessary or are closures smart enough to clear the return themselves? // RSM
 
+         if (e.isThrownValue())
+         {
+            e.getScriptInstance().recordStackFrame(scalar.toString(), getLineNumber());
+         }
+         
          e.FrameResult(result);
          return null;
       }
@@ -235,6 +240,12 @@ public class ObjectAccess extends Step
 
                      e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
                   }
+                  catch (InvocationTargetException ite)
+                  {
+                     ObjectUtilities.handleExceptionFromJava(ite.getCause(), e, theMethod + "", getLineNumber());
+                     trace.append(" - FAILED!");
+                     e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
+                  }
                   catch (RuntimeException rex)
                   {
                      trace.append(" - FAILED!");
@@ -271,15 +282,7 @@ public class ObjectAccess extends Step
       }
       catch (InvocationTargetException ite)
       {
-         Throwable yex = ite;
-
-         while (yex.getCause() != null)
-         {
-            yex = yex.getCause();
-         }
-
-         e.flagError(yex.toString());
-         e.getScriptInstance().fireWarning(yex.toString(), getLineNumber());
+         ObjectUtilities.handleExceptionFromJava(ite.getCause(), e, theMethod + "", getLineNumber());
       }
       catch (IllegalArgumentException aex)
       {

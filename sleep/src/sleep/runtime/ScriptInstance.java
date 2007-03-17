@@ -90,8 +90,12 @@ public class ScriptInstance implements Serializable, Runnable
         trace messages... */
     protected static final int DEBUG_TRACE_SUPPRESS = 16;
 
+    /** throw exceptions for anything flagged for retrieval with checkError() */
+    public static final int DEBUG_THROW_WARNINGS = 2 | 32;
+
     /** track all of the flagged debug options for this script (set to DEBUG_SHOW_ERRORS by default) */
     protected int debug = DEBUG_SHOW_ERRORS;
+
 
     /** set the debug flags for this script */
     public void setDebugFlags(int options)
@@ -182,11 +186,7 @@ public class ScriptInstance implements Serializable, Runnable
     /** Executes this script, should be done first thing once a script is loaded */
     public Scalar runScript()
     {
-        script.evaluate(getScriptEnvironment());
-        Scalar temp = getScriptEnvironment().getReturnValue();
-
-        getScriptEnvironment().clearReturn();
-        return temp;
+        return SleepUtils.runCode(script, getScriptEnvironment());
     }
  
     /** A container for Sleep strack trace elements. */
@@ -203,10 +203,8 @@ public class ScriptInstance implements Serializable, Runnable
     }
  
     /** Records a stack frame into this environments stack trace tracker thingie. */
-    public void recordStackFrame(String description, int lineNumber)
+    public void recordStackFrame(String description, String source, int lineNumber)
     {
-       if (description == null) return;
-
        List strace = (List)getScriptEnvironment().getEnvironment().get("%strace%");
 
        if (strace == null) 
@@ -216,21 +214,24 @@ public class ScriptInstance implements Serializable, Runnable
        }
 
        SleepStackElement stat = new SleepStackElement();
-       stat.sourcefile  = getScriptEnvironment().getCurrentSource();
+       stat.sourcefile  = source;
        stat.description = description;
        stat.lineNumber  = lineNumber;
 
        strace.add(0, stat);
     }
 
-    /** Removes the top element of the stack trace */
-    public void popStackFrame()
+    /** Records a stack frame into this environments stack trace tracker thingie. */
+    public void recordStackFrame(String description, int lineNumber)
     {
-       List strace = (List)getScriptEnvironment().getEnvironment().get("%strace%");
-       if (strace != null) 
-       {
-          strace.clear();
-       }
+       recordStackFrame(description, getScriptEnvironment().getCurrentSource(), lineNumber);
+    }
+
+    /** Removes the top element of the stack trace */
+    public void clearStackTrace()
+    {
+       List strace = new LinkedList();
+       getScriptEnvironment().getEnvironment().put("%strace%", strace);
     }
 
     /** Returns the last stack trace.  Each element of the list is a ScriptInstance.SleepStackElement object.  

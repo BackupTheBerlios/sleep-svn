@@ -51,7 +51,7 @@ foreach $var (@files)
       }  
       else
       {
-         print ".";
+         print "$var \n";
       }
    }
 }
