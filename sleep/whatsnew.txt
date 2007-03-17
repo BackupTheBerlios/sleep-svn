@@ -34,6 +34,7 @@
   by checkError() in lieu of strings.  This means the error messages are
   somewhat less descriptive but on the other hand you can fully inspect them
   for whatever additional details you want.
+- fixed a bug preventing use of increment/decrement ops in expression context
 
 2.1-beta 12  (11 Mar 07)
 ===========

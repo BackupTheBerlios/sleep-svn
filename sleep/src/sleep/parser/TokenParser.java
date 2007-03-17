@@ -396,6 +396,19 @@ public class TokenParser implements ParserConstants
             myToken.setType(IDEA_FUNC);
             myToken.add(tokens[x]);
          }
+         // increment hack
+         else if (Checkers.isIncrementHack(strings[x]))
+         {
+            myToken.setType(HACK_INC);
+            myToken.add(tokens[x]);
+         }
+         // decrement hack
+         else if (Checkers.isDecrementHack(strings[x]))
+         {
+            myToken.setType(HACK_DEC);
+            myToken.add(tokens[x]);
+         }
+         // a normal block
          else if (Checkers.isVariable(strings[x]))
          {
             myToken.setType(VALUE_SCALAR);
