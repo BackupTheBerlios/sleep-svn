@@ -622,6 +622,82 @@ test($fluffy);</pre>
 <p>The return command causes the current subroutine to stop executing and return to where it started.  You can specify a scalar 
 with return that will be the value of the function call.</p>
 
+<h3><a name="throw"></a>Throwing Errors</h3>
+
+<p>Sometimes an error or condition occurs that you don't want to handle in your subroutine but expect someone would
+want to handle it higher up in the call stack.  This type of thing is referred to as an exceptional condition and 
+Sleep has ample support for "exception" handling.</p>
+
+<p>To notify Sleep that an exception has occured, use the throw command.  The throw command works similiarly to return
+in that it expects you to specify a scalar that will be passed to an exception handler later on.  It is worth noteing
+that if the thrown value evaluates to <var>$null</var> then it will not be thrown.</p>
+
+<pre>sub multiplyBy3
+{
+   if (!-isnumber $1)
+   {
+      throw "&multipyBy3( $+ $1 $+ ) requires a number!";
+   }
+
+   return $1 * 3;
+}</pre>
+
+<p>The subroutine above checks if its argument is a number or not.  If someone where to call <code>multiplyBy3("hi")</code>
+then this function would throw the string "&multiplyBy3(hi) requires a number!" up the call stack.   This string would
+bubble up through the Sleep call stack.  The first part of the call stack to have a handler to catch the exception will 
+get to handle it.  If there are no error handlers in place then a warning message will be printed: 
+"Warning: Uncaught exception: &amp;multiplyBy3(hi) requires a number! at 5".  An uncaught exception will cause the 
+current script to stop executing.</p>
+
+<p>In general, an uncaught exception will be swallowed by Sleep.  There is one special case where this is not true and 
+that is covered under <a href="#interfaces">Sleep Interfaces</a> later in this manual.</p>
+
+<p>So with all of this in mind, hoes does one catch these exception errors?  The answer is to enclose executing code
+into a try / catch block.</p>
+
+<pre>try
+{
+   multiplyBy3("hi");
+}
+catch $message
+{
+   println("Failed to multiply by 3: $message");
+   printAll(getStackTrace());
+}</pre>
+
+<p>The code above will attempt the multiplyBy3 within the try block.  The catch block immediately following the try
+block will catch any error messages that bubble up while the try block is part of the call stack.  This means that if
+<code>&amp;multiplyBy3</code> calls a function that calls another function that throws an exception - your catch block will still work
+for catching that message.</p>
+
+<p>In the example above <var>$message</var> is specified as the place to dump the exception message to.  When an 
+exception handler is invoked, the variable specified after the catch keyword will be populated with the exception
+message.</p>
+
+<p>The function <code>&getStackTrace()</code> is a special function to describe where in your script the thrown message
+originated from and which other functions were executed before leading to the thrown message.</p>
+
+<h4><a name="choice"></a>Choice in Error Handling</h4>
+
+<p>Sleep does not use this mechanism for flagging and reporting errors.  In general errors are made available with 
+<code>&checkError($error)</code>.  This function will return the last reported error message flagged by Sleep or Java.
+If you prefer to handle these types of errors with the try catch mechanism then you have two options:  
+
+<p>You can throw individual errors yourself.  Simply inserting <code>throw checkError($error);</code> in certain places
+will cause the error to be thrown if there is one.  If there is no error, <code>&amp;checkError($error)</code> will
+return <var>$null</var>.  If this is the case then the throw command will not process it.  If there is an error then
+the throw command will throw it and it will bubble up itself.</p>
+
+<p>The other option is to enable the Sleep debug option to cause all errors to be thrown.  This option can be enabled
+by calling: <code>debug(34)</code>.  With this debug option in place anything that would have been available to 
+<code>&amp;checkError()</code> will be automatically converted into an exception and thrown.</p>
+
+<p>The <code>&amp;checkError()</code> mechanism for handling errors is simple, requires little code on your part to
+accomodate, and has support for automatic reporting through Sleep's debug flags.  The try/catch/throw mechanism requires
+writing a little bit more code but the ability to retrieve the full stack trace that created the error condition can
+be valuable for debugging.  Ultimately the choice is yours.  You can handle errors the Sleep <code>&amp;checkError()</code> 
+way, the Java try/catch way, or somewhere in between.</p>
+
 <h3>Arrays and Hashes as Arguments</h3>
 
 <p>Arrays and Hashes can be passed to subroutines as arguments.</p>
@@ -1502,7 +1578,7 @@ $output   = [new XMLOutputter: [Format getPrettyFormat]];
 <p>Sleep will try to find the specified jar file (i.e. jdom.jar) using the Sleep classpath.  This value is the
 sleep.classpath accessible as systemProperties()["sleep.classpath"].</p>
 
-<h3>Sleep Interfaces</h3>
+<h3><a name="interfaces"></a>Sleep Interfaces</h3>
 
 <p>A neat feature of HOES is how interfaces can be quickly and easily created and passed to Java objects.  A Java interface
 defines methods that a Java class should implement to facilitate interacting with certain objects.  </p>
@@ -1544,6 +1620,8 @@ specified as a 0th parameter.  The parameters 1..n are the actual parameters pas
 only message passed to ActionListener interfaces is the actionPerformed message.  The button_pressed subroutine is passed as a 
 closure parameter in this line: <code>[$button addActionListener:&button_pressed];</code>.</p>
 
+<p>Any uncaught exceptions originating from a Sleep script will bubble up to the Java caller of the Sleep interface.</p>
+
 <h3>Scalar Conversions</h3>
 
 <p>Sleep automatically converts scalar data into the appropriate Java types when necessary.  Sleep strings map easily to Java 
@@ -1575,7 +1653,10 @@ is converted into a java.util.Map if a function requires such an argument.</p>
 
 <h3>Catching Exceptions</h3>
 
-<p>Often times Java API's acessed via HOES can throw an "exception".  Exceptions are a mechanism used to notify programs that some type of error has occured.  You can check for an exception using the <code>checkError($scalar)</code> function.</p>
+<p>Often times Java API's acessed via HOES can throw an "exception".  Exceptions are a mechanism used to notify programs that some type of error has occured.  You can check for an exception using the <code>checkError($scalar)</code> function.  The value returned by checkError() will be the actual Exception object.  This object can be used within object expressions.</p>
+
+<p>If you prefer a more Java-esque method of handling exceptions, Sleep does have a <a href="#throw">try/catch/throw</a> mechanism that can
+be utilized.</p>
 
 <h2><a name="10a">Sleep Closures</a></h2>
 
@@ -2630,7 +2711,7 @@ n-m substrings will be returned.</td>
  <tr>
   <td>$</td>
   <td>checkError([$scalar])</td>
-  <td>returns the last error message to occur.  if a $scalar is specified : $scalar is set to the error string.  Once chekError() is called the error message is cleared.  Functions that might flag an error will be documented.</td>
+  <td>returns the last error message to occur.  if a $scalar is specified : $scalar is set to the error string.  Once chekError() is called the error message is cleared.  Functions that might flag an error will be documented.  Any type of Scalar can be returned by checkError(). i.e. often times the error message might be a Java exception Object.</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2646,12 +2727,17 @@ n-m substrings will be returned.</td>
  <tr>
   <td>$</td>
   <td>debug(level)</td>
-  <td>explicitly enables the specified debug level for this script: 0 - no debugging; 1 - show only critical errors (default); 2 - show all warnings; 4 - show first time use of non-declared variables; 8 - trace all function calls (collects profiler statistics) or 24 - trace only for the purpose of collecting profiler statistics.  any of the levels can be |'d together.</td>
+  <td>explicitly enables the specified debug level for this script: 0 - no debugging; 1 - show only critical errors (default); 2 - show all messages flagged for retrieval with checkError(); 4 - show first time use of non-declared variables; 8 - trace all function calls (collects profiler statistics); 24 - trace only for the purpose of collecting profiler statistics; 34 - "throw" all messages flagged for use with checkError() - this allows use of try/catch to deal with errors.  any of the levels can be |'d together.</td>
  </tr>
  <tr>
   <td>$</td>
   <td width="240">eval("code")</td>
   <td>parses and evaluates the specified code returning the return value of the code.  syntax errors can be obtained with &amp;checkError()</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>exit()</td>
+  <td>causes the currently executing script context to exit.</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2662,6 +2748,12 @@ n-m substrings will be returned.</td>
   <td>$</td>
   <td>function('&func_name')</td>
   <td>obtains the function handle for the function bound to the specified string</td>
+ </tr>
+ <tr>
+  <td>@</td>
+  <td>getStackTrace()</td>
+  <td>in the context of a catch block (try/catch handlers) this function will return a trace of the Sleep call stack
+      that caused the exceptional condition.  Returns an empty array otherwise.</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2747,6 +2839,11 @@ n-m substrings will be returned.</td>
   <td></td>
   <td>use("/path/to/file.jar", "Loadable")</td>
   <td>loads the specified class into the current script environment.  The sleep.interfaces.Loadable class is loaded from the specified jar file.  Use to import sleep modules and the like.</td>
+ </tr>
+ <tr>
+  <td></td>
+  <td>watch('$x $y')</td>
+  <td>A useful debug function for tracking variable changes.  parses the specified string and declares all variables in the string as "watch" variables.  Any attempt to update the container *referenced* by a watch variable will print out a warning.</td>
  </tr>
 </table>
 
