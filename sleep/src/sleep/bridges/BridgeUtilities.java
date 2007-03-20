@@ -136,10 +136,11 @@ public class BridgeUtilities
    /** grab a sleep array, if the stack is empty a scalar array with no elements will be returned. */
    public static ScalarArray getArray(Stack arguments)
    {
-      if (arguments.isEmpty())
+      Scalar s = getScalar(arguments);
+      if (s.getArray() == null)
          return SleepUtils.getArrayScalar().getArray();
 
-      return ((Scalar)arguments.pop()).getArray();
+      return s.getArray();
    }
 
    /** grab a sleep hash, if the stack is empty a scalar hash with no members will be returned. */
@@ -297,5 +298,12 @@ public class BridgeUtilities
       }
 
       return toValue;
+   }
+
+   /** normalizes the index value based on the specified length */
+   public static final int normalize(int value, int length)
+   {
+      if (length == 0) { return 0; }
+      return (value < 0 ? value + length : value) % length;
    }
 }

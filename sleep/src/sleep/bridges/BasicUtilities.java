@@ -68,6 +68,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&add",   this);      // &pop(@array) = $scalar
         temp.put("&flatten",   this);      // &pop(@array) = $scalar
         temp.put("&clear", this);
+        temp.put("&splice", this);
         temp.put("&subarray", this);
         temp.put("&copy",  new copy());
  
@@ -579,7 +580,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
           ScalarArray value = BridgeUtilities.getArray(l);
-          return value.remove(BridgeUtilities.getInt(l, 0));
+          return value.remove(BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.size()));
        }
     }
 
@@ -832,6 +833,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
           return SleepUtils.getScalar(i.getDebugFlags());
        }
 
+       /** Start of many array functions */
+
        Scalar value = BridgeUtilities.getScalar(l);
 
        if (n.equals("&push"))
@@ -895,8 +898,31 @@ public class BasicUtilities implements Function, Loadable, Predicate
        else if (n.equals("&add") && value.getArray() != null)
        {
           Scalar item = BridgeUtilities.getScalar(l);
-          int index = BridgeUtilities.getInt(l, 0);  
+          int index   = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.getArray().size());
           return value.getArray().add(SleepUtils.getScalar(item), index);
+       }
+       else if (n.equals("&splice") && value.getArray() != null)
+       {
+          // splice(@old, @stuff, start, n to remove)
+          ScalarArray insert = BridgeUtilities.getArray(l);
+          int         start  = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.getArray().size());
+          int         torem  = BridgeUtilities.getInt(l, insert.size()) + start;
+
+          for (int z = start; z < torem; z++)
+          {
+             value.getArray().remove(start);
+          }
+ 
+          int count = 0;
+          Iterator j = insert.scalarIterator();
+          while (j.hasNext())
+          {
+             Scalar ins = (Scalar)j.next();
+             value.getArray().add(SleepUtils.getScalar(ins), start + count);
+             count++;
+          }
+
+          return value;
        }
        else if (n.equals("&pop"))
        {
@@ -924,7 +950,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
        else if (n.equals("&search") && value.getArray() != null)
        {
           SleepClosure f = BridgeUtilities.getFunction(l, i); 
-          int start      = BridgeUtilities.getInt(l, 0);
+          int start      = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.getArray().size());
           int count      = 0;
           Stack locals   = new Stack();
 
@@ -990,20 +1016,12 @@ public class BasicUtilities implements Function, Loadable, Predicate
        }
        else if (n.equals("&subarray"))
        {
-          if (value.getArray() != null)
-          {
-             int begin = BridgeUtilities.getInt(l, 0);
-             int end   = BridgeUtilities.getInt(l, value.getArray().size());
-
-             Scalar rv = SleepUtils.getArrayScalar();
-             while (begin < end)
-             {
-                rv.getArray().push(SleepUtils.getScalar(value.getArray().getAt(begin)));
-                begin++;
-             }
-
-             return rv;
-          }
+          return subarray(value, BridgeUtilities.getInt(l, 0), BridgeUtilities.getInt(l, value.getArray().size()));
+       }
+       else if (n.equals("&splice"))
+       {
+          // splice(@old, @new, start, nchars)
+          
        }
        else if (n.equals("&remove"))
        {
@@ -1129,5 +1147,33 @@ public class BasicUtilities implements Function, Loadable, Predicate
        }
 
        return SleepUtils.getEmptyScalar();
+    }
+
+    private static final Scalar subarray(Scalar value, int _start, int _end)
+    { 
+       Scalar rv = SleepUtils.getArrayScalar();
+
+       if (value.getArray() != null)
+       {
+          int length = value.getArray().size();
+          int start, end;
+
+          start = (_start < 0 ? _start + length : _start) % length;
+          end   = (_end < 0 ? _end + length : _end);
+          end   = end <= length ? end : length;
+
+          if (start >= end)
+          {
+             throw new IllegalArgumentException("illegal subarray(" + SleepUtils.describe(value) + ", " + _start + " -> " + start + ", " + _end + " -> " + end + ")");
+          }
+  
+          while (start < end)
+          {
+             rv.getArray().push(SleepUtils.getScalar(value.getArray().getAt(start)));
+             start++;
+          }
+       }
+
+       return rv;
     }
 }

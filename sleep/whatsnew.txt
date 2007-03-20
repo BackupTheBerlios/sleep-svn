@@ -1,3 +1,13 @@
+2.1-beta 14
+===========
+- added splice(@array, @insertme, position, n) for modifying an array.  
+  works a lot like replaceAt, i.e. up to n elements at the specified
+  position are removed and the elements of @insertme are put in their
+  place.  @array is modified in place.
+- array functions now normalize negative parameters as offsets from the
+  total length of the array.  updated functions include:
+  &add, &removeAt, &search, and &subarray.
+
 2.1-beta 13  (18 Mar 07)
 ===========
 - trace debug option now reports the parameters for a HOES call even if an

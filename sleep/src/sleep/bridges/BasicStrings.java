@@ -401,7 +401,7 @@ public class BasicStrings implements Loadable
         {
            StringBuffer work    = new StringBuffer(BridgeUtilities.getString(l, ""));
            String       nstr    = BridgeUtilities.getString(l, "");
-           int          index   = normalize(BridgeUtilities.getInt(l, 0), work.length());
+           int          index   = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), work.length());
            int          nchar   = BridgeUtilities.getInt(l, nstr.length());
 
            work.delete(index, index + nchar);
@@ -439,7 +439,7 @@ public class BasicStrings implements Loadable
         {
            String value = l.pop().toString();
            String item  = l.pop().toString();
-           int    start = normalize(BridgeUtilities.getInt(l, 0), value.length());
+           int    start = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.length());
                   
            return SleepUtils.getScalar(value.indexOf(item, start));
         }
@@ -645,7 +645,7 @@ public class BasicStrings implements Loadable
       int length = str.length();
       int start, end;
 
-      start = (_start < 0 ? _start + length : _start) % length;
+      start = BridgeUtilities.normalize(_start, length);
       end   = (_end < 0 ? _end + length : _end);
       end   = end <= length ? end : length;
 
@@ -657,19 +657,10 @@ public class BasicStrings implements Loadable
       return str.substring(start, end);
    }
 
-   /** normalizes the value based on the string length */
-   private static final int normalize(int value, int length)
-   {
-      return (value < 0 ? value + length : value) % length;
-   }
-
    /** Normalizes the start parameter based on the length of the string and returns a character.  Functions with
        parameters normalized in this way will be able to accept nagative indices for their parameters */
    private static final char charAt(String str, int start)
    {
-      int length = str.length();
-
-      start = (start < 0 ? start + length : start) % length;
-      return str.charAt(start);
+      return str.charAt(BridgeUtilities.normalize(start, str.length()));
    }
 }
