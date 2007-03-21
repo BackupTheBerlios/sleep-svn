@@ -548,6 +548,9 @@ public class ObjectUtilities
       {
          Stack temp = new Stack();
 
+         boolean isTrace = (script.getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS;
+         StringBuffer message = null;
+
          if (args != null)
          {
             for (int z = args.length - 1; z >= 0; z--)
@@ -556,8 +559,45 @@ public class ObjectUtilities
             }
          }
 
+         Scalar value;
+
          script.getScriptEnvironment().installExceptionHandler(null, null, null);
-         Scalar value = func.evaluate(method.getName(), script, temp); 
+
+         if (isTrace)
+         {
+            if (!script.isProfileOnly())
+            {
+               message = new StringBuffer("[" + func + " " + method.getName());
+
+               if (!temp.isEmpty())
+                  message.append(": " + SleepUtils.describe(temp));
+
+               message.append("]");
+            }
+
+            long stat = System.currentTimeMillis();
+            value = func.evaluate(method.getName(), script, temp); 
+            stat = System.currentTimeMillis() - stat;
+
+            if (func.getClass() == SleepClosure.class)
+            {
+               script.collect(((SleepClosure)func).toStringGeneric(), -1, stat);
+            }
+
+            if (message != null)
+            {
+               if (script.getScriptEnvironment().isThrownValue()) 
+                  message.append(" - FAILED!"); 
+               else
+                  message.append(" = " + SleepUtils.describe(value)); 
+
+               script.fireWarning(message.toString(), -1, true);
+            }
+         }
+         else
+         {
+            value = func.evaluate(method.getName(), script, temp); 
+         }
          script.getScriptEnvironment().popExceptionContext();
          script.getScriptEnvironment().clearReturn();
  

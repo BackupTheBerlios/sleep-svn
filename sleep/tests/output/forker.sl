@@ -1,4 +1,4 @@
 Trace: &check('within fork') at forker.sl:9
-Trace: &fork(&closure[forker.sl:9]#2) = sleep.bridges.io.IOObject@57ea4a at forker.sl:8
+Trace: &fork(&closure[forker.sl:9]#2) = sleep.bridges.io.IOObject@1a1399 at forker.sl:8
 Trace: &sleep(1000) at forker.sl:12
 Trace: &check('outside of fork') at forker.sl:14

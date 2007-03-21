@@ -7,6 +7,9 @@
 - array functions now normalize negative parameters as offsets from the
   total length of the array.  updated functions include:
   &add, &removeAt, &search, and &subarray.
+- added a check to ensure regex pattern cache is flushed every so often.
+- tracing/profiling now records Java calls on closures passed as psuedo
+  objects.
 
 2.1-beta 13  (18 Mar 07)
 ===========

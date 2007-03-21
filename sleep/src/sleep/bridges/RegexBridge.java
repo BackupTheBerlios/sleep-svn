@@ -36,7 +36,7 @@ import sleep.parser.ParserConfig;
 /** Provides a bridge between Java's regex API and sleep.  Rock on */
 public class RegexBridge implements Loadable
 {
-    private static HashMap patternCache = new HashMap();
+    private static Map patternCache = Collections.synchronizedMap(new HashMap());
  
     static
     {
@@ -49,6 +49,11 @@ public class RegexBridge implements Loadable
        if (patternCache.containsKey(pattern))
        {
           return (Pattern)patternCache.get(pattern);  
+       }
+
+       if (patternCache.size() > 1024)
+       {
+          patternCache.clear(); /* ensure the pattern cache is flushed once in awhile */
        }
      
        Pattern temp = Pattern.compile(pattern);
