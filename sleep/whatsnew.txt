@@ -10,6 +10,8 @@
 - added a check to ensure regex pattern cache is flushed every so often.
 - tracing/profiling now records Java calls on closures passed as psuedo
   objects.
+- the import/from syntax now allows the jar filename to be quoted with 
+  double or single quotes to specify a path with spaces.
 
 2.1-beta 13  (18 Mar 07)
 ===========

@@ -1068,6 +1068,9 @@ public class CodeGenerator implements ParserConstants
            }
            else
            {
+              if (Checkers.isString(strings[1]) || Checkers.isLiteral(strings[1]))
+                 strings[1] = ParserUtilities.extract(strings[1]);
+
               File searchFor = parser.importPackage(strings[0], strings[1]);
               if (searchFor == null || !searchFor.exists())
               {
