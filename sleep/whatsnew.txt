@@ -1,4 +1,4 @@
-2.1-beta 14
+2.1-beta 14  (23 Mar 07)
 ===========
 - added splice(@array, @insertme, position, n) for modifying an array.  
   works a lot like replaceAt, i.e. up to n elements at the specified

@@ -772,7 +772,7 @@ elements individually and referencing the array as a whole.</p>
 "Michelangelo".</p>
 
 <p>When referencing an array with the index operator, it is acceptable to use negative indices.  For example to reference the
-last element of <var>@foo</var> one could use <code>@foo[-1]</code>.</p>
+last element of <var>@foo</var> one could use <code>@foo[-1]</code>.  Many array functions normalize negative indices as well.</p>
 
 <p>Arrays can be assigned to each other as well.   As stated in the Scalars section assigning an array to another array just 
 copies the reference.   Both <var>@array</var>'s will point to the same data.  A change in one array will affect the other 
@@ -1578,6 +1578,8 @@ $output   = [new XMLOutputter: [Format getPrettyFormat]];
 <p>Sleep will try to find the specified jar file (i.e. jdom.jar) using the Sleep classpath.  This value is the
 sleep.classpath accessible as systemProperties()["sleep.classpath"].</p>
 
+<p>If the jar filename includes spaces, you can surround it with single or double quotes.</p>
+
 <h3><a name="interfaces"></a>Sleep Interfaces</h3>
 
 <p>A neat feature of HOES is how interfaces can be quickly and easily created and passed to Java objects.  A Java interface
@@ -1998,6 +2000,11 @@ to represent the dimensions of the array.</td>
   <td>@</td>
   <td>sortn(@array)</td>
   <td>returns a copy of @array sorted numerically.  For use with an array of scalar integers.</td>
+ </tr>
+ <tr>
+  <td>@</td>
+  <td>splice(@array, @insert, [n], [m])</td>
+  <td>removes m characters at position n from @array and splices in the contents of @insert.  @insert can be null.  default value of n is 0; default value of m is the length of @insert.</td>
  </tr>
  <tr>
   <td>@</td>
