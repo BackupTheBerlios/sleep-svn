@@ -898,7 +898,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
        else if (n.equals("&add") && value.getArray() != null)
        {
           Scalar item = BridgeUtilities.getScalar(l);
-          int index   = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.getArray().size());
+          int index   = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.getArray().size() + 1);
           return value.getArray().add(SleepUtils.getScalar(item), index);
        }
        else if (n.equals("&splice") && value.getArray() != null)
@@ -1158,11 +1158,11 @@ public class BasicUtilities implements Function, Loadable, Predicate
           int length = value.getArray().size();
           int start, end;
 
-          start = (_start < 0 ? _start + length : _start) % length;
+          start = BridgeUtilities.normalize(_start, length);
           end   = (_end < 0 ? _end + length : _end);
           end   = end <= length ? end : length;
 
-          if (start >= end)
+          if (start > end)
           {
              throw new IllegalArgumentException("illegal subarray(" + SleepUtils.describe(value) + ", " + _start + " -> " + start + ", " + _end + " -> " + end + ")");
           }

@@ -649,7 +649,11 @@ public class BasicStrings implements Loadable
       end   = (_end < 0 ? _end + length : _end);
       end   = end <= length ? end : length;
 
-      if (start >= end)
+      if (start == end)
+      {
+         return "";
+      }
+      else if (start > end)
       {
          throw new IllegalArgumentException(func + ": illegal substring('" + str + "', " + _start + " -> " + start + ", " + _end + " -> " + end + ") indices");
       }

@@ -1,4 +1,4 @@
-2.1-beta 14  (23 Mar 07)
+2.1-beta 14  (24 Mar 07)
 ===========
 - added splice(@array, @insertme, position, n) for modifying an array.  
   works a lot like replaceAt, i.e. up to n elements at the specified
@@ -12,6 +12,7 @@
   objects.
 - the import/from syntax now allows the jar filename to be quoted with 
   double or single quotes to specify a path with spaces.
+- fixed a bug with normalized parameters (for both arrays and strings)
 
 2.1-beta 13  (18 Mar 07)
 ===========

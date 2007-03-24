@@ -4,12 +4,11 @@ is a test
 this is a
 this is uNF test
 a
-this is a testthis is a testthis is a testthis is a testthis is a testthis is a 
-t a si sihttset a si sihttset a si sihttset a si sihttset a si sihttset a si siht
+this is a testthis is a test
 --): gnirts elbisrever a si siht++
 string
 string
-Warning: &substr: illegal substring('++this is a reversible string :)--', -11 -> 23, -15 -> 19) indices at strmods.sl:42
+Warning: &substr: illegal substring('++this is a reversible string :)--', -11 -> 23, -15 -> 19) indices at strmods.sl:52
 2
 2
 2
@@ -19,17 +18,6 @@ Warning: &substr: illegal substring('++this is a reversible string :)--', -11 ->
 -1
 -1
 -1
--1
--1
--1
--1
--1
-2
-2
-2
-5
-5
-5
 -1
 -1
 -1

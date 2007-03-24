@@ -303,7 +303,6 @@ public class BridgeUtilities
    /** normalizes the index value based on the specified length */
    public static final int normalize(int value, int length)
    {
-      if (length == 0) { return 0; }
-      return (value < 0 ? value + length : value) % length;
+      return value < 0 ? value + length : value;
    }
 }
