@@ -526,7 +526,10 @@ public class ScriptEnvironment implements Serializable
     /** obtain the filename of the current source of execution */
     public String getCurrentSource()
     {
-       return sources.peek() + "";
+       if (!sources.isEmpty())
+          return sources.peek() + "";
+
+       return "unknown";
     }
  
     /** remove the latest source information from the source stack */

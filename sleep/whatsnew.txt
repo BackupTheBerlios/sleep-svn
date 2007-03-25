@@ -1,3 +1,8 @@
+2.1-beta 15
+===========
+- fixed a potential problem that could arise when one attempts to 
+  query which file is currently executing and no file is executing.
+
 2.1-beta 14  (24 Mar 07)
 ===========
 - added splice(@array, @insertme, position, n) for modifying an array.  
