@@ -7,6 +7,9 @@
   interface may be the way to go.  Using the ProxyInterface class you
   can create these closure backed instances and you get all of the built-in
   function call tracing, profiling, error checking, etc. for free.
+- the outer most frame of execution for running a Sleep script now enjoys
+  the same thread safety/synrchronization that the rest of the Sleep
+  functionality adheres to.
 
 2.1-beta 14  (24 Mar 07)
 ===========

@@ -56,11 +56,14 @@ public class SleepUtils
     */
    public static Scalar runCode(Block code, ScriptEnvironment env)
    {
-       Scalar temp = code.evaluate(env);
-       env.resetEnvironment();             /* if we're going to call a function that returns
-                                             something then we are obligated to clear its return
-                                             value when its done running... */
-       return temp;
+       synchronized (env.getScriptVariables())
+       {
+          Scalar temp = code.evaluate(env);
+          env.resetEnvironment();             /* if we're going to call a function that returns
+                                                 something then we are obligated to clear its return
+                                                 value when its done running... */
+          return temp;
+       }
    }
 
    /** "safely" runs a "Function" of code.  The main thing this method does is clear the return value 
