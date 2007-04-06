@@ -2,6 +2,11 @@
 ===========
 - fixed a potential problem that could arise when one attempts to 
   query which file is currently executing and no file is executing.
+- made the ProxyInterface class in sleep.engine public.  For those of you
+  looking to embed Sleep,  a Sleep closure backed instance of a  Java 
+  interface may be the way to go.  Using the ProxyInterface class you
+  can create these closure backed instances and you get all of the built-in
+  function call tracing, profiling, error checking, etc. for free.
 
 2.1-beta 14  (24 Mar 07)
 ===========

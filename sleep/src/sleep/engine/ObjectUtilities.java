@@ -406,7 +406,7 @@ public class ObjectUtilities
       }
       else if (type.isInterface() && SleepUtils.isFunctionScalar(value))
       {
-         return BuildInterface(type, SleepUtils.getFunctionFromScalar(value, script), script);
+         return ProxyInterface.BuildInterface(type, SleepUtils.getFunctionFromScalar(value, script), script);
       }
 
       return value.objectValue();
@@ -525,103 +525,6 @@ public class ObjectUtilities
          return SleepUtils.getScalar(value);
       }
 
-   }
-
-   public static Object BuildInterface(Class className, Function subroutine, ScriptInstance script)
-   {
-      InvocationHandler temp = new ProxyInterface(subroutine, script);
-      return Proxy.newProxyInstance(className.getClassLoader(), new Class[] { className }, temp);
-   } 
-
-   private static class ProxyInterface implements InvocationHandler
-   {
-      protected ScriptInstance    script;
-      protected Function          func;
-
-      public ProxyInterface(Function _method, ScriptInstance _script)
-      {
-         func        = _method;
-         script      = _script;
-      }
-
-      public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
-      {
-         Stack temp = new Stack();
-
-         boolean isTrace = (script.getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS;
-         StringBuffer message = null;
-
-         if (args != null)
-         {
-            for (int z = args.length - 1; z >= 0; z--)
-            { 
-               temp.push(BuildScalar(true, args[z]));
-            }
-         }
-
-         Scalar value;
-
-         script.getScriptEnvironment().installExceptionHandler(null, null, null);
-
-         if (isTrace)
-         {
-            if (!script.isProfileOnly())
-            {
-               message = new StringBuffer("[" + func + " " + method.getName());
-
-               if (!temp.isEmpty())
-                  message.append(": " + SleepUtils.describe(temp));
-
-               message.append("]");
-            }
-
-            long stat = System.currentTimeMillis();
-            value = func.evaluate(method.getName(), script, temp); 
-            stat = System.currentTimeMillis() - stat;
-
-            if (func.getClass() == SleepClosure.class)
-            {
-               script.collect(((SleepClosure)func).toStringGeneric(), -1, stat);
-            }
-
-            if (message != null)
-            {
-               if (script.getScriptEnvironment().isThrownValue()) 
-                  message.append(" - FAILED!"); 
-               else
-                  message.append(" = " + SleepUtils.describe(value)); 
-
-               script.fireWarning(message.toString(), -1, true);
-            }
-         }
-         else
-         {
-            value = func.evaluate(method.getName(), script, temp); 
-         }
-         script.getScriptEnvironment().popExceptionContext();
-         script.getScriptEnvironment().clearReturn();
- 
-         if (script.getScriptEnvironment().isThrownValue())
-         {
-            script.recordStackFrame(func + " as " + method.toString(), "<internal>", 0);
-
-            Object exvalue = (script.getScriptEnvironment().getExceptionMessage()).objectValue();
-           
-            if (exvalue instanceof Throwable)
-            {
-               throw (Throwable)exvalue;
-            }
-            else
-            {
-               throw new RuntimeException(exvalue.toString());
-            }
-         }        
-
-         if (value != null)
-            return buildArgument(method.getReturnType(), value, script);
-
-         return null;
-      }
    }
 
    /** Determines the primitive type of the specified array.  Primitive Sleep values (int, long, double) will return the appropriate Number.TYPE class.  This is an important distinction as Double.TYPE != new Double().getClass() */
