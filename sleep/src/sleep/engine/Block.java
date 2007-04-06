@@ -258,12 +258,7 @@ public class Block implements Serializable
                  }
               }
 
-              if (environment.isDebugInterrupt())
-              {
-                 environment.getScriptInstance().fireWarning(environment.getDebugString(), temp.getLineNumber());
-                 /** get debug string clears the debug interrupt! */
-              }
-              else if (environment.isThrownValue())
+              if (environment.isThrownValue())
               {
                  if (!environment.isExceptionHandlerInstalled())
                  {
@@ -286,6 +281,11 @@ public class Block implements Serializable
                  environment.popSource();
                  return environment.getReturnValue(); /* we do this because the exception will get cleared and after that
                                                          there may be a return value */
+              }
+              else if (environment.isDebugInterrupt())
+              {
+                 environment.getScriptInstance().fireWarning(environment.getDebugString(), temp.getLineNumber());
+                 /** get debug string clears the debug interrupt! */
               }
               else
               {
