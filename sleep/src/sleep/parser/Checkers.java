@@ -60,6 +60,7 @@ public class Checkers
       keywords.put("throw",    Boolean.TRUE);
       keywords.put("try",      Boolean.TRUE);
       keywords.put("catch",    Boolean.TRUE);
+      keywords.put("assert",   Boolean.TRUE);
    }
 
    public static boolean isIfStatement(String a, String b, String c)
@@ -242,6 +243,11 @@ public class Checkers
    public static final boolean isSpecialForeach (String a, String b, String c, String d, String e, String f)
    {
        return (a.equals("foreach") && isVariable(b) && c.equals("=>") && isVariable(d) && isExpression(e) && isBlock(f));
+   }
+
+   public static final boolean isAssert (String temp)
+   {
+       return (temp.equals("assert"));
    }
 
    public static final boolean isReturn (String temp)

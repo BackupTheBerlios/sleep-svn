@@ -22,6 +22,8 @@ public interface ParserConstants
    public static final int EXPR_BIND_PRED       = 504;
    public static final int EXPR_BIND_FILTER     = 505;
    public static final int EXPR_EVAL_STRING     = 506; // used for `backtick` strings that do something cool :)
+
+   public static final int EXPR_ASSERT          = 507; // oooh ass hurt... eer assert.
  
    public static final int IDEA_EXPR            = 601;
    public static final int IDEA_OPER            = 603;

@@ -81,7 +81,7 @@ public class Decide extends Step
    {
       if (start.check(e))
       {
-          iftrue.evaluate(e);
+          if (iftrue != null) { iftrue.evaluate(e); }
       }
       else if (iffalse != null)
       {

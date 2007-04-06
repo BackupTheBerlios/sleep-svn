@@ -568,9 +568,16 @@ public class TokenParser implements ParserConstants
             x += 2;
          }
          // a return statement
-         else if (Checkers.isReturn(strings[x]))
+         else if (Checkers.isReturn(strings[x]) || Checkers.isAssert(strings[x]))
          {
-            myToken.setType(EXPR_RETURN);
+            if (Checkers.isAssert(strings[x]))
+            {
+               myToken.setType(EXPR_ASSERT);
+            }
+            else
+            {
+               myToken.setType(EXPR_RETURN);
+            }
             myToken.add(tokens[x]);
            
             x++;

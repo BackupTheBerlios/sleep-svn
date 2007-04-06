@@ -10,6 +10,13 @@
 - the outer most frame of execution for running a Sleep script now enjoys
   the same thread safety/synrchronization that the rest of the Sleep
   functionality adheres to.
+- exit() function now allows an optional string parameter which will be 
+  reported to the user as a runtime warning (usually an indicator of why
+  the script chose to exit?)
+- added an assert command.  assert takes a predicate expression as a 
+  parameter.  if the predicate expression does not evaluate to true then
+  the currently running script will exit with the message "assertion
+  failed".
 
 2.1-beta 14  (24 Mar 07)
 ===========

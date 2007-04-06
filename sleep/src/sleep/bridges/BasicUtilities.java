@@ -1090,6 +1090,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
        else if (n.equals("&exit"))
        {
           i.getScriptEnvironment().flagReturn(null, ScriptEnvironment.FLOW_CONTROL_THROW); /* a null throw will exit the interpreter */
+          if (!SleepUtils.isEmptyScalar(value))
+          {
+             throw new RuntimeException(value.toString());
+          }
        }
        else if (n.equals("&setField"))
        {

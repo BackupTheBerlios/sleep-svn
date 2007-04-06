@@ -1078,6 +1078,28 @@ public class CodeGenerator implements ParserConstants
               }
            }
            break;           
+         case EXPR_ASSERT:
+           if (tokens.length == 1)
+           {
+              parser.reportError("Assertion can't be empty!", tokens[0]);
+              return;
+           }
+
+           backup();
+              atom = GeneratedSteps.CreateFrame();
+              add(atom, tokens[0]);
+
+              ascalar = SleepUtils.getScalar("assertion failed");
+              atom    = GeneratedSteps.SValue(ascalar);
+              add(atom, tokens[0]);
+
+              atom = GeneratedSteps.Call("&exit");
+              add(atom, tokens[0]);
+           b = restore();
+
+           atom = GeneratedSteps.Decide(parsePredicate(tokens[1]), null, b);
+           add(atom, tokens[1]);
+           break;
          case EXPR_RETURN:                     // implemented
            atom = GeneratedSteps.CreateFrame();
            add(atom, tokens[0]);
