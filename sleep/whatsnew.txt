@@ -22,6 +22,8 @@
 - Proxy instantiations of Java classes are now synchronized in the same
   way as the rest of Sleep's interpreter and source information is now
   installed to show calls on these classes as coming from <Java>
+- fixed a bug that disallowed importing multiple packages from a single
+  external jar file.  
 
 2.1-beta 14  (24 Mar 07)
 ===========

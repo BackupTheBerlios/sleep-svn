@@ -87,14 +87,17 @@ public class Parser
 
        /* resolve and setup our class loader for the specified jar file */
 
-       if (from != null && !jars.containsKey(from))
+       if (from != null)
        {
           try
           {
              returnValue = ParserConfig.findJarFile(from);
  
-             URLClassLoader loader = new URLClassLoader(new URL[] { returnValue.toURL() }, Thread.currentThread().getContextClassLoader());
-             jars.put(from, loader);
+             if (!jars.containsKey(from))
+             {
+                URLClassLoader loader = new URLClassLoader(new URL[] { returnValue.toURL() }, Thread.currentThread().getContextClassLoader());
+                jars.put(from, loader);
+             }
           }
           catch (Exception ex) { ex.printStackTrace(); }
        }
