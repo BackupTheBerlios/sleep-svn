@@ -61,81 +61,87 @@ public class ProxyInterface implements InvocationHandler
    /** This function invokes the contained Sleep closure with the specified arguments */
    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable
    {
-      Stack temp = new Stack();
-
-      boolean isTrace = (script.getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS;
-      StringBuffer message = null;
-
-      if (args != null)
+      synchronized (script.getScriptVariables())
       {
-         for (int z = args.length - 1; z >= 0; z--)
-         { 
-            temp.push(ObjectUtilities.BuildScalar(true, args[z]));
-         }
-      }
+         script.getScriptEnvironment().pushSource("<Java>");
 
-      Scalar value;
+         Stack temp = new Stack();
 
-      script.getScriptEnvironment().installExceptionHandler(null, null, null);
+         boolean isTrace = (script.getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS;
+         StringBuffer message = null;
 
-      if (isTrace)
-      {
-         if (!script.isProfileOnly())
+         if (args != null)
          {
-            message = new StringBuffer("[" + func + " " + method.getName());
-
-            if (!temp.isEmpty())
-               message.append(": " + SleepUtils.describe(temp));
-
-            message.append("]");
+            for (int z = args.length - 1; z >= 0; z--)
+            { 
+               temp.push(ObjectUtilities.BuildScalar(true, args[z]));
+            }
          }
 
-         long stat = System.currentTimeMillis();
-         value = func.evaluate(method.getName(), script, temp); 
-         stat = System.currentTimeMillis() - stat;
+         Scalar value;
 
-         if (func.getClass() == SleepClosure.class)
+         script.getScriptEnvironment().installExceptionHandler(null, null, null);
+
+         if (isTrace)
          {
-            script.collect(((SleepClosure)func).toStringGeneric(), -1, stat);
-         }
+            if (!script.isProfileOnly())
+            {
+               message = new StringBuffer("[" + func + " " + method.getName());
 
-         if (message != null)
-         {
-            if (script.getScriptEnvironment().isThrownValue()) 
-               message.append(" - FAILED!"); 
-            else
-               message.append(" = " + SleepUtils.describe(value)); 
+               if (!temp.isEmpty())
+                   message.append(": " + SleepUtils.describe(temp));
 
-            script.fireWarning(message.toString(), -1, true);
-         }
-      }
-      else
-      {
-         value = func.evaluate(method.getName(), script, temp); 
-      }
-      script.getScriptEnvironment().popExceptionContext();
-      script.getScriptEnvironment().clearReturn();
- 
-      if (script.getScriptEnvironment().isThrownValue())
-      {
-         script.recordStackFrame(func + " as " + method.toString(), "<internal>", 0);
+               message.append("]");
+            }
 
-         Object exvalue = (script.getScriptEnvironment().getExceptionMessage()).objectValue();
-           
-         if (exvalue instanceof Throwable)
-         {
-            throw (Throwable)exvalue;
+            long stat = System.currentTimeMillis();
+            value = func.evaluate(method.getName(), script, temp); 
+            stat = System.currentTimeMillis() - stat;
+
+            if (func.getClass() == SleepClosure.class)
+            {
+               script.collect(((SleepClosure)func).toStringGeneric(), -1, stat);
+            }
+
+            if (message != null)
+            {
+               if (script.getScriptEnvironment().isThrownValue()) 
+                  message.append(" - FAILED!"); 
+               else
+                  message.append(" = " + SleepUtils.describe(value)); 
+
+               script.fireWarning(message.toString(), -1, true);
+            }
          }
          else
-         {
-            throw new RuntimeException(exvalue.toString());
+         {  
+            value = func.evaluate(method.getName(), script, temp); 
          }
-      }        
+         script.getScriptEnvironment().popExceptionContext();
+         script.getScriptEnvironment().clearReturn();
+         script.getScriptEnvironment().popSource();
+ 
+         if (script.getScriptEnvironment().isThrownValue())
+         {
+            script.recordStackFrame(func + " as " + method.toString(), "<Java>", -1);
 
-      if (value != null)
-         return ObjectUtilities.buildArgument(method.getReturnType(), value, script);
+            Object exvalue = (script.getScriptEnvironment().getExceptionMessage()).objectValue();
+             
+            if (exvalue instanceof Throwable)
+            {
+               throw (Throwable)exvalue;
+            }
+            else
+            {
+               throw new RuntimeException(exvalue.toString());
+            }
+         }        
 
-      return null;
+         if (value != null)
+            return ObjectUtilities.buildArgument(method.getReturnType(), value, script);
+
+         return null;
+      }
    }
 }
 	

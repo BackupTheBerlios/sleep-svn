@@ -19,6 +19,9 @@
   failed".
 - HOES expressions with no arguments following the : will report a 
   syntax error (originally this error was crashing the parser)
+- Proxy instantiations of Java classes are now synchronized in the same
+  way as the rest of Sleep's interpreter and source information is now
+  installed to show calls on these classes as coming from <Java>
 
 2.1-beta 14  (24 Mar 07)
 ===========
