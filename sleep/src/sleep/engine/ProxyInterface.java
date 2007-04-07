@@ -33,8 +33,15 @@ public class ProxyInterface implements InvocationHandler
        to all method calls on this instance. */
    public static Object BuildInterface(Class className, Function subroutine, ScriptInstance script)
    {
+      return BuildInterface(new Class[] { className }, subroutine, script);
+   } 
+
+   /** Constructs a new instance of the specified class that uses the passed Sleep function to respond
+       to all method calls on this instance. */
+   public static Object BuildInterface(Class classes[], Function subroutine, ScriptInstance script)
+   {
       InvocationHandler temp = new ProxyInterface(subroutine, script);
-      return Proxy.newProxyInstance(className.getClassLoader(), new Class[] { className }, temp);
+      return Proxy.newProxyInstance(classes[0].getClassLoader(), classes, temp);
    } 
 
    /** Constructs a new instance of the specified class that uses the passed block to respond
@@ -42,6 +49,13 @@ public class ProxyInterface implements InvocationHandler
    public static Object BuildInterface(Class className, Block block, ScriptInstance script)
    {
       return BuildInterface(className, new SleepClosure(script, block), script);
+   } 
+
+   /** Constructs a new instance of the specified class that uses the passed block to respond
+       to all method calls on this instance. */
+   public static Object BuildInterface(Class classes[], Block block, ScriptInstance script)
+   {
+      return BuildInterface(classes, new SleepClosure(script, block), script);
    } 
 
    /** This function invokes the contained Sleep closure with the specified arguments */

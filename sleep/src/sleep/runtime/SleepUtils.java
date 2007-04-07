@@ -313,6 +313,18 @@ public class SleepUtils
       return SleepUtils.getScalar(handle);
    }
 
+   /** Creates a proxy instance of the specified class (limited to interfaces at this time) that is backed with the specified closure */
+   public static Object newInstance(Class initializeMe, SleepClosure closure, ScriptInstance owner)
+   {
+      return ProxyInterface.BuildInterface(initializeMe, closure, owner != null ? owner : closure.getOwner());
+   }
+
+   /** Creates a proxy instance of the specified class (limited to interfaces at this time) that is backed with the specified block of code (made into a closure) */
+   public static Object newInstance(Class initializeMe, Block code, ScriptInstance owner)
+   {
+      return ProxyInterface.BuildInterface(initializeMe, new SleepClosure(owner, code), owner);
+   }
+  
    /** returns a comma separated list of descriptions of the scalars in the specified argument
        stack.  This is used by the debugging mechanism to format arguments to strings based on
        their scalar type. */
