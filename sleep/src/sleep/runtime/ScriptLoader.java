@@ -436,7 +436,8 @@ public class ScriptLoader
         // clear the block cache of this script...
         if (BLOCK_CACHE != null) {
             //System.out.println("Removing: " + script.getName() + " from BLOCK_CACHE");
-            BLOCK_CACHE.remove(script.getName());
+            //BLOCK_CACHE.remove(script.getName());
+            BLOCK_CACHE.clear();
         }
 
         //
