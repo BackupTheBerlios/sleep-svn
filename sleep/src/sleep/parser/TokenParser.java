@@ -154,6 +154,12 @@ public class TokenParser implements ParserConstants
          parser.reportError("Object Access: parameter separator is :", new Token(data.toString(), tokens[0].getHint()));
          return null;
       }
+      else if ((idx + 1) >= tokens.length)
+      {
+         parser.reportError("Object Access: can not specify empty arg list after :", new Token("[" + data.toString().substring(0, data.toString().length() - 4) + ":<null>]", tokens[0].getHint()));
+         return null;
+      }
+
       idx++;
 
       StringBuffer temp = new StringBuffer(strings[idx]);

@@ -17,6 +17,8 @@
   parameter.  if the predicate expression does not evaluate to true then
   the currently running script will exit with the message "assertion
   failed".
+- HOES expressions with no arguments following the : will report a 
+  syntax error (originally this error was crashing the parser)
 
 2.1-beta 14  (24 Mar 07)
 ===========
