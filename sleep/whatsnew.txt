@@ -27,6 +27,7 @@
 - unloading a script through ScriptLoader now causes the entire block
   cache to be cleared.  This will ensure that external files loaded
   with include() will be purged from the cache as well.
+- added &sorto for sorting a Sleep array of Java Comparable objects
 
 2.1-beta 14  (24 Mar 07)
 ===========

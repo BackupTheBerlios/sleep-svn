@@ -79,9 +79,11 @@ public class BasicStrings implements Loadable
         temp.put("&chr",     new func_chr());
 
         temp.put("&sort",    new func_sort());
-        temp.put("&sorta",    new func_sorta());
-        temp.put("&sortn",    new func_sortn());
-        temp.put("&sortd",    new func_sortd());
+
+        func_sorters funky = new func_sorters();
+        temp.put("&sorta",   funky);
+        temp.put("&sortn",   funky);
+        temp.put("&sortd",   funky);
 
         // predicates
         temp.put("eq", new pred_eq());
@@ -485,35 +487,25 @@ public class BasicStrings implements Loadable
         }
     }
 
-    private static class func_sorta implements Function
+    private static class func_sorters implements Function
     {
         public Scalar evaluate(String n, ScriptInstance i, Stack l)
         {
            ScalarArray  array     = BridgeUtilities.getWorkableArray(l);
 
-           array.sort(new CompareStrings());
-           return SleepUtils.getArrayScalar(array);
-        }
-    }
+           if (n.equals("&sorta"))
+           {
+              array.sort(new CompareStrings());
+           }
+           else if (n.equals("&sortn"))
+           {
+              array.sort(new CompareNumbers());
+           }
+           else if (n.equals("&sortd"))
+           {
+              array.sort(new CompareDoubles());
+           }
 
-    private static class func_sortn implements Function
-    {
-        public Scalar evaluate(String n, ScriptInstance i, Stack l)
-        {
-           ScalarArray  array     = BridgeUtilities.getWorkableArray(l);
-
-           array.sort(new CompareNumbers());
-           return SleepUtils.getArrayScalar(array);
-        }
-    }
-
-    private static class func_sortd implements Function
-    {
-        public Scalar evaluate(String n, ScriptInstance i, Stack l)
-        {
-           ScalarArray  array     = BridgeUtilities.getWorkableArray(l);
-
-           array.sort(new CompareDoubles());
            return SleepUtils.getArrayScalar(array);
         }
     }
