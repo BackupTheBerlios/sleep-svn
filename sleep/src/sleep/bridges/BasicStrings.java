@@ -235,7 +235,7 @@ public class BasicStrings implements Loadable
                     }
                  }
 
-                 for (cptr = aptr; cptr < a.length() && a.charAt(cptr) != '?' && a.charAt(cptr) != '*'; cptr++) { } // body intentionally left empty.
+                 for (cptr = aptr; cptr < a.length() && a.charAt(cptr) != '?' && a.charAt(cptr) != '\\' && a.charAt(cptr) != '*'; cptr++) { } // body intentionally left empty.
 
                  if (cptr != aptr) // don't advance our bptr unless there is some non-wildcard pattern to look for next in the string
                  {
@@ -280,6 +280,7 @@ public class BasicStrings implements Loadable
            }
            catch (Exception ex) { ex.printStackTrace(); }
      
+
            return false;
         }
      
