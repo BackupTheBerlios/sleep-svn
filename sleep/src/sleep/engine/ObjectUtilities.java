@@ -115,32 +115,29 @@ public class ObjectUtilities
                compType = compType.getComponentType();
             }
 
-            if (compType == Object.class)
+            Class mytype = getArrayType(scalar, null);
+ 
+            if (mytype != null && compType.isAssignableFrom(mytype))
             {
-               return ARG_MATCH_MAYBE;
+               return ARG_MATCH_YES;
             }
             else
             {
-               Class mytype = getArrayType(scalar, null);
- 
-               if (mytype == compType)
-               {
-                  return ARG_MATCH_YES;
-               }
-               else
-               {
-                  return ARG_MATCH_NO;
-               }
+               return ARG_MATCH_NO;
             }
          }
-         else if (check.isAssignableFrom(java.util.List.class))
+         else if (check == java.util.List.class || check == java.util.Collection.class)
          {
             // would a java.util.List or java.util.Collection satisfy the argument?
             return ARG_MATCH_YES;
          }
-         else if (check.isInstance(scalar.objectValue()))
+         else if (check == ScalarArray.class)
          {
             return ARG_MATCH_YES;
+         }
+         else if (check == java.lang.Object.class)
+         {
+            return ARG_MATCH_MAYBE;
          }
          else
          {
@@ -149,12 +146,12 @@ public class ObjectUtilities
       }
       else if (scalar.getHash() != null)
       {
-         if (check.isAssignableFrom(java.util.Map.class))
+         if (check == java.util.Map.class)
          {
             // would a java.util.Map or java.util.Collection satisfy the argument?
             return ARG_MATCH_YES;
          }
-         else if (check.isInstance(scalar.objectValue()))
+         else if (check == ScalarHash.class)
          {
             return ARG_MATCH_YES;
          }
@@ -309,6 +306,12 @@ public class ObjectUtilities
          case 'd':
             atype = Double.TYPE;
             break;
+         case 'o':
+            atype = Object.class;
+            break;
+         case '*':
+            atype = null; 
+            break;
       }
 
       return atype;
@@ -334,7 +337,23 @@ public class ObjectUtilities
                while (i.hasNext())
                {
                    Scalar temp = (Scalar)i.next();
-                   Array.set(arrayV, x, buildArgument(atype, temp, script));
+                   Object blah = buildArgument(atype, temp, script);
+
+                   if (blah != null && (atype.isInstance(blah) || atype.isPrimitive()))
+                   {
+                      Array.set(arrayV, x, blah);
+                   }
+                   else
+                   {
+                      if (atype.isArray())
+                      {
+                         throw new RuntimeException("incorrect dimensions for conversion to " + type);
+                      }
+                      else
+                      {
+                         throw new RuntimeException(SleepUtils.describe(temp) + " at "+x+" is not compatible with " + atype.getName());
+                      }
+                   }
                    x++;
                }
 
@@ -342,27 +361,32 @@ public class ObjectUtilities
             }
             catch (Exception ex)
             {
+               if (ex instanceof RuntimeException)
+               {
+                  throw (RuntimeException)ex;
+               }
+
                throw new RuntimeException(ex.getMessage() + " - maybe the dimensions are wrong?");
             }
          }
-         else if (type.isAssignableFrom(java.util.List.class))
+         else if (type == ScalarArray.class)
          {
-            return SleepUtils.getListFromArray(value);
+            return value.objectValue();
          }
          else
          {
-            return value.objectValue();
+            return SleepUtils.getListFromArray(value);
          }
       }
       else if (value.getHash() != null)
       {
-         if (type.isAssignableFrom(java.util.Map.class))
+         if (type == ScalarHash.class)
          {
-            return SleepUtils.getMapFromHash(value);
+            return value.objectValue();
          }
          else
          {
-            return value.objectValue();
+            return SleepUtils.getMapFromHash(value);
          }
       }
       else if (type.isPrimitive())

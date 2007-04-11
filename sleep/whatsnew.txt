@@ -29,6 +29,16 @@
   with include() will be purged from the cache as well.
 - fixed a bug with iswm and using \ as a character literal in the match
   pattern, use \\ to specifiy a literal \
+- altered HOES argument resolution for Sleep hashes and arrays; no longer
+  will either of these types match to a method requiring a generic Object
+  as an argument.  Collection/List/Object[]/ScalarArray for Sleep arrays
+  and Map/ScalarHash for Sleep hashes.
+- updated cast/casti with a new pattern character, 'o' which will create
+  a java.lang.Object based on the specified scalar.
+- reworked conversion of array scalars to native Java arrays and enhanced
+  error messages.  In general Sleep will try its best to convert all of
+  the array elements to the same type (type determined by first elements).
+  Use cast(@array, "t") to cast the array to the type you really desire.
 
 2.1-beta 14  (24 Mar 07)
 ===========

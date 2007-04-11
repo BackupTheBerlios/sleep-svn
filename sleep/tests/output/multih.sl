@@ -11,4 +11,4 @@ Printing the table:
 5.0; 6.0; 
 6.5; 7.0; 
 8.0; 9.0; 
-Warning: array element type mismatch - maybe the dimensions are wrong? at multih.sl:13
+Warning: incorrect dimensions for conversion to class [[D at multih.sl:13
