@@ -327,47 +327,35 @@ public class ObjectUtilities
       {
          if (type.isArray())
          {
-            try
+            Class atype = getArrayType(value, type.getComponentType());
+
+            Object arrayV = Array.newInstance(atype, value.getArray().size());
+            Iterator i = value.getArray().scalarIterator();
+            int x = 0;
+            while (i.hasNext())
             {
-               Class atype = getArrayType(value, type.getComponentType());
+                Scalar temp = (Scalar)i.next();
+                Object blah = buildArgument(atype, temp, script);
 
-               Object arrayV = Array.newInstance(atype, value.getArray().size());
-               Iterator i = value.getArray().scalarIterator();
-               int x = 0;
-               while (i.hasNext())
-               {
-                   Scalar temp = (Scalar)i.next();
-                   Object blah = buildArgument(atype, temp, script);
-
-                   if (blah != null && (atype.isInstance(blah) || atype.isPrimitive()))
+                if (blah != null && (atype.isInstance(blah) || atype.isPrimitive()))
+                {
+                   Array.set(arrayV, x, blah);
+                }
+                else
+                {
+                   if (atype.isArray())
                    {
-                      Array.set(arrayV, x, blah);
+                      throw new RuntimeException("incorrect dimensions for conversion to " + type);
                    }
                    else
                    {
-                      if (atype.isArray())
-                      {
-                         throw new RuntimeException("incorrect dimensions for conversion to " + type);
-                      }
-                      else
-                      {
-                         throw new RuntimeException(SleepUtils.describe(temp) + " at "+x+" is not compatible with " + atype.getName());
-                      }
+                      throw new RuntimeException(SleepUtils.describe(temp) + " at "+x+" is not compatible with " + atype.getName());
                    }
-                   x++;
-               }
-
-               return arrayV;
+                }
+                x++;
             }
-            catch (Exception ex)
-            {
-               if (ex instanceof RuntimeException)
-               {
-                  throw (RuntimeException)ex;
-               }
 
-               throw new RuntimeException(ex.getMessage() + " - maybe the dimensions are wrong?");
-            }
+            return arrayV;
          }
          else if (type == ScalarArray.class)
          {
