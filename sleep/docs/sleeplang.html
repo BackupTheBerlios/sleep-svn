@@ -436,6 +436,27 @@ only if the condition is true.  The third parameter is returned if and only if t
 <var>$value</var> would be "Calculation took 1 second".  The iff example above checks if <var>$x</var> is greater than 1.  If it 
 is then "s" is returned.  Otherwise "" is returned.</p>
 
+<h3>Assertions</h3>
+
+<p>Now that you know about predicates and conditions, I can introduce assertions.  Assertions are a really basic debugging mechanism.  An assertion is a quick way to check that a condition is true.  If the condition isn't true, the current script will exit with an error message.  The syntax for an assertion is:</p>
+
+<pre>assert <b>comparison</b>;</pre>
+
+<p>Assertions are great for doing a last minute sanity check of some condition.  Can you tell what is wrong with this code snippet?</P>
+
+<pre>sub fact
+{
+   return iff($1 == 0, 1, $1 * fact($1 - 1));
+}</pre>
+
+<p>If someone were to call fact with a negative argument, the script would go into an infinite loop potentially crashing Sleep and/or the app hosting it.  An assertion can provide a quick sanity check to protect against this.</p>
+
+<pre>sub fact
+{
+   assert $1 >= 0;
+   return iff($1 == 0, 1, $1 * fact($1 - 1));
+}</pre>
+
 <h2><a name="3">Loops</a></h2>
 
 <h3>While Loops</h3>
@@ -1898,7 +1919,7 @@ as many arguments as you are willing to specify.</p>
   <td>$</td>
   <td>cast(@array, 't', ...)</td>
   <td>casts @array into an object scalar representing a native java array of type t where t can be b = byte, c = char, d = 
-double, f = float, h = short, i = int, l = long, z = boolean, * = any object type.  Arguments ... are optional and used 
+double, f = float, h = short, i = int, l = long, o = java.lang.Object, z = boolean, * = any object type.  Arguments ... are optional and used 
 to represent the dimensions of the array.</td>
  </tr>
  <tr>
@@ -2729,7 +2750,7 @@ n-m substrings will be returned.</td>
   <td>$</td>
   <td>casti($scalar, 't')</td>
   <td>casts $scalar into an object scalar representing a native java value of type t where t can be b = byte, c = char, d = 
-      double, f = float, h = short, i = int, l = long, z = boolean.</td>
+      double, f = float, h = short, i = int, l = long, o = java.lang.Object, z = boolean.</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2743,7 +2764,7 @@ n-m substrings will be returned.</td>
  </tr>
  <tr>
   <td>$</td>
-  <td>exit()</td>
+  <td>exit(["reason"])</td>
   <td>causes the currently executing script context to exit.</td>
  </tr>
  <tr>
