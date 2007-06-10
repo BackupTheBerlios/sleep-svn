@@ -129,7 +129,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&function",  funcs);
         temp.put("&setf",      funcs);
         temp.put("&eval",     new eval());
-        temp.put("&expr",     new expr());
+        temp.put("&expr",     temp.get("&eval"));
 
         // synchronization primitives...
         SyncPrimitives sync = new SyncPrimitives();
@@ -682,27 +682,16 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           try 
           {
-             Scalar temp = SleepUtils.getScalar(i.getScriptEnvironment().evaluateStatement(code));
-             return temp;
-          }
-          catch (YourCodeSucksException ex)
-          {
-             i.getScriptEnvironment().flagError(ex);
-             return SleepUtils.getEmptyScalar();
-          }
-       }
-    }
-
-    private static class expr implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
-          String code  = l.pop().toString();
-
-          try 
-          {
-             Scalar temp = SleepUtils.getScalar(i.getScriptEnvironment().evaluateExpression(code));
-             return temp;
+             if (n.equals("&eval"))
+             {
+                Scalar temp = SleepUtils.getScalar(i.getScriptEnvironment().evaluateStatement(code));
+                return temp;
+             }
+             else
+             {
+                Scalar temp = SleepUtils.getScalar(i.getScriptEnvironment().evaluateExpression(code));
+                return temp;
+             }
           }
           catch (YourCodeSucksException ex)
           {
