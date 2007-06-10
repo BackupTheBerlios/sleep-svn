@@ -257,11 +257,6 @@ public class BridgeUtilities
             value = SleepUtils.getScalar(  temp.substring( temp.indexOf('=') + 1, temp.length() ) );
             return new KeyValuePair(key, value);
          }
-/*         else
-         {
-            key   = SleepUtils.getScalar(temp);
-            value = SleepUtils.getEmptyScalar();
-         } */
       }
 
       throw new IllegalArgumentException("attempted to pass a malformed key value pair: " + temps);
@@ -270,9 +265,14 @@ public class BridgeUtilities
    /** Flattens the specified scalar array.  The <var>toValue</var> field can be null. */
    public static Scalar flattenArray(Scalar fromValue, Scalar toValue)
    {
+      return flattenIterator(fromValue.getArray().scalarIterator(), toValue);
+   }
+
+   /** Flattens the specified arrays within the specified iterator.  The <var>toValue</var> field can be null. */
+   public static Scalar flattenIterator(Iterator i, Scalar toValue)
+   {
       if (toValue == null) { toValue = SleepUtils.getArrayScalar(); }
 
-      Iterator i = fromValue.getArray().scalarIterator();
       while (i.hasNext())
       {
          Scalar temp = (Scalar)i.next();

@@ -216,19 +216,20 @@ public class RegexBridge implements Loadable
        public Scalar evaluate(String n, ScriptInstance script, Stack l)
        {
           String      a = ((Scalar)l.pop()).toString();
-          ScalarArray b = ((Scalar)l.pop()).getArray();
+          Iterator    i = BridgeUtilities.getIterator(l, script);
 
           StringBuffer result = new StringBuffer();
-         
-          Iterator i = b.scalarIterator();
-          while (i.hasNext())
+
+
+          if (i.hasNext())
           {
              result.append(i.next().toString());
+          }
 
-             if (i.hasNext())
-             { 
-                result.append(a);
-             }
+          while (i.hasNext())
+          {
+             result.append(a);
+             result.append(i.next().toString());
           }
 
           return SleepUtils.getScalar(result.toString());

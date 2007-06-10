@@ -809,6 +809,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           return SleepUtils.getScalar(i.getDebugFlags());
        }
+       else if (n.equals("&flatten"))
+       {
+          return BridgeUtilities.flattenIterator(BridgeUtilities.getIterator(l, i), null);
+       }
 
        /** Start of many array functions */
 
@@ -991,18 +995,9 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           return a;
        }
-       else if (n.equals("&flatten") && value.getArray() != null)
-       {
-          return BridgeUtilities.flattenArray(value, null);
-       }
        else if (n.equals("&subarray"))
        {
           return subarray(value, BridgeUtilities.getInt(l, 0), BridgeUtilities.getInt(l, value.getArray().size()));
-       }
-       else if (n.equals("&splice"))
-       {
-          // splice(@old, @new, start, nchars)
-          
        }
        else if (n.equals("&remove"))
        {
