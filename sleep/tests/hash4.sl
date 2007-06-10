@@ -4,8 +4,16 @@
 
 println("Pre Removal:");
 
-#%hash = hash("key=hello world!@", "blah=bleh", "user=password", "skanks", "testing", "", "zing=1+2=3 or 4");
-%hash = hash("key=hello world!@", "blah=bleh", "user=password", "zing=1+2=3 or 4");
+try
+{
+   %hash = hash(@array);
+}
+catch $ex
+{
+
+}
+
+%hash = hash("key=hello world!@", "blah=bleh", "user=password", "skanks", "testing", "", "zing=1+2=3 or 4");
 
 remove(%hash, "user");
 

@@ -255,14 +255,13 @@ public class BridgeUtilities
          {
             key   = SleepUtils.getScalar(temp.substring(0, temp.indexOf('=')));
             value = SleepUtils.getScalar(  temp.substring( temp.indexOf('=') + 1, temp.length() ) );
+            return new KeyValuePair(key, value);
          }
-         else
+/*         else
          {
             key   = SleepUtils.getScalar(temp);
             value = SleepUtils.getEmptyScalar();
-         }
-
-         return new KeyValuePair(key, value);
+         } */
       }
 
       throw new IllegalArgumentException("attempted to pass a malformed key value pair: " + temps);
