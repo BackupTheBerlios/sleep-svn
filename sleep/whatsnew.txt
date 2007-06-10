@@ -4,6 +4,7 @@
   is expected now results in an error message.   valid kvp's include:
   expressions of (key => value) and strings with the form "key=value"
 - added getIOHandle(InputStream, OutputStream) to SleepUtilities class
+- registered cmp operator to prevent parser confusing it with a function
 
 2.1-beta 15  (25 Apr 07)
 ===========

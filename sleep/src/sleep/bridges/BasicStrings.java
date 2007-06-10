@@ -44,6 +44,7 @@ public class BasicStrings implements Loadable
         ParserConfig.addKeyword("gt");
         ParserConfig.addKeyword("isin");
         ParserConfig.addKeyword("iswm");
+        ParserConfig.addKeyword("cmp");
     }
 
     public boolean scriptUnloaded(ScriptInstance aScript)
