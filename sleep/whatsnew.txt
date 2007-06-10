@@ -18,6 +18,8 @@
 - &join, &flatten functions now accept either a sleep array or generator
   function.
 - &readObject no longer throws an EOFException.
+- added another debug mode: DEBUG_TRACE_LOGIC (64); use this to trace
+  the results of all predicate evaluations
 
 2.1-beta 15  (25 Apr 07)
 ===========

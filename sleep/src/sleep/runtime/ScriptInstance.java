@@ -93,6 +93,9 @@ public class ScriptInstance implements Serializable, Runnable
     /** throw exceptions for anything flagged for retrieval with checkError() */
     public static final int DEBUG_THROW_WARNINGS = 2 | 32;
 
+    /** fire a runtime warning describing each predicate decision made */
+    public static final int DEBUG_TRACE_LOGIC = 64;
+
     /** track all of the flagged debug options for this script (set to DEBUG_SHOW_ERRORS by default) */
     protected int debug = DEBUG_SHOW_ERRORS;
 

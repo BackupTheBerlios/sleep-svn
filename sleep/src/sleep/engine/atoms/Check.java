@@ -169,7 +169,47 @@ public class Check implements Serializable
       }
       else
       {
-         temp = choice.decide(name, env.getScriptInstance(), env.getCurrentFrame());
+         if ((env.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_TRACE_LOGIC) == ScriptInstance.DEBUG_TRACE_LOGIC)
+         {
+            StringBuffer message = new StringBuffer(64);
+            if (env.getCurrentFrame().size() >= 2)
+            {
+               message.append(SleepUtils.describe((Scalar)env.getCurrentFrame().get(0)));
+               message.append(" "); 
+               if (negate) { message.append("!"); }
+               message.append(name);
+               message.append(" ");
+               message.append(SleepUtils.describe((Scalar)env.getCurrentFrame().get(1)));
+            }
+            else if (env.getCurrentFrame().size() == 1)
+            {
+               if (negate) { message.append("!"); }
+               message.append(name);
+               message.append(" ");
+               message.append(SleepUtils.describe((Scalar)env.getCurrentFrame().get(0)));
+            }
+            else
+            {
+               message.append("corrupted stack frame: " + name);
+            }
+            temp = choice.decide(name, env.getScriptInstance(), env.getCurrentFrame());
+            message.append(" ? ");
+
+            if (negate)
+            {
+               message.append((!temp + "").toUpperCase());
+            }
+            else
+            {
+               message.append((temp + "").toUpperCase());
+            }
+
+            env.getScriptInstance().fireWarning(message.toString(), hint, true);
+         }
+         else
+         {
+            temp = choice.decide(name, env.getScriptInstance(), env.getCurrentFrame());
+         }
       }
 
       env.KillFrame();
