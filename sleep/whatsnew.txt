@@ -5,6 +5,7 @@
   expressions of (key => value) and strings with the form "key=value"
 - added getIOHandle(InputStream, OutputStream) to SleepUtilities class
 - registered cmp operator to prevent parser confusing it with a function
+- hashes/arrays can now be passed as named parameters to closures
 
 2.1-beta 15  (25 Apr 07)
 ===========

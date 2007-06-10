@@ -228,7 +228,7 @@ public class SleepClosure implements Function
              {
                 KeyValuePair kvp = (KeyValuePair)lvar.getValue().objectValue();
 
-                if (kvp.getKey().toString().charAt(0) != '$')
+                if (!sleep.parser.Checkers.isVariable(kvp.getKey().toString()))
                 {
                    throw new IllegalArgumentException("unreachable named parameter: " + kvp.getKey());
                 }

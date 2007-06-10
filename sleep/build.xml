@@ -43,6 +43,8 @@
            <include name="sleep/interfaces/*.java" />
            <include name="sleep/parser/ParserConfig.java" />
            <include name="sleep/runtime/*.java" />
+           <include name="sleep/engine/ProxyInterface.java" />
+           <exclude name="sleep/runtime/WatchScalar.java" />
            <exclude name="sleep/runtime/CollectionWrapper.java" />
            <exclude name="sleep/runtime/MapWrapper.java" />
         </fileset>
