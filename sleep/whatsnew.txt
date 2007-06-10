@@ -3,6 +3,7 @@
 - passing a value that can not be used as a key/value pair when a kvp 
   is expected now results in an error message.   valid kvp's include:
   expressions of (key => value) and strings with the form "key=value"
+- added getIOHandle(InputStream, OutputStream) to SleepUtilities class
 
 2.1-beta 15  (25 Apr 07)
 ===========

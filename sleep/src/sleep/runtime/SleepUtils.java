@@ -306,11 +306,18 @@ public class SleepUtils
        streams can each be null if necessary. */ 
    public static Scalar getIOHandleScalar(InputStream in, OutputStream out)
    {
+      return SleepUtils.getScalar(getIOHandle(in, out));
+   }
+
+   /** creates an IO handle scalar suitable for use with the sleep IO API.  The passed in
+       streams can each be null if necessary. */ 
+   public static sleep.bridges.io.IOObject getIOHandle(InputStream in, OutputStream out)
+   {
       sleep.bridges.io.IOObject handle = new sleep.bridges.io.IOObject();
       handle.openRead(in);
       handle.openWrite(out);
 
-      return SleepUtils.getScalar(handle);
+      return handle;
    }
 
    /** Creates a proxy instance of the specified class (limited to interfaces at this time) that is backed with the specified closure */
