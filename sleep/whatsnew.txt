@@ -6,6 +6,9 @@
 - added getIOHandle(InputStream, OutputStream) to SleepUtilities class
 - registered cmp operator to prevent parser confusing it with a function
 - hashes/arrays can now be passed as named parameters to closures
+- &size now works with hashes
+- the '.' command in the console interact mode will not repeat the last
+  code sequence if no new code has been specified.
 
 2.1-beta 15  (25 Apr 07)
 ===========

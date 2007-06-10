@@ -123,7 +123,8 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        interact = false;
 
        String input;
-       StringBuffer code = new StringBuffer();
+       StringBuffer code   = new StringBuffer();
+       String       repeat = ""; 
 
        while (true)
        {
@@ -140,8 +141,16 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
              }
              else if (input.equals("."))
              { 
-                eval(code.toString(), code.toString());
-                code = new StringBuffer();                                
+                if (code.length() == 0)
+                {
+                   eval(repeat, repeat);
+                }
+                else
+                {
+                   eval(code.toString(), code.toString());
+                   repeat = code.toString();
+                   code   = new StringBuffer();                                
+                }
              }
              else
              {

@@ -45,9 +45,10 @@ help
 interact
    Enters the console into interactive mode.  From here full blocks of sleep
    code can be typed in.  Once one wants to evaluate the typed in code they
-   simply type '.' and the code will be evaluated and executed.  Any syntax
-   errors will be reported back.  Typing 'done' or Ctrl+D will effectively
-   stop interactive mode.
+   simply type '.' and the code will be evaluated and executed.  Subsequent 
+   uses of '.' will repeat the previous code sequence.   Any syntax errors 
+   will be reported back.  Typing 'done' or Ctrl+D will effectively stop 
+   interactive mode.
 
 list
    Lists all of the currently loaded scripts

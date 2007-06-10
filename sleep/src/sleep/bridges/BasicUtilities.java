@@ -932,6 +932,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
        {
           return SleepUtils.getScalar(value.getArray().size());
        }
+       else if (n.equals("&size") && value.getHash() != null) // &size(@array)
+       {
+          return SleepUtils.getScalar(value.getHash().keys().size());
+       }
        else if (n.equals("&clear"))
        {
           if (value.getArray() != null)
