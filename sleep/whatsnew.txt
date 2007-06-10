@@ -1,3 +1,6 @@
+2.1-beta 16
+===========
+
 2.1-beta 15  (25 Apr 07)
 ===========
 - fixed a potential problem that could arise when one attempts to 

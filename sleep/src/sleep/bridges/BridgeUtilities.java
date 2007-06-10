@@ -161,7 +161,7 @@ public class BridgeUtilities
 
       Scalar temp = (Scalar)arguments.pop();
 
-      if (temp.getArray().getClass() == roarray)
+      if (temp.getArray().getClass() == sleep.runtime.CollectionWrapper.class)
       {
          ScalarArray array = SleepUtils.getArrayScalar().getArray();
          Iterator i = temp.getArray().scalarIterator();
@@ -236,19 +236,6 @@ public class BridgeUtilities
       return new File(temp);
    }
  
-   private static Class kvpair;
-   private static Class roarray;
-
-   static
-   { 
-      try
-      {
-         kvpair  = Class.forName("sleep.bridges.KeyValuePair");
-         roarray = Class.forName("sleep.runtime.CollectionWrapper");
-      }
-      catch (Exception ex) { }
-   }
-
    /** Pops a Key/Value pair object off of the argument stack.  A Key/Value pair is created using
        the => operator within Sleep scripts.  If the top argument on this stack was not created using
        =>, this function will try to parse a key/value pair using the pattern: [key]=[value] */
@@ -256,25 +243,29 @@ public class BridgeUtilities
    {
       Scalar temps = getScalar(arguments);
 
-      if (temps.objectValue() != null && temps.objectValue().getClass() == kvpair)
+      if (temps.objectValue() != null && temps.objectValue().getClass() == sleep.bridges.KeyValuePair.class)
          return (KeyValuePair)temps.objectValue();
 
-      Scalar key, value;
-
-      String temp = temps.toString();
-
-      if (temp.indexOf('=') > -1)
+      if (temps.getActualValue() != null)
       {
-         key   = SleepUtils.getScalar(temp.substring(0, temp.indexOf('=')));
-         value = SleepUtils.getScalar(  temp.substring( temp.indexOf('=') + 1, temp.length() ) );
-      }
-      else
-      {
-         key   = SleepUtils.getScalar(temp);
-         value = SleepUtils.getEmptyScalar();
+         Scalar key, value;
+         String temp = temps.getActualValue().toString();
+
+         if (temp.indexOf('=') > -1)
+         {
+            key   = SleepUtils.getScalar(temp.substring(0, temp.indexOf('=')));
+            value = SleepUtils.getScalar(  temp.substring( temp.indexOf('=') + 1, temp.length() ) );
+         }
+         else
+         {
+            key   = SleepUtils.getScalar(temp);
+            value = SleepUtils.getEmptyScalar();
+         }
+
+         return new KeyValuePair(key, value);
       }
 
-      return new KeyValuePair(key, value);
+      throw new IllegalArgumentException("attempted to pass a malformed key value pair: " + temps);
    }
 
    /** Flattens the specified scalar array.  The <var>toValue</var> field can be null. */
