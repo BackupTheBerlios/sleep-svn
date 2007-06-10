@@ -9,6 +9,12 @@
 - &size now works with hashes
 - the '.' command in the console interact mode will not repeat the last
   code sequence if no new code has been specified.
+- fixed a bug with &let, &lambda: when a ($this => ...) is specified
+  all subsequent variable placements will be put into the shared this
+  scope.
+- &compile_closure now shares its implementation with &let, &lambda 
+  allowing it to function as they do for settings vars, passing $this 
+  scope, etc..
 
 2.1-beta 15  (25 Apr 07)
 ===========

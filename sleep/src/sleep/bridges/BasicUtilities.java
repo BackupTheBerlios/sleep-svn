@@ -122,12 +122,12 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
         // closure / function handle type stuff
         temp.put("&lambda",    new lambda());
+        temp.put("&compile_closure", temp.get("&lambda"));
         temp.put("&let",    temp.get("&lambda"));
 
         function funcs = new function();
         temp.put("&function",  funcs);
         temp.put("&setf",      funcs);
-        temp.put("&compile_closure",    new compile_closure());
         temp.put("&eval",     new eval());
         temp.put("&expr",     new expr());
 
@@ -498,15 +498,31 @@ public class BasicUtilities implements Function, Loadable, Predicate
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
           SleepClosure value;
- 
-          SleepClosure temp = BridgeUtilities.getFunction(l, si);           
+          SleepClosure temp;
 
           if (n.equals("&lambda"))
           {
+             temp  = BridgeUtilities.getFunction(l, si);           
              value = new SleepClosure(si, temp.getRunnableCode());
+          }
+          else if (n.equals("&compile_closure"))
+          {
+             String code  = l.pop().toString();
+
+             try 
+             {
+                 temp  = new SleepClosure(si, SleepUtils.ParseCode(code));
+                 value = temp;
+             }
+             catch (YourCodeSucksException ex)
+             {
+                si.getScriptEnvironment().flagError(ex);
+                return SleepUtils.getEmptyScalar();
+             }
           }
           else
           {
+             temp  = BridgeUtilities.getFunction(l, si);           
              value = temp;
           }
            
@@ -520,6 +536,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
              {
                 SleepClosure c = (SleepClosure)kvp.getValue().objectValue();
                 value.setVariables(c.getVariables());
+                vars = c.getVariables();
              }
              else
              {
@@ -666,35 +683,6 @@ public class BasicUtilities implements Function, Loadable, Predicate
           try 
           {
              Scalar temp = SleepUtils.getScalar(i.getScriptEnvironment().evaluateStatement(code));
-             return temp;
-          }
-          catch (YourCodeSucksException ex)
-          {
-             i.getScriptEnvironment().flagError(ex);
-             return SleepUtils.getEmptyScalar();
-          }
-       }
-    }
-
-    private static class compile_closure implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
-          String code  = l.pop().toString();
-
-          try 
-          {
-             SleepClosure value = new SleepClosure(i, SleepUtils.ParseCode(code));
-             Scalar       temp  = SleepUtils.getScalar(value);
-
-             Variable      vars = value.getVariables();
-
-             while (!l.isEmpty())
-             {
-                KeyValuePair kvp = BridgeUtilities.getKeyValuePair(l);
-                vars.putScalar(kvp.getKey().toString(), kvp.getValue());
-             }
-
              return temp;
           }
           catch (YourCodeSucksException ex)
