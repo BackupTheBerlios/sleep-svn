@@ -17,6 +17,7 @@
   scope, etc..
 - &join, &flatten functions now accept either a sleep array or generator
   function.
+- &readObject no longer throws an EOFException.
 
 2.1-beta 15  (25 Apr 07)
 ===========

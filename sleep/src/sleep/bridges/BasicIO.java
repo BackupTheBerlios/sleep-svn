@@ -171,6 +171,10 @@ public class BasicIO implements Loadable, Function
              Scalar value = (Scalar)ois.readObject();
              return value;
           }
+          catch (EOFException eofex)
+          {
+             a.close();
+          }
           catch (Exception ex)
           {
              i.getScriptEnvironment().flagError(ex);
