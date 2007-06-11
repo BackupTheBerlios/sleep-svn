@@ -1007,7 +1007,7 @@ hash just copies the reference.  Both %hashe's will point to the same data.  A c
 it.</p>
 
 <p>To obtain an @array of all of the keys in a hash you can use the keys() function with the %hash as the parameter.   To remove 
-a key from a hash you can use remove(%hash, "key").</P>
+a value from a hash you can use remove(%hash, "value").</P>
 
 <p>To remove a key key from a hash simply set the value to $null.</p>
 
@@ -1036,6 +1036,9 @@ blah("ice cream!!!", $first => "Raphael", $last => "Mudge");
 blah($first => "Raphael", "ice cream!!!", $last => "Mudge");</pre>
 
 <p>The example above prints 'My name is Raphael Mudge, and I like ice cream!!!' three times.</p>
+
+<p>Sleep functions that expect a key/value pair will accept either a key/value expression or a string of the form
+"key=value".</p>
 
 <h3>Multidimensional Hashes/Arrays</h3>
 
@@ -1939,8 +1942,8 @@ to represent the dimensions of the array.</td>
  </tr>
  <tr>
   <td>@</td>
-  <td>flatten(@array)</td>
-  <td>returns a copy of a multidimensional(?) @array flattened into a one dimensional array</td>
+  <td>flatten(@|&amp;)</td>
+  <td>returns a copy of a multidimensional(?) @array or &amp;generator flattened into a one dimensional array (only array elements are flattened)</td>
  </tr>
  <tr>
   <td>@</td>
@@ -1973,9 +1976,9 @@ to represent the dimensions of the array.</td>
   <td>removes all elements of @b from @a. equivalent to the different of @a and @b</td>
  </tr>
  <tr>
-  <td>$</td>
-  <td>removeAt(@arrray, index)</td>
-  <td>removes the element at index from @array.</td>
+  <td></td>
+  <td>removeAt(@arrray, index, ...)</td>
+  <td>removes the elements at the specified indices.</td>
  </tr>
  <tr>
   <td>@</td>
@@ -2226,8 +2229,18 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
  </tr>
  <tr>
   <td></td>
-  <td>remove(%hash, $key, ...)</td>
-  <td>removes all specified keys from %hash</td>
+  <td>remove(%hash, $value, ...)</td>
+  <td>removes all specified values from %hash</td>
+ </tr>
+ <tr>
+  <td></td>
+  <td>removeAt(%hash, "key", ...)</td>
+  <td>removes the specified keys from the hash.</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>size(%hash)</td>
+  <td>returns the number of elements in %hash</td>
  </tr>
  <tr>
   <td>@</td>
@@ -2643,8 +2656,8 @@ will be returned by &amp;wait.  if $handle is a process, the return value of the
  </tr>
  <tr>
   <td>$</td>
-  <td>join("string", @array)</td>
-  <td>joins the elements of @array with "string"</td>
+  <td>join("string", @|&amp;)</td>
+  <td>joins the elements of @array or &amp;generator with "string"</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2755,7 +2768,12 @@ n-m substrings will be returned.</td>
  <tr>
   <td>$</td>
   <td>debug(level)</td>
-  <td>explicitly enables the specified debug level for this script: 0 - no debugging; 1 - show only critical errors (default); 2 - show all messages flagged for retrieval with checkError(); 4 - show first time use of non-declared variables; 8 - trace all function calls (collects profiler statistics); 24 - trace only for the purpose of collecting profiler statistics; 34 - "throw" all messages flagged for use with checkError() - this allows use of try/catch to deal with errors.  any of the levels can be |'d together.</td>
+  <td>explicitly enables the specified debug level for this script: 0 - no debugging; 1 - show only critical
+errors (default); 2 - show all messages flagged for retrieval with checkError(); 4 - show first time use of
+non-declared variables; 8 - trace all function calls (collects profiler statistics); 24 - trace only for the
+purpose of collecting profiler statistics; 34 - "throw" all messages flagged for use with checkError() - this
+allows use of try/catch to deal with errors; 64 - trace all logical comparisons.  any of the levels can be |'d 
+together.</td>
  </tr>
  <tr>
   <td>$</td>

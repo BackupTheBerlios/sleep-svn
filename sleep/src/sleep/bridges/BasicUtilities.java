@@ -603,10 +603,9 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           if (value.getArray() != null)
           {
-             int size = value.getArray().size();
              while (!l.isEmpty())
              {             
-                value.getArray().remove(BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), size));
+                value.getArray().remove(BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.getArray().size()));
              }
           }
           else if (value.getHash() != null)

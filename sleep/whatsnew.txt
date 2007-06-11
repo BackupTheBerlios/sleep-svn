@@ -1,4 +1,4 @@
-2.1-beta 16
+2.1-beta 16  (11 Jun 07)
 ===========
 - passing a value that can not be used as a key/value pair when a kvp 
   is expected now results in an error message.   valid kvp's include:
