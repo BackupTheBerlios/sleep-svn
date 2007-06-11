@@ -66,9 +66,12 @@ public class SleepUtils
             }
             else if (value.getActualValue() != null && next.getActualValue() != null)
             {
-               if (value.getActualValue().getClass() == ObjectValue.class && value.getActualValue().getClass() == ObjectValue.class && value.objectValue() == next.objectValue())
+               if (value.getActualValue().getClass() == ObjectValue.class || next.getActualValue().getClass() == ObjectValue.class) 
                {
-                  collection.remove(); /* two objects with matching references! */
+                  if (value.objectValue() == next.objectValue())
+                  {
+                     collection.remove(); /* two objects with matching references! */
+                  }
                }
                else if (value.getActualValue().toString().equals(next.getActualValue().toString()))
                {
