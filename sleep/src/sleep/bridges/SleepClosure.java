@@ -224,9 +224,9 @@ public class SleepClosure implements Function
           {
              Scalar lvar = (Scalar)locals.pop();
 
-             if (lvar.getValue() != null && lvar.getValue().getClass() == ObjectValue.class && lvar.getValue().objectValue() != null && lvar.getValue().objectValue().getClass() == KeyValuePair.class)
+             if (lvar.getActualValue() != null && lvar.getActualValue().getClass() == ObjectValue.class && lvar.getActualValue().objectValue() != null && lvar.getActualValue().objectValue().getClass() == KeyValuePair.class)
              {
-                KeyValuePair kvp = (KeyValuePair)lvar.getValue().objectValue();
+                KeyValuePair kvp = (KeyValuePair)lvar.getActualValue().objectValue();
 
                 if (!sleep.parser.Checkers.isVariable(kvp.getKey().toString()))
                 {

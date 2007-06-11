@@ -33,8 +33,12 @@ public class HashContainer implements ScalarHash
       Iterator i = values.values().iterator();
       while (i.hasNext())
       {
-         if (((Scalar)i.next()).getValue() == ntype)
+         Scalar next = (Scalar)i.next();
+
+         if (next.getArray() == null && next.getHash() == null && next.getActualValue() == ntype)
+         {
             i.remove();
+         }
       }
 
       return new CollectionWrapper(values.keySet());
@@ -42,12 +46,7 @@ public class HashContainer implements ScalarHash
 
    public void remove(Scalar value)
    {
-      Iterator i = values.keySet().iterator();
-      while (i.hasNext())
-      {
-         if (i.next().toString().equals(value.toString()))
-            i.remove();
-      }
+      SleepUtils.removeScalar(values.values().iterator(), value);
    }
 
    public String toString()

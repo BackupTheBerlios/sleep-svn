@@ -194,7 +194,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
        //  "3"      "3"      3         - true
        //   
        if (predName.equals("-istrue"))
-          return value.getValue().toString().length() != 0 && !("0".equals(value.getValue().toString()));
+       {
+          return (value.getArray() != null || value.getHash() != null) || (
+                  value.getActualValue().toString().length() != 0 && !("0".equals(value.getActualValue().toString())));
+       }
 
        if (predName.equals("-isfunction"))
           return SleepUtils.isFunctionScalar(value);
@@ -596,8 +599,26 @@ public class BasicUtilities implements Function, Loadable, Predicate
     {
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
-          ScalarArray value = BridgeUtilities.getArray(l);
-          return value.remove(BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.size()));
+          Scalar value = (Scalar)l.pop();
+
+          if (value.getArray() != null)
+          {
+             int size = value.getArray().size();
+             while (!l.isEmpty())
+             {             
+                value.getArray().remove(BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), size));
+             }
+          }
+          else if (value.getHash() != null)
+          {
+             while (!l.isEmpty())
+             {
+                Scalar remove = value.getHash().getAt((Scalar)l.pop()); /* set each key to null to remove */
+                remove.setValue(SleepUtils.getEmptyScalar());
+             }
+          }
+
+          return SleepUtils.getEmptyScalar();
        }
     }
 

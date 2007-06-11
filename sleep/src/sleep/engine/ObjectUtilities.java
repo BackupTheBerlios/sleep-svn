@@ -162,7 +162,7 @@ public class ObjectUtilities
       }
       else if (check.isPrimitive())
       {
-         Class stemp = scalar.getValue().getClass();
+         Class stemp = scalar.getActualValue().getClass(); /* at this point we know scalar is not null, not a hash, and not an array */
 
          if (stemp == INT_SCALAR && check == Integer.TYPE)
          {
@@ -176,7 +176,7 @@ public class ObjectUtilities
          {
             return ARG_MATCH_YES;
          }
-         else if (check == Character.TYPE && stemp == STRING_SCALAR && scalar.getValue().toString().length() == 1)
+         else if (check == Character.TYPE && stemp == STRING_SCALAR && scalar.getActualValue().toString().length() == 1)
          {
             return ARG_MATCH_YES;
          }
@@ -205,7 +205,7 @@ public class ObjectUtilities
       }
       else if (check == String.class)
       {
-         Class stemp = scalar.getValue().getClass();
+         Class stemp = scalar.getActualValue().getClass();
          return (stemp == STRING_SCALAR) ? ARG_MATCH_YES : ARG_MATCH_MAYBE;
       }
       else if (check == Object.class)
@@ -214,7 +214,7 @@ public class ObjectUtilities
       }
       else if (check.isInstance(scalar.objectValue()))
       {
-         Class stemp = scalar.getValue().getClass();
+         Class stemp = scalar.getActualValue().getClass();
          return (stemp == OBJECT_SCALAR) ? ARG_MATCH_YES : ARG_MATCH_MAYBE;
       }
       else

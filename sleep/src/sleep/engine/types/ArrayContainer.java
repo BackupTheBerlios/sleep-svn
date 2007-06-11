@@ -54,16 +54,7 @@ public class ArrayContainer implements ScalarArray
 
    public void remove(Scalar key)
    {
-      Iterator i = values.iterator();
-      while (i.hasNext())
-      {
-         String value = i.next().toString();
-
-         if (value.equals(key.toString()))
-         {
-            i.remove();
-         }
-      }
+      SleepUtils.removeScalar(values.iterator(), key);
    }
 
    public Scalar remove(int index)

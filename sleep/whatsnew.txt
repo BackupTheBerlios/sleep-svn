@@ -20,6 +20,17 @@
 - &readObject no longer throws an EOFException.
 - added another debug mode: DEBUG_TRACE_LOGIC (64); use this to trace
   the results of all predicate evaluations
+- cleaned up the code in BasicNumbers a bit to reduce the file size
+- cleaned up the implementation of &remove(%|@, ...), the function now
+  removes based on values (and not keys); comparisons are made as follows
+  hashes, arrays, and object scalars are compared by reference, everything
+  else is checked by string value.
+- fixed improper uses of (<Scalar>n).getValue() throughout the Sleep codebase.
+  this function builds discardable string representations of hashes/arrays.
+  sometimes this behavior is desired, usually its not.  these changes will
+  increase performance when using arrays/hashes extensively. 
+- &removeAt can now remove elements from arrays or hashes, multiple keys
+  can be specified as well.  the function no longer returns a value.
 
 2.1-beta 15  (25 Apr 07)
 ===========

@@ -46,6 +46,37 @@ public class SleepUtils
 
        return parser.getRunnableBlock();
     }
+  
+    /** Iterates over the specified collection and removes all items that are the same as the specified scalar
+        value.  Certain scalars (ints, doubles, etc.) are compared by string representation where as others 
+        (Object, Hash, Array) are compared by reference. */
+    public static void removeScalar(Iterator collection, Scalar value)
+    {
+        while (collection.hasNext())
+        {
+            Scalar next = (Scalar)collection.next();
+
+            if (value.getArray() != null && next.getArray() != null && value.getArray() == next.getArray())
+            {
+               collection.remove();
+            }
+            else if (value.getHash() != null && next.getHash() != null && value.getHash() == next.getHash())
+            {
+               collection.remove();
+            }
+            else if (value.getActualValue() != null && next.getActualValue() != null)
+            {
+               if (value.getActualValue().getClass() == ObjectValue.class && value.getActualValue().getClass() == ObjectValue.class && value.objectValue() == next.objectValue())
+               {
+                  collection.remove(); /* two objects with matching references! */
+               }
+               else if (value.getActualValue().toString().equals(next.getActualValue().toString()))
+               {
+                  collection.remove(); /* whee... */
+               } 
+            }
+        }
+    }
 
    /** "safely" run a snippet of code.  The main thing this function does is clear the return value 
     *  before returning the value to the caller.  This is important because the return value (if there 
@@ -401,11 +432,11 @@ public class SleepUtils
       }
       else
       {
-         if (scalar.getValue() instanceof NullValue)
+         if (scalar.getActualValue() instanceof NullValue)
          {
             return "$null";
          }
-         else if (scalar.getValue() instanceof StringValue)
+         else if (scalar.getActualValue() instanceof StringValue)
          {
             return "'" + scalar.toString() + "'";
          }
@@ -418,11 +449,11 @@ public class SleepUtils
             KeyValuePair kvp = (KeyValuePair)scalar.objectValue();
             return kvp.getKey().toString() + " => " + describe(kvp.getValue());
          }
-         else if (scalar.getValue() instanceof ObjectValue)
+         else if (scalar.getActualValue() instanceof ObjectValue)
          {
             return scalar.toString();
          }
-         else if (scalar.getValue() instanceof LongValue)
+         else if (scalar.getActualValue() instanceof LongValue)
          {
             return scalar.toString() + "L";
          }

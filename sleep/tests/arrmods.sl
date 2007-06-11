@@ -15,7 +15,8 @@ println(splice(@c, subarray(@a, -4), 3, 0));
 println(splice(@c, subarray(@a, -4, -2), 3, 0));
 
 @c = copy(@b);
-println(removeAt(@c, -3));
+println(@c[-3]);
+removeAt(@c, -3);
 println(@c);
 
 add(@c, "test!!!", 0);

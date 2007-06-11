@@ -34,17 +34,6 @@ import java.math.*;
 /** provides some of the basic number crunching functionality */
 public class BasicNumbers implements Predicate, Operator, Loadable, Function
 {
-    public static Class TYPE_LONG;
-    public static Class TYPE_INT;
-    public static Class TYPE_DOUBLE;
-  
-    public BasicNumbers()
-    {
-       TYPE_LONG   = sleep.engine.types.LongValue.class;
-       TYPE_INT    = sleep.engine.types.IntValue.class;
-       TYPE_DOUBLE = sleep.engine.types.DoubleValue.class;
-    }
-
     public boolean scriptUnloaded(ScriptInstance aScript)
     {
        return true;
@@ -65,13 +54,13 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        }
 
        // functions
-       temp.put("&double", new convert_double());
-       temp.put("&int",    new convert_int());
-       temp.put("&uint",    new convert_uint());
-       temp.put("&long",   new convert_long());
+       temp.put("&double", this);
+       temp.put("&int", this);
+       temp.put("&uint", this);
+       temp.put("&long", this);
 
-       temp.put("&parseNumber",   new parseNumber());
-       temp.put("&formatNumber",   new formatNumber());
+       temp.put("&parseNumber",  this);
+       temp.put("&formatNumber", this);
 
        // basic operators
        temp.put("+", this);
@@ -91,7 +80,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        temp.put("&", this);
        temp.put("|", this);
        temp.put("^", this);
-       temp.put("&not", new not());
+       temp.put("&not", this);
  
        // predicates
        temp.put("==", this);
@@ -103,21 +92,9 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        temp.put("is", this);
 
        // functions
-       temp.put("&rand", new rand());
+       temp.put("&rand", this);
 
        return true;
-    }
-
-    private static class parseNumber implements Function
-    {
-       public Scalar evaluate(String name, ScriptInstance si, Stack args)
-       {
-          String number = BridgeUtilities.getString(args, "0");
-          int    radix  = BridgeUtilities.getInt(args, 10);
-
-          BigInteger temp = new BigInteger(number, radix);
-          return SleepUtils.getScalar(temp.longValue());
-       }
     }
 
     public Scalar evaluate(String name, ScriptInstance si, Stack args)
@@ -139,13 +116,44 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        else if (name.equals("&radians")) { return SleepUtils.getScalar(Math.toRadians(BridgeUtilities.getDouble(args, 0.0))); }
        else if (name.equals("&degrees")) { return SleepUtils.getScalar(Math.toDegrees(BridgeUtilities.getDouble(args, 0.0))); }
        else if (name.equals("&exp")) { return SleepUtils.getScalar(Math.exp(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&not")) {
+           ScalarType sa = ((Scalar)args.pop()).getActualValue(); /* we already assume this is a number */
 
-       return SleepUtils.getEmptyScalar();
-    }
-    
-    private static class formatNumber implements Function
-    {
-       public Scalar evaluate(String name, ScriptInstance si, Stack args)
+           if (sa.getClass() == IntValue.class)
+               return SleepUtils.getScalar(~ sa.intValue());
+
+           return SleepUtils.getScalar(~ sa.longValue());
+       }
+       else if (name.equals("&long"))
+       {
+          Scalar temp = BridgeUtilities.getScalar(args);
+          return SleepUtils.getScalar(temp.longValue());
+       }
+       else if (name.equals("&double"))
+       {
+          Scalar temp = BridgeUtilities.getScalar(args);
+          return SleepUtils.getScalar(temp.doubleValue());
+       }
+       else if (name.equals("&int"))
+       {
+          Scalar temp = BridgeUtilities.getScalar(args);
+          return SleepUtils.getScalar(temp.intValue());
+       }
+       else if (name.equals("&uint"))
+       {
+          int temp = BridgeUtilities.getInt(args, 0);
+          long templ = 0x00000000FFFFFFFFL & temp;
+          return SleepUtils.getScalar(templ);
+       }
+       else if (name.equals("&parseNumber"))
+       {
+          String number = BridgeUtilities.getString(args, "0");
+          int    radix  = BridgeUtilities.getInt(args, 10);
+
+          BigInteger temp = new BigInteger(number, radix);
+          return SleepUtils.getScalar(temp.longValue());
+       }
+       else if (name.equals("&formatNumber"))
        {
           String number = BridgeUtilities.getString(args, "0");
 
@@ -161,24 +169,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
           BigInteger temp = new BigInteger(number, from);
           return SleepUtils.getScalar(temp.toString(to));
        }
-    }
-    
-    private static class not implements Function
-    {
-       public Scalar evaluate(String name, ScriptInstance si, Stack args)
-       {
-           ScalarType sa = ((Scalar)args.pop()).getValue();
-
-           if (sa.getClass() == TYPE_INT)
-               return SleepUtils.getScalar(~ sa.intValue());
-
-           return SleepUtils.getScalar(~ sa.longValue());
-       }
-    }
-
-    private static class rand implements Function
-    {
-       public Scalar evaluate(String name, ScriptInstance si, Stack args)
+       else if (name.equals("&rand"))
        {
           if (! args.isEmpty())
           {
@@ -197,54 +188,23 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
           
           return SleepUtils.getScalar(Math.random());
        }
-    }
 
-    private static class convert_double implements Function
-    {
-       public Scalar evaluate(String name, ScriptInstance si, Stack args)
-       {          Scalar temp = BridgeUtilities.getScalar(args);
-          return SleepUtils.getScalar(temp.doubleValue());
-       }
-    }
-
-    private static class convert_int implements Function
-    {
-       public Scalar evaluate(String name, ScriptInstance si, Stack args)
-       {
-          Scalar temp = BridgeUtilities.getScalar(args);
-          return SleepUtils.getScalar(temp.intValue());
-       }
-    }
-
-    private static class convert_uint implements Function
-    {
-       public Scalar evaluate(String name, ScriptInstance si, Stack args)
-       {
-          int temp = BridgeUtilities.getInt(args, 0);
-          long templ = 0x00000000FFFFFFFFL & temp;
-          return SleepUtils.getScalar(templ);
-       }
-    }
-
-    private static class convert_long implements Function
-    {
-       public Scalar evaluate(String name, ScriptInstance si, Stack args)
-       {
-          Scalar temp = BridgeUtilities.getScalar(args);
-          return SleepUtils.getScalar(temp.longValue());
-       }
+       return SleepUtils.getEmptyScalar();
     }
 
     public boolean decide(String n, ScriptInstance i, Stack l)
     {
        Stack env = i.getScriptEnvironment().getEnvironmentStack();
-       ScalarType sb = ((Scalar)l.pop()).getValue();
-       ScalarType sa = ((Scalar)l.pop()).getValue();
+       Scalar vb = (Scalar)l.pop();
+       Scalar va = (Scalar)l.pop();
 
        if (n.equals("is"))
-          return sa.objectValue() == sb.objectValue();
+          return va.objectValue() == vb.objectValue(); /* could be anything! */
 
-       if (sa.getClass() == TYPE_DOUBLE || sb.getClass() == TYPE_DOUBLE)
+       ScalarType sb = vb.getActualValue();
+       ScalarType sa = va.getActualValue();
+
+       if (sa.getClass() == DoubleValue.class || sb.getClass() == DoubleValue.class)
        {
           double a = sa.doubleValue();
           double b = sb.doubleValue();
@@ -256,7 +216,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
           if (n.equals("<"))  { return a <  b; }
           if (n.equals(">"))  { return a >  b; }
        }
-       else if (sa.getClass() == TYPE_LONG || sb.getClass() == TYPE_LONG)
+       else if (sa.getClass() == LongValue.class || sb.getClass() == LongValue.class)
        {
           long a = sa.longValue();
           long b = sb.longValue();
@@ -286,10 +246,10 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
 
     public Scalar operate(String o, ScriptInstance i, Stack locals)
     {
-       ScalarType left  = ((Scalar)locals.pop()).getValue();
-       ScalarType right = ((Scalar)locals.pop()).getValue();
+       ScalarType left  = ((Scalar)locals.pop()).getActualValue();
+       ScalarType right = ((Scalar)locals.pop()).getActualValue();
 
-       if ((right.getClass() == TYPE_DOUBLE || left.getClass() == TYPE_DOUBLE) && !(o.equals(">>") || o.equals("<<") || o.equals("&") || o.equals("|") || o.equals("^")))
+       if ((right.getClass() == DoubleValue.class || left.getClass() == DoubleValue.class) && !(o.equals(">>") || o.equals("<<") || o.equals("&") || o.equals("|") || o.equals("^")))
        {
           double a = left.doubleValue();
           double b = right.doubleValue();
@@ -301,7 +261,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
           if (o.equals("% ")) { return SleepUtils.getScalar(a % b); }
           if (o.equals("**")) { return SleepUtils.getScalar(Math.pow((double)a, (double)b)); }
        }
-       else if (right.getClass() == TYPE_LONG || left.getClass() == TYPE_LONG)
+       else if (right.getClass() == LongValue.class || left.getClass() == LongValue.class)
        {
           long a = left.longValue();
           long b = right.longValue();
