@@ -103,7 +103,12 @@ public class Checkers
        return (a.equals("import"));
    }
 
-   public static final boolean isClassIdentifier(Parser parser, String a)
+   public static final boolean isClassLiteral(String a)
+   {
+       return a.length() >= 2 && a.charAt(0) == '^';
+   }
+
+   public static final boolean isClassPiece(String a)
    {
        if (a.length() >= 1 && !isVariable(a) && Character.isJavaIdentifierStart(a.charAt(0)))
        {
@@ -114,11 +119,14 @@ public class Checkers
                 return false;
              }
           }
-
-          return parser.findImportedClass(a) != null;
+          return true;
        }
-
        return false;
+   }
+
+   public static final boolean isClassIdentifier(Parser parser, String a)
+   {
+       return isClassPiece(a) && parser.findImportedClass(a) != null;
    }
 
    public static final boolean isBindFilter(String a, String b, String c, String d)

@@ -446,6 +446,20 @@ public class CodeGenerator implements ParserConstants
            atom    = GeneratedSteps.SValue(ascalar);
            add(atom, tokens[0]);
            break;
+         case IDEA_CLASS:
+           Class claz = parser.findImportedClass(strings[0].substring(1));
+ 
+           if (claz == null)
+           {
+              parser.reportError("unable to resolve class: " + strings[0].substring(1), tokens[0]);
+           } 
+           else
+           {          
+              ascalar = SleepUtils.getScalar(parser.findImportedClass(strings[0].substring(1)));
+              atom    = GeneratedSteps.SValue(ascalar);
+              add(atom, tokens[0]);
+           }
+           break;
          case VALUE_SCALAR:                       //   implemented
            if (strings[0].equals("$null"))
            {

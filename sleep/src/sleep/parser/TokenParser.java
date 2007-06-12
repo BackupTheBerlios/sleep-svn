@@ -465,6 +465,11 @@ public class TokenParser implements ParserConstants
             myToken.setType(IDEA_BLOCK);
             myToken.add(tokens[x]);
          }
+         else if (Checkers.isClassLiteral(strings[x]))
+         {
+            myToken.setType(IDEA_CLASS);
+            myToken.add(tokens[x]);
+         }
          else
          {
             parser.reportError("Unknown expression", new Token(data.toString(), tokens[x].getHint()));

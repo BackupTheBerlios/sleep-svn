@@ -3,6 +3,9 @@
 - reduced number of Class.forName calls made when parsing scripts...
   should help those using Sleep in Java applets ;) 
   [p.s. sorry I wasn't able to take care of this sooner]
+- added a new type of literal for resolving a Java class i.e.:
+  ^java.util.LinkedList resolves to java.util.LinkedList.class
+  ^Map$Entry would resolve to java.util.Map$Entry.class  etc..
 
 2.1-beta 16  (11 Jun 07)
 ===========

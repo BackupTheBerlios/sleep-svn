@@ -113,7 +113,19 @@ public class LexicalAnalyzer
 
             tok = x;
 
-            if (Checkers.isFunctionCall(a, b) || Checkers.isIndexableItem(a, b))
+            if ((x + 2) < terms.length && Checkers.isClassLiteral(a) && b.equals("."))
+            {
+               rhs.append(terms[x]);
+
+               /** collapse a literal class string plz */
+               while ((x + 2) < terms.length && terms[x+1].toString().equals(".") && Checkers.isClassPiece(terms[x+2].toString()))
+               {
+                  rhs.append(".");
+                  rhs.append(terms[x+2]);
+                  x += 2;
+               }
+            }
+            else if (Checkers.isFunctionCall(a, b) || Checkers.isIndexableItem(a, b))
             {
                rhs.append(a.toString());
                rhs.append(b.toString());
