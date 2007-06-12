@@ -162,6 +162,12 @@ public class Parser
              }
           }
 
+          if (rv == null)
+          {
+             System.err.println("Argh: " + name + " is not an imported class");
+             Thread.dumpStack();
+          }
+
           classes.put(name, rv);
        }
      

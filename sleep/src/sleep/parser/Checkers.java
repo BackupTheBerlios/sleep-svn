@@ -105,7 +105,20 @@ public class Checkers
 
    public static final boolean isClassIdentifier(Parser parser, String a)
    {
-       return !isIndex(a) && parser.findImportedClass(a) != null;
+       if (a.length() >= 1 && !isVariable(a) && Character.isJavaIdentifierStart(a.charAt(0)))
+       {
+          for (int x = 1; x < a.length(); x++)
+          {
+             if (!Character.isJavaIdentifierPart(a.charAt(x)) && a.charAt(x) != '.')
+             {
+                return false;
+             }
+          }
+
+          return parser.findImportedClass(a) != null;
+       }
+
+       return false;
    }
 
    public static final boolean isBindFilter(String a, String b, String c, String d)
