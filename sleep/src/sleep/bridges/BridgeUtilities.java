@@ -67,6 +67,14 @@ public class BridgeUtilities
       return ((Scalar)arguments.pop()).intValue();
    }
 
+   /** grab a class, if the stack is empty the default value will be returned */
+   public static Class getClass(Stack arguments, Class defaultValue)
+   {
+      Object obj = getObject(arguments);
+      if (obj == null) { return defaultValue; }
+      return (Class)obj;
+   }
+
    /** grab a long.  if the stack is empty 0 will be returned. */
    public static long getLong(Stack arguments)
    {

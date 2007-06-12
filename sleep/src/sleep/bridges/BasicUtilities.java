@@ -34,12 +34,17 @@ import java.net.URLClassLoader;
 
 import java.lang.reflect.*; // for array casting stuff
 
-import sleep.parser.Parser;
+import sleep.parser.*;
 import sleep.error.YourCodeSucksException;
 
 /** implementation of basic utility functions */
 public class BasicUtilities implements Function, Loadable, Predicate
 {
+    static
+    {
+       ParserConfig.addKeyword("isa");
+    }
+
     public boolean scriptUnloaded (ScriptInstance i)
     {
         return true;
@@ -95,6 +100,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("-isarray", this);   
         temp.put("-ishash",  this); 
         temp.put("-isfunction", this);
+        temp.put("isa", this);
         temp.put("&setField", this);
 
         temp.put("&exit", this);
@@ -181,6 +187,14 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
     public boolean decide(String predName, ScriptInstance anInstance, Stack terms)
     {
+
+       if (predName.equals("isa"))
+       {
+          Class  blah = BridgeUtilities.getClass(terms, null);
+          Object bleh = BridgeUtilities.getObject(terms);
+          return blah != null && blah.isInstance(bleh);          
+       }
+ 
        Scalar value = (Scalar)terms.pop();
  
        // Times when a scalar is considered true:

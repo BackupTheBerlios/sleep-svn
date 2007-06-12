@@ -6,6 +6,10 @@
 - added a new type of literal for resolving a Java class i.e.:
   ^java.util.LinkedList resolves to java.util.LinkedList.class
   ^Map$Entry would resolve to java.util.Map$Entry.class  etc..
+- added a new predicate 'isa' for determining if an object is a 
+  instance of a specific class i.e.:  "string" isa ^String
+- added a better error message for class cast exceptions caught w/i
+  the interpreter.
 
 2.1-beta 16  (11 Jun 07)
 ===========

@@ -223,6 +223,10 @@ public class Block implements Serializable
               {
                  environment.getScriptInstance().fireWarning("attempted an invalid index", temp.getLineNumber());
               }
+              else if (ex instanceof ClassCastException)
+              {
+                 environment.getScriptInstance().fireWarning("attempted an invalid cast: " + ex.getMessage(), temp.getLineNumber());
+              }
               else if (ex instanceof NullPointerException)
               {
                  environment.getScriptInstance().fireWarning("null value error", temp.getLineNumber());
