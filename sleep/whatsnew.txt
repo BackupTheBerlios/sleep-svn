@@ -29,6 +29,8 @@
   of a Java object backed by the specified interfaces
 - try/catch is no longer dependent on putting the caught value into
   the global scope.
+- returning within a try block no longer breaks Sleep's exception
+  mechanism.
 
 2.1-beta 16  (11 Jun 07)
 ===========

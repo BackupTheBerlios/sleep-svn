@@ -187,6 +187,19 @@ public class Block implements Serializable
         }
     }
 
+    /** clean up the environment */
+    private void cleanupEnvironment(ScriptEnvironment environment)
+    {
+        /* pop source information from the stack */
+        environment.popSource();
+
+        /* remove exception handlers associated with this block (we obviously returned within one */
+        if (environment.isResponsible(this))
+        {
+           environment.popExceptionContext();
+        }
+    }
+
     /** evaluates this block of code.  please note that if the block has a return statement and the method clearReturn() is not 
         called on the corresponding script environment chaos will ensue.  use SleepUtils.runCode() to safely execute a block of
         code.  don't call this method yourself.  okay? */
@@ -198,7 +211,7 @@ public class Block implements Serializable
            {
               environment.pushSource(source); /* may not be necessary, but then again, maybe they are... used for stack traces */
               handleException(environment);
-              environment.popSource();
+              cleanupEnvironment(environment);
            }
 
            return environment.getReturnValue();
@@ -241,7 +254,7 @@ public class Block implements Serializable
                  ex.printStackTrace(System.out);
               }
 
-              environment.popSource();
+              cleanupEnvironment(environment);
               return SleepUtils.getEmptyScalar();
            } 
 
@@ -282,7 +295,7 @@ public class Block implements Serializable
                     handleException(environment);
                  }
 
-                 environment.popSource();
+                 cleanupEnvironment(environment);
                  return environment.getReturnValue(); /* we do this because the exception will get cleared and after that
                                                          there may be a return value */
               }
@@ -293,7 +306,7 @@ public class Block implements Serializable
               }
               else
               {
-                 environment.popSource();
+                 cleanupEnvironment(environment);
                  return environment.getReturnValue();
               }
            }
@@ -301,7 +314,7 @@ public class Block implements Serializable
            temp = temp.next;
         }
 
-        environment.popSource();
+        cleanupEnvironment(environment);
         return SleepUtils.getEmptyScalar(); 
     }
 }
