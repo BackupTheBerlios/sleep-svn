@@ -10,7 +10,7 @@ $sb2 = [new SqueezeBox];
 println("Pre change:");
 [$sb1 printValues];
 
-setField(SqueezeBox, aDoubleField => 4);
+setField(^SqueezeBox, aDoubleField => 4);
 [$sb1 printValues];
 [$sb2 printValues];
 

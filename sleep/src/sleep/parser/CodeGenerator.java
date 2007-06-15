@@ -789,16 +789,6 @@ public class CodeGenerator implements ParserConstants
               atom = GeneratedSteps.Decide(parsePredicate(termsAr[0]), a, b);
               add(atom, tokens[0]); 
            }
-           else if (strings[0].equals("&setField"))
-           {
-              atom = GeneratedSteps.CreateFrame();
-              add(atom, tokens[0]);
-
-              parseSpecialParameters(ParserUtilities.extract(tokens[1]));
-
-              atom = GeneratedSteps.Call(strings[0]);
-              add(atom, tokens[0]);
-           }
            else if (tokens.length > 1)
            {
               atom = GeneratedSteps.CreateFrame();
@@ -1190,39 +1180,6 @@ public class CodeGenerator implements ParserConstants
            break;
          default:
       }     
-   }
-
-   /** checks if the first token is potentially a class literal, if it is creates an
-       object scalar for it.  otherwise it is parsed as a normal literal idea */
-   public void parseSpecialParameters(Token token)
-   {
-      TokenList terms   = ParserUtilities.groupByParameterTerm(parser, token);
-      Token[]   termsAr = terms.getTokens();
-
-      for (int x = termsAr.length - 1; x >= 0; x--)
-      {
-         if (x == 0)
-         {
-            Class aClass = parser.findImportedClass(termsAr[x].toString());
-
-            if (aClass == null)
-            {
-               parseIdea(termsAr[x]);
-            }
-            else
-            {
-               Scalar  ascalar = SleepUtils.getScalar(aClass);
-               Step    atom    = GeneratedSteps.SValue(ascalar);
-               add(atom, termsAr[x]);
-
-               parseIdea(ParserUtilities.makeToken("'==CLASS=='", termsAr[x]));
-            }
-         }
-         else
-         {
-            parseIdea(termsAr[x]);
-         }
-      }
    }
 
    public void parseParameters(Token token)

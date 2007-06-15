@@ -232,8 +232,9 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
-          File   parent;
-          String className;
+          File   parent    = null;
+          String className = "";
+          Class  bridge    = null;
 
           if (l.size() == 2)
           {
@@ -242,10 +243,18 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
           else
           {
-             File a    = sleep.parser.ParserConfig.findJarFile(l.pop().toString());
+             Scalar obj = (Scalar)l.pop();
+             if (obj.objectValue() instanceof Class && n.equals("&use"))
+             {
+                bridge = (Class)obj.objectValue();
+             }
+             else
+             {
+                File a     = sleep.parser.ParserConfig.findJarFile(obj.toString());
 
-             parent    = a.getParentFile();
-             className = a.getName();
+                parent     = a.getParentFile();
+                className  = a.getName();
+             }
           }
 
           if (parent != null && !parent.exists())
@@ -257,16 +266,17 @@ public class BasicUtilities implements Function, Loadable, Predicate
           {
              if (n.equals("&use"))
              {
-                Class bridge;
-
-                if (parent != null)
+                if (bridge == null)
                 {
-                   URLClassLoader loader = new URLClassLoader(new URL[] { parent.toURL() });
-                   bridge = Class.forName(className, true, loader);
-                }
-                else
-                {
-                   bridge = Class.forName(className);
+                   if (parent != null)
+                   {
+                      URLClassLoader loader = new URLClassLoader(new URL[] { parent.toURL() });
+                      bridge = Class.forName(className, true, loader);
+                   }
+                   else
+                   {
+                      bridge = Class.forName(className);
+                   }
                 }
 
                 Loadable temp;
@@ -1121,13 +1131,14 @@ public class BasicUtilities implements Function, Loadable, Predicate
           Class  aClass = null;
           Object inst   = null;
 
-          if ("==CLASS==".equals(value.toString()))
-          {
-             aClass = (Class)(BridgeUtilities.getScalar(l).objectValue());
-          }
-          else if (value.objectValue() == null)
+          if (value.objectValue() == null)
           {
              throw new IllegalArgumentException("&setField: can not set field on a null object");
+          }
+          else if (value.objectValue() instanceof Class)
+          {
+             aClass = (Class)value.objectValue();
+             inst   = null;
           }
           else
           {

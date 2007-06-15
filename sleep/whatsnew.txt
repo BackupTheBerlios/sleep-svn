@@ -16,6 +16,11 @@
   specified scalars value.  
 - added the ability to specify a failure message with an assert i.e.:
   assert <predicate> : <message>; 
+- setField can now accept a class literal as its first argument for
+  updating a static field
+- &use can now accept a class literal as its first argument (safer
+  than specifying bridge as a string as class literals are resolved 
+  at compile time)
 
 2.1-beta 16  (11 Jun 07)
 ===========
