@@ -103,6 +103,7 @@ public class TextConsole implements ConsoleProxy
             }
 
             script.getScriptVariables().putScalar("@ARGV", array);  // set @ARGV to be our array of command line arguments
+            script.getScriptVariables().putScalar("$__SCRIPT__", SleepUtils.getScalar(script.getName()));
 
             if (System.getProperty("sleep.debug") != null)
             {

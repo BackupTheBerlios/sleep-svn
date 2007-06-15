@@ -10,6 +10,8 @@
   instance of a specific class i.e.:  "string" isa ^String
 - added a better error message for class cast exceptions caught w/i
   the interpreter.
+- added a $__SCRIPT__ variable to indicate the name of the executed
+  script when running a Sleep script from the command line.
 
 2.1-beta 16  (11 Jun 07)
 ===========

@@ -71,107 +71,25 @@ public class Parser
 
    public    char       EndOfTerm  = ';';
 
-   protected Map        imports   = new LinkedHashMap();
-   protected HashMap    classes   = new HashMap();
+   protected ImportManager imports;
 
-   protected HashMap    jars      = new HashMap(); /* resolved jar files, key=jar name value=ClassLoader */
+   /** obtain the import manager, used for managing imported packages. */
+   public ImportManager getImportManager()
+   {
+      return imports;
+   }
 
-   /** Used by hoes to import package names... */
+   /** Used by Sleep to import statement to save an imported package name. */
    public File importPackage(String packagez, String from)
    {
-       File returnValue = null;
+      return imports.importPackage(packagez, from);
+   }   
 
-       String pack, clas;
-       clas = packagez.substring(packagez.lastIndexOf(".") + 1, packagez.length());
-       pack = packagez.substring(0, packagez.lastIndexOf("."));
-
-       /* resolve and setup our class loader for the specified jar file */
-
-       if (from != null)
-       {
-          try
-          {
-             returnValue = ParserConfig.findJarFile(from);
- 
-             if (!jars.containsKey(from))
-             {
-                URLClassLoader loader = new URLClassLoader(new URL[] { returnValue.toURL() }, Thread.currentThread().getContextClassLoader());
-                jars.put(from, loader);
-             }
-          }
-          catch (Exception ex) { ex.printStackTrace(); }
-       }
-
-       /* handle importing our package */
-
-       if (clas.equals("*"))
-       {
-          imports.put(pack, from);
-       }
-       else
-       {
-          imports.put(packagez, from);
-         
-          Class found = findImportedClass(packagez);
-          classes.put(clas, found);
-       }
-
-       return returnValue;
-   }
-
-   private Class resolveClass(String pack, String clas, String jar)
-   {
-       try
-       {
-          if (jar != null)
-          {
-             ClassLoader cl = (ClassLoader)jars.get(jar);
-             return Class.forName(pack + "." + clas, true, cl);
-          }
-          else
-          {
-             return Class.forName(pack + "." + clas);
-          }
-       }
-       catch (Exception ex) { }
-
-       return null;
-   }
-
+   /** Attempts to find a class, starts out with the passed in string itself, if that doesn't resolve then the string is
+       appended to each imported package to see where the class might exist */
    public Class findImportedClass(String name)
    {
-       if (classes.get(name) == null)
-       {
-          Class rv = null;
-          String clas, pack;
-
-          if (name.indexOf(".") > -1)
-          {
-             clas = name.substring(name.lastIndexOf(".") + 1, name.length());
-             pack = name.substring(0, name.lastIndexOf("."));
-
-	     rv   = resolveClass(pack, clas, (String)imports.get(name));
-          }
-          else
-          {
-             Iterator i = imports.entrySet().iterator();
-             while (i.hasNext() && rv == null)
-             {
-                Map.Entry en = (Map.Entry)i.next();
-                rv = resolveClass((String)en.getKey(), name, (String)en.getValue());
-             }
-          }
-
-          if (rv == null)
-          {
-             System.err.println("Argh: " + name + " is not an imported class");
-             Thread.dumpStack();
-          }
-
-          classes.put(name, rv);
-       }
-     
-       return (Class)classes.get(name);
+      return imports.findImportedClass(name);
    }
 
    public void setEndOfTerm(char c)
@@ -188,6 +106,18 @@ public class Parser
    /** initialize the parser with the code you want me to work with */
    public Parser(String _name, String _code)
    {
+      this(_name, _code, null);
+   }
+
+   /** initialize the parser with the code you want me to work with plus a shared import manager */
+   public Parser(String _name, String _code, ImportManager imps)
+   {
+      if (imps == null)
+      {
+         imps = new ImportManager();
+      }
+      imports = imps;
+
       importPackage("java.lang.*", null);
       importPackage("java.util.*", null);
       importPackage("sleep.runtime.*", null);
