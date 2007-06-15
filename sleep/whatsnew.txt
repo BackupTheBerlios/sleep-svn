@@ -12,6 +12,8 @@
   the interpreter.
 - added a $__SCRIPT__ variable to indicate the name of the executed
   script when running a Sleep script from the command line.
+- added a typeOf($scalar) function to retrieve the class backing the
+  specified scalars value.  
 
 2.1-beta 16  (11 Jun 07)
 ===========

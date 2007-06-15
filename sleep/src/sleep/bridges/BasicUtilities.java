@@ -102,6 +102,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("-isfunction", this);
         temp.put("isa", this);
         temp.put("&setField", this);
+        temp.put("&typeOf", this);
 
         temp.put("&exit", this);
      
@@ -773,6 +774,13 @@ public class BasicUtilities implements Function, Loadable, Predicate
                 throw new IllegalArgumentException(vars[x] + " must already exist in a scope prior to watching");
              }
           }
+       }
+       else if (n.equals("&typeOf"))
+       {
+          Scalar s = BridgeUtilities.getScalar(l);
+          if (s.getArray() != null) { return SleepUtils.getScalar(s.getArray().getClass()); }
+          if (s.getHash() != null) { return SleepUtils.getScalar(s.getHash().getClass()); }
+          return SleepUtils.getScalar(s.getActualValue().getClass());
        }
        else if (n.equals("&invoke")) 
        {
