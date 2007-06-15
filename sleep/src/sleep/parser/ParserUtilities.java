@@ -62,6 +62,14 @@ public class ParserUtilities
        return groupByTerm(tokens);
    }
 
+   /** breaks down the token into sub tokens that are one "term" wide, in the case of messages separated by : */
+   public static TokenList groupByMessageTerm(Parser parser, Token smokin)
+   {
+       StringIterator iterator = new StringIterator(smokin.toString(), smokin.getHint());
+       TokenList      tokens   = LexicalAnalyzer.GroupExpressionIndexTokens(parser, iterator);
+       return groupByTerm(tokens);
+   }
+
    /** breaks down the token into sub tokens that are one "term" wide, a termi in the case of parameters it uses , */
    public static TokenList groupByParameterTerm(Parser parser, Token smokin)
    {
@@ -69,6 +77,7 @@ public class ParserUtilities
        TokenList      tokens   = LexicalAnalyzer.GroupParameterTokens(parser, iterator);
        return groupByTerm(tokens);
    }
+
 
    private static TokenList groupByTerm(TokenList n)
    {

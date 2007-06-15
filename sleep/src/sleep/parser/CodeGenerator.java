@@ -1099,19 +1099,28 @@ public class CodeGenerator implements ParserConstants
               return;
            }
 
+           Token assert_terms[] = ParserUtilities.groupByMessageTerm(parser, tokens[1]).getTokens();
+           
            backup();
               atom = GeneratedSteps.CreateFrame();
               add(atom, tokens[0]);
 
-              ascalar = SleepUtils.getScalar("assertion failed");
-              atom    = GeneratedSteps.SValue(ascalar);
-              add(atom, tokens[0]);
+              if (assert_terms.length == 1)
+              {
+                 ascalar = SleepUtils.getScalar("assertion failed");
+                 atom    = GeneratedSteps.SValue(ascalar);
+                 add(atom, tokens[0]);
+              }
+              else
+              {
+                 parseIdea(assert_terms[1]);
+              }
 
               atom = GeneratedSteps.Call("&exit");
               add(atom, tokens[0]);
            b = restore();
 
-           atom = GeneratedSteps.Decide(parsePredicate(tokens[1]), null, b);
+           atom = GeneratedSteps.Decide(parsePredicate(assert_terms[0]), null, b);
            add(atom, tokens[1]);
            break;
          case EXPR_RETURN:                     // implemented

@@ -14,6 +14,8 @@
   script when running a Sleep script from the command line.
 - added a typeOf($scalar) function to retrieve the class backing the
   specified scalars value.  
+- added the ability to specify a failure message with an assert i.e.:
+  assert <predicate> : <message>; 
 
 2.1-beta 16  (11 Jun 07)
 ===========
