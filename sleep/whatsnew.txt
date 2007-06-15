@@ -31,6 +31,7 @@
   the global scope.
 - returning within a try block no longer breaks Sleep's exception
   mechanism.
+- &exit can now be used within a try/catch block
 
 2.1-beta 16  (11 Jun 07)
 ===========

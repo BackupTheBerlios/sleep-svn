@@ -104,11 +104,12 @@ public class ImportManager
              }
           }
 
-          if (rv == null)
+          // some friendly (really) debugging
+/*          if (rv == null)
           {
              System.err.println("Argh: " + name + " is not an imported class");
              Thread.dumpStack();
-          }
+          } */
 
           classes.put(name, rv);
        }

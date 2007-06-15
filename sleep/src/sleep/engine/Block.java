@@ -292,7 +292,10 @@ public class Block implements Serializable
                  }
                  else
                  {
-                    handleException(environment);
+                    if (!SleepUtils.isEmptyScalar(environment.getReturnValue())) /* an empty return value means we're exiting */
+                    {
+                       handleException(environment);
+                    }
                  }
 
                  cleanupEnvironment(environment);
