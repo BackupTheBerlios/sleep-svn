@@ -21,6 +21,8 @@
 - &use can now accept a class literal as its first argument (safer
   than specifying bridge as a string as class literals are resolved 
   at compile time)
+- updated &cast and &casti to allow a class literal to be specified
+  as the type to cast to.
 
 2.1-beta 16  (11 Jun 07)
 ===========

@@ -353,13 +353,11 @@ public class BasicUtilities implements Function, Loadable, Predicate
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
           Scalar value      = BridgeUtilities.getScalar(l);
-          String type       = BridgeUtilities.getString(l, " ");
-
-          if (type.length() == 0) { type = " "; }
+          Scalar type       = BridgeUtilities.getScalar(l);
 
           if (n.equals("&casti"))
           {
-             Class  atype = ObjectUtilities.convertDescriptionToClass(type);
+             Class  atype = ObjectUtilities.convertScalarDescriptionToClass(type);
 
              if (atype != null)
              {
@@ -374,11 +372,11 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           if (value.getArray() == null)
           {
-             if (type.charAt(0) == 'c')
+             if (type.toString().charAt(0) == 'c')
              {
                 return SleepUtils.getScalar((Object)value.toString().toCharArray());
              }             
-             else if (type.charAt(0) == 'b')
+             else if (type.toString().charAt(0) == 'b')
              {
                 // we do a straight conversion here because we don't want byte data to be mucked up by charsets
                 // this is because string stores an array of bytes as a string...
@@ -410,7 +408,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           Object rv;
 
-          Class atype = ObjectUtilities.convertDescriptionToClass(type);
+          Class atype = ObjectUtilities.convertScalarDescriptionToClass(type);
 
           if (atype == null)
               atype = ObjectUtilities.getArrayType(value, Object.class);

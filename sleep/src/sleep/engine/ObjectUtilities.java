@@ -275,9 +275,25 @@ public class ObjectUtilities
       return temp;
    }
 
+   /** this function checks if the specified scalar is a Class literal and uses that if it is, otherwise description is converted to a string and the convertDescriptionToClass method is used */
+   public static Class convertScalarDescriptionToClass(Scalar description)
+   {
+       if (description.objectValue() instanceof Class)
+       {
+          return (Class)description.objectValue();
+       }
+
+       return convertDescriptionToClass(description.toString());
+   }
+
    /** converts the one character class description to the specified Class type, i.e. z = boolean, c = char, b = byte, i = integer, etc.. */
    public static Class convertDescriptionToClass(String description)
    {
+      if (description.length() != 1)
+      {
+         return null;
+      }
+
       Class atype = null;
 
       switch (description.charAt(0))
