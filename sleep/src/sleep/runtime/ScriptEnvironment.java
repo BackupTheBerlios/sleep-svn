@@ -142,7 +142,7 @@ public class ScriptEnvironment implements Serializable
        return getScriptVariables().getScalar(key, getScriptInstance());
     }
 
-    /** puts a scalar into this scripts environment */
+    /** puts a scalar into this scripts environment (global scope) */
     public void putScalar(String key, Scalar value)
     {
        getScriptVariables().putScalar(key, value);
@@ -401,7 +401,16 @@ public class ScriptEnvironment implements Serializable
     {
        request     &= ~FLOW_CONTROL_THROW;       
        Block  doit  = currentHandler.handler;
-       putScalar(currentHandler.varname, rv);
+
+       Scalar temp  = getScriptVariables().getScalar(currentHandler.varname, getScriptInstance());
+       if (temp != null)
+       {
+          temp.setValue(rv);
+       }
+       else
+       {
+          putScalar(currentHandler.varname, rv);
+       }
        rv           = null;
        return doit;
     }

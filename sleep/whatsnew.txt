@@ -27,6 +27,8 @@
 - sleep console now shares one pool of imported packages for evaluations
 - added newInstance(^Class|@, &closure) for creating a proxy instance
   of a Java object backed by the specified interfaces
+- try/catch is no longer dependent on putting the caught value into
+  the global scope.
 
 2.1-beta 16  (11 Jun 07)
 ===========
