@@ -24,6 +24,7 @@
 - updated &cast and &casti to allow a class literal to be specified
   as the type to cast to.  
 - added a lindexOf function to obtain the last index of a substring
+- sleep console now shares one pool of imported packages for evaluations
 
 2.1-beta 16  (11 Jun 07)
 ===========

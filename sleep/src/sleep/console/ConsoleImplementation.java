@@ -54,6 +54,9 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
    /** the script loader */
    private ScriptLoader     loader; 
 
+   /** our import manager */
+   private ImportManager    imports;
+
    /** Creates an implementation of the sleep console.  The implementation created by this constructor is isolated from your 
        applications environment.  Any scripts loaded via this console will have only the default bridges.  */
    public ConsoleImplementation()
@@ -506,7 +509,11 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
    {
        try
        {
-          Block parsed = SleepUtils.ParseCode(expression.toString());
+          Parser parser = new Parser("eval", expression.toString(), imports);
+          imports = parser.getImportManager();
+          parser.parse();
+          Block parsed = parser.getRunnableBlock();
+
           script = loader.loadScript("<interact mode>", parsed, sharedEnvironment);
 
           if (System.getProperty("sleep.debug") != null)
