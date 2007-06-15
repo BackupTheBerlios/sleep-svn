@@ -69,7 +69,8 @@ public class BasicStrings implements Loadable
         temp.put("&substr",  f_substr);
         temp.put("&mid",  f_substr);
 
-        temp.put("&indexOf", new func_indexOf());
+        temp.put("&indexOf",  new func_indexOf());
+        temp.put("&lindexOf", temp.get("&indexOf"));
         temp.put("&strlen",  new func_strlen());
         temp.put("&strrep",  new func_strrep());
         temp.put("&replaceAt",  new func_replaceAt());
@@ -443,9 +444,17 @@ public class BasicStrings implements Loadable
         {
            String value = l.pop().toString();
            String item  = l.pop().toString();
-           int    start = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.length());
                   
-           return SleepUtils.getScalar(value.indexOf(item, start));
+           if (n.equals("&lindexOf"))
+           {
+              int start = BridgeUtilities.normalize(BridgeUtilities.getInt(l, value.length()), value.length());
+              return SleepUtils.getScalar(value.lastIndexOf(item, start));
+           }
+           else
+           {
+              int start = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.length());
+              return SleepUtils.getScalar(value.indexOf(item, start));
+           }
         }
     }
 
