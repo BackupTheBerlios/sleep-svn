@@ -30,3 +30,5 @@ removeAt(@test, -1);
 
 println(@test);
 
+println(subarray(@("a", "b", "c", "d", "e"), 2));
+println(substr("abcde", 2));

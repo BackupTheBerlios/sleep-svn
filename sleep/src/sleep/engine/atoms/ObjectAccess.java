@@ -221,6 +221,10 @@ public class ObjectAccess extends Step
                   {
                      trace.append(theClass.getName() + " " + name + args + "]");
                   }
+                  else if (Proxy.isProxyClass(theClass))
+                  {
+                     trace.append(theClass.getName() + " " + name + args + "]");
+                  }
                   else
                   {
                      trace.append(SleepUtils.describe(scalar) + " " + name + args + "]");

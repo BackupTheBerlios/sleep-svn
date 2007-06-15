@@ -103,6 +103,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("isa", this);
         temp.put("&setField", this);
         temp.put("&typeOf", this);
+        temp.put("&newInstance", this);
 
         temp.put("&exit", this);
      
@@ -781,6 +782,25 @@ public class BasicUtilities implements Function, Loadable, Predicate
              {
                 throw new IllegalArgumentException(vars[x] + " must already exist in a scope prior to watching");
              }
+          }
+       }
+       else if (n.equals("&newInstance"))
+       {
+          Scalar top = BridgeUtilities.getScalar(l);
+      
+          if (top.getArray() != null)
+          {
+             Class        clz[]   = (Class[])ObjectUtilities.buildArgument(Class[].class, top, i);
+             SleepClosure closure = (SleepClosure)BridgeUtilities.getObject(l);          
+
+             return SleepUtils.getScalar(ProxyInterface.BuildInterface(clz, closure, i));
+          }
+          else
+          {
+             Class        clz     = (Class)top.objectValue();
+             SleepClosure closure = (SleepClosure)BridgeUtilities.getObject(l);          
+
+             return SleepUtils.getScalar(SleepUtils.newInstance(clz, closure, i));
           }
        }
        else if (n.equals("&typeOf"))
