@@ -321,6 +321,10 @@ statement.</p>
   <td>is</td>
   <td>true if scalar object reference v1 equals object reference v2</td>
  </tr>
+ <tr>  
+  <td>isa</td>
+  <td>true if scalar object reference v1 is an instance of the Class referenced by scalar v2</td>
+ </tr>
 </table>
 
 <p>One example use of the <code>is</code> comparison is to check if a function really returned
@@ -347,6 +351,8 @@ if ($null is $null)
 {
    # the string "test" is not contained in the string "walrus"
 }</pre>
+
+<p>The <code>isa</code> predicate is covered later in the <i>Class Literals</i> subsection of this document.</p>
 
 <h3>Combining Comparisons</h3>
 
@@ -442,6 +448,10 @@ is then "s" is returned.  Otherwise "" is returned.</p>
 
 <pre>assert <b>comparison</b>;</pre>
 
+<p>Assertions also allow a message to be attached.  The attached message is echoed whenever an assertion fails.</p>
+
+<pre>assert <b>comparison</b> : <b>message</b>;</pre>
+
 <p>Assertions are great for doing a last minute sanity check of some condition.  Can you tell what is wrong with this code snippet?</P>
 
 <pre>sub fact
@@ -453,7 +463,7 @@ is then "s" is returned.  Otherwise "" is returned.</p>
 
 <pre>sub fact
 {
-   assert $1 >= 0;
+   assert $1 >= 0 : "invalid arg for fact: $1";
    return iff($1 == 0, 1, $1 * fact($1 - 1));
 }</pre>
 
@@ -1604,6 +1614,29 @@ sleep.classpath accessible as systemProperties()["sleep.classpath"].</p>
 
 <p>If the jar filename includes spaces, you can surround it with single or double quotes.</p>
 
+<h4>Class Literals</h4>
+
+<p>Sleep has a special literal form for specifying Java classes within scripts.  The hat symbol followed by a string is 
+expanded into the appropriate class using the current list of imports at script compile time.  As an example <code>^String</code>
+expands to the result of <code>[Class forName: "java.lang.String"]</code>.  Class literals can be used to compare scalar types
+against eachother, to specify a desired class in a casting function, and more.</p>
+
+<p>Inner classes are referenced with a dollar sign between the parent class and the inner class name i.e.:
+<code>^Map$Entry</code> references the Entry class that belongs to the Map class.</p>
+
+<p>For example to check if an exception is an IOException before acting on it:</p>
+
+<pre>import java.io.IOException;
+
+$handle = openf("fjosfjs");
+if (checkError($error) && $error isa ^IOException)
+{
+   println("Could not open file: " . [$error getCause]);
+}</pre>
+
+<p>The <code>isa</code> predicate is used to check if the value on the left hand side is an instance of the class on the 
+right hand side.  It is analagous to Java's instanceof predicate.</p>
+
 <h3><a name="interfaces"></a>Sleep Interfaces</h3>
 
 <p>A neat feature of HOES is how interfaces can be quickly and easily created and passed to Java objects.  A Java interface
@@ -1645,6 +1678,8 @@ specified as a 0th parameter.  The parameters 1..n are the actual parameters pas
 <p>Above, the <var>&button_pressed</var> subroutine is acting as a java.awt.event.ActionListener interface.  The 
 only message passed to ActionListener interfaces is the actionPerformed message.  The button_pressed subroutine is passed as a 
 closure parameter in this line: <code>[$button addActionListener:&button_pressed];</code>.</p>
+
+<p>Sleep backed instantiations of Java interfaces can also be created with the <code>&amp;newInstance</code> function.</p>
 
 <p>Any uncaught exceptions originating from a Sleep script will bubble up to the Java caller of the Sleep interface.</p>
 
@@ -1893,6 +1928,9 @@ as many arguments as you are willing to specify.</p>
 
 <p>Parameters specified as <code>@|&</code> represent that either an @array can be passed or a &generator function.  A generator function is a closure that iterates over a sequence with the yield keyword and returns $null when no values are left to iterate over.</p>
 
+<p>A <code>^</code> indicates a literal Class value i.e. <code>^String</code>.  This is used to indicate that a function expects
+a class literal as an argument (or offers one as a return value).</p>
+
 <p>Note, the $ is not part of the function name.  It is solely shorthand for specifying the return type of the function.</p>
 
 <h3>Array Functions</h3>
@@ -1920,10 +1958,11 @@ as many arguments as you are willing to specify.</p>
  </tr>
  <tr>
   <td>$</td>
-  <td>cast(@array, 't', ...)</td>
-  <td>casts @array into an object scalar representing a native java array of type t where t can be b = byte, c = char, d = 
-double, f = float, h = short, i = int, l = long, o = java.lang.Object, z = boolean, * = any object type.  Arguments ... are optional and used 
-to represent the dimensions of the array.</td>
+  <td>cast(@array, 't'|^Class, ...)</td>
+  <td>casts @array into an object scalar representing a native java array of type t where t can be b = byte, c = char, d =
+double, f = float, h = short, i = int, l = long, o = java.lang.Object, z = boolean, * = any object type.  Optionally a
+^Class literal can be specified and Sleep will create an array of that type.  Arguments ... are optional and used to
+represent the dimensions of the array.</td>
  </tr>
  <tr>
   <td></td>
@@ -2656,6 +2695,11 @@ will be returned by &amp;wait.  if $handle is a process, the return value of the
  </tr>
  <tr>
   <td>$</td>
+  <td>lindexOf("string", "substr", [start])</td>
+  <td>returns the last index of "substr" inside of "string" looking backwards from the specified start index.</td>
+ </tr>
+ <tr>
+  <td>$</td>
   <td>join("string", @|&amp;)</td>
   <td>joins the elements of @array or &amp;generator with "string"</td>
  </tr>
@@ -2761,9 +2805,10 @@ n-m substrings will be returned.</td>
  </tr>
  <tr>
   <td>$</td>
-  <td>casti($scalar, 't')</td>
+  <td>casti($scalar, 't'|^Class)</td>
   <td>casts $scalar into an object scalar representing a native java value of type t where t can be b = byte, c = char, d = 
-      double, f = float, h = short, i = int, l = long, o = java.lang.Object, z = boolean.</td>
+      double, f = float, h = short, i = int, l = long, o = java.lang.Object, z = boolean.  Optionally a ^Class literal can be
+      specified in place of a type string.</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2837,6 +2882,11 @@ together.</td>
   <td>parses the specified string and declares all variables in the string as local variables.</td>
  </tr>
  <tr>
+  <td>$</td>
+  <td>newInstance(@|^Interface, &closure)</td>
+  <td>Creates a sleep closure backed instance of the specified java interface class (or classes if an array is used).</td>
+ </tr>
+ <tr>
   <td>@</td>
   <td>profile()</td>
   <td>returns the profiler statistics for the current script environment.  Profile statistics will only be collected if DEBUG_TRACE_CALLS (8) or DEBUG_TRACE_PROFILE_ONLY (24) is set.</td>
@@ -2853,7 +2903,7 @@ together.</td>
  </tr>
  <tr>
   <td></td>
-  <td>setField(class|$object, field => value, ...)</td>
+  <td>setField(^class|$object, field => value, ...)</td>
   <td>sets any number of public/protected fields of the specified class or instance of $object to a corresponding value.</td>
  </tr>
  <tr>
@@ -2878,8 +2928,8 @@ together.</td>
  </tr>
  <tr>
   <td></td>
-  <td>use("Loadable class")</td>
-  <td>loads the specified class into the current script environment.  Classes specified as package.Name are loaded from the Java classpath.  Classes can also be specified as filenames without the .class extension.  The specified class must be a Loadable bridge (i.e. it implements sleep.interfaces.Loadable).</td>
+  <td>use("Loadable"|^Loadable)</td>
+  <td>loads the specified class into the current script environment.  Classes specified as package.Name are loaded from the Java classpath.  Classes can also be specified as filenames without the .class extension.  The specified class must be a Loadable bridge (i.e. it implements sleep.interfaces.Loadable).  Optionally a class literal can be specified as an argument and Sleep will instantiate an instance of that class and install it as a bridge into the current script environment.  This is a safer way to use this function as the class name can be checked at script compile time.</td>
  </tr>
  <tr>
   <td></td>

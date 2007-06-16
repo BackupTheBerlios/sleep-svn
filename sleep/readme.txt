@@ -98,7 +98,8 @@ To launch a sleep script from the command line:
 [raffi@beardsley ~/sleep/bin]$ java -jar sleep.jar filename.sl
 
 When sleep scripts are run directly on the command line, arguments are
-placed into the @ARGV variable.
+placed into the @ARGV variable.  Also the executed script name is
+stored in the $__SCRIPT__ variable.
 
 To launch a sleep script from the command line (without -jar):
 
