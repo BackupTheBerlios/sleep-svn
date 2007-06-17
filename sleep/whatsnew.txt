@@ -1,4 +1,4 @@
-2.1-beta 17
+2.1-beta 17  (17 Jun 07)
 ===========
 - reduced number of Class.forName calls made when parsing scripts...
   should help those using Sleep in Java applets ;) 

@@ -1,5 +1,5 @@
  ------- -------------------- ---------   ---------------  ------- ---------
-Sleep - 2.1 beta 16 - README   
+Sleep - 2.1 beta 17 - README   
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 "You got the language, all you need now is the O'Reilly book".  That is
@@ -104,9 +104,6 @@ stored in the $__SCRIPT__ variable.
 To launch a sleep script from the command line (without -jar):
 
 [raffi@beardsley ~/sleep/bin]$ java -classpath sleep.jar sleep.console.TextConsole filename.sl
-
-When sleep scripts are run directly on the command line, arguments are
-placed into the @ARGV variable.
 
  ------- -------------------- ---------   ---------------  ------- ---------
 Feedback
