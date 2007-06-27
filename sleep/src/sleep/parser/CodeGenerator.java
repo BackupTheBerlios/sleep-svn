@@ -352,6 +352,20 @@ public class CodeGenerator implements ParserConstants
 
        switch (datum.getType())
        {
+         case VALUE_SCALAR_REFERENCE:
+           atom = GeneratedSteps.CreateFrame();
+           add(atom, tokens[0]);
+
+           atom = GeneratedSteps.Get(strings[0].substring(1)); /* generate rhs with scalar value */
+           add(atom, tokens[0]);
+
+           ascalar = SleepUtils.getScalar(strings[0].substring(1)); /* generate lhs string scalar with var name */
+           atom    = GeneratedSteps.SValue(ascalar);
+           add(atom, tokens[0]);
+
+           atom = GeneratedSteps.Operate("=>");
+           add(atom, tokens[0]);
+           break;
          case IDEA_HASH_PAIR:
            //
            // parsing A => B

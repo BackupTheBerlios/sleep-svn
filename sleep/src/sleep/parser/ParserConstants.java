@@ -45,8 +45,9 @@ public interface ParserConstants
    public static final int OBJECT_IMPORT   = 444;
    public static final int OBJECT_CL_CALL  = 446; // a object closure call [$closure:parm1, parm2, parm3] or [$closure] 
 
-   public static final int VALUE_SCALAR    = 701;
-   public static final int VALUE_INDEXED   = 710;
+   public static final int VALUE_SCALAR           = 701;
+   public static final int VALUE_SCALAR_REFERENCE = 705;
+   public static final int VALUE_INDEXED          = 710;
 
 
    public static final int PRED_BI         = 801;

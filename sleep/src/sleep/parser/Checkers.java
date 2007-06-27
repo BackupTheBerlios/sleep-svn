@@ -159,6 +159,11 @@ public class Checkers
       return (a.charAt(0) == '&' && a.length() > 1 && !a.equals("&&"));
    }
 
+   public static final boolean isVariableReference (String temp)
+   {
+      return temp.length() >= 3 && temp.charAt(0) == '\\' && !temp.equals("\\$null") && isVariable(temp.substring(1));
+   }
+
    public static final boolean isVariable (String temp)
    {
       return (isScalar(temp) || isHash(temp) || isArray(temp));

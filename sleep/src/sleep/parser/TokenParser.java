@@ -414,6 +414,11 @@ public class TokenParser implements ParserConstants
             myToken.setType(HACK_DEC);
             myToken.add(tokens[x]);
          }
+         else if (Checkers.isVariableReference(strings[x]))
+         {
+            myToken.setType(VALUE_SCALAR_REFERENCE);
+            myToken.add(tokens[x]);
+         }
          // a normal block
          else if (Checkers.isVariable(strings[x]))
          {
