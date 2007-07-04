@@ -3,6 +3,9 @@
 - added scalar references: \$x is equivalent to $x => $x.  this sugar
   was added for the common case of passing a key/value pair to copy a
   scalar into the local/this environment of a function.
+- added a srand(long) function for seeding the Sleep random number
+  generator.   %RANDOM% in the script environment contains the random
+  number generator reference.
 
 2.1-beta 17  (17 Jun 07)
 ===========
@@ -48,7 +51,7 @@
 - registered cmp operator to prevent parser confusing it with a function
 - hashes/arrays can now be passed as named parameters to closures
 - &size now works with hashes
-- the '.' command in the console interact mode will not repeat the last
+- the '.' command in the console interact mode will now repeat the last
   code sequence if no new code has been specified.
 - fixed a bug with &let, &lambda: when a ($this => ...) is specified
   all subsequent variable placements will be put into the shared this

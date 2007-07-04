@@ -16,7 +16,7 @@ $src = fork({
 
   for ($x = 0; $x < (1024 * 100); $x++)
   {
-     writeb($str, chr(rand(0, 255)));
+     writeb($str, chr(rand(255)));
 
      if (($x % 1024) == 0)
      {

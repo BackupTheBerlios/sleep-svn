@@ -39,16 +39,57 @@ import javax.crypto.*;
 import java.security.*;
 
 /** provides IO functions for the sleep language */
-public class BasicIO implements Loadable, Function
+public class BasicIO implements Loadable, Function, Evaluation
 {
     public boolean scriptUnloaded(ScriptInstance aScript)
     {
         return true;
     }
 
+    public Scalar evaluateString(ScriptInstance script, String value)
+    {
+       Scalar rv = SleepUtils.getArrayScalar();
+
+       try
+       { 
+          // execute our process and setup a reader for it 
+ 
+          Process proc  = Runtime.getRuntime().exec(value);
+          BufferedReader reader    = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+          BufferedReader errstream = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
+
+          // read each line from the process output, stuff it into our scalar array rv
+          if (errstream.ready())
+          {
+             System.out.println("err stream is pissing me off!");
+             rv.getArray().push(SleepUtils.getScalar("** " + errstream.readLine()));
+          }
+
+          String text = null;
+          while ((text = reader.readLine()) != null)
+          {
+             rv.getArray().push(SleepUtils.getScalar(text));
+
+             if (errstream.ready())
+             {
+                System.out.println("err stream is pissing me off! 2");
+                rv.getArray().push(SleepUtils.getScalar("** " + errstream.readLine()));
+             }
+          }
+       }
+       catch (Exception ex)
+       {
+          script.getScriptEnvironment().flagError(ex);
+       }
+
+       return rv;
+    }
+
     public boolean scriptLoaded (ScriptInstance aScript)
     {
         Hashtable temp = aScript.getScriptEnvironment().getEnvironment();
+
+        temp.put("%BACKQUOTE%", this);
 
         // predicates
         temp.put("-eof",     new iseof());

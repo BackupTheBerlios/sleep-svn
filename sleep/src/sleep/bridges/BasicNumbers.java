@@ -93,6 +93,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
 
        // functions
        temp.put("&rand", this);
+       temp.put("&srand", this);
 
        return true;
     }
@@ -169,24 +170,35 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
           BigInteger temp = new BigInteger(number, from);
           return SleepUtils.getScalar(temp.toString(to));
        }
+       else if (name.equals("&srand"))
+       {
+          long seed = BridgeUtilities.getLong(args);
+          si.getScriptEnvironment().getEnvironment().put("%RANDOM%", new Random(seed));
+       }
        else if (name.equals("&rand"))
        {
+          if (si.getScriptEnvironment().getEnvironment().get("%RANDOM%") == null) 
+          { 
+             si.getScriptEnvironment().getEnvironment().put("%RANDOM%", new Random()); 
+          }
+          Random r = (Random)si.getScriptEnvironment().getEnvironment().get("%RANDOM%");
+
           if (! args.isEmpty())
           {
              Scalar temp = (Scalar)args.pop();
 
              if (temp.getArray() != null)
              {
-                int potential = (int)(Math.random() * temp.getArray().size());
+                int potential = r.nextInt(temp.getArray().size());
                 return temp.getArray().getAt(potential);
              }
              else
              {
-                return SleepUtils.getScalar((int)(Math.random() * temp.intValue()));
+                return SleepUtils.getScalar(r.nextInt(temp.intValue()));
              }
           }
           
-          return SleepUtils.getScalar(Math.random());
+          return SleepUtils.getScalar(r.nextDouble());
        }
 
        return SleepUtils.getEmptyScalar();
