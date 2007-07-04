@@ -18,7 +18,10 @@
   requesting a byte[] or char[] parameter.
 - Sleep scalars returned by Java calls will be returned as is.
 - increased performance (x3) of Sleeps internal functions to convert a 
-  String to a non-tampered byte array. 
+  String to a non-mangled byte array. 
+- &remove returns data structure data was removed from
+- extended &add to accept a hash and multiple key/value pairs for
+  adding stuff to an existing hash.
 
 2.1-beta 17  (17 Jun 07)
 ===========

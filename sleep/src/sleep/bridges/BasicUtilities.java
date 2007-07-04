@@ -750,9 +750,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
              sleep.engine.atoms.Iterate.IteratorData d = (sleep.engine.atoms.Iterate.IteratorData)iterators.peek();
              d.iterator.remove();
              d.count = d.count - 1;
+             return d.source;
           }
-         
-          return SleepUtils.getEmptyScalar();
        }
        else if (n.equals("&watch"))
        {
@@ -940,7 +939,20 @@ public class BasicUtilities implements Function, Loadable, Predicate
        {
           Scalar item = BridgeUtilities.getScalar(l);
           int index   = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.getArray().size() + 1);
-          return value.getArray().add(SleepUtils.getScalar(item), index);
+          value.getArray().add(SleepUtils.getScalar(item), index);
+          return value;
+       }
+       else if (n.equals("&add") && value.getHash() != null)
+       {
+          while (!l.isEmpty())
+          {
+             KeyValuePair kvp = BridgeUtilities.getKeyValuePair(l);
+
+             Scalar blah = value.getHash().getAt(kvp.getKey());
+             blah.setValue(kvp.getValue());
+          }
+
+          return value;
        }
        else if (n.equals("&splice") && value.getArray() != null)
        {
@@ -1074,6 +1086,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
                 value.getHash().remove(scalar);
              }
           }
+
+          return value;
        }
        else if (n.equals("&keys")) // &keys(%hash)
        {
