@@ -52,29 +52,18 @@ public class BasicIO implements Loadable, Function, Evaluation
 
        try
        { 
-          // execute our process and setup a reader for it 
- 
           Process proc  = Runtime.getRuntime().exec(value);
           BufferedReader reader    = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-          BufferedReader errstream = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
-
-          // read each line from the process output, stuff it into our scalar array rv
-          if (errstream.ready())
-          {
-             System.out.println("err stream is pissing me off!");
-             rv.getArray().push(SleepUtils.getScalar("** " + errstream.readLine()));
-          }
 
           String text = null;
           while ((text = reader.readLine()) != null)
           {
              rv.getArray().push(SleepUtils.getScalar(text));
+          }
 
-             if (errstream.ready())
-             {
-                System.out.println("err stream is pissing me off! 2");
-                rv.getArray().push(SleepUtils.getScalar("** " + errstream.readLine()));
-             }
+          if (proc.waitFor() != 0)
+          {
+             script.getScriptEnvironment().flagError("abnormal termination: " + proc.exitValue());
           }
        }
        catch (Exception ex)
@@ -155,18 +144,6 @@ public class BasicIO implements Loadable, Function, Evaluation
         temp.put("&digest",   this);
 
         return true;
-    }
-
-    private static byte[] toByteArrayNoConversion(String textz)
-    {
-        char[] text = textz.toCharArray();
-        byte[] data = new byte[text.length];
-        for (int x = 0; x < text.length; x++)
-        {
-           data[x] = (byte)text[x];
-        }
-
-        return data;
     }
 
     private static Checksum getChecksum(String algorithm)
@@ -279,7 +256,7 @@ public class BasicIO implements Loadable, Function, Evaluation
              {
 
                 MessageDigest doit = MessageDigest.getInstance(algo);
-                doit.update(toByteArrayNoConversion(temp), 0, temp.length());
+                doit.update(BridgeUtilities.toByteArrayNoConversion(temp), 0, temp.length());
                 return SleepUtils.getScalar(doit.digest());
              }
              catch (NoSuchAlgorithmException ex)
@@ -355,7 +332,7 @@ public class BasicIO implements Loadable, Function, Evaluation
              String algo = BridgeUtilities.getString(l, "CRC32");
 
              Checksum doit = getChecksum(algo);
-             doit.update(toByteArrayNoConversion(temp), 0, temp.length());
+             doit.update(BridgeUtilities.toByteArrayNoConversion(temp), 0, temp.length());
              return SleepUtils.getScalar(doit.getValue());
           }
        }

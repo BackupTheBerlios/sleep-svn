@@ -52,6 +52,19 @@ import java.util.*;
  */
 public class BridgeUtilities
 {
+   /** converts the specified string to an array of bytes (useful as Sleep stores byte arrays to strings) */
+   public static byte[] toByteArrayNoConversion(String textz)
+   {
+      byte[] data = new byte[textz.length()];
+
+      for (int y = 0; y < data.length; y++)
+      {
+         data[y] = (byte)textz.charAt(y);
+      }
+
+      return data;
+   }
+
    /** grab an integer. if the stack is empty 0 will be returned. */
    public static int getInt(Stack arguments)
    {

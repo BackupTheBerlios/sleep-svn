@@ -379,17 +379,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
              }             
              else if (type.toString().charAt(0) == 'b')
              {
-                // we do a straight conversion here because we don't want byte data to be mucked up by charsets
-                // this is because string stores an array of bytes as a string...
-                char[] tempc = value.toString().toCharArray();
-                byte[] tempb = new byte[tempc.length];
-
-                for (int x = 0; x < tempc.length; x++)
-                {
-                   tempb[x] = (byte)tempc[x];
-                }
-
-                return SleepUtils.getScalar((Object)tempb);
+                return SleepUtils.getScalar((Object)BridgeUtilities.toByteArrayNoConversion(value.toString()));
              }             
 
              return SleepUtils.getEmptyScalar();

@@ -155,6 +155,10 @@ public class ObjectUtilities
          {
             return ARG_MATCH_YES;
          }
+         else if (check == java.lang.Object.class)
+         {
+            return ARG_MATCH_MAYBE;
+         }
          else
          {
             return ARG_MATCH_NO;
@@ -216,6 +220,18 @@ public class ObjectUtilities
       {
          Class stemp = scalar.getActualValue().getClass();
          return (stemp == OBJECT_SCALAR) ? ARG_MATCH_YES : ARG_MATCH_MAYBE;
+      }
+      else if (check.isArray())
+      {
+         Class stemp = scalar.getActualValue().getClass();
+         if (stemp == STRING_SCALAR && (check.getComponentType() == Character.TYPE || check.getComponentType() == Byte.TYPE))
+         {
+            return ARG_MATCH_MAYBE;
+         }
+         else
+         {
+            return ARG_MATCH_NO;
+         }
       }
       else
       {
@@ -432,6 +448,17 @@ public class ObjectUtilities
       {
          return null;
       }
+      else if (type.isArray() && value.getActualValue().getClass() == sleep.engine.types.StringValue.class)
+      {
+         if (type.getComponentType() == Byte.TYPE || type.getComponentType() == Byte.class)
+         {
+            return BridgeUtilities.toByteArrayNoConversion(value.toString());
+         }
+         else if (type.getComponentType() == Character.TYPE || type.getComponentType() == Character.class)
+         {
+            return value.toString().toCharArray();
+         }
+      }
       else if (type.isInterface() && SleepUtils.isFunctionScalar(value))
       {
          return ProxyInterface.BuildInterface(type, SleepUtils.getFunctionFromScalar(value, script), script);
@@ -495,6 +522,10 @@ public class ObjectUtilities
          {
             return SleepUtils.getScalar((byte[])value);            
          }
+         else if (check.getComponentType() == Character.TYPE || check.getComponentType() == Character.class)
+         {
+            return SleepUtils.getScalar(new String((char[])value));            
+         }
          else
          {
             Scalar array = SleepUtils.getArrayScalar();
@@ -547,6 +578,10 @@ public class ObjectUtilities
       if (check == String.class)
       {
          return SleepUtils.getScalar(value.toString());
+      }
+      else if (check == Scalar.class || check == WatchScalar.class) 
+      {
+         return (Scalar)value;
       }
       else 
       {

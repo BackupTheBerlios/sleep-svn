@@ -6,6 +6,19 @@
 - added a srand(long) function for seeding the Sleep random number
   generator.   %RANDOM% in the script environment contains the random
   number generator reference.
+- Sleep now evaluates text within a back ticks as an expression to
+  execute.  The expression returns an array with the output printed by
+  the executed command.  Execution errors and non-zero process termination
+  value are available via checkError()
+- Scalar hashes can now be passed to Java methods expecting an Object
+  value (if desired)
+- character arrays returned by Java calls will now be converted to a 
+  Sleep string
+- Sleep strings will now be recognized as valid matches for Java methods
+  requesting a byte[] or char[] parameter.
+- Sleep scalars returned by Java calls will be returned as is.
+- increased performance (x3) of Sleeps internal functions to convert a 
+  String to a non-tampered byte array. 
 
 2.1-beta 17  (17 Jun 07)
 ===========
