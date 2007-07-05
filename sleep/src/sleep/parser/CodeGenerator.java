@@ -1080,19 +1080,29 @@ public class CodeGenerator implements ParserConstants
            add(atom, tokens[1]);
            break;
          case OBJECT_IMPORT:
-           if (strings.length == 1)
+           try
            {
-              parser.importPackage(strings[0], null);
-           }
-           else
-           {
-              if (Checkers.isString(strings[1]) || Checkers.isLiteral(strings[1]))
-                 strings[1] = ParserUtilities.extract(strings[1]);
-
-              File searchFor = parser.importPackage(strings[0], strings[1]);
-              if (searchFor == null || !searchFor.exists())
+              if (strings.length == 1)
               {
-                 parser.reportError("jar file to import package from was not found!", ParserUtilities.makeToken("import " + strings[0] + " from: " + strings[1], tokens[1]));
+                 parser.importPackage(strings[0], null);
+              }
+              else
+              {
+                 if (Checkers.isString(strings[1]) || Checkers.isLiteral(strings[1]))
+                    strings[1] = ParserUtilities.extract(strings[1]);
+
+                 parser.importPackage(strings[0], strings[1]);
+              }
+           }
+           catch (Exception ex)
+           {
+              if (tokens.length == 2)
+              {
+                 parser.reportError(ex.getMessage(), ParserUtilities.makeToken("import " + strings[0] + " from: " + strings[1], tokens[1]));
+              }
+              else
+              {
+                 parser.reportError(ex.getMessage(), ParserUtilities.makeToken("import " + strings[0], tokens[0]));
               }
            }
            break;           

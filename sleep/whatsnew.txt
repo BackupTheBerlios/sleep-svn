@@ -17,11 +17,20 @@
 - Sleep strings will now be recognized as valid matches for Java methods
   requesting a byte[] or char[] parameter.
 - Sleep scalars returned by Java calls will be returned as is.
-- increased performance (x3) of Sleeps internal functions to convert a 
+- improved performance (x3) of Sleeps internal functions to convert a 
   String to a non-mangled byte array. 
-- &remove returns data structure data was removed from
+- &remove now returns data structure data was removed from
 - extended &add to accept a hash and multiple key/value pairs for
   adding stuff to an existing hash.
+- Sleep's set operations removeAll, retainAll, and addAll now work based
+  on scalar identity in lieu of string representation
+- Added "in" operator to check if a scalar with same identity is contained 
+  within an iteratable data structure (generator function / array)
+- Added =~ for comparing two scalars by identity (scalar that reference
+  something are identical if their references match, other scalars are
+  identical if their string reps match).
+- fixed a bug causing import to crash parser when no package was specified
+- Sleep parser now checks if a class exists when it is imported
 
 2.1-beta 17  (17 Jun 07)
 ===========

@@ -16,22 +16,32 @@ public class ImportManager
    protected HashMap    jars      = new HashMap(); /* resolved jar files, key=jar name value=ClassLoader */  
 
    /** Used by Sleep to import statement to save an imported package name. */
-   public File importPackage(String packagez, String from)
+   public void importPackage(String packagez, String from)
    {
-       File returnValue = null;
-
        String pack, clas;
-       clas = packagez.substring(packagez.lastIndexOf(".") + 1, packagez.length());
-       pack = packagez.substring(0, packagez.lastIndexOf("."));
+
+       if (packagez.indexOf(".") > -1)
+       {
+          clas = packagez.substring(packagez.lastIndexOf(".") + 1, packagez.length());
+          pack = packagez.substring(0, packagez.lastIndexOf("."));
+       }
+       else
+       {
+          clas = packagez;
+          pack = null;
+       }
 
        /* resolve and setup our class loader for the specified jar file */
 
        if (from != null)
        {
+          File returnValue = null;
+          returnValue = ParserConfig.findJarFile(from);
+
+          if (returnValue == null || !returnValue.exists()) { throw new RuntimeException("jar file to import package from was not found!"); }
+
           try
           {
-             returnValue = ParserConfig.findJarFile(from);
- 
              if (!jars.containsKey(from))
              {
                 URLClassLoader loader = new URLClassLoader(new URL[] { returnValue.toURL() }, Thread.currentThread().getContextClassLoader());
@@ -47,30 +57,44 @@ public class ImportManager
        {
           imports.put(pack, from);
        }
+       else if (pack == null)
+       {
+          imports.put(packagez, from);
+          Class found = resolveClass(null, packagez, (String)imports.get(packagez)); /* try with no package to see if we have an anonymous class */
+          classes.put(packagez, found);
+
+          if (found == null)
+             throw new RuntimeException("imported class was not found");
+       }
        else
        {
           imports.put(packagez, from);
          
           Class found = findImportedClass(packagez);
           classes.put(clas, found);
-       }
 
-       return returnValue;
+          if (found == null)
+             throw new RuntimeException("imported class was not found");
+       }
    }
 
    /** This method is used by Sleep to resolve a specific class (or at least try) */
    private Class resolveClass(String pack, String clas, String jar)
    {
+       StringBuffer name = new StringBuffer();
+       if (pack != null) { name.append(pack); name.append("."); }
+       name.append(clas);
+
        try
        {
           if (jar != null)
           {
              ClassLoader cl = (ClassLoader)jars.get(jar);
-             return Class.forName(pack + "." + clas, true, cl);
+             return Class.forName(name.toString(), true, cl);
           }
           else
           {
-             return Class.forName(pack + "." + clas);
+             return Class.forName(name.toString());
           }
        }
        catch (Exception ex) { }
@@ -96,6 +120,8 @@ public class ImportManager
           }
           else
           {
+             rv = resolveClass(null, name, (String)imports.get(name)); /* try with no package to see if we have an anonymous class */
+
              Iterator i = imports.entrySet().iterator();
              while (i.hasNext() && rv == null)
              {

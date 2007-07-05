@@ -80,9 +80,9 @@ public class Parser
    }
 
    /** Used by Sleep to import statement to save an imported package name. */
-   public File importPackage(String packagez, String from)
+   public void importPackage(String packagez, String from)
    {
-      return imports.importPackage(packagez, from);
+      imports.importPackage(packagez, from);
    }   
 
    /** Attempts to find a class, starts out with the passed in string itself, if that doesn't resolve then the string is

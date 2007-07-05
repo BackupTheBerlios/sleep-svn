@@ -55,31 +55,12 @@ public class SleepUtils
         while (collection.hasNext())
         {
             Scalar next = (Scalar)collection.next();
-
-            if (value.getArray() != null && next.getArray() != null && value.getArray() == next.getArray())
+            if (value.sameAs(next))
             {
                collection.remove();
-            }
-            else if (value.getHash() != null && next.getHash() != null && value.getHash() == next.getHash())
-            {
-               collection.remove();
-            }
-            else if (value.getActualValue() != null && next.getActualValue() != null)
-            {
-               if (value.getActualValue().getClass() == ObjectValue.class || next.getActualValue().getClass() == ObjectValue.class) 
-               {
-                  if (value.objectValue() == next.objectValue())
-                  {
-                     collection.remove(); /* two objects with matching references! */
-                  }
-               }
-               else if (value.getActualValue().toString().equals(next.getActualValue().toString()))
-               {
-                  collection.remove(); /* whee... */
-               } 
             }
         }
-    }
+     }
 
    /** "safely" run a snippet of code.  The main thing this function does is clear the return value 
     *  before returning the value to the caller.  This is important because the return value (if there 

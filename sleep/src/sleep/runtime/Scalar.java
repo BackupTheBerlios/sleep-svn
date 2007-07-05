@@ -176,6 +176,44 @@ public class Scalar implements Serializable
       hash  = _hash;
    }
 
+   /** returns an identity value for this scalar.  the identity value is used in set operations.  basically any scalar values
+       that are handled by reference (object,s arrays, and hashes) use their reference as their identity.  other values used
+       their string value as their identity (doubles that do not have a decimal point will be converted to longs). */
+   public Object identity()
+   {
+      if (this.getArray() != null) { return array; }
+      if (this.getHash() != null) { return hash; }
+      if (value.getClass() == sleep.engine.types.ObjectValue.class) { return this.objectValue(); }
+      return this.toString();
+   }
+ 
+   /** compares two scalars in terms of their identity.  scalars that hold references (array, object, and hash) are compared by
+       reference where other values are compared by their string value.  doubles with a round value will be converted to a long */
+   public boolean sameAs(Scalar other)
+   {
+      if (this.getArray() != null && other.getArray() != null && this.getArray() == other.getArray())
+      {
+         return true;
+      } 
+      else if (this.getHash() != null && other.getHash() != null && this.getHash() == other.getHash())
+      {
+         return true;
+      }
+      else if (this.getActualValue() != null && other.getActualValue() != null)
+      {
+         if (this.getActualValue().getClass() == sleep.engine.types.ObjectValue.class || other.getActualValue().getClass() == sleep.engine.types.ObjectValue.class)
+         {
+            return (this.objectValue() == other.objectValue());
+         }
+         else 
+         { 
+            return this.identity().equals(other.identity());
+         }
+      }
+ 
+      return false;
+   }
+
    public String toString()
    {
       return stringValue();

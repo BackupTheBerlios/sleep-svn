@@ -43,6 +43,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
     static
     {
        ParserConfig.addKeyword("isa");
+       ParserConfig.addKeyword("in");
+       ParserConfig.addKeyword("=~");
     }
 
     public boolean scriptUnloaded (ScriptInstance i)
@@ -101,6 +103,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("-ishash",  this); 
         temp.put("-isfunction", this);
         temp.put("isa", this);
+        temp.put("in", this);
+        temp.put("=~", this);
         temp.put("&setField", this);
         temp.put("&typeOf", this);
         temp.put("&newInstance", this);
@@ -195,6 +199,31 @@ public class BasicUtilities implements Function, Loadable, Predicate
           Class  blah = BridgeUtilities.getClass(terms, null);
           Object bleh = BridgeUtilities.getObject(terms);
           return blah != null && blah.isInstance(bleh);          
+       }
+       else if (predName.equals("=~"))
+       {
+          Scalar right = BridgeUtilities.getScalar(terms);
+          Scalar left  = BridgeUtilities.getScalar(terms);
+
+          return left.sameAs(right);
+       }
+       else if (predName.equals("in"))
+       {
+          // $x in @(...)
+          Iterator iter = BridgeUtilities.getIterator(terms, anInstance);
+          Scalar   left = BridgeUtilities.getScalar(terms);
+
+          while (iter.hasNext())
+          {
+             Scalar right = (Scalar)iter.next();
+
+             if (left.sameAs(right))
+             {
+                return true;
+             }
+          }
+
+          return false;
        }
  
        Scalar value = (Scalar)terms.pop();
@@ -885,26 +914,34 @@ public class BasicUtilities implements Function, Loadable, Predicate
        {
           ScalarArray a = value.getArray();
           ScalarArray b = BridgeUtilities.getArray(l);
-    
+          Scalar temp;    
+
           HashSet s = new HashSet();
           Iterator iter = b.scalarIterator();
           while (iter.hasNext())
           {
-             s.add(iter.next().toString());
+             temp = (Scalar)iter.next();
+             s.add(temp.identity());
           }      
 
           iter = a.scalarIterator();
           while (iter.hasNext())
           {
-             Object temp = iter.next();
+             temp = (Scalar)iter.next();
 
-             if (!s.contains(temp.toString()) && n.equals("&retainAll"))
+             if (!s.contains(temp.identity()))
              {
-                iter.remove();
+                if (n.equals("&retainAll"))
+                {
+                   iter.remove();
+                }
              }
-             else if (s.contains(temp.toString()) && n.equals("&removeAll"))
+             else
              {
-                iter.remove();
+                if (n.equals("&removeAll"))
+                {
+                   iter.remove();
+                }
              }
           }
 
@@ -917,17 +954,20 @@ public class BasicUtilities implements Function, Loadable, Predicate
     
           HashSet s = new HashSet();
           Iterator iter = a.scalarIterator();
+          Scalar temp;
+
           while (iter.hasNext())
           {
-             s.add(iter.next().toString());
+             temp = (Scalar)iter.next();
+             s.add(temp.identity());
           }      
 
           iter = b.scalarIterator();
           while (iter.hasNext())
           {
-             Scalar temp = (Scalar)iter.next();
+             temp = (Scalar)iter.next();
 
-             if (!s.contains(temp.toString()))
+             if (!s.contains(temp.identity()))
              {
                 a.push(SleepUtils.getScalar(temp));
              }
