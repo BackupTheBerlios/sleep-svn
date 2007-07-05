@@ -1,4 +1,4 @@
-2.1-beta 18  (26 Jun 07)
+2.1-beta 18  (5 Jul 07)
 ===========
 - added scalar references: \$x is equivalent to $x => $x.  this sugar
   was added for the common case of passing a key/value pair to copy a

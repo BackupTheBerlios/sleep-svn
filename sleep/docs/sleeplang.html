@@ -226,6 +226,22 @@ created with no value.  This local variable has nothing to do with the global va
 <var>$decision</var> was then assigned the value "not guilty".  When the subroutine verdict finished executing the local variable
 <var>$decision</var> went away.  The global variable <var>$decision</var> was not touched.</p>
 
+<h3>Scalar Identity</h3>
+
+<p>In general Sleep tries to hide the type of the data you're working with.  You can use strings, numbers, and objects interchangeably 
+in many cases.</p>
+
+<p>Sleep has built-in array and hash (dictionary) data structures for storing scalars.  The concept of scalar identity was invented to
+help with manipulating and querying these data structures.  For example the <code>&amp;addAll</code> function is a way to union two
+arrays together.  Scalars are judged as being equivalent through scalar identity.</p>
+
+<p>If a scalar holds a reference to a value (i.e. a hash, an object, or an array) then the identity of that scalar is the reference 
+itself.  Otherwise the identity is based on the string form of the value.</p>
+
+<p>The <code>=~</code> operator exists for checking if two scalars share the same identity.  Really though you only need to know about
+this concept to understand how the <code>in</code> predicate works and how <code>&amp;addAll</code>, <code>&amp;retainAll</code>, and
+<code>&amp;removeAll</code> work.</p>
+
 <h2><a name="2">If-Else Statements</a></h2>
 
 <p>If-Else statements let you compare different values and execute a certain part of the script based on the result of the 
@@ -318,12 +334,20 @@ statement.</p>
   <th>Description</th>
  </tr>
  <tr>
+  <td>in</td>
+  <td>true if scalar v1 identity exists in array/generator v2</td>
+ </tr>
+ <tr>
   <td>is</td>
   <td>true if scalar object reference v1 equals object reference v2</td>
  </tr>
  <tr>  
   <td>isa</td>
   <td>true if scalar object reference v1 is an instance of the Class referenced by scalar v2</td>
+ </tr>
+ <tr>  
+  <td>=~</td>
+  <td>true if scalar v1 identity is equal to scalar v2 identity</td>
  </tr>
 </table>
 
@@ -1047,8 +1071,32 @@ blah($first => "Raphael", "ice cream!!!", $last => "Mudge");</pre>
 
 <p>The example above prints 'My name is Raphael Mudge, and I like ice cream!!!' three times.</p>
 
-<p>Sleep functions that expect a key/value pair will accept either a key/value expression or a string of the form
+<p>Built-in functions that expect a key/value pair will accept either a key/value expression or a string of the form
 "key=value".</p>
+
+<h4>Scalar References</h4>
+
+<p>Many times you may find yourself passing a key/value pair with the same key/value.  This is most often done to move
+a scalar between scopes.  This is very common with fork, lambda, and let.  To save you some typing Sleep has a special
+syntax for specifying a scalar be passed by name as a parameter.  Simply prefix the scalar with a backslash.</p>
+
+<pre>sub foo
+{
+   local('$name');
+   $name = "Raphael";
+   bar(\$name);
+}
+
+bar
+{
+   println("Name is: $name");
+}
+
+foo();</pre>
+
+<p>In the example above <var>$name</var> is local to <code>&amp;foo</code>.  Normally to pass <var>$name</var> into the this
+scope of <code>&amp;bar</code> you would have to use <code>$name => $name</code>.  The scalar reference <code>\$name</code>
+is equivalent to that expression.</p>
 
 <h3>Multidimensional Hashes/Arrays</h3>
 
@@ -2005,7 +2053,7 @@ represent the dimensions of the array.</td>
   <td>I probably should have learned from python and not added this but here it is anyways.  Applies &amp;closure to first two elements of @array or &generator.  Takes the resulting value and applies it to the next element of @array or &generator, so on and so forth.  Returns one value.</td>
  </tr>
  <tr>
-  <td></td>
+  <td>@</td>
   <td>remove(@array, $scalar, ...)</td>
   <td>removes each specified $scalar from @array.  if no parameters are passed the active element in the current foreach loop is removed.</td>
  </tr>
@@ -2245,6 +2293,11 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
  </tr>  
 
  <tr>
+   <td>%</td>
+   <td>add(%hash, key => "value", ...)</td>
+   <td>adds specified key/values to the hash.</td>
+ </tr> 
+ <tr>
   <td></td>
   <td>clear(%hash)</td>
   <td>clears %hash</td>
@@ -2457,6 +2510,11 @@ calling the closure.  the closure will be called for the last read even if &lt; 
  </tr>
  <tr>
   <td>$</td>
+  <td>sizeof('format')</td>
+  <td>using the specified data format string, calculates an estimated size of the data.</td>
+ </tr>
+ <tr>
+  <td>$</td>
   <td>skip([$handle], n)</td>
   <td>tells the handle to skip the next n bytes</td>
  </tr>
@@ -2639,6 +2697,11 @@ will be returned by &amp;wait.  if $handle is a process, the return value of the
   <td>$</td>
   <td>sqrt($scalar)</td>
   <td>returns the rounded positive square root of $scalar</td>
+ </tr>
+ <tr>
+   <td>$</td>
+   <td>srand($scalar)</td>
+   <td>seeds the random number generator with the specified scalar (interpreted as a long)</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2925,6 +2988,11 @@ together.</td>
   <td></td>
   <td>this('$x $y')</td>
   <td>parses the specified string and declares all variables in the string as variables specific to the current closure.</td>
+ </tr>
+ <tr>   
+  <td>$</td>
+  <td>typeOf($scalar)</td>
+  <td>returns the Java ^Class backing the specified scalar.</td>
  </tr>
  <tr>
   <td></td>
