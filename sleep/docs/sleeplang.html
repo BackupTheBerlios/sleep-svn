@@ -1389,6 +1389,20 @@ closef($process);</pre>
 <p>Calling closef on a process will kill the process.  The above program executes the UNIX command ls -al which lists all of the 
 files in the current directory with some details.</p>
 
+<h4>Quick Execution</h4>
+
+<p>Similar to Perl, Sleep also supports quick execution of a process via a string enclosed in backticks.  Any string enclosed in
+backticks is evaluated (as if it was a parsed literal) and the contents is then executed.  The output of the executed command is
+returned as an array.</p>  
+
+<pre>foreach $file (`ls -1`)
+{
+   # do something with the file...
+}</pre>
+
+<p>Any errors from trying to execute the command are available via <code>&amp;checkError</code>.  If the process returns a non-zero
+value, this will also be available with <code>&amp;checkError</code>.</p>
+
 <h3>Buffers</h3>
 
 <p>For those times when speed is a necessity Sleep provides the loveable byte buffer.  A buffer is simply
