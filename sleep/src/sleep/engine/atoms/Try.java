@@ -31,8 +31,11 @@ public class Try extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
+      int mark = e.markFrame();
       e.installExceptionHandler(owner, handler, var);
-      return owner.evaluate(e);
+      Scalar o = owner.evaluate(e);
+      e.cleanFrame(mark);
+      return o;
    }
 }
 

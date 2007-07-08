@@ -66,6 +66,8 @@ public class ObjectAccess extends Step
 
       Scalar scalar   = null;
 
+      int mark = e.markFrame();
+
       if (classRef == null)
       {
          scalar    = (Scalar)e.getCurrentFrame().pop();
@@ -74,6 +76,7 @@ public class ObjectAccess extends Step
          if (accessMe == null)
          {
             e.getScriptInstance().fireWarning("Attempted to call a non-static method on a null reference", getLineNumber());
+            e.cleanFrame(mark);
             e.KillFrame();
 
             e.getCurrentFrame().push(SleepUtils.getEmptyScalar());
@@ -162,6 +165,7 @@ public class ObjectAccess extends Step
             e.getScriptInstance().recordStackFrame(scalar.toString(), getLineNumber());
          }
          
+         e.cleanFrame(mark);
          e.FrameResult(result);
          return null;
       }
@@ -169,6 +173,7 @@ public class ObjectAccess extends Step
       if (name == null)
       {
          e.getScriptInstance().fireWarning("Attempted to query an object with no method/field", getLineNumber());
+         e.cleanFrame(mark);
          e.KillFrame();
          e.getCurrentFrame().push(result);
 
@@ -311,6 +316,7 @@ public class ObjectAccess extends Step
          e.getScriptInstance().fireWarning("cannot access " + name + " in " + theClass + ": " + iax.getMessage(), getLineNumber());
       }
 
+      e.cleanFrame(mark);
       e.FrameResult(result);
       return null;
    }

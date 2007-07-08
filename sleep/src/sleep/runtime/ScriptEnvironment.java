@@ -553,6 +553,21 @@ public class ScriptEnvironment implements Serializable
     protected ArrayList frames = new ArrayList(10);
     protected int       findex = -1;
 
+    /** markFrame and cleanFrame are used to keep the sleep stack in good order after certain error conditions */
+    public int markFrame()
+    {
+        return findex;
+    }
+
+    /** markFrame and cleanFrame are used to keep the sleep stack in good order after certain error conditions */
+    public void cleanFrame(int mark)
+    {
+        while (findex > mark)
+        {
+           KillFrame();
+        }
+    } 
+
     public Stack getCurrentFrame()
     {
        return (Stack)frames.get(findex);    

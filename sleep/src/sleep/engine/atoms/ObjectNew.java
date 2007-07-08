@@ -60,6 +60,8 @@ public class ObjectNew extends Step
       Object[]    parameters     = null;
       Constructor theConstructor = null;
 
+      int mark = e.markFrame();
+
       try
       {
          theConstructor  = ObjectUtilities.findConstructor(name, e.getCurrentFrame());
@@ -156,6 +158,7 @@ public class ObjectNew extends Step
          e.getScriptInstance().fireWarning(iax.toString(), getLineNumber());
       }
 
+      e.cleanFrame(mark);
       e.FrameResult(result);
       return null;
    }

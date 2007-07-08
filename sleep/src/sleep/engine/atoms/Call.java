@@ -54,6 +54,8 @@ public class Call extends Step
       Scalar temp = null;
       Function callme = e.getFunction(function);
 
+      int mark = e.markFrame();
+
       if (callme != null)
       {
          if ((e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS && !function.equals("&@") && !function.equals("&%"))
@@ -94,6 +96,7 @@ public class Call extends Step
                 }
                 catch (RuntimeException rex)
                 {
+                   e.cleanFrame(mark);
                    e.KillFrame();
                    e.getScriptInstance().fireWarning(message + " - FAILED!", getLineNumber(), true);
                    throw(rex);
@@ -109,6 +112,7 @@ public class Call extends Step
              }
              catch (RuntimeException rex)
              {
+                e.cleanFrame(mark);
                 e.KillFrame();
                 throw(rex);
              }
@@ -125,6 +129,7 @@ public class Call extends Step
          temp = SleepUtils.getEmptyScalar();
       }
 
+      e.cleanFrame(mark);
       e.FrameResult(temp);
 
       return null;
