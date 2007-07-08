@@ -104,6 +104,7 @@ public class ObjectAccess extends Step
             {
                long stat = System.currentTimeMillis();
                result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
+               e.clearReturn();
                stat = System.currentTimeMillis() - stat;
                e.getScriptInstance().collect(((SleepClosure)scalar.objectValue()).toStringGeneric(), getLineNumber(), stat);
             }
@@ -132,7 +133,10 @@ public class ObjectAccess extends Step
                try
                {
                   long stat = System.currentTimeMillis();
+
                   result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
+                  e.clearReturn();
+
                   stat = System.currentTimeMillis() - stat;
                   e.getScriptInstance().collect(((SleepClosure)scalar.objectValue()).toStringGeneric(), getLineNumber(), stat);
 
@@ -145,7 +149,8 @@ public class ObjectAccess extends Step
                }
                catch (RuntimeException rex)
                {
-                  /** execute a kill frame here?!? */
+                  e.cleanFrame(mark);
+                  e.KillFrame();
                   trace.append(" - FAILED!");
                   e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
                   throw(rex);
@@ -154,11 +159,18 @@ public class ObjectAccess extends Step
          }
          else
          {
-            result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
+            try
+            {
+               result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
+               e.clearReturn();
+            }
+            catch (RuntimeException rex)
+            {
+               e.cleanFrame(mark);
+               e.KillFrame();
+               throw(rex);
+            }
          }         
-
-         e.clearReturn(); // this has to be done or else bad things will happen when the closure returns stuff
-         // ^-- evaluate, is this really necessary or are closures smart enough to clear the return themselves? // RSM
 
          if (e.isThrownValue())
          {
