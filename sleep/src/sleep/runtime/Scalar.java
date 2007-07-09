@@ -1,6 +1,6 @@
 package sleep.runtime;
 
-import java.io.Serializable;
+import java.io.*;
 
 /**
  * <p>A scalar is the universal data type for sleep variables.  Scalars can have numerical values of integer, double, or 
@@ -226,5 +226,31 @@ public class Scalar implements Serializable
       if (newValue.getArray() != null) { setValue(newValue.getArray()); return; }
       if (newValue.getHash()  != null) { setValue(newValue.getHash()); return; }
       if (newValue.getValue() != null) { setValue(newValue.getValue()); return; }
+   }
+
+   private void writeObject(ObjectOutputStream out) throws IOException
+   {
+       if (SleepUtils.isEmptyScalar(this))
+       {
+          out.writeObject(null);
+       }
+       else
+       {
+          out.writeObject(value);
+       }
+       out.writeObject(array);       
+       out.writeObject(hash);       
+   }
+
+   private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException
+   {
+       value = (ScalarType)in.readObject();
+       array = (ScalarArray)in.readObject();
+       hash  = (ScalarHash)in.readObject();
+   
+       if (value == null && array == null && hash == null)
+       {
+          setValue(SleepUtils.getEmptyScalar());
+       }
    }
 }

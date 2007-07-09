@@ -53,7 +53,14 @@ public class WatchScalar extends Scalar
 
    private void writeObject(ObjectOutputStream out) throws IOException
    {
-       out.writeObject(value);
+       if (SleepUtils.isEmptyScalar(this))
+       {
+          out.writeObject(null);
+       }
+       else
+       {
+          out.writeObject(value);
+       }
        out.writeObject(array);
        out.writeObject(hash);
    }
@@ -63,5 +70,10 @@ public class WatchScalar extends Scalar
        value = (ScalarType)in.readObject();
        array = (ScalarArray)in.readObject();
        hash  = (ScalarHash)in.readObject();
+
+       if (value == null && array == null && hash == null)
+       {
+          setValue(SleepUtils.getEmptyScalar());
+       }
    }
 }

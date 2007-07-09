@@ -2,6 +2,9 @@
 ===========
 - sleep interpreter now performs better stack hygeine to prevent 
   exceptions and errors from corrupting the stack inadvertently.
+- $null now deserializes as its singleton value.  this fixes a lot of
+  potential pitfalls for scripts that rely heavily on serializing and
+  deserializing Sleep functions.  
 
 2.1-beta 18  (5 Jul 07)
 ===========
