@@ -1,10 +1,12 @@
-2.1-beta 19  (8 Jul 07)
+2.1-beta 19 
 ===========
 - sleep interpreter now performs better stack hygeine to prevent 
   exceptions and errors from corrupting the stack inadvertently.
 - $null now deserializes as its singleton value.  this fixes a lot of
   potential pitfalls for scripts that rely heavily on serializing and
   deserializing Sleep functions.  
+- closure context metadata (regex matcher and iterator for foreach 
+  loops) is no longer serialized with the closure...  beware of this.
 
 2.1-beta 18  (5 Jul 07)
 ===========

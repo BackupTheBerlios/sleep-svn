@@ -245,7 +245,10 @@ public class ScriptEnvironment implements Serializable
     }
 
     /** Use this function to save some meta data for this particular closure context, passing null for value will
-        remove the key from the metadata for this context */
+        remove the key from the metadata for this context.
+       
+        Note: context metadata is *not* serialized when the closure is serialized.
+    */
     public void setContextMetadata(Object key, Object value)
     {
        if (value == null) 

@@ -1,24 +1,3 @@
-/*
-   SLEEP - Simple Language for Environment Extension Purposes
- .----------------------------.
- | sleep.bridges.SleepClosure |_______________________________________________
- |                                                                            |
-   Author: Raphael Mudge (raffi@hick.org)
-           http://www.hick.org/~raffi/
-
-   Description:
-        Implementation of a Sleep Closure.
-
-   Documentation:
-
-   Changelog:
-
-   * This software is distributed under the artistic license, see license.txt
-     for more information. *
-
- |____________________________________________________________________________|
- */
-
 package sleep.bridges;
  
 import java.util.*;
@@ -272,7 +251,7 @@ public class SleepClosure implements Function
        out.writeInt(id);
        out.writeObject(code);
        out.writeObject(context);
-       out.writeObject(metadata);
+/*       out.writeObject(metadata); */
        out.writeObject(variables);
     }
 
@@ -281,7 +260,8 @@ public class SleepClosure implements Function
        id        = in.readInt();
        code      = (Block)in.readObject();
        context   = (Stack)in.readObject();
-       metadata  = (HashMap)in.readObject();
+       metadata  = new HashMap();
+/*       metadata  = (HashMap)in.readObject(); */
        variables = (Variable)in.readObject();
        owner     = null;
     }
