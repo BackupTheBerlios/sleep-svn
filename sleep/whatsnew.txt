@@ -9,6 +9,26 @@
   loops) is no longer serialized with the closure...  beware of this.
 - added &ohash(...) to initialize a Sleep hash that keeps track of
   key insertion order.  requested by Marty.
+- updated the sleep listen(...) and connect(...) functions to accept a
+  number of key/value options.  options include:
+     linger  => the value of SO_LINGER (how long (ms) the socket waits 
+               for a TCP reset before actually closing.
+     lport   => the local port to bind to
+     laddr   => the local address to bind to
+     backlog => the number of connections to queue while waiting for
+                a subsequent call of listen(...) to accept a 
+                connection.
+
+   for example, to listen on port 8888 of 192.168.1.1 while allowing
+   only 1 connection:
+ 
+   $handle = listen(8888, laddr => "192.168.1.1", backlog => 1)
+   
+   listen will only honor the extra parameters the first time the 
+   port is intialized.  the extra params will have no effect on 
+   subsequent calls to listen.  to fix this call closef(port) to
+   unbind the specified port.
+
 
 2.1-beta 18  (5 Jul 07)
 ===========

@@ -486,9 +486,16 @@ public class BasicIO implements Loadable, Function, Evaluation
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          SocketHandler handler = new SocketHandler();
+          Map options = BridgeUtilities.extractNamedParameters(l);
+
+          SocketObject.SocketHandler handler = new SocketObject.SocketHandler();
           handler.socket        = new SocketObject();
           handler.script        = i;
+
+          handler.lport    = options.containsKey("lport") ? ((Scalar)options.get("lport")).intValue() : 0; /* 0 means use any free port */
+          handler.laddr    = options.containsKey("laddr") ? ((Scalar)options.get("laddr")).toString() : null;
+          handler.linger   = options.containsKey("linger") ? ((Scalar)options.get("linger")).intValue() : 5; /* 5ms is the default linger */
+          handler.backlog  = options.containsKey("backlog") ? ((Scalar)options.get("backlog")).intValue() : 0; /* backlog of 0 means use default */
 
           if (n.equals("&listen"))
           {
@@ -496,7 +503,7 @@ public class BasicIO implements Loadable, Function, Evaluation
              handler.timeout  = BridgeUtilities.getInt(l, 60 * 1000);   // timeout
              handler.callback = BridgeUtilities.getScalar(l);           // scalar to put info in to
 
-             handler.type     = LISTEN_FUNCTION;
+             handler.type     = SocketObject.LISTEN_FUNCTION;
           }
           else
           {
@@ -504,7 +511,7 @@ public class BasicIO implements Loadable, Function, Evaluation
              handler.port     = BridgeUtilities.getInt(l, 1);
              handler.timeout  = BridgeUtilities.getInt(l, 60 * 1000);   // timeout
 
-             handler.type     = CONNECT_FUNCTION;
+             handler.type     = SocketObject.CONNECT_FUNCTION;
           }
           
           if (!l.isEmpty())
@@ -1430,55 +1437,6 @@ public class BasicIO implements Loadable, Function, Evaluation
                 source.close();
                 script.getScriptEnvironment().flagError(ex);
              }
-          }
-       }
-    }
-
-    private static final int LISTEN_FUNCTION  = 1;
-    private static final int CONNECT_FUNCTION = 2;
-
-    private static class SocketHandler implements Runnable
-    {
-       public ScriptInstance script;
-       public SleepClosure   function;
-       public SocketObject   socket;
-
-       public int            port;
-       public int            timeout;
-       public String         host;
-       public Scalar         callback;
-
-       public int            type;
-
-       public void start()
-       {
-          if (function != null)
-          {
-             socket.setThread(new Thread(this));
-             socket.getThread().start();
-          }
-          else
-          {
-             run();
-          }
-       }
-
-       public void run()
-       {
-          if (type == LISTEN_FUNCTION)
-          {
-             socket.listen(port, timeout, callback, script.getScriptEnvironment());
-          }
-          else
-          {
-             socket.open(host, port, timeout, script.getScriptEnvironment());
-          }
-
-          if (function != null)
-          {
-             Stack  args  = new Stack();
-             args.push(SleepUtils.getScalar(socket));
-             function.callClosure("&callback", script, args);
           }
        }
     }
