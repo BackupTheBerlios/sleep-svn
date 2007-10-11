@@ -4,13 +4,23 @@ import sleep.runtime.*;
 
 import java.util.*;
 
+/* Container for Sleep hashes.  *phEAR* */
 public class HashContainer implements ScalarHash
 {
-   protected HashMap values;
+   protected Map values;
 
+   /* constructs this hash container using the specified Map compatible data structure as the
+      backing.  this data structure will hold sleep.runtime.Scalar objects and should by empty
+      when passed to this constructor */
+   public HashContainer(Map container)
+   {
+      values = container;
+   }
+
+   /* constructs this hash container backed by a HashMap data structure */
    public HashContainer()
    {
-      values = new HashMap();
+      this(new HashMap());
    }
 
    public Scalar getAt(Scalar key)

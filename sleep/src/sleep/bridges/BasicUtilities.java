@@ -64,6 +64,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
         temp.put("&array", f_array); 
         temp.put("&hash", f_hash);
+        temp.put("&ohash", f_hash);
         temp.put("&@", f_array);
         temp.put("&%", f_hash);  
 
@@ -525,7 +526,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
     {
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
-          Scalar value = SleepUtils.getHashScalar();
+          Scalar value = n.equals("&ohash") ? SleepUtils.getOrderedHashScalar() : SleepUtils.getHashScalar();
            
           while (!l.isEmpty())
           {

@@ -457,6 +457,15 @@ public class SleepUtils
       return temp;
    }
 
+   /** returns an empty ordered hashmap scalar */
+   public static Scalar getOrderedHashScalar()
+   {
+      Scalar temp = new Scalar();
+      temp.setValue(new HashContainer(new LinkedHashMap()));
+
+      return temp;
+   }
+
    /** returns an int scalar with value x */
    public static Scalar getScalar(int x)
    {

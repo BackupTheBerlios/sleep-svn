@@ -7,6 +7,8 @@
   deserializing Sleep functions.  
 - closure context metadata (regex matcher and iterator for foreach 
   loops) is no longer serialized with the closure...  beware of this.
+- added &ohash(...) to initialize a Sleep hash that keeps track of
+  key insertion order.  requested by Marty.
 
 2.1-beta 18  (5 Jul 07)
 ===========
