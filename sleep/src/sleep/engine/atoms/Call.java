@@ -41,96 +41,113 @@ public class Call extends Step
    {
       return prefix + "[Function Call]: "+function+"\n";
    }
-  
+
+   private static class FunctionCallRequest extends CallRequest
+   {
+      protected String function;
+      protected Function callme;
+
+      public FunctionCallRequest(ScriptEnvironment e, int lineNo, String functionName, Function f)
+      {
+         super(e, lineNo);
+         function = functionName;
+         callme   = f;
+      }
+
+      public String getFunctionName()
+      {
+         return function;
+      }
+
+      public String getFrameDescription()    
+      {
+         return function + "()";
+      }
+
+      public String formatCall(String args) 
+      {
+         return function + "(" + args + ")";
+      }
+
+      public boolean isDebug()
+      {
+         return super.isDebug() && !function.equals("&@") && !function.equals("&%");
+      }
+
+      protected Scalar execute()
+      {
+         Scalar temp = callme.evaluate(function, getScriptEnvironment().getScriptInstance(), getScriptEnvironment().getCurrentFrame());
+         getScriptEnvironment().clearReturn();
+         return temp;
+      }
+   }
+
+   private static class InlineCallRequest extends CallRequest
+   {
+      protected String function;
+      protected Block  inline;
+
+      public InlineCallRequest(ScriptEnvironment e, int lineNo, String functionName, Block i)
+      {
+         super(e, lineNo);
+         function = functionName;
+         inline   = i;
+      }
+
+      public String getFunctionName()
+      {
+         return "<inline> " + function;
+      }
+
+      public String getFrameDescription()    
+      {
+         return "<inline> " + function + "()";
+      }
+
+      protected String formatCall(String args) 
+      {
+         return "<inline> " + function + "(" + args + ")";
+      }
+
+      protected Scalar execute()
+      {
+         ScriptVariables vars = getScriptEnvironment().getScriptVariables();
+         synchronized (vars)
+         {
+            Variable localLevel = vars.getLocalVariables();
+            sleep.bridges.BridgeUtilities.initLocalScope(vars, localLevel, getScriptEnvironment().getCurrentFrame());
+            return inline.evaluate(getScriptEnvironment());
+         }
+      }
+   }
+
+	  
    // Pre Condition:
    //  arguments on the current stack (to allow stack to be passed0
    //
    // Post Condition:
    //  current frame will be dissolved and return value will be placed on parent frame
 
-
    public Scalar evaluate(ScriptEnvironment e)
    {
-      Scalar temp = null;
       Function callme = e.getFunction(function);
-
-      int mark = e.markFrame();
+      Block    inline = null;
 
       if (callme != null)
       {
-         if ((e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS && !function.equals("&@") && !function.equals("&%"))
-         {
-             if (e.getScriptInstance().isProfileOnly())
-             {
-                long stat = System.currentTimeMillis();
-                temp = callme.evaluate(function, e.getScriptInstance(), e.getCurrentFrame());
-                e.clearReturn();
-                stat = System.currentTimeMillis() - stat;
-                e.getScriptInstance().collect(function, getLineNumber(), stat); 
-             }
-             else
-             {
-                String args = SleepUtils.describe(e.getCurrentFrame());
-
-                String message = function + "(" + args + ")";
-                try
-                {
-                   long stat = System.currentTimeMillis();
-                   temp = callme.evaluate(function, e.getScriptInstance(), e.getCurrentFrame());
-                   e.clearReturn();
-                   stat = System.currentTimeMillis() - stat;
-                   e.getScriptInstance().collect(function, getLineNumber(), stat); /* add to the profiler, plz */
-                
-                   if (e.isThrownValue())
-                   {
-                      e.getScriptInstance().fireWarning(message + " - FAILED!", getLineNumber(), true);
-                   }
-                   else if (SleepUtils.isEmptyScalar(temp))
-                   {
-                      e.getScriptInstance().fireWarning(message, getLineNumber(), true);
-                   }
-                   else
-                   {
-                      e.getScriptInstance().fireWarning(message + " = " + SleepUtils.describe(temp), getLineNumber(), true);
-                   }
-                }
-                catch (RuntimeException rex)
-                {
-                   e.cleanFrame(mark);
-                   e.KillFrame();
-                   e.getScriptInstance().fireWarning(message + " - FAILED!", getLineNumber(), true);
-                   throw(rex);
-                }
-             }
-         }
-         else
-         {
-             try
-             {
-                temp = callme.evaluate(function, e.getScriptInstance(), e.getCurrentFrame());
-                e.clearReturn();
-             }
-             catch (RuntimeException rex)
-             {
-                e.cleanFrame(mark);
-                e.KillFrame();
-                throw(rex);
-             }
-         }
-
-         if (e.isThrownValue())
-         {
-             e.getScriptInstance().recordStackFrame(function + "()", getLineNumber());
-         }
+         FunctionCallRequest request = new FunctionCallRequest(e, getLineNumber(), function, callme);         
+         request.CallFunction();
+      }
+      else if ((inline = e.getBlock(function)) != null)
+      {
+         InlineCallRequest request = new InlineCallRequest(e, getLineNumber(), function, inline);
+         request.CallFunction();
       }
       else
       {
          e.getScriptInstance().fireWarning("Attempted to call non-existent function " + function, getLineNumber());
-         temp = SleepUtils.getEmptyScalar();
+         e.FrameResult(SleepUtils.getEmptyScalar());
       }
-
-      e.cleanFrame(mark);
-      e.FrameResult(temp);
 
       return null;
    }

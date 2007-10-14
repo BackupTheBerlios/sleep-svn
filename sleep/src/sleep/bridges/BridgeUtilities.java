@@ -23,8 +23,9 @@ package sleep.bridges;
 
 import sleep.runtime.*;
 import java.io.File;
-import sleep.interfaces.Function;
+import sleep.interfaces.*;
 import java.util.*;
+import sleep.engine.types.*;
 
 /**
  * A bridge is a class that bridges your applications API and sleep.  Bridges are created using interfaces from the sleep.interfaces package.  Arguments are passed to bridges generally in a java.util.Stack form.  The Stack of arguments contains sleep Scalar objects.  The BridgeUtilities makes it safer and easier for you to extract Java types from arguments.
@@ -309,6 +310,38 @@ public class BridgeUtilities
       }
 
       return toValue;
+   }
+
+   /** initializes local scope based on argument stack */
+   public static int initLocalScope(ScriptVariables vars, Variable localLevel, Stack locals)
+   {
+      int name = 1;
+
+      while (!locals.isEmpty())
+      {
+         Scalar lvar = (Scalar)locals.pop();
+
+         if (lvar.getActualValue() != null && lvar.getActualValue().getClass() == ObjectValue.class && lvar.getActualValue().objectValue() != null && lvar.getActualValue().objectValue().getClass() == KeyValuePair.class)
+         {
+            KeyValuePair kvp = (KeyValuePair)lvar.getActualValue().objectValue();
+
+            if (!sleep.parser.Checkers.isVariable(kvp.getKey().toString()))
+            {
+               throw new IllegalArgumentException("unreachable named parameter: " + kvp.getKey());
+            }
+            else
+            {
+               vars.setScalarLevel(kvp.getKey().toString(), kvp.getValue(), localLevel);
+            }
+         }
+         else
+         {
+            vars.setScalarLevel("$"+name, lvar, localLevel);
+            name++;
+         }
+      }
+
+      return name;
    }
 
    /** normalizes the index value based on the specified length */

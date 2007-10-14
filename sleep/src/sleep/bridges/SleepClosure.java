@@ -192,37 +192,11 @@ public class SleepClosure implements Function
              vars.pushLocalLevel(localLevel);
           }
 
+          //
+          // initialize local variables...
+          //
           vars.setScalarLevel("$0", SleepUtils.getScalar(message), localLevel);
-
-          //
-          // setup the parameters from the stack based since this is
-          // the default function environment.
-          //
-          int name = 1;
-          while (!locals.isEmpty())
-          {
-             Scalar lvar = (Scalar)locals.pop();
-
-             if (lvar.getActualValue() != null && lvar.getActualValue().getClass() == ObjectValue.class && lvar.getActualValue().objectValue() != null && lvar.getActualValue().objectValue().getClass() == KeyValuePair.class)
-             {
-                KeyValuePair kvp = (KeyValuePair)lvar.getActualValue().objectValue();
-
-                if (!sleep.parser.Checkers.isVariable(kvp.getKey().toString()))
-                {
-                   throw new IllegalArgumentException("unreachable named parameter: " + kvp.getKey());
-                }
-                else
-                {
-                   vars.setScalarLevel(kvp.getKey().toString(), kvp.getValue(), localLevel);
-                }
-             } 
-             else
-             {
-                vars.setScalarLevel("$"+name, lvar, localLevel);
-                name++;
-             }
-          }
-
+          int name = BridgeUtilities.initLocalScope(vars, localLevel, locals);
           vars.setScalarLevel("@_", SleepUtils.getArrayScalar(new ArgumentArray(name, localLevel)), localLevel);
 
           //

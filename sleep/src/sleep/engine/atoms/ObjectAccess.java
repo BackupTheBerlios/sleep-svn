@@ -46,6 +46,58 @@ public class ObjectAccess extends Step
       return "[Object Access]: "+classRef+"#"+name+"\n";
    }
 
+   private static class ClosureCallRequest extends CallRequest
+   {
+      protected String name;
+      protected Scalar scalar;
+
+      public ClosureCallRequest(ScriptEnvironment e, int lineNo, Scalar _scalar, String _name)
+      {
+         super(e, lineNo);
+         scalar = _scalar;
+         name   = _name;
+      }
+
+      public String getFunctionName()
+      {
+         return ((SleepClosure)scalar.objectValue()).toStringGeneric();
+      }
+
+      public String getFrameDescription()
+      {
+         return scalar.toString();   
+      }
+
+      public String formatCall(String args)
+      {
+         StringBuffer buffer = new StringBuffer("[" + SleepUtils.describe(scalar));
+         
+         if (name != null && name.length() > 0)
+         {
+            buffer.append(" " + name);
+         }
+
+         if (args.length() > 0)
+         {
+            buffer.append(": " + args);
+         }
+
+         buffer.append("]");
+
+         return buffer.toString();
+      }
+
+      protected Scalar execute()
+      {
+         Function func = SleepUtils.getFunctionFromScalar(scalar, getScriptEnvironment().getScriptInstance());
+
+         Scalar result;
+         result = func.evaluate(name, getScriptEnvironment().getScriptInstance(), getScriptEnvironment().getCurrentFrame());
+         getScriptEnvironment().clearReturn();
+         return result;
+      }
+   }
+
    //
    // Pre Condition:
    //   object we're accessing is top item on current frame
@@ -57,16 +109,13 @@ public class ObjectAccess extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      boolean isTrace   = (e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS;
-
+      int mark = e.markFrame();
       Scalar result = SleepUtils.getEmptyScalar();
 
       Object accessMe = null;
       Class  theClass = null;
 
       Scalar scalar   = null;
-
-      int mark = e.markFrame();
 
       if (classRef == null)
       {
@@ -94,93 +143,17 @@ public class ObjectAccess extends Step
       //
       // check if this is a closure, if it is, try to invoke stuff on it instead
       //
+
       if (scalar != null && SleepUtils.isFunctionScalar(scalar))
       {
-         Function func = SleepUtils.getFunctionFromScalar(scalar, e.getScriptInstance());
-
-         if (isTrace)
-         {
-            if (e.getScriptInstance().isProfileOnly())
-            {
-               long stat = System.currentTimeMillis();
-               result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
-               e.clearReturn();
-               stat = System.currentTimeMillis() - stat;
-               e.getScriptInstance().collect(((SleepClosure)scalar.objectValue()).toStringGeneric(), getLineNumber(), stat);
-            }
-            else
-            {
-               String args = SleepUtils.describe(e.getCurrentFrame());
-
-               /* construct the actual trace message */
-   
-               StringBuffer trace = new StringBuffer("[" + SleepUtils.describe(scalar));
-            
-               if (name != null && name.length() > 0)
-               {
-                  trace.append(" " + name);
-               }
-
-               if (args.length() > 0)
-               {
-                  trace.append(": " + args + "]");
-               }
-               else
-               {
-                  trace.append("]");
-               }
-
-               try
-               {
-                  long stat = System.currentTimeMillis();
-
-                  result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
-                  e.clearReturn();
-
-                  stat = System.currentTimeMillis() - stat;
-                  e.getScriptInstance().collect(((SleepClosure)scalar.objectValue()).toStringGeneric(), getLineNumber(), stat);
-
-                  if (!SleepUtils.isEmptyScalar(result))
-                  {
-                     trace.append(" = " + SleepUtils.describe(result));
-                  }
-
-                  e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
-               }
-               catch (RuntimeException rex)
-               {
-                  e.cleanFrame(mark);
-                  e.KillFrame();
-                  trace.append(" - FAILED!");
-                  e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
-                  throw(rex);
-               }
-            }
-         }
-         else
-         {
-            try
-            {
-               result = func.evaluate(name, e.getScriptInstance(), e.getCurrentFrame());
-               e.clearReturn();
-            }
-            catch (RuntimeException rex)
-            {
-               e.cleanFrame(mark);
-               e.KillFrame();
-               throw(rex);
-            }
-         }         
-
-         if (e.isThrownValue())
-         {
-            e.getScriptInstance().recordStackFrame(scalar.toString(), getLineNumber());
-         }
-         
-         e.cleanFrame(mark);
-         e.FrameResult(result);
+         ClosureCallRequest request = new ClosureCallRequest(e, getLineNumber(), scalar, name);
+         request.CallFunction();
          return null;
       }
+
+      //
+      // now we know we're not dealing with a closure; so before we go on the name field has to be non-null.
+      //
 
       if (name == null)
       {
@@ -192,9 +165,12 @@ public class ObjectAccess extends Step
          return null;
       }
 
+      boolean isTrace   = (e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS;
+
       //
       // try to invoke stuff on the object...
       //
+
       Method theMethod    = null;
       Object[] parameters = null;
 

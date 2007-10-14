@@ -92,7 +92,8 @@ public class DefaultEnvironment implements Loadable, Environment
         //
         // tell the environment that we want subroutine's to be bound here
         //
-        env.put("sub",   this);
+        env.put("sub",    this);
+        env.put("inline", this);
 
         return true;
     }
@@ -101,20 +102,27 @@ public class DefaultEnvironment implements Loadable, Environment
     {
         Hashtable env = si.getScriptEnvironment().getEnvironment(); // assuming the environment is shared. hah right
 
-        Stack unloadStack;
-
-        if (env.get("&"+name) != null && env.get("&"+name) instanceof BasicSubroutine)
+        if (type.equals("sub"))
         {
-            BasicSubroutine temp = (BasicSubroutine)env.get("&"+name);
-            unloadStack = temp.getUnloadStack();
+           Stack unloadStack;
 
-            unloadStack.push(temp); // make this instance of BasicSubroutine available in case the main one gets unloaded
+           if (env.get("&"+name) != null && env.get("&"+name) instanceof BasicSubroutine)
+           {
+               BasicSubroutine temp = (BasicSubroutine)env.get("&"+name);
+               unloadStack = temp.getUnloadStack();
+
+               unloadStack.push(temp); // make this instance of BasicSubroutine available in case the main one gets unloaded
+           }
+           else
+           {
+               unloadStack = new Stack();
+           }
+
+           env.put("&"+name, new BasicSubroutine(si, code, unloadStack));
         }
-        else
+        else if (type.equals("inline"))
         {
-            unloadStack = new Stack();
+           env.put("^&"+name, code); /* add an inline function, very harmless */
         }
-
-        env.put("&"+name, new BasicSubroutine(si, code, unloadStack));
     }
 }

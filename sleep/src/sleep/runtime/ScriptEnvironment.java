@@ -147,6 +147,11 @@ public class ScriptEnvironment implements Serializable
     {
        getScriptVariables().putScalar(key, value);
     }
+
+    public Block getBlock(String name)
+    {
+       return (Block)(getEnvironment().get("^" + name));
+    }   
  
     public Function getFunction(String func)
     {

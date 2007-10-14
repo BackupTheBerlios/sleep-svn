@@ -28,7 +28,15 @@
    port is intialized.  the extra params will have no effect on 
    subsequent calls to listen.  to fix this call closef(port) to
    unbind the specified port.
+- added inline functions.  these are more like poor macros than anything
+  else.  an inline function is executed inline with the current function,
+  it shares all scope information and any attempt to return/yield values
+  will affect the parent directly. 
 
+  inline return12 { return 12; }
+
+- refactored Sleep's logic flow for managing function calls, debug 
+  options, etc.. to one file.  
 
 2.1-beta 18  (5 Jul 07)
 ===========
