@@ -51,7 +51,7 @@ public abstract class CallRequest
    /** actually execute the function call */
    public void CallFunction()
    {
-      Scalar temp;
+      Scalar temp = null;
       ScriptEnvironment e = getScriptEnvironment();
       int mark = getScriptEnvironment().markFrame();
 
@@ -90,10 +90,16 @@ public abstract class CallRequest
              }
              catch (RuntimeException rex)
              {
-                e.cleanFrame(mark);
-                e.KillFrame();
                 e.getScriptInstance().fireWarning(formatCall(args) + " - FAILED!", getLineNumber(), true);
-                throw(rex);
+
+                if (rex.getCause() == null || ! (  (java.lang.reflect.InvocationTargetException.class).isInstance(rex.getCause())  ))
+                {
+                   /* swallow invocation target exceptions please */
+
+                   e.cleanFrame(mark);
+                   e.KillFrame();
+                   throw(rex);
+                }
              }
          }
       }
@@ -105,9 +111,14 @@ public abstract class CallRequest
          }
          catch (RuntimeException rex)
          {
-             e.cleanFrame(mark);
-             e.KillFrame();
-             throw(rex);
+             if (rex.getCause() == null || ! (  (java.lang.reflect.InvocationTargetException.class).isInstance(rex.getCause())  ))
+             {
+                 /* swallow invocation target exceptions please */
+
+                e.cleanFrame(mark);
+                e.KillFrame();
+                throw(rex);
+             }
          }
       }
 
@@ -115,6 +126,9 @@ public abstract class CallRequest
       {
          e.getScriptInstance().recordStackFrame(getFrameDescription(), getLineNumber());
       }
+
+      if (temp == null)
+        temp = SleepUtils.getEmptyScalar();
 
       e.cleanFrame(mark);
       e.FrameResult(temp);

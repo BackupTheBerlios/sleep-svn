@@ -46,6 +46,83 @@ public class ObjectAccess extends Step
       return "[Object Access]: "+classRef+"#"+name+"\n";
    }
 
+   private static class MethodCallRequest extends CallRequest
+   {
+      protected Method theMethod;
+      protected Scalar scalar;
+      protected String name;
+      protected Class  theClass;
+
+      public MethodCallRequest(ScriptEnvironment e, int lineNo, Method method, Scalar _scalar, String _name, Class _class)
+      {
+         super(e, lineNo);
+         theMethod = method;
+         scalar    = _scalar;
+         name      = _name;
+         theClass  = _class;
+      }
+
+      public String getFunctionName()
+      {
+         return theMethod.toString();
+      }
+
+      public String getFrameDescription()
+      {
+         return theMethod.toString();   
+      }
+
+      public String formatCall(String args)
+      {
+         StringBuffer trace = new StringBuffer("[");
+
+         if (args != null && args.length() > 0) { args = ": " + args; }
+
+         if (scalar == null)
+         {
+            trace.append(theClass.getName() + " " + name + args + "]");
+         }
+         else if (Proxy.isProxyClass(theClass))
+         {
+            trace.append(theClass.getName() + " " + name + args + "]");
+         }
+         else
+         {
+            trace.append(SleepUtils.describe(scalar) + " " + name + args + "]");
+         }
+
+         return trace.toString();
+      }
+
+      protected Scalar execute()
+      {
+         Object[] parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), getScriptEnvironment().getCurrentFrame(), getScriptEnvironment().getScriptInstance());
+
+         try
+         {
+            return ObjectUtilities.BuildScalar(true, theMethod.invoke(scalar != null ? scalar.objectValue() : null, parameters));
+         }
+         catch (InvocationTargetException ite)
+         {
+            if (ite.getCause() != null)
+               getScriptEnvironment().flagError(ite.getCause());
+
+            throw new RuntimeException(ite);
+         }
+         catch (IllegalArgumentException aex)
+         {
+            aex.printStackTrace();
+            getScriptEnvironment().getScriptInstance().fireWarning(ObjectUtilities.buildArgumentErrorMessage(theClass, name, theMethod.getParameterTypes(), parameters), getLineNumber());
+         }
+         catch (IllegalAccessException iax)
+         {
+            getScriptEnvironment().getScriptInstance().fireWarning("cannot access " + name + " in " + theClass + ": " + iax.getMessage(), getLineNumber());
+         }
+
+         return SleepUtils.getEmptyScalar();
+      }
+   }
+ 
    private static class ClosureCallRequest extends CallRequest
    {
       protected String name;
@@ -171,93 +248,27 @@ public class ObjectAccess extends Step
       // try to invoke stuff on the object...
       //
 
-      Method theMethod    = null;
-      Object[] parameters = null;
+      Method theMethod = ObjectUtilities.findMethod(theClass, name, e.getCurrentFrame());
 
-      try
-      {
-         theMethod  = ObjectUtilities.findMethod(theClass, name, e.getCurrentFrame());
-
-         if (theMethod != null && (classRef == null || (theMethod.getModifiers() & Modifier.STATIC) == Modifier.STATIC))
-         {  
-            try
-            {
-               theMethod.setAccessible(true);
-            }
-            catch (Exception ex) { }
-
-            if (isTrace)
-            {
-               if (e.getScriptInstance().isProfileOnly())
-               {
-                  long stat = System.currentTimeMillis();
-
-                  parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
-                  result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
-
-                  stat = System.currentTimeMillis() - stat;
-                  e.getScriptInstance().collect(theMethod.toString(), getLineNumber(), stat);
-               }
-               else
-               {
-                  String args = SleepUtils.describe(e.getCurrentFrame());
-
-                  if (args.length() > 0) { args = ": " + args; }
-
-                  parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
-
-                  /* construct the actual trace message */
-
-                  StringBuffer trace = new StringBuffer("[");
-
-                  if (scalar == null)
-                  {
-                     trace.append(theClass.getName() + " " + name + args + "]");
-                  }
-                  else if (Proxy.isProxyClass(theClass))
-                  {
-                     trace.append(theClass.getName() + " " + name + args + "]");
-                  }
-                  else
-                  {
-                     trace.append(SleepUtils.describe(scalar) + " " + name + args + "]");
-                  }
-
-                  try
-                  {
-                     long stat = System.currentTimeMillis();
-                     result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
-                     stat = System.currentTimeMillis() - stat;
-                     e.getScriptInstance().collect(theMethod.toString(), getLineNumber(), stat);
-
-                     if (!SleepUtils.isEmptyScalar(result))
-                     {
-                        trace.append(" = " + SleepUtils.describe(result));
-                     }
-
-                     e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
-                  }
-                  catch (InvocationTargetException ite)
-                  {
-                     ObjectUtilities.handleExceptionFromJava(ite.getCause(), e, theMethod + "", getLineNumber());
-                     trace.append(" - FAILED!");
-                     e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
-                  }
-                  catch (RuntimeException rex)
-                  {
-                     trace.append(" - FAILED!");
-                     e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true); 
-                     throw(rex);
-                  }
-               }
-            }
-            else
-            {
-               parameters = ObjectUtilities.buildArgumentArray(theMethod.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
-               result = ObjectUtilities.BuildScalar(true, theMethod.invoke(accessMe, parameters));
-            }
+      if (theMethod != null && (classRef == null || (theMethod.getModifiers() & Modifier.STATIC) == Modifier.STATIC))
+      {  
+         try
+         {
+            theMethod.setAccessible(true);
          }
-         else
+         catch (Exception ex) { }
+
+         MethodCallRequest request = new MethodCallRequest(e, getLineNumber(), theMethod, scalar, name, theClass);
+         request.CallFunction();
+         return null;
+      }
+      else if (theMethod == null && !e.getCurrentFrame().isEmpty())
+      {
+         e.getScriptInstance().fireWarning("there is no method that matches " + name + "("+SleepUtils.describe(e.getCurrentFrame()) + ") in " + theClass.getName(), getLineNumber());
+      }
+      else
+      {
+         try
          {
             Field aField = theClass.getField(name);
 
@@ -276,32 +287,14 @@ public class ObjectAccess extends Step
                result = SleepUtils.getEmptyScalar();
             }
          }
-      }
-      catch (InvocationTargetException ite)
-      {
-         ObjectUtilities.handleExceptionFromJava(ite.getCause(), e, theMethod + "", getLineNumber());
-      }
-      catch (IllegalArgumentException aex)
-      {
-         aex.printStackTrace();
-
-         e.getScriptInstance().fireWarning(ObjectUtilities.buildArgumentErrorMessage(theClass, name, theMethod.getParameterTypes(), 
-                                     parameters), getLineNumber());
-      }
-      catch (NoSuchFieldException fex)
-      {
-         if (!e.getCurrentFrame().isEmpty())
-         {
-            e.getScriptInstance().fireWarning("there is no method that matches " + name + "("+SleepUtils.describe(e.getCurrentFrame()) + ") in " + theClass.getName(), getLineNumber());
-         }
-         else
+         catch (NoSuchFieldException fex)
          {
             e.getScriptInstance().fireWarning("no field/method named " + name + " in " + theClass, getLineNumber());
          }
-      }
-      catch (IllegalAccessException iax)
-      {
-         e.getScriptInstance().fireWarning("cannot access " + name + " in " + theClass + ": " + iax.getMessage(), getLineNumber());
+         catch (IllegalAccessException iax)
+         {
+            e.getScriptInstance().fireWarning("cannot access " + name + " in " + theClass + ": " + iax.getMessage(), getLineNumber());
+         }
       }
 
       e.cleanFrame(mark);

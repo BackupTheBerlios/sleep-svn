@@ -35,8 +35,8 @@
 
   inline return12 { return 12; }
 
-- refactored Sleep's logic flow for managing function calls, debug 
-  options, etc.. to one file.  
+- major refactor of Sleep's logic flow for managing function calls, debug 
+  options, etc.. to one file.  please report any bugs 
 
 2.1-beta 18  (5 Jul 07)
 ===========
