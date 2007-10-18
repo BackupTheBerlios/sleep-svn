@@ -1196,6 +1196,11 @@ public class CodeGenerator implements ParserConstants
                  free to uncomment the two lines above (my original hacky fix for
                  the situation described in this comment */
            }
+           else if (strings[0].equals("callcc"))
+           {
+              atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_CALLCC);
+              add(atom, tokens[0]);
+           }
            else
            {
               atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_RETURN);

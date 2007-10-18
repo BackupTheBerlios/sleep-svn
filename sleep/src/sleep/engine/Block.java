@@ -25,7 +25,9 @@ package sleep.engine;
 import java.util.*;
 import java.io.*;
 
+import sleep.interfaces.Function;
 import sleep.runtime.*;
+import sleep.bridges.SleepClosure;
 
 /**
  * <p>A Block is the fundamental unit of parsed and ready to execute sleep code.</p>
@@ -258,9 +260,9 @@ public class Block implements Serializable
               return SleepUtils.getEmptyScalar();
            } 
 
-           if (environment.isReturn())
+           while (environment.isReturn())
            {
-              if (environment.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_YIELD)
+              if (environment.isYield())
               {
                  if (temp instanceof sleep.engine.atoms.Goto)
                  {
@@ -301,6 +303,29 @@ public class Block implements Serializable
                  cleanupEnvironment(environment);
                  return environment.getReturnValue(); /* we do this because the exception will get cleared and after that
                                                          there may be a return value */
+              }
+              else if (environment.isPassControl())
+              {
+                 if (environment.markFrame() >= 0)
+                 {
+                    Object check = environment.getCurrentFrame().pop(); /* get rid of the function that we're going to callcc */	
+  
+                    if (check != environment.getReturnValue())
+                    {
+                       environment.getScriptInstance().fireWarning("bad callcc stack: " + SleepUtils.describe((Scalar)check) + " expected " + SleepUtils.describe(environment.getReturnValue()), temp.getLineNumber());
+                    }
+                 }
+
+                 Scalar callme = environment.getReturnValue();
+                 environment.flagReturn(null, ScriptEnvironment.FLOW_CONTROL_NONE);
+
+                 environment.CreateFrame(); /* create a frame because the function call will destroy it */
+
+                 /** pass the continuation as the first argument to the callcc'd closure */
+                 environment.getCurrentFrame().push(((SleepClosure)callme.objectValue()).getAndRemoveMetadata("continuation", null));
+
+                 CallRequest.ClosureCallRequest request = new CallRequest.ClosureCallRequest(environment, temp.getLineNumber(), callme, "CALLCC");
+                 request.CallFunction();
               }
               else if (environment.isDebugInterrupt())
               {

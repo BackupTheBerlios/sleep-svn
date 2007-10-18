@@ -55,6 +55,20 @@ public class SleepClosure implements Function
     /** the closure variables referenced by this closure */
     Variable         variables;
 
+    /** put some value into the metadata store associated with this closure. */
+    public void putMetadata(Object key, Object value)
+    {
+       metadata.put(key, value);
+    }
+
+    /** obtain a key from the metadata store associated with this closure */
+    public Object getAndRemoveMetadata(Object key, Object defaultv)
+    {
+       Object temp = metadata.remove(key);
+       if (temp == null) { return defaultv; }
+       return temp;
+    }
+
     /** saves the top level context */
     private void saveToplevelContext(Stack _context, Variable localLevel)
     {
@@ -159,6 +173,7 @@ public class SleepClosure implements Function
 
        Scalar temp = evaluate(message, si, locals);
        si.getScriptEnvironment().clearReturn();
+
        return temp;
     }
 
@@ -215,6 +230,13 @@ public class SleepClosure implements Function
 
           vars.popLocalLevel();
           vars.popClosureLevel();
+
+          if (si.getScriptEnvironment().isCallCC())
+          {
+             SleepClosure tempc = SleepUtils.getFunctionFromScalar(si.getScriptEnvironment().getReturnValue(), si);
+             tempc.putMetadata("continuation", SleepUtils.getScalar(this));
+             si.getScriptEnvironment().flagReturn(si.getScriptEnvironment().getReturnValue(), ScriptEnvironment.FLOW_CONTROL_PASS); 
+          }
        }
 
        return temp;

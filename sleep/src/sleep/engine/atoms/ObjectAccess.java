@@ -123,58 +123,6 @@ public class ObjectAccess extends Step
       }
    }
  
-   private static class ClosureCallRequest extends CallRequest
-   {
-      protected String name;
-      protected Scalar scalar;
-
-      public ClosureCallRequest(ScriptEnvironment e, int lineNo, Scalar _scalar, String _name)
-      {
-         super(e, lineNo);
-         scalar = _scalar;
-         name   = _name;
-      }
-
-      public String getFunctionName()
-      {
-         return ((SleepClosure)scalar.objectValue()).toStringGeneric();
-      }
-
-      public String getFrameDescription()
-      {
-         return scalar.toString();   
-      }
-
-      public String formatCall(String args)
-      {
-         StringBuffer buffer = new StringBuffer("[" + SleepUtils.describe(scalar));
-         
-         if (name != null && name.length() > 0)
-         {
-            buffer.append(" " + name);
-         }
-
-         if (args.length() > 0)
-         {
-            buffer.append(": " + args);
-         }
-
-         buffer.append("]");
-
-         return buffer.toString();
-      }
-
-      protected Scalar execute()
-      {
-         Function func = SleepUtils.getFunctionFromScalar(scalar, getScriptEnvironment().getScriptInstance());
-
-         Scalar result;
-         result = func.evaluate(name, getScriptEnvironment().getScriptInstance(), getScriptEnvironment().getCurrentFrame());
-         getScriptEnvironment().clearReturn();
-         return result;
-      }
-   }
-
    //
    // Pre Condition:
    //   object we're accessing is top item on current frame
@@ -223,7 +171,7 @@ public class ObjectAccess extends Step
 
       if (scalar != null && SleepUtils.isFunctionScalar(scalar))
       {
-         ClosureCallRequest request = new ClosureCallRequest(e, getLineNumber(), scalar, name);
+         CallRequest.ClosureCallRequest request = new CallRequest.ClosureCallRequest(e, getLineNumber(), scalar, name);
          request.CallFunction();
          return null;
       }

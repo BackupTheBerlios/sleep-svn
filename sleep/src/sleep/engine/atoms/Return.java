@@ -58,6 +58,20 @@ public class Return extends Step
       {
          e.flagReturn(null, return_type);
       }
+      else if (return_type == ScriptEnvironment.FLOW_CONTROL_CALLCC)
+      {
+         Scalar temp = e.getCurrentFrame().isEmpty() ? SleepUtils.getEmptyScalar() : (Scalar)e.getCurrentFrame().pop();
+
+         if (!SleepUtils.isFunctionScalar(temp))
+         {
+            e.getScriptInstance().fireWarning("callcc requires a function: " + SleepUtils.describe(temp), getLineNumber());
+            e.flagReturn(temp, ScriptEnvironment.FLOW_CONTROL_YIELD);
+         }
+         else
+         {
+            e.flagReturn(temp, return_type);
+         }
+      }
       else if (e.getCurrentFrame().isEmpty())
       {
          e.flagReturn(SleepUtils.getEmptyScalar(), return_type);

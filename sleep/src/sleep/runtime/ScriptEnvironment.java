@@ -329,7 +329,7 @@ public class ScriptEnvironment implements Serializable
 
           rv = temp.block.evaluate(this, temp.last);
 
-          if (isReturn() && getFlowControlRequest() == FLOW_CONTROL_YIELD)
+          if (isReturn() && isYield())
           {
              while (i.hasNext())
              {
@@ -457,13 +457,19 @@ public class ScriptEnvironment implements Serializable
 
     /** adding a yield keyword */
     public static final int FLOW_CONTROL_YIELD    = 8;
-
+   
     /** adding a throw keyword -- sleep is now useable :) */
     public static final int FLOW_CONTROL_THROW    = 16;
 
     /** a special case for debugs and such */ 
     public static final int FLOW_CONTROL_DEBUG    = 32;
  
+    /** adding a callcc keyword */
+    public static final int FLOW_CONTROL_CALLCC   = 8 | 64; 
+
+    /** a special case, pass control flow to the return value (it better be a function!) */
+    public static final int FLOW_CONTROL_PASS     = 128;
+
     protected String  debugString       = "";
     protected Scalar rv      = null;
     protected int    request = 0;
@@ -476,6 +482,21 @@ public class ScriptEnvironment implements Serializable
     public boolean isDebugInterrupt()
     {
        return (request & FLOW_CONTROL_DEBUG) == FLOW_CONTROL_DEBUG;
+    }
+
+    public boolean isYield()
+    {
+       return (request & FLOW_CONTROL_YIELD) == FLOW_CONTROL_YIELD;
+    }
+
+    public boolean isCallCC()
+    {
+       return (request & FLOW_CONTROL_CALLCC) == FLOW_CONTROL_CALLCC;
+    }
+
+    public boolean isPassControl()
+    {
+       return (request & FLOW_CONTROL_PASS) == FLOW_CONTROL_PASS;
     }
 
     public Scalar getReturnValue()
@@ -505,7 +526,8 @@ public class ScriptEnvironment implements Serializable
        request |= FLOW_CONTROL_DEBUG;
        debugString = message;
     }
-
+  
+    /** flags a return value for this script environment */
     public void flagReturn(Scalar value, int type_of_flow)
     {
        if (value == null) { value = SleepUtils.getEmptyScalar(); }
@@ -525,9 +547,9 @@ public class ScriptEnvironment implements Serializable
     /** Clears the return value from the last executed function. */
     public void clearReturn()
     {
-       request = FLOW_CONTROL_NONE | (request & (FLOW_CONTROL_THROW | FLOW_CONTROL_DEBUG));
+       request = FLOW_CONTROL_NONE | (request & (FLOW_CONTROL_THROW | FLOW_CONTROL_DEBUG | FLOW_CONTROL_PASS));
 
-       if (!isThrownValue())
+       if (!isThrownValue() && !isPassControl())
            rv      = null;
     }
 

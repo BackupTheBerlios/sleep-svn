@@ -42,86 +42,6 @@ public class Call extends Step
       return prefix + "[Function Call]: "+function+"\n";
    }
 
-   private static class FunctionCallRequest extends CallRequest
-   {
-      protected String function;
-      protected Function callme;
-
-      public FunctionCallRequest(ScriptEnvironment e, int lineNo, String functionName, Function f)
-      {
-         super(e, lineNo);
-         function = functionName;
-         callme   = f;
-      }
-
-      public String getFunctionName()
-      {
-         return function;
-      }
-
-      public String getFrameDescription()    
-      {
-         return function + "()";
-      }
-
-      public String formatCall(String args) 
-      {
-         return function + "(" + args + ")";
-      }
-
-      public boolean isDebug()
-      {
-         return super.isDebug() && !function.equals("&@") && !function.equals("&%");
-      }
-
-      protected Scalar execute()
-      {
-         Scalar temp = callme.evaluate(function, getScriptEnvironment().getScriptInstance(), getScriptEnvironment().getCurrentFrame());
-         getScriptEnvironment().clearReturn();
-         return temp;
-      }
-   }
-
-   private static class InlineCallRequest extends CallRequest
-   {
-      protected String function;
-      protected Block  inline;
-
-      public InlineCallRequest(ScriptEnvironment e, int lineNo, String functionName, Block i)
-      {
-         super(e, lineNo);
-         function = functionName;
-         inline   = i;
-      }
-
-      public String getFunctionName()
-      {
-         return "<inline> " + function;
-      }
-
-      public String getFrameDescription()    
-      {
-         return "<inline> " + function + "()";
-      }
-
-      protected String formatCall(String args) 
-      {
-         return "<inline> " + function + "(" + args + ")";
-      }
-
-      protected Scalar execute()
-      {
-         ScriptVariables vars = getScriptEnvironment().getScriptVariables();
-         synchronized (vars)
-         {
-            Variable localLevel = vars.getLocalVariables();
-            sleep.bridges.BridgeUtilities.initLocalScope(vars, localLevel, getScriptEnvironment().getCurrentFrame());
-            return inline.evaluate(getScriptEnvironment());
-         }
-      }
-   }
-
-	  
    // Pre Condition:
    //  arguments on the current stack (to allow stack to be passed0
    //
@@ -135,12 +55,12 @@ public class Call extends Step
 
       if (callme != null)
       {
-         FunctionCallRequest request = new FunctionCallRequest(e, getLineNumber(), function, callme);         
+         CallRequest.FunctionCallRequest request = new CallRequest.FunctionCallRequest(e, getLineNumber(), function, callme);         
          request.CallFunction();
       }
       else if ((inline = e.getBlock(function)) != null)
       {
-         InlineCallRequest request = new InlineCallRequest(e, getLineNumber(), function, inline);
+         CallRequest.InlineCallRequest request = new CallRequest.InlineCallRequest(e, getLineNumber(), function, inline);
          request.CallFunction();
       }
       else
