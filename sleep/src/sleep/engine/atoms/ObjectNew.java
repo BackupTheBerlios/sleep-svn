@@ -43,6 +43,69 @@ public class ObjectNew extends Step
       return "[Object New]: "+name+"\n";
    }
 
+   private static class ConstructorCallRequest extends CallRequest
+   {
+      protected Constructor theConstructor;
+      protected Class  name;
+
+      public ConstructorCallRequest(ScriptEnvironment e, int lineNo, Constructor cont, Class _name)
+      {
+         super(e, lineNo);
+         theConstructor = cont;
+         name      = _name;
+      }
+
+      public String getFunctionName()
+      {
+         return name.toString();
+      }
+
+      public String getFrameDescription()
+      {
+         return name.toString();
+      }
+
+      public String formatCall(String args)
+      {
+         if (args != null && args.length() > 0) { args = ": " + args; }
+         StringBuffer trace = new StringBuffer("[new " + name.getName() + args + "]");
+
+         return trace.toString();
+      }
+
+      protected Scalar execute()
+      {
+         Object[] parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), getScriptEnvironment().getCurrentFrame(), getScriptEnvironment().getScriptInstance());
+
+         try
+         {
+            return ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
+         }
+         catch (InvocationTargetException ite)
+         {
+            if (ite.getCause() != null)
+               getScriptEnvironment().flagError(ite.getCause());
+
+            throw new RuntimeException(ite);
+         }
+         catch (IllegalArgumentException aex)
+         {
+            aex.printStackTrace();
+            getScriptEnvironment().getScriptInstance().fireWarning(ObjectUtilities.buildArgumentErrorMessage(name, name.getName(), theConstructor.getParameterTypes(), parameters), getLineNumber());
+         }
+         catch (InstantiationException iex)
+         {
+            getScriptEnvironment().getScriptInstance().fireWarning("unable to instantiate abstract class " + name.getName(), getLineNumber());
+         }
+         catch (IllegalAccessException iax)
+         {
+            getScriptEnvironment().getScriptInstance().fireWarning("cannot access constructor in " + name.getName() + ": " + iax.getMessage(), getLineNumber());
+         }
+
+         return SleepUtils.getEmptyScalar();
+      }
+   }   
+
    //
    // Pre Condition:
    //   arguments are on the current frame
@@ -53,113 +116,27 @@ public class ObjectNew extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      boolean isTrace = (e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS;
+      Scalar      result;
+      Constructor theConstructor  = ObjectUtilities.findConstructor(name, e.getCurrentFrame());
 
-      Scalar result = SleepUtils.getEmptyScalar();
-
-      Object[]    parameters     = null;
-      Constructor theConstructor = null;
-
-      int mark = e.markFrame();
-
-      try
-      {
-         theConstructor  = ObjectUtilities.findConstructor(name, e.getCurrentFrame());
-
-         if (theConstructor != null)
-         {  
-            try
-            {
-               theConstructor.setAccessible(true);
-            }
-            catch (Exception ex) { }
-
-            if (isTrace)
-            {
-               if (e.getScriptInstance().isProfileOnly())
-               {
-                  long stat = System.currentTimeMillis();
-
-                  parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
-                  result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
-
-                  stat = System.currentTimeMillis() - stat;
-                  e.getScriptInstance().collect(theConstructor.toString(), getLineNumber(), stat);
-               }
-               else
-               {
-                  String args = SleepUtils.describe(e.getCurrentFrame());
-                  parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
- 
-                  StringBuffer trace = new StringBuffer("[new " + name.getName());
-
-                  if (args.length() > 0)
-                  {
-                     trace.append(": " + args);
-                  }
-
-                  trace.append("]");
-
-                  try
-                  {
-                     long stat = System.currentTimeMillis();
-                     result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
-
-                     stat = System.currentTimeMillis() - stat;
-                     e.getScriptInstance().collect(theConstructor.toString(), getLineNumber(), stat);
-
-                     if (!SleepUtils.isEmptyScalar(result))
-                     {
-                        trace.append(" = " + SleepUtils.describe(result));
-                     }
-
-                     e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
-                  }
-                  catch (InvocationTargetException ite)
-                  {
-                     ObjectUtilities.handleExceptionFromJava(ite.getCause(), e, theConstructor + "", getLineNumber());
-                     trace.append(" - FAILED!");
-                     e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
-                  }
-                  catch (RuntimeException rex)
-                  {
-                     trace.append(" - FAILED!");
-                     e.getScriptInstance().fireWarning(trace.toString(), getLineNumber(), true);
-                     throw(rex);
-                  }
-               }
-            }
-            else
-            { 
-               parameters = ObjectUtilities.buildArgumentArray(theConstructor.getParameterTypes(), e.getCurrentFrame(), e.getScriptInstance());
-               result = ObjectUtilities.BuildScalar(false, theConstructor.newInstance(parameters));
-            }
-         }
-         else
+      if (theConstructor != null)
+      {  
+         try
          {
-            e.getScriptInstance().fireWarning("no constructor matching "+name.getName()+"(" + SleepUtils.describe(e.getCurrentFrame()) + ")", getLineNumber());
+            theConstructor.setAccessible(true);
          }
+         catch (Exception ex) { }
+         ConstructorCallRequest request = new ConstructorCallRequest(e, getLineNumber(), theConstructor, name); 
+         request.CallFunction();
+         return null;
       }
-      catch (InvocationTargetException ite)
+      else
       {
-         ObjectUtilities.handleExceptionFromJava(ite.getCause(), e, theConstructor + "", getLineNumber());
-      }
-      catch (IllegalArgumentException aex)
-      {
-         e.getScriptInstance().fireWarning(ObjectUtilities.buildArgumentErrorMessage(name, name.getName(), theConstructor.getParameterTypes(),
-                                     parameters), getLineNumber());
-      }
-      catch (InstantiationException iex)
-      {
-         e.getScriptInstance().fireWarning("unable to instantiate abstract class " + name.getName(), getLineNumber());
-      }
-      catch (Exception iax)
-      {
-         e.getScriptInstance().fireWarning(iax.toString(), getLineNumber());
+         e.getScriptInstance().fireWarning("no constructor matching " + name.getName() + "("+SleepUtils.describe(e.getCurrentFrame()) + ")", getLineNumber());
+         result = SleepUtils.getEmptyScalar();
+         e.FrameResult(result);
       }
 
-      e.cleanFrame(mark);
-      e.FrameResult(result);
       return null;
    }
 }

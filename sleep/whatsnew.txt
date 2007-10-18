@@ -19,15 +19,15 @@
                 a subsequent call of listen(...) to accept a 
                 connection.
 
-   for example, to listen on port 8888 of 192.168.1.1 while allowing
-   only 1 connection:
+    for example, to listen on port 8888 of 192.168.1.1 while allowing
+    only 1 connection:
  
-   $handle = listen(8888, laddr => "192.168.1.1", backlog => 1)
+    $handle = listen(8888, laddr => "192.168.1.1", backlog => 1)
    
-   listen will only honor the extra parameters the first time the 
-   port is intialized.  the extra params will have no effect on 
-   subsequent calls to listen.  to fix this call closef(port) to
-   unbind the specified port.
+    listen will only honor the extra parameters the first time the 
+    port is intialized.  the extra params will have no effect on 
+    subsequent calls to listen.  to fix this call closef(port) to
+    unbind the specified port.
 - added inline functions.  these are more like poor macros than anything
   else.  an inline function is executed inline with the current function,
   it shares all scope information and any attempt to return/yield values
@@ -41,6 +41,7 @@
   with yield) and then it calls the specified function with the packaged
   current function as an argument.  combine this with the new inline 
   functions feature and there is all kinds of fun to be had.
+- HOES now complains if a specified constructor could not be found.
 
 2.1-beta 18  (5 Jul 07)
 ===========
