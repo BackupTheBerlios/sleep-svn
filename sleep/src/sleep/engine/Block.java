@@ -248,12 +248,20 @@ public class Block implements Serializable
               }
               else if (ex instanceof RuntimeException)
               {
-                 environment.getScriptInstance().fireWarning(ex.getMessage(), temp.getLineNumber());
+                 if (ex.getMessage() == null)
+                 {
+                    environment.getScriptInstance().fireWarning("internal error - " + ex.getClass(), temp.getLineNumber());
+//                    ex.printStackTrace(System.err);
+                 }
+                 else
+                 {
+                    environment.getScriptInstance().fireWarning(ex.getMessage(), temp.getLineNumber());
+                 }
               }
               else
               {
                  environment.getScriptInstance().fireWarning(ex.toString(), temp.getLineNumber());
-                 ex.printStackTrace(System.out);
+//                 ex.printStackTrace(System.err);
               }
 
               cleanupEnvironment(environment);
