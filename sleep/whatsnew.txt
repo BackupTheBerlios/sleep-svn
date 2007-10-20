@@ -41,7 +41,6 @@
   with yield) and then it calls the specified function with the packaged
   current function as an argument.  combine this with the new inline 
   functions feature and there is all kinds of fun to be had.
-- HOES now complains if a specified constructor could not be found.
 
 2.1-beta 18  (5 Jul 07)
 ===========

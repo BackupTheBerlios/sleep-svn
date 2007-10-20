@@ -134,12 +134,8 @@ public class ObjectAccess extends Step
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      int mark = e.markFrame();
-      Scalar result = SleepUtils.getEmptyScalar();
-
       Object accessMe = null;
       Class  theClass = null;
-
       Scalar scalar   = null;
 
       if (classRef == null)
@@ -150,9 +146,7 @@ public class ObjectAccess extends Step
          if (accessMe == null)
          {
             e.getScriptInstance().fireWarning("Attempted to call a non-static method on a null reference", getLineNumber());
-            e.cleanFrame(mark);
             e.KillFrame();
-
             e.getCurrentFrame().push(SleepUtils.getEmptyScalar());
 
             return null;
@@ -183,14 +177,13 @@ public class ObjectAccess extends Step
       if (name == null)
       {
          e.getScriptInstance().fireWarning("Attempted to query an object with no method/field", getLineNumber());
-         e.cleanFrame(mark);
          e.KillFrame();
-         e.getCurrentFrame().push(result);
+         e.getCurrentFrame().push(SleepUtils.getEmptyScalar());
 
          return null;
       }
 
-      boolean isTrace   = (e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_TRACE_CALLS) == ScriptInstance.DEBUG_TRACE_CALLS;
+      Scalar result = SleepUtils.getEmptyScalar();
 
       //
       // try to invoke stuff on the object...
@@ -245,7 +238,6 @@ public class ObjectAccess extends Step
          }
       }
 
-      e.cleanFrame(mark);
       e.FrameResult(result);
       return null;
    }
