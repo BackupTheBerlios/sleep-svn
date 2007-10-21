@@ -1,4 +1,4 @@
-2.1-beta 19 
+2.1-beta 19  (23 Oct 07)
 ===========
 - sleep interpreter now performs better stack hygeine to prevent 
   exceptions and errors from corrupting the stack inadvertently.
@@ -28,10 +28,10 @@
     port is intialized.  the extra params will have no effect on 
     subsequent calls to listen.  to fix this call closef(port) to
     unbind the specified port.
-- added inline functions.  these are more like poor macros than anything
-  else.  an inline function is executed inline with the current function,
-  it shares all scope information and any attempt to return/yield values
-  will affect the parent directly. 
+- added inline functions.  these are more like poor mans macros than 
+  anything else.  an inline function is executed inline with the 
+  current function, it shares all scope information and any attempt 
+  to return/yield/callcc values will affect the parent directly. 
 
   inline return12 { return 12; }
 

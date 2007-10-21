@@ -785,6 +785,33 @@ subroutine is factorial:</p>
    return $1 * fact($1 - 1)
 }</pre>
 
+<h3>Inline Subroutines</h3>
+
+<p>An inline subroutine is Sleep's solution to the macro.  An inline subroutine executes within the current function context as if it manually
+existed there.  Local and closure variable scopes are shared with the current function.  Any attempt to yield, return, or callcc a value from an 
+inline function will directly affect the parent.</p>
+
+<p>Parameters passed to inline subroutines are numbered from <var>$1</var> ... <var>$n</var>.  <var>$this</var> and friends refer to the current
+function and not the inline function.</p>
+
+<p>Inline functions have utility for abstracting complex callcc, yield, or return behavior.  They are declared with the inline keyword.</p>
+
+<pre>inline printx
+{
+   println("\$x is $x");
+}
+
+sub foo
+{
+   local('$x');
+   $x = 0x31337;
+   printx();
+}</pre>
+
+<p>Inline subroutines do not return values themselves.  Any attempt to use an inline function call in
+an expression will result in <var>$null</var>.  Any attempt to use an inline function call that saves function state (yield, callcc) will result
+in an unusable continuation.</p>
+
 <h3>Nesting Subroutines</h3>
 
 <p>Everything in sleep is evaluated in a (semi) straight forward manner.  When sleep executes a statement that consists of the 
@@ -1968,6 +1995,34 @@ Value is 999</pre>
 evaluate an expression each iteration of a loop where as foreach is iterating over a closure reference.  The difference is
 pretty much in the implementation, the end result is the same.</p>
 
+<h4>The Callcc Command</h4>
+
+<p>Similar to coroutines are continuations.  A paused function object can be thought of as the future stuff to execute (or the
+continuation) of the function.  The callcc command syntactically resembles yield and return except a function parameter is required.</p>
+
+<p>callcc will save the current function state into a object.  The specified function will the be called with the current function continuation
+as a parameter.  Control flow will be moved to the specified function.  callcc can be thought of as a functional-level goto.</p>
+
+<pre>$buffer  = $null;
+
+sub produce {
+   for ($x = 0; $x < 3; $x++) {
+      println("Produce: $x * 3");
+      $buffer = $x * 3;
+      callcc &consume;
+   }
+}
+
+sub consume {
+   println("Consume: $buffer");
+   callcc &produce;
+}
+
+produce();</pre>
+
+<p>Callcc and yield use the same internal mechanisms.  The practical difference between callcc and yield is that callcc expects a function parameter and this
+function parameter is immediately invoked with the saved state of the calling function.</p>
+
 <h2><a name="11">Function Library</a></h2>
 
 <p>This appendix is a list of the application neutral built-in functions for sleep.  I expect this list to grow as time goes on.  
@@ -2328,6 +2383,11 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
  </tr>
  <tr>
   <td>%</td>
+  <td>ohash(blah => "value", ...)</td>
+  <td>instantiates an ordered hash with the specified values.  ordered hashes mantain key insertion order.  keys can be updated without changing order.</td>
+ </tr>
+ <tr>
+  <td>%</td>
   <td>putAll(%hash, @|&amp;, [@|&amp;])</td>
   <td>populates the hash with the specified iterators.  If only one iterator is specified then the second argument
   is assumed to be the same as the first.  The first iterator is iterated over to obtain the keys for the hash
@@ -2404,9 +2464,11 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
  </tr>
  <tr>
   <td>$</td>
-  <td>connect("host", port, [timeout], [&amp;closure])</td>
+  <td>connect("host", port, [timeout], [&amp;closure], ...)</td>
   <td>connects to the specified host:port and returns a $handle.  Check for issues connecting to a host with checkError().  If 
-     &amp;closure is specified, this call will not block.  &amp;closure will be called when a connection is established.</td>
+     &amp;closure is specified, this call will not block.  &amp;closure will be called when a connection is established.  multiple key value pairs
+can be specified to set parameters of the connection: linger => (the value of SO_LINGER (how long (ms) the socket waits for a TCP reset before
+actually closing.); lport => (the local port number to bind to); laddr => (the local address to bind to)</td>
  </tr>
  <tr>
   <td>$</td>
@@ -2439,10 +2501,13 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
  </tr>
  <tr>
   <td>$</td>
-  <td>listen(port, [timeout], [$host], [&amp;closure])</td>
+  <td>listen(port, [timeout], [$host], [&amp;closure], ...)</td>
   <td>listens for a connection on the specified port.  Check for listening issues with the checkError() function.  If 
       &amp;closure is specified, this call will not block.  &amp;closure will be called when a connection is established.  
-      The specified scalar $host will be set to the name of the host that connects (if successful).</td>
+      The specified scalar $host will be set to the name of the host that connects (if successful).  multiple key value pairs can be specified to
+set parameters of the connection: linger => (the value of SO_LINGER (how long (ms) the socket waits for a TCP reset before actually closing.);
+lport => (the local port number to bind to); laddr => (the local address to bind to); and backlog => (the number of connections to queue while
+waiting for a subsequent call of listen(...) to accept a connection.)</td>
  </tr>
  <tr>
   <td></td>

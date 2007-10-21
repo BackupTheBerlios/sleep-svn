@@ -1,5 +1,5 @@
  ------- -------------------- ---------   ---------------  ------- ---------
-Sleep - 2.1 beta 18 - README   
+Sleep - 2.1 beta 19 - README   
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 "You got the language, all you need now is the O'Reilly book".  That is
@@ -21,6 +21,7 @@ wanted* to integrate it.  Since then, Sleep has been revised, expanded,
 and stabilized.  
 
 Sleep Project Homepage: http://sleep.hick.org/
+              (Mirror): http://sleep.berlios.de/
 
  ------- -------------------- ---------   ---------------  ------- ---------
 Documentation
@@ -156,9 +157,9 @@ forum:
 Legal Garbage
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
-Sleep is (c) 2002, 2003, 2004, 2005, 2006 Raphael Mudge (raffi@hick.org).  All 
-of the source and somehow the documentation are released under the GNU Lesser
-Public License.  
+Sleep is (c) 2002, 2003, 2004, 2005, 2006, 2007 Raphael Mudge (raffi@hick.org).  
+All of the source and somehow the documentation are released under the GNU 
+Lesser Public License.  
 
 The scripts and library files supplied as input to or produced as output 
 from the Sleep library do not automatically fall under the copyright of the
