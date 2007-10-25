@@ -6,7 +6,7 @@ blah 1
 Returned pHEAR
 blah 3
 bleh 2
-@_ = @()
+@_ = @('aa', 'bbb', 'cccc')
 Arg: aa
 $foo: uNF
 $this: &closure[inline.sl:57-60]#3

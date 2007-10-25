@@ -313,7 +313,7 @@ public class BridgeUtilities
    }
 
    /** initializes local scope based on argument stack */
-   public static int initLocalScope(ScriptVariables vars, Variable localLevel, Stack locals)
+   public static void initLocalScope(ScriptVariables vars, Variable localLevel, Stack locals)
    {
       int name = 1;
 
@@ -341,7 +341,7 @@ public class BridgeUtilities
          }
       }
 
-      return name;
+      vars.setScalarLevel("@_", SleepUtils.getArrayScalar(new ArgumentArray(name, localLevel)), localLevel);
    }
 
    /** normalizes the index value based on the specified length */

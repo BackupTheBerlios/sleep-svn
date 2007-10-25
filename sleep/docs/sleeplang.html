@@ -2003,6 +2003,15 @@ continuation) of the function.  The callcc command syntactically resembles yield
 <p>callcc will save the current function state into a object.  The specified function will the be called with the current function continuation
 as a parameter.  Control flow will be moved to the specified function.  callcc can be thought of as a functional-level goto.</p>
 
+<p>The syntax for callcc is:</p>
+
+<p><code>callcc <b>closure</b></code>;</p>
+
+<p>The return value of the specified closure will be the return value of the current function.  The specified closure receives the continuation of 
+the current function as the <var>$1</var> parameter.</p>
+
+<p>The following is a simple example of callcc demonstrating the producer/consumer problem:</p>
+
 <pre>$buffer  = $null;
 
 sub produce {
@@ -2015,7 +2024,7 @@ sub produce {
 
 sub consume {
    println("Consume: $buffer");
-   callcc &produce;
+   callcc $1; # resume the calling function
 }
 
 produce();</pre>
