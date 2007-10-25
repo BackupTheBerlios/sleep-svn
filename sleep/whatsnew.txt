@@ -1,4 +1,4 @@
-2.1-beta 19  (23 Oct 07)
+2.1-beta 19  (24 Oct 07)
 ===========
 - sleep interpreter now performs better stack hygeine to prevent 
   exceptions and errors from corrupting the stack inadvertently.
