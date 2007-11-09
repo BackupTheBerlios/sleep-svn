@@ -1,6 +1,9 @@
 2.1-beta 20
 ===========
 - fix debug mode 24 error handling inconsistency bug.
+- $null passed as a Java string now evaluates to null and not ""
+- sleep arrays will now $null elements when converting to Java
+  arrays.
 
 2.1-beta 19  (24 Oct 07)
 ===========

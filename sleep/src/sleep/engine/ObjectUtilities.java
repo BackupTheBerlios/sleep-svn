@@ -353,7 +353,7 @@ public class ObjectUtilities
    {
       if (type == String.class)
       {
-         return value.toString();
+         return SleepUtils.isEmptyScalar(value) ? null : value.toString();
       }
       else if (value.getArray() != null)
       {
@@ -369,7 +369,7 @@ public class ObjectUtilities
                 Scalar temp = (Scalar)i.next();
                 Object blah = buildArgument(atype, temp, script);
 
-                if (blah != null && (atype.isInstance(blah) || atype.isPrimitive()))
+                if ((blah == null && !atype.isPrimitive()) || atype.isInstance(blah) || atype.isPrimitive())
                 {
                    Array.set(arrayV, x, blah);
                 }
