@@ -4,6 +4,8 @@
 - $null passed as a Java string now evaluates to null and not ""
 - sleep arrays will now $null elements when converting to Java
   arrays.
+- updated fork() to use script name AND line number information
+  for thread description.  will aid debugging.
 
 2.1-beta 19  (24 Oct 07)
 ===========

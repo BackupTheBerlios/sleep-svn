@@ -1,0 +1,7 @@
+#
+# 
+#
+
+fork({
+  println([Thread currentThread]);
+});
