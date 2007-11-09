@@ -1,3 +1,7 @@
+2.1-beta 20
+===========
+- fix debug mode 24 error handling inconsistency bug.
+
 2.1-beta 19  (24 Oct 07)
 ===========
 - sleep interpreter now performs better stack hygeine to prevent 

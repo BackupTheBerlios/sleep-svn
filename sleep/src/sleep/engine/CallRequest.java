@@ -64,10 +64,24 @@ public abstract class CallRequest
       {
          if (e.getScriptInstance().isProfileOnly())
          {
-             long stat = System.currentTimeMillis();
-             temp = execute();
-             stat = System.currentTimeMillis() - stat;
-             e.getScriptInstance().collect(getFunctionName(), getLineNumber(), stat);
+             try
+             {
+                long stat = System.currentTimeMillis();
+                temp = execute();
+                stat = System.currentTimeMillis() - stat;
+                e.getScriptInstance().collect(getFunctionName(), getLineNumber(), stat);
+             }
+             catch (RuntimeException rex)
+             {
+                if (rex.getCause() == null || ! (  (java.lang.reflect.InvocationTargetException.class).isInstance(rex.getCause())  ))
+                {
+                   /* swallow invocation target exceptions please */
+
+                   e.cleanFrame(mark);
+                   e.KillFrame();
+                   throw(rex);
+                }
+             }
          }
          else
          {
