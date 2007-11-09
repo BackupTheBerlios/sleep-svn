@@ -1,9 +1,10 @@
 package sleep.runtime;
 
 import java.util.*;
+import sleep.engine.ObjectUtilities;
 
 /** A class for creating accessing a Map data structure in your application in a ready only way.  It is assumed that your map 
-data structure uses strings for keys.  Accessed values will be returned as scalar strings */
+data structure uses strings for keys.  Accessed values will be marshalled into Sleep scalars */
 public class MapWrapper implements ScalarHash
 {
    protected Map values;
@@ -16,13 +17,7 @@ public class MapWrapper implements ScalarHash
    public Scalar getAt(Scalar key)
    {
       Object o = values.get(key.getValue().toString());
-
-      if (o != null)
-      {
-         return SleepUtils.getScalar(o.toString());
-      }
-
-      return SleepUtils.getEmptyScalar();
+      return ObjectUtilities.BuildScalar(true, o);
    }
 
    /** this operation is kind of expensive... should be fixed up to take care of that */
@@ -33,7 +28,7 @@ public class MapWrapper implements ScalarHash
 
    public void remove(Scalar key)
    {
-      // do nothing, we're not in the business of mucking with there data structures... eh
+      throw new RuntimeException("hash is read-only");
    }
 
    public String toString()

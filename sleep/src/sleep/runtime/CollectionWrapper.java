@@ -1,9 +1,10 @@
 package sleep.runtime;
 
 import java.util.*;
+import sleep.engine.ObjectUtilities;
 
-/** A read only scalar array for wrapping data structures that implement the java.util.Collection interface. Values wrapped 
-within this class will be converted to object scalars whenever accessed. */
+/** A read only scalar array for wrapping data structures that implement the java.util.Collection interface. 
+Values will be marshalled into Sleep scalars when accessed. */
 public class CollectionWrapper implements ScalarArray
 {
    protected Collection values;
@@ -21,17 +22,17 @@ public class CollectionWrapper implements ScalarArray
 
    public Scalar pop()
    {
-      return SleepUtils.getEmptyScalar();
+      throw new RuntimeException("array is read-only");
    }
 
    public void sort(Comparator compare)
    {
-
+      throw new RuntimeException("array is read-only");
    }
 
    public Scalar push(Scalar value)
    {
-      return SleepUtils.getEmptyScalar();
+      throw new RuntimeException("array is read-only");
    }
 
    public int size()
@@ -41,7 +42,7 @@ public class CollectionWrapper implements ScalarArray
 
    public Scalar remove(int index)
    {
-      return SleepUtils.getEmptyScalar();
+      throw new RuntimeException("array is read-only");
    }
 
    public Scalar getAt(int index)
@@ -51,12 +52,7 @@ public class CollectionWrapper implements ScalarArray
          array = values.toArray();
       }
 
-      if (array[index] instanceof String)
-      {
-         return SleepUtils.getScalar((String)array[index]);
-      }
-
-      return SleepUtils.getScalar(array[index]);
+      return ObjectUtilities.BuildScalar(true, array[index]);
    }
 
    public Iterator scalarIterator()
@@ -66,11 +62,12 @@ public class CollectionWrapper implements ScalarArray
 
    public Scalar add(Scalar value, int index)
    {
-      return SleepUtils.getEmptyScalar();
+      throw new RuntimeException("array is read-only");
    }
 
    public void remove(Scalar value)
    {
+      throw new RuntimeException("array is read-only");
       // do nothing
    }
 
@@ -91,17 +88,12 @@ public class CollectionWrapper implements ScalarArray
       public Object next()
       {
          Object temp = realIterator.next();
- 
-         if (temp instanceof String)
-         {
-            return SleepUtils.getScalar((String)temp);
-         }
-
-         return SleepUtils.getScalar(temp);
+         return ObjectUtilities.BuildScalar(true, temp);
       }
 
       public void remove()
       {
+          throw new RuntimeException("array is read-only");
           // no dice
       }
    }

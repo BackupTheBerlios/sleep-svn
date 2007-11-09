@@ -6,6 +6,10 @@
   arrays.
 - updated fork() to use script name AND line number information
   for thread description.  will aid debugging.
+- updated read-only array, hash wrappers to display a warning 
+  when a script attempts a modifying operation
+- updated array, hash wrappers to marshall wrapped types into
+  Sleep types as appropriate.
 
 2.1-beta 19  (24 Oct 07)
 ===========
