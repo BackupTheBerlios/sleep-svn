@@ -1,8 +1,8 @@
-2.1-beta 20
+2.1-beta 20  (12 Nov 07)
 ===========
 - fix debug mode 24 error handling inconsistency bug.
 - $null passed as a Java string now evaluates to null and not ""
-- sleep arrays will now $null elements when converting to Java
+- sleep arrays now allow $null elements when converting to Java
   arrays.
 - updated fork() to use script name AND line number information
   for thread description.  will aid debugging.
