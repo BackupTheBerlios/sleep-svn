@@ -8,6 +8,7 @@
 - assignment loops now record proper line number information for
   error reporting purposes.
 - added a ? command to evaluate predicates in the Sleep console.
+- index operator can now be applied to backtick expressions
 
 2.1-beta 20  (12 Nov 07)
 ===========
