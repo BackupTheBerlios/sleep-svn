@@ -241,6 +241,11 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
                 Scalar value = eval("return " + args + ";", args);
                 if (value != null) { getProxy().consolePrintln(value + ""); }
              }
+             else if (command.equals("?") && args != null)
+             {
+                Scalar value = eval("return iff(" + args + ", 'true', 'false');", args);
+                if (value != null) { getProxy().consolePrintln(value + ""); }
+             }
              else if (command.equals("quit") || command.equals("exit") || command.equals("done"))
              {
                 getProxy().consolePrintln("Good bye!");
@@ -276,7 +281,7 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        getProxy().consolePrintln("quit");
        getProxy().consolePrintln("version");
        getProxy().consolePrintln("x <expression>");
-
+       getProxy().consolePrintln("? <predicate expression>");
    }
 
    private void help(String command)
@@ -335,6 +340,11 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        {
           getProxy().consolePrintln("x <expression>");
           getProxy().consolePrintln("   evaluates a sleep expression and displays the value");
+       }
+       else if (command.equals("?"))
+       {
+          getProxy().consolePrintln("? <predicate expression>");
+          getProxy().consolePrintln("   evaluates a sleep predicate expression and displays the truth value");
        }
        else
        {

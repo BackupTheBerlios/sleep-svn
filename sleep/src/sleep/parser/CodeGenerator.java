@@ -864,7 +864,10 @@ public class CodeGenerator implements ParserConstants
            a = restore();
 
            // dew the lewp while the assigned value is not $null
-           atom = GeneratedSteps.Goto(new Check("!is", a), b, null);
+           tempp = GeneratedSteps.Check("!is", a);
+           tempp.setInfo(tokens[1].getHint());
+
+           atom = GeneratedSteps.Goto(tempp, b, null);
            add(atom, tokens[1]);
 
            break;

@@ -79,6 +79,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&splice", this);
         temp.put("&subarray", this);
         temp.put("&copy",  new copy());
+        temp.put("&value", this);
  
         map map_f = new map();
 
@@ -1107,6 +1108,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
 
           return a;
+       }
+       else if (n.equals("&value"))
+       {
+          return SleepUtils.getScalar(value);
        }
        else if (n.equals("&subarray"))
        {

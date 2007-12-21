@@ -69,3 +69,6 @@ quit
 
 x <expression>
    Evaluates a sleep expression and displays the value.
+
+? <predicate expression>
+   Evaluates a sleep predicate expression and displays the truth value.

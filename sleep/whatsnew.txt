@@ -1,3 +1,14 @@
+2.1-beta 21 
+===========
+- added &value function to return a new scalar container with the
+  same value as its argument.  This should be used when one does 
+  not want to pass a reference of a scalar that can be affected:
+  
+  function arguments, lambda, let, and fork all pass by reference.
+- assignment loops now record proper line number information for
+  error reporting purposes.
+- added a ? command to evaluate predicates in the Sleep console.
+
 2.1-beta 20  (12 Nov 07)
 ===========
 - fix debug mode 24 error handling inconsistency bug.
