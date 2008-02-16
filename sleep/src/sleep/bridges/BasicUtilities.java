@@ -79,7 +79,6 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&splice", this);
         temp.put("&subarray", this);
         temp.put("&copy",  new copy());
-        temp.put("&value", this);
  
         map map_f = new map();
 
@@ -628,15 +627,37 @@ public class BasicUtilities implements Function, Loadable, Predicate
     {
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
-          Scalar      value = SleepUtils.getArrayScalar();
-          Iterator    i     = BridgeUtilities.getIterator(l, si);
+          Scalar doit = BridgeUtilities.getScalar(l);
 
-          while (i.hasNext())
+          if (doit.getArray() != null || SleepUtils.isFunctionScalar(doit))
           {
-             value.getArray().push(SleepUtils.getScalar((Scalar)i.next()));
-          }
+             Scalar      value = SleepUtils.getArrayScalar();
+             Iterator    i     = doit.getArray() == null ? SleepUtils.getFunctionFromScalar(doit, si).scalarIterator() : doit.getArray().scalarIterator();
 
-          return value;
+             while (i.hasNext())
+             {
+                value.getArray().push(SleepUtils.getScalar((Scalar)i.next()));
+             }
+
+             return value;
+          }
+          else if (doit.getHash() != null)
+          {
+              Scalar value = SleepUtils.getHashScalar();
+              Iterator i = doit.getHash().keys().scalarIterator();
+              while (i.hasNext())
+              {
+                 Scalar key = (Scalar)i.next();
+                 Scalar temp = value.getHash().getAt(key);
+                 temp.setValue(doit.getHash().getAt(key));
+              }
+
+              return value;
+          }
+          else
+          {
+              return SleepUtils.getScalar(doit);
+          }
        }
     }
 
@@ -1108,10 +1129,6 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
 
           return a;
-       }
-       else if (n.equals("&value"))
-       {
-          return SleepUtils.getScalar(value);
        }
        else if (n.equals("&subarray"))
        {

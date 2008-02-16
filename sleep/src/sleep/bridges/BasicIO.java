@@ -115,6 +115,8 @@ public class BasicIO implements Loadable, Function, Evaluation
         // object io functions
         temp.put("&readObject",      this);
         temp.put("&writeObject",     this);
+        temp.put("&readAsObject",      this);
+        temp.put("&writeAsObject",     this);
         temp.put("&sizeof", this);
 
         temp.put("&pack",       new pack());
@@ -122,7 +124,7 @@ public class BasicIO implements Loadable, Function, Evaluation
 
         temp.put("&available",  new available());
         temp.put("&mark",       new mark());
-        temp.put("&skip",       new skip());
+        temp.put("&skip",       temp.get("&consume"));
         temp.put("&reset",      new reset());
         temp.put("&wait",       this);
 
@@ -162,7 +164,7 @@ public class BasicIO implements Loadable, Function, Evaluation
 
           return a.wait(i.getScriptEnvironment(), to);
        }
-       else if (n.equals("&writeObject"))
+       else if (n.equals("&writeObject") || n.equals("&writeAsObject"))
        {
           IOObject a = chooseSource(l, 2, i);
           while (!l.isEmpty())
@@ -171,7 +173,15 @@ public class BasicIO implements Loadable, Function, Evaluation
              try
              {
                 ObjectOutputStream ois = new ObjectOutputStream(a.getWriter());
-                ois.writeObject(b);
+
+                if (n.equals("&writeAsObject"))
+                {
+                   ois.writeObject(b.objectValue());
+                }
+                else
+                {
+                   ois.writeObject(b);
+                }
              }
              catch (Exception ex)
              {
@@ -180,14 +190,22 @@ public class BasicIO implements Loadable, Function, Evaluation
              }
           }
        }
-       else if (n.equals("&readObject"))
+       else if (n.equals("&readObject") || n.equals("&readAsObject"))
        {
           IOObject a = chooseSource(l, 1, i);
           try
           {
              ObjectInputStream ois = new ObjectInputStream(a.getReader());
-             Scalar value = (Scalar)ois.readObject();
-             return value;
+
+             if (n.equals("&readAsObject"))
+             {
+                return SleepUtils.getScalar(ois.readObject());
+             }
+             else
+             {
+                Scalar value = (Scalar)ois.readObject();
+                return value;
+             }
           }
           catch (EOFException eofex)
           {
@@ -1170,19 +1188,6 @@ public class BasicIO implements Loadable, Function, Evaluation
              }
           }
           catch (Exception ex) { return SleepUtils.getEmptyScalar(); }
-       }
-    }
-
-    private static class skip implements Function
-    {
-       public Scalar evaluate(String n, ScriptInstance i, Stack l)
-       {
-          try {
-          IOObject        a = chooseSource(l, 2, i);
-          a.getInputBuffer().skip(BridgeUtilities.getLong(l, 0));
-          } catch (Exception ex) { }
-
-          return SleepUtils.getEmptyScalar();
        }
     }
 
