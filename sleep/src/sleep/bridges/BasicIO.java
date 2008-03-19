@@ -457,7 +457,7 @@ public class BasicIO implements Loadable, Function, Evaluation
           while (!l.isEmpty())
           {
              KeyValuePair kvp = BridgeUtilities.getKeyValuePair(l);
-             vars.putScalar(kvp.getKey().toString(), kvp.getValue());
+             vars.putScalar(kvp.getKey().toString(), SleepUtils.getScalar(kvp.getValue()));
           }
 
           // create a pipe between these two items...

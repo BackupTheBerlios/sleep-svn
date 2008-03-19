@@ -110,7 +110,22 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        else if (name.equals("&cos")) { return SleepUtils.getScalar(Math.cos(BridgeUtilities.getDouble(args, 0.0))); }
        else if (name.equals("&log") && args.size() == 1) { return SleepUtils.getScalar(Math.log(BridgeUtilities.getDouble(args, 0.0))); }
        else if (name.equals("&log") && args.size() == 2) { return SleepUtils.getScalar(Math.log(BridgeUtilities.getDouble(args, 0.0)) / Math.log(BridgeUtilities.getDouble(args, 0.0))); }
-       else if (name.equals("&round")) { return SleepUtils.getScalar(Math.round(BridgeUtilities.getDouble(args, 0.0))); }
+       else if (name.equals("&round")) { 
+           if (args.size() == 1)
+           {
+              return SleepUtils.getScalar(Math.round(BridgeUtilities.getDouble(args, 0.0))); 
+           }
+           else
+           {
+              /* round to a certain number of places--if the argument is significantly large, this function could break */
+              double number = BridgeUtilities.getDouble(args, 0.0);
+              double places = Math.pow(10, BridgeUtilities.getInt(args, 0));
+
+              number = Math.round(number * places);
+              number = number / places;
+              return SleepUtils.getScalar(number);
+           }
+       }
        else if (name.equals("&sin")) { return SleepUtils.getScalar(Math.sin(BridgeUtilities.getDouble(args, 0.0))); }
        else if (name.equals("&sqrt")) { return SleepUtils.getScalar(Math.sqrt(BridgeUtilities.getDouble(args, 0.0))); }
        else if (name.equals("&tan")) { return SleepUtils.getScalar(Math.tan(BridgeUtilities.getDouble(args, 0.0))); }

@@ -10,6 +10,17 @@
   Java objects (in lieu of sleep.runtime.Scalar objects)
 - updated &copy to accept either a singular scalar or a hash 
   argument.
+- added &pushl and &popl for creating and removing local scope, 
+  arguments to these functions are used to pass data between the
+  current and resulting local scope.
+- fork now passes copies of its arguments into the forked scope.
+  this is in line with how lambda, let, etc.. work.  pass a data
+  structure (such as an array or hash) to have updateable shared
+  values.
+- round function can now round to a certain number of places if
+  desired.
+- replace function can now handle empty arguments, it will use
+  empty strings in their place.
 
 2.1-beta 20  (12 Nov 07)
 ===========

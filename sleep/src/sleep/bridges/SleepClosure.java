@@ -211,7 +211,8 @@ public class SleepClosure implements Function
           // initialize local variables...
           //
           vars.setScalarLevel("$0", SleepUtils.getScalar(message), localLevel);
-          BridgeUtilities.initLocalScope(vars, localLevel, locals);
+          int targs = BridgeUtilities.initLocalScope(vars, localLevel, locals);
+          vars.setScalarLevel("@_", SleepUtils.getArrayScalar(new ArgumentArray(targs, localLevel)), localLevel);
 
           //
           // call the function, save the scalar that was returned. 

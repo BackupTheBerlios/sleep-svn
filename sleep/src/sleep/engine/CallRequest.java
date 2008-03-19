@@ -285,7 +285,10 @@ public abstract class CallRequest
          synchronized (vars)
          {
             Variable localLevel = vars.getLocalVariables();
-            sleep.bridges.BridgeUtilities.initLocalScope(vars, localLevel, getScriptEnvironment().getCurrentFrame());
+
+            int targs = sleep.bridges.BridgeUtilities.initLocalScope(vars, localLevel, getScriptEnvironment().getCurrentFrame());
+            vars.setScalarLevel("@_", SleepUtils.getArrayScalar(new sleep.bridges.ArgumentArray(targs, localLevel)), localLevel);
+
             return inline.evaluate(getScriptEnvironment());
          }
       }

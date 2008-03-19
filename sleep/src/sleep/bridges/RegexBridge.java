@@ -240,9 +240,9 @@ public class RegexBridge implements Loadable
     {
        public Scalar evaluate(String n, ScriptInstance script, Stack l)
        {
-          String a = ((Scalar)l.pop()).toString(); // current
-          String b = ((Scalar)l.pop()).toString(); // old
-          String c = ((Scalar)l.pop()).toString(); // new
+          String a = BridgeUtilities.getString(l, ""); // current
+          String b = BridgeUtilities.getString(l, ""); // old
+          String c = BridgeUtilities.getString(l, ""); // new
           int    d = BridgeUtilities.getInt(l, -1);
 
           StringBuffer rv = new StringBuffer();

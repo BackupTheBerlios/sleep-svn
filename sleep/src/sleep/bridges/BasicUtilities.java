@@ -95,6 +95,9 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&removeAll", this);
         temp.put("&retainAll", this);
 
+        temp.put("&pushl", this);
+        temp.put("&popl", this);
+      
         temp.put("&search", this);
         temp.put("&reduce", this);
         temp.put("&values", this);
@@ -121,6 +124,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&watch", this);
 
         temp.put("&debug", this);
+        temp.put("&warn", this);
         temp.put("&profile", this);
         temp.put("&getStackTrace", this);
 
@@ -909,6 +913,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
        {
           return SleepUtils.getArrayWrapper(i.getStackTrace());
        }
+       else if (n.equals("&warn"))
+       {
+          return SleepUtils.getEmptyScalar();
+       }
        else if (n.equals("&debug"))
        {
           /* allow the script to programatically set the debug level */
@@ -923,6 +931,26 @@ public class BasicUtilities implements Function, Loadable, Predicate
        else if (n.equals("&flatten"))
        {
           return BridgeUtilities.flattenIterator(BridgeUtilities.getIterator(l, i), null);
+       }
+       else if (n.equals("&pushl") || n.equals("&popl"))
+       {
+          ScriptVariables vars = i.getScriptVariables();
+ 
+          if (n.equals("&pushl"))
+          {
+             vars.pushLocalLevel();
+          }
+          else if (n.equals("&popl"))
+          {
+             vars.popLocalLevel();
+          }
+
+          if (!l.isEmpty())
+          {
+             BridgeUtilities.initLocalScope(vars, vars.getLocalVariables(), l);
+          }
+
+          return SleepUtils.getEmptyScalar();
        }
 
        /** Start of many array functions */
