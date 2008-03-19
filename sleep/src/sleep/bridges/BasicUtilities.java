@@ -915,6 +915,9 @@ public class BasicUtilities implements Function, Loadable, Predicate
        }
        else if (n.equals("&warn"))
        {
+          /* for those looking at how to read current line number from an executing function, you can't.  this function
+             is a special case.  the parser looks for &warn and adds an extra argument containing the current line number */
+          i.fireWarning(BridgeUtilities.getString(l, "warning requested"), BridgeUtilities.getInt(l, -1));
           return SleepUtils.getEmptyScalar();
        }
        else if (n.equals("&debug"))
@@ -959,7 +962,14 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
        if (n.equals("&push"))
        {
-          return value.getArray().push(SleepUtils.getScalar((Scalar)l.pop()));
+          Scalar pushed = null;
+          while (!l.isEmpty())
+          {
+             pushed = (Scalar)l.pop();
+             value.getArray().push(SleepUtils.getScalar(pushed));
+          }
+ 
+          return pushed == null ? SleepUtils.getEmptyScalar() : pushed;
        }
        else if ((n.equals("&retainAll") || n.equals("&removeAll")) && value.getArray() != null)
        {

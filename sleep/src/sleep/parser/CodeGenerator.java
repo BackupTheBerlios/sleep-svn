@@ -780,24 +780,31 @@ public class CodeGenerator implements ParserConstants
               strings[0] = '&' + strings[0];
            }
 
-           if (strings[0].equals("&iff") && tokens.length > 1)
+           if ((strings[0].equals("&iff") || strings[0].equals("&?")) && tokens.length > 1)
            {
               TokenList terms = ParserUtilities.groupByParameterTerm(parser, ParserUtilities.extract(tokens[1]));
-
               Token[] termsAr = terms.getTokens();
 
-              if (termsAr.length != 3)
-              {
-                 parser.reportErrorWithMarker("iff(condition, value_t, value_f): invalid form.", tokens[0].copy(strings[0] + strings[1]));
-                 break;
-              }
-
               backup();
-              parseIdea(termsAr[1]);
+              if (termsAr.length >= 2)
+              {
+                 parseIdea(termsAr[1]);
+              }
+              else
+              {
+                 parseIdea(termsAr[0].copy("true"));
+              }
               a = restore();
 
               backup();
-              parseIdea(termsAr[2]);
+              if (termsAr.length == 3)
+              {
+                 parseIdea(termsAr[2]);
+              }
+              else
+              {
+                 parseIdea(termsAr[0].copy("false"));
+              }
               b = restore();
 
               atom = GeneratedSteps.Decide(parsePredicate(termsAr[0]), a, b);
@@ -807,6 +814,13 @@ public class CodeGenerator implements ParserConstants
            {
               atom = GeneratedSteps.CreateFrame();
               add(atom, tokens[0]);
+
+              /* if we're dealing with the warn function, sneak the current line number in as an argument. */
+              if (strings[0].equals("&warn"))
+              {
+                 atom    = GeneratedSteps.SValue(SleepUtils.getScalar(tokens[0].getHint()));
+                 add(atom, tokens[0]);
+              }
 
               parseParameters(ParserUtilities.extract(tokens[1]));
 

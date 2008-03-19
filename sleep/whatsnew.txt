@@ -8,8 +8,7 @@
   to the same function.
 - added &readAsObject and &writeAsObject to read/write serialized
   Java objects (in lieu of sleep.runtime.Scalar objects)
-- updated &copy to accept either a singular scalar or a hash 
-  argument.
+- updated &copy to also copy scalars and hashes.
 - added &pushl and &popl for creating and removing local scope, 
   arguments to these functions are used to pass data between the
   current and resulting local scope.
@@ -21,6 +20,12 @@
   desired.
 - replace function can now handle empty arguments, it will use
   empty strings in their place.
+- added &warn to send a message to the script warning watcher 
+  installed within the script environment... 
+- true and false arguments are now optional in iff expressions:
+  iff(3 == 3) = 1
+  iff(3 != 3) = $null
+- &push can now push multiple arguments
 
 2.1-beta 20  (12 Nov 07)
 ===========
