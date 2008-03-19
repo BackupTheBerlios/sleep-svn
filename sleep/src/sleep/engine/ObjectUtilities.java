@@ -587,7 +587,6 @@ public class ObjectUtilities
       {
          return SleepUtils.getScalar(value);
       }
-
    }
 
    /** Determines the primitive type of the specified array.  Primitive Sleep values (int, long, double) will return the appropriate Number.TYPE class.  This is an important distinction as Double.TYPE != new Double().getClass() */

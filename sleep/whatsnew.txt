@@ -26,6 +26,8 @@
   iff(3 == 3) = 1
   iff(3 != 3) = $null
 - &push can now push multiple arguments
+- added &scalar($object) to force object through the Sleep scalar 
+  conversion process.  
 
 2.1-beta 20  (12 Nov 07)
 ===========
