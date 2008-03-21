@@ -27,6 +27,10 @@
 - &push can now push multiple arguments
 - added &scalar($object) to force object through the Sleep scalar 
   conversion process.  
+- continuations now save multiple levels of local scope if 
+  necessary (this makes pushl/popl safe for yield/callcc)
+- inline functions will only mangle @_ if unnamed values are
+  passed.  Use $var => ... to pass a named value.
 
 2.1-beta 20  (12 Nov 07)
 ===========

@@ -287,7 +287,11 @@ public abstract class CallRequest
             Variable localLevel = vars.getLocalVariables();
 
             int targs = sleep.bridges.BridgeUtilities.initLocalScope(vars, localLevel, getScriptEnvironment().getCurrentFrame());
-            vars.setScalarLevel("@_", SleepUtils.getArrayScalar(new sleep.bridges.ArgumentArray(targs, localLevel)), localLevel);
+
+            if ((targs - 1) > 0)
+            {
+               vars.setScalarLevel("@_", SleepUtils.getArrayScalar(new sleep.bridges.ArgumentArray(targs, localLevel)), localLevel);
+            }
 
             Scalar eval = inline.evaluate(getScriptEnvironment());
             return eval;
