@@ -65,9 +65,32 @@ import java.util.WeakHashMap;
   */
 public class ScriptVariables implements Serializable
 {
-    Variable    global;   /* global variables */
-    LinkedList  closure;  /* closure specific variables :) */
-    LinkedList  locals;   /* local variables */
+    protected Variable    global;   /* global variables */
+    protected LinkedList  closure;  /* closure specific variables :) */
+    protected LinkedList  locals;   /* local variables--can be stacked into a closure thanks to pushl, popl, and inline functions */
+
+    protected Stack       marks;    /* mark the beginning of a stack for fun and profit */
+
+    /** called when a closure is entered, allows an old stack of local scopes to be restored easily */
+    public void beginToplevel(LinkedList l)
+    {
+       marks.push(locals);
+       locals = l;
+    }
+    
+    /** called when a closure is exited, returns local var scope for later restoration if desired */
+    public LinkedList leaveToplevel()
+    {
+       LinkedList scopes = locals;
+       locals = (LinkedList)marks.pop(); 
+       return scopes;
+    }
+
+    /** used to check if other local scopes exist after the next pop */
+    public boolean haveMoreLocals()
+    {
+        return locals.size() > 1;
+    }
 
     /** Initializes this ScriptVariables container using a DefaultVariable object for default variable storage */
     public ScriptVariables()
@@ -81,6 +104,7 @@ public class ScriptVariables implements Serializable
        global   = aVariableClass;
        closure  = new LinkedList();
        locals   = new LinkedList();
+       marks    = new Stack();
 
        pushLocalLevel();
     }

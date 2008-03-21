@@ -289,7 +289,8 @@ public abstract class CallRequest
             int targs = sleep.bridges.BridgeUtilities.initLocalScope(vars, localLevel, getScriptEnvironment().getCurrentFrame());
             vars.setScalarLevel("@_", SleepUtils.getArrayScalar(new sleep.bridges.ArgumentArray(targs, localLevel)), localLevel);
 
-            return inline.evaluate(getScriptEnvironment());
+            Scalar eval = inline.evaluate(getScriptEnvironment());
+            return eval;
          }
       }
    }

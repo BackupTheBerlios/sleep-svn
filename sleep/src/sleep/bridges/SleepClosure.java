@@ -69,14 +69,18 @@ public class SleepClosure implements Function
        return temp;
     }
 
-    /** saves the top level context */
-    private void saveToplevelContext(Stack _context, Variable localLevel)
+    /** saves the top level context; may throw an exception if an error is detected... be sure to move critical cleanup prior to this function. */
+    private void saveToplevelContext(Stack _context, LinkedList localLevel)
     {
        if (!_context.isEmpty())
        {
           _context.push(localLevel); /* push the local vars on to the top of the context stack,
                                         this better be popped before use!!! */
           context.push(_context);
+       }
+       else if (localLevel.size() != 1)
+       {
+          throw new RuntimeException((localLevel.size() - 1) + " unaccounted local stack frame(s) in " + toString() + " (perhaps you forgot to &popl?)");
        }
     }
 
@@ -198,14 +202,16 @@ public class SleepClosure implements Function
 
           if (toplevel.isEmpty()) /* a normal closure call */
           {
+             vars.beginToplevel(new LinkedList());
              vars.pushLocalLevel();
-             localLevel = vars.getLocalVariables();
           }
           else /* restoring from a coroutine */
           {
-             localLevel = (Variable)toplevel.pop();
-             vars.pushLocalLevel(localLevel);
+             LinkedList levels = (LinkedList)toplevel.pop();             
+             vars.beginToplevel(levels);
           }
+
+          localLevel = vars.getLocalVariables();
 
           //
           // initialize local variables...
@@ -226,10 +232,9 @@ public class SleepClosure implements Function
              temp = env.evaluateOldContext();
           }
 
-          saveToplevelContext(env.saveContext(), localLevel);
-
-          vars.popLocalLevel();
-          vars.popClosureLevel();
+          LinkedList phear = vars.leaveToplevel();        /* this will simultaneously save and remove all local scopes associated with
+                                                             the current closure context.  Very sexy */
+          vars.popClosureLevel();                         /* still have to do this manually, one day I need to refactor this state saving stuff */
 
           if (si.getScriptEnvironment().isCallCC())
           {
@@ -237,6 +242,8 @@ public class SleepClosure implements Function
              tempc.putMetadata("continuation", SleepUtils.getScalar(this));
              si.getScriptEnvironment().flagReturn(si.getScriptEnvironment().getReturnValue(), ScriptEnvironment.FLOW_CONTROL_PASS); 
           }
+
+          saveToplevelContext(env.saveContext(), phear);  /* saves the top level context *pHEAR*; done last in case there is an error with this */
        }
 
        return temp;

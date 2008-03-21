@@ -950,7 +950,14 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
           else if (n.equals("&popl"))
           {
-             vars.popLocalLevel();
+             if (vars.haveMoreLocals())
+             {
+                vars.popLocalLevel();
+             }
+             else
+             {
+                throw new RuntimeException("&popl: no more local frames exist"); 
+             }
           }
 
           if (!l.isEmpty())

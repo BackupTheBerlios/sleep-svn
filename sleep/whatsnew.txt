@@ -16,8 +16,7 @@
   this is in line with how lambda, let, etc.. work.  pass a data
   structure (such as an array or hash) to have updateable shared
   values.
-- round function can now round to a certain number of places if
-  desired.
+- round function can now round to a desired number of places.
 - replace function can now handle empty arguments, it will use
   empty strings in their place.
 - added &warn to send a message to the script warning watcher 

@@ -12,7 +12,7 @@ sub bar
 {
    local('$x');
    $x = 2;
-   $z = 10 * foo();
+   $z = 10 * foo(); # this is a bug and it is bad.
    println($z);
    return 10;
 }
