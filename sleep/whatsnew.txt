@@ -1,4 +1,4 @@
-2.1-beta 21 
+2.1-beta 21  (21 Mar 08)
 ===========
 - assignment loops now record proper line number information for
   error reporting purposes.
@@ -31,6 +31,8 @@
   necessary (this makes pushl/popl safe for yield/callcc)
 - inline functions will only mangle @_ if unnamed values are
   passed.  Use $var => ... to pass a named value.
+- toplevel sleep scripts are now executed as a closure... this
+  allows callcc to work from the top level.
 
 2.1-beta 20  (12 Nov 07)
 ===========

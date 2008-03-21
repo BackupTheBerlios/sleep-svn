@@ -33,6 +33,7 @@ import sleep.bridges.BasicUtilities;
 import sleep.bridges.DefaultEnvironment;
 import sleep.bridges.DefaultVariable;
 import sleep.bridges.RegexBridge;
+import sleep.bridges.SleepClosure;
 
 import sleep.interfaces.*;
 import sleep.error.*;
@@ -65,7 +66,7 @@ public class ScriptInstance implements Serializable, Runnable
     protected ScriptVariables   variables;
 
     /** The compiled sleep code for this script, the ScriptLoader will set this value upon loading a script. */
-    protected Block             script;
+    protected SleepClosure      script;
 
     /** debug should be absolutely quiet, never fire any runtime warnings */
     public static final int DEBUG_NONE          = 0;
@@ -147,7 +148,7 @@ public class ScriptInstance implements Serializable, Runnable
     /** Install a block as the compiled script code */ 
     public void installBlock(Block _script)
     {
-        script = _script;
+        script = new SleepClosure(this, _script);
     }
 
     /** Constructs a new script instance */
@@ -189,7 +190,7 @@ public class ScriptInstance implements Serializable, Runnable
     /** Executes this script, should be done first thing once a script is loaded */
     public Scalar runScript()
     {
-        return SleepUtils.runCode(script, getScriptEnvironment());
+        return SleepUtils.runCode(script, getName(), this, new Stack());
     }
  
     /** A container for Sleep strack trace elements. */
@@ -373,7 +374,7 @@ public class ScriptInstance implements Serializable, Runnable
     }
 
     /** Returns the compiled form of this script */
-    public Block getRunnableBlock()
+    public SleepClosure getRunnableBlock()
     {
         return script;
     }

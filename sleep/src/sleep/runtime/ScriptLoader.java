@@ -300,7 +300,7 @@ public class ScriptLoader
     public ScriptInstance loadScript(String name, Block code, Hashtable env)
     {
         ScriptInstance si = new ScriptInstance(env);
-        si.script = code;
+        si.installBlock(code);
         inProcessScript(name, si);
         return si;
     }

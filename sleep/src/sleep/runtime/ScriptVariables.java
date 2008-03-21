@@ -106,7 +106,7 @@ public class ScriptVariables implements Serializable
        locals   = new LinkedList();
        marks    = new Stack();
 
-       pushLocalLevel();
+//       pushLocalLevel();
     }
 
     /** puts a scalar into the global scope */ 

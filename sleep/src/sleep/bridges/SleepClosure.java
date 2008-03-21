@@ -11,7 +11,7 @@ import sleep.runtime.*;
 /** The Sleep Closure class.  This class represents a Function object that is also a self contained closure */
 public class SleepClosure implements Function
 {
-    private static int ccount = 0;
+    private static int ccount = -1;
     private int id;
 
     private class ClosureIterator implements Iterator
