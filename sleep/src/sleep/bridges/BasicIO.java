@@ -482,7 +482,7 @@ public class BasicIO implements Loadable, Function, Evaluation
           
              child.getScriptVariables().putScalar("$source", SleepUtils.getScalar(child_io));
 
-             Thread temp = new Thread(child, "fork of " + child.getRunnableBlock().getRunnableCode().getSourceLocation());
+             Thread temp = new Thread(child, "fork of " + child.getRunnableBlock().getSourceLocation());
 
              parent_io.setThread(temp);
              child_io.setThread(temp);

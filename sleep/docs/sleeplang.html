@@ -458,13 +458,15 @@ only if the condition is true.  The third parameter is returned if and only if t
 
 <pre>iff(comparison, expression_if_true, expression_if_false)</pre>
 
+<p>The second and third parameters for iff are optional.</p>
+
 <p>An example:</p>
 
-<pre>$value = "Calculation took" . $x . " second" . iff($x > 1, "s", "");</pre>
+<pre>$value = "Calculation took" . $x . " second" . iff($x > 1, "s");</pre>
 
 <p><var>$value</var> would be "Calculation took 2 seconds" if $x is equal to 2.  If <var>$x</var> was equal to 0 then 
 <var>$value</var> would be "Calculation took 1 second".  The iff example above checks if <var>$x</var> is greater than 1.  If it 
-is then "s" is returned.  Otherwise "" is returned.</p>
+is then "s" is returned.  Otherwise <var>$null</var> (the default when no false value is specified) is returned.</p>
 
 <h3>Assertions</h3>
 
@@ -2097,8 +2099,8 @@ represent the dimensions of the array.</td>
  </tr>
  <tr>
   <td>@</td>
-  <td>copy(@|&)</td>
-  <td>returns an array with copies of the elements of @array or &generator</td>
+  <td>copy(@|&|$|%)</td>
+  <td>returns an array with copies of the elements of @array or &generator (can also copy hashes or individual scalars)</td>
  </tr>
  <tr>
   <td>@</td>
@@ -2568,6 +2570,11 @@ calling the closure.  the closure will be called for the last read even if &lt; 
  </tr>
  <tr>
   <td>$</td>
+  <td>readAsObject([$handle])</td>
+  <td>reads a serialized Java object from the specified handle</td>
+ </tr>
+ <tr>
+  <td>$</td>
   <td>readb([$handle], n)</td>
   <td>reads n bytes from $handle.  If 0 bytes are read <var>$null</var> will be returned.</td>
  </tr>
@@ -2602,9 +2609,12 @@ calling the closure.  the closure will be called for the last read even if &lt; 
   <td>using the specified data format string, calculates an estimated size of the data.</td>
  </tr>
  <tr>
+ <tr>
   <td>$</td>
-  <td>skip([$handle], n)</td>
-  <td>tells the handle to skip the next n bytes</td>
+  <td>skip($handle, n, [buffer size])</td>
+  <td>reads and discards up to n bytes from the specified handle.  this is useful for causing data to be read and processed without the expensive conversion process
+      to sleep strings (i.e. when one wants to digest or checksum a file)</td>
+ </tr>
  </tr>
  <tr>
   <td>@</td>
@@ -2617,6 +2627,11 @@ specified in the format string</td>
   <td>wait($handle, [timeout])</td>
   <td>waits for the callback, process, or fork associated with $handle to finish.  if $handle is a fork, the return value of the fork 
 will be returned by &amp;wait.  if $handle is a process, the return value of the process will be returned by &amp;wait. If the specified timeout is reached $null will be returned.</td>
+ </tr>
+ <tr>
+  <td></td>
+  <td>writeAsObject([$handle], $scalar, ...)</td>
+  <td>serializes and writes Java objects to the specified handle</td>
  </tr>
  <tr>
   <td></td>
@@ -3038,14 +3053,29 @@ together.</td>
   <td>Creates a sleep closure backed instance of the specified java interface class (or classes if an array is used).</td>
  </tr>
  <tr>
+  <td></td>
+  <td>popl($key => $value, ...)</td>
+  <td>pops current local scope, returning to previous local scope.  Populates resulting scope with specified key/value pairs.</td>
+ </tr>
+ <tr>
   <td>@</td>
   <td>profile()</td>
   <td>returns the profiler statistics for the current script environment.  Profile statistics will only be collected if DEBUG_TRACE_CALLS (8) or DEBUG_TRACE_PROFILE_ONLY (24) is set.</td>
  </tr>
  <tr>
   <td></td>
+  <td>pushl($key => $value, ...)</td>
+  <td>creates a new local scope populated with specified key/value pairs.</td>
+ </tr>
+ <tr>
+  <td></td>
   <td>release($semaphore)</td>
   <td>increments the count value of the specified semaphore.</td>
+ </tr>
+ <tr>
+  <td></td>
+  <td>scalar($object)</td>
+  <td>forces the specified object through the Java Object to Sleep scalar conversion process.</td>
  </tr>
  <tr>
   <td></td>
@@ -3092,6 +3122,11 @@ together.</td>
   <td>use("/path/to/file.jar", "Loadable")</td>
   <td>loads the specified class into the current script environment.  The sleep.interfaces.Loadable class is loaded from the specified jar file.  Use to import sleep modules and the like.</td>
  </tr>
+ <tr>
+  <td></td>
+  <td>warn("message")</td>
+  <td>prints specified warning message using the install runtime warning watcher</td>
+ </tr> 
  <tr>
   <td></td>
   <td>watch('$x $y')</td>
@@ -3883,7 +3918,7 @@ retrieve/store binary data into a string scalar or a file.</p>
  <tr>
   <td>Z</td>
   <td>variable</td>
-  <td>read/write the specified number of characters (consumes the whole field)</td>
+  <td>read/write the specified number of characters (<consumes the whole field)</td>
  </tr>
 </table>
 

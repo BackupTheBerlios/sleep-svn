@@ -373,10 +373,18 @@ public class ScriptInstance implements Serializable, Runnable
         parent = p;
     }
 
-    /** Returns the compiled form of this script */
-    public SleepClosure getRunnableBlock()
+    /** Returns the compiled form of this script 
+     *  @see #getRunnableScript
+     */
+    public Block getRunnableBlock()
     {
-        return script;
+       return script.getRunnableCode();
+    }
+
+    /** Returns this toplevel script as a Sleep closure. */
+    public SleepClosure getRunnableScript()
+    {
+       return script;
     }
 
     /** Calls a subroutine/built-in function using this script. */
