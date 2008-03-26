@@ -95,6 +95,11 @@ public class Goto extends Step
                                       the increment has to be executed separately so it is included */
             }
          }
+
+         if (e.markFrame() >= 0)
+         {
+            e.getCurrentFrame().clear(); /* prevent some memory leakage action */
+         }
       }
 
       if (e.getFlowControlRequest() == ScriptEnvironment.FLOW_CONTROL_BREAK)
