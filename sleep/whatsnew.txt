@@ -34,6 +34,8 @@
 - toplevel sleep scripts are now executed as a closure... this
   allows callcc to work from the top level.
 - fixed a memory leak caused by stack pollution within loops.  
+- callcc can now be used within fork to take control of the fork
+  and eventually return a value (retrievable via &wait)
 
 2.1-beta 20  (12 Nov 07)
 ===========

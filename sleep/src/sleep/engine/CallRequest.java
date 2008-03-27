@@ -156,6 +156,11 @@ public abstract class CallRequest
       e.cleanFrame(mark);
       e.FrameResult(temp);
 
+      /* if you're digging here then you've discovered my dirty little secret.  My continuation's continue to possess Java stack frames until
+         something decides to return.  Moving this check into Block.java overcomes this limitation except it makes it so continuations don't work
+         in code invoked outside of a Call instruction enclosed within Block.java.  If this is an issue email me and I'll look at better ways to
+         eliminate this problem. */
+
       if (e.isPassControl())
       {
          Scalar callme = temp;
