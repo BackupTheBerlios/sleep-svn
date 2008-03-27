@@ -285,6 +285,12 @@ public class Block implements Serializable
                  }
               }
 
+              if (environment.isCallCC())
+              {
+                 environment.getCurrentFrame().push(source);
+                 environment.getCurrentFrame().push(new Integer(temp.getLineNumber()));
+              }
+
               if (environment.isThrownValue())
               {
                  if (!environment.isExceptionHandlerInstalled())
@@ -311,29 +317,6 @@ public class Block implements Serializable
                  cleanupEnvironment(environment);
                  return environment.getReturnValue(); /* we do this because the exception will get cleared and after that
                                                          there may be a return value */
-              }
-              else if (environment.isPassControl())
-              {
-                 if (environment.markFrame() >= 0)
-                 {
-                    Object check = environment.getCurrentFrame().pop(); /* get rid of the function that we're going to callcc */	
-  
-                    if (check != environment.getReturnValue())
-                    {
-                       environment.getScriptInstance().fireWarning("bad callcc stack: " + SleepUtils.describe((Scalar)check) + " expected " + SleepUtils.describe(environment.getReturnValue()), temp.getLineNumber());
-                    }
-                 }
-
-                 Scalar callme = environment.getReturnValue();
-                 environment.flagReturn(null, ScriptEnvironment.FLOW_CONTROL_NONE);
-
-                 environment.CreateFrame(); /* create a frame because the function call will destroy it */
-
-                 /** pass the continuation as the first argument to the callcc'd closure */
-                 environment.getCurrentFrame().push(((SleepClosure)callme.objectValue()).getAndRemoveMetadata("continuation", null));
-
-                 CallRequest.ClosureCallRequest request = new CallRequest.ClosureCallRequest(environment, temp.getLineNumber(), callme, "CALLCC");
-                 request.CallFunction();
               }
               else if (environment.isDebugInterrupt())
               {

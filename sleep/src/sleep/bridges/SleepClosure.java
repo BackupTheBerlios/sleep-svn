@@ -240,6 +240,9 @@ public class SleepClosure implements Function
           {
              SleepClosure tempc = SleepUtils.getFunctionFromScalar(si.getScriptEnvironment().getReturnValue(), si);
              tempc.putMetadata("continuation", SleepUtils.getScalar(this));
+             tempc.putMetadata("sourceLine", si.getScriptEnvironment().getCurrentFrame().pop());
+             tempc.putMetadata("sourceFile", si.getScriptEnvironment().getCurrentFrame().pop());
+
              si.getScriptEnvironment().flagReturn(si.getScriptEnvironment().getReturnValue(), ScriptEnvironment.FLOW_CONTROL_PASS); 
           }
 

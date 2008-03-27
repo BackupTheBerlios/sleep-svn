@@ -60,7 +60,7 @@ public abstract class CallRequest
       ScriptEnvironment e = getScriptEnvironment();
       int mark = getScriptEnvironment().markFrame();
 
-      if (isDebug())
+      if (isDebug() && getLineNumber() != Integer.MIN_VALUE)
       {
          if (e.getScriptInstance().isProfileOnly())
          {
@@ -100,7 +100,7 @@ public abstract class CallRequest
                 }
                 else if (e.isPassControl())
                 {
-                   e.getScriptInstance().fireWarning(formatCall(args) + " ... " + SleepUtils.describe(temp), getLineNumber(), true);
+                   e.getScriptInstance().fireWarning(formatCall(args) + " -goto- " + SleepUtils.describe(temp), getLineNumber(), true);
                 }
                 else if (SleepUtils.isEmptyScalar(temp))
                 {
@@ -155,6 +155,36 @@ public abstract class CallRequest
 
       e.cleanFrame(mark);
       e.FrameResult(temp);
+
+      if (e.isPassControl())
+      {
+         Scalar callme = temp;
+
+         e.pushSource(((SleepClosure)callme.objectValue()).getAndRemoveMetadata("sourceFile", "<unknown>") + "");
+         int lno = ( (Integer)(  ((SleepClosure)callme.objectValue()).getAndRemoveMetadata("sourceLine", new Integer(-1))  ) ).intValue();
+
+         if (e.markFrame() >= 0)
+         {
+            Object check = e.getCurrentFrame().pop(); /* get rid of the function that we're going to callcc */
+
+            if (check != temp)
+            {
+               e.getScriptInstance().fireWarning("bad callcc stack: " + SleepUtils.describe((Scalar)check) + " expected " + SleepUtils.describe(temp), lno);
+            }
+         }
+
+         e.flagReturn(null, ScriptEnvironment.FLOW_CONTROL_NONE);
+
+         e.CreateFrame(); /* create a frame because the function call will destroy it */
+
+         /** pass the continuation as the first argument to the callcc'd closure */
+         e.getCurrentFrame().push(((SleepClosure)callme.objectValue()).getAndRemoveMetadata("continuation", null));
+
+         CallRequest.ClosureCallRequest request = new CallRequest.ClosureCallRequest(environment, lno, callme, "CALLCC");
+         request.CallFunction();
+
+         e.popSource();
+      }
    }
 
    /** execute a closure with all of the trimmings. */
