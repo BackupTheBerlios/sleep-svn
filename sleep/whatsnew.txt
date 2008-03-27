@@ -36,6 +36,8 @@
 - fixed a memory leak caused by stack pollution within loops.  
 - callcc can now be used within fork to take control of the fork
   and eventually return a value (retrievable via &wait)
+- fixed a callcc corner case that could lead to an infinite loop
+  in the interpreter
 
 2.1-beta 20  (12 Nov 07)
 ===========

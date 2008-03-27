@@ -278,10 +278,7 @@ public class Block implements Serializable
                  }
                  else
                  {
-                    if (temp.next != null)
-                    {
-                       environment.addToContext(this, temp.next);
-                    }
+                    environment.addToContext(this, temp.next);
                  }
               }
 
