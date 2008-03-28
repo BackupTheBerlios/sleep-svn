@@ -135,7 +135,7 @@ public class AssignT extends Step
          putv.setValue(value);
       }
 
-      e.KillFrame();
+      e.FrameResult(scalar);
       } catch (Exception ex) { ex.printStackTrace(); }
       return null;
    }

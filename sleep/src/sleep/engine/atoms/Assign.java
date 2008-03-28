@@ -89,7 +89,7 @@ public class Assign extends Step
       }
 
       putv.setValue(value);    
-      e.KillFrame();
+      e.FrameResult(value);
       return null;
    }
 }
