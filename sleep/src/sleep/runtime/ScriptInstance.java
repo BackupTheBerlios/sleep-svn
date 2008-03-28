@@ -191,26 +191,7 @@ public class ScriptInstance implements Serializable, Runnable
     /** Executes this script, should be done first thing once a script is loaded */
     public Scalar runScript()
     {
-       environment.pushSource(getName());
-
-       /* a place to hold our result... */
-       environment.CreateFrame();
-
-       /* this stuff is a necessity for calling into the closure */
-       environment.CreateFrame();
- //      CallRequest.ClosureCallRequest request = new CallRequest.ClosureCallRequest(environment, script.getRunnableCode().getLowLineNumber(), SleepUtils.getScalar(script), null);
-       CallRequest.ClosureCallRequest request = new CallRequest.ClosureCallRequest(environment, Integer.MIN_VALUE, SleepUtils.getScalar(script), null);
-       request.CallFunction();        
-
-       /* get the return value */
-       Scalar rv = environment.getCurrentFrame().isEmpty() ? SleepUtils.getEmptyScalar() : (Scalar)environment.getCurrentFrame().pop();
-
-       /* handle the cleanup */
-       environment.KillFrame();
-       environment.popSource();
-
-
-       return rv;
+       return SleepUtils.runCode(script, null, this, null);
     }
  
     /** A container for Sleep strack trace elements. */

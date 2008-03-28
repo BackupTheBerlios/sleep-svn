@@ -621,6 +621,25 @@ public class ScriptEnvironment implements Serializable
        findex--;
     }
     
+    public void CreateFrame(Stack frame)
+    {
+       if (frame == null) 
+       { 
+          frame = new Stack(); 
+       }
+
+       if ((findex + 1) >= frames.size())
+       {
+          frames.add(frame);
+       } 
+       else
+       {
+          frames.set(findex + 1, frame);
+       }
+
+       findex++;
+    }
+
     public void CreateFrame()
     {
        if ((findex + 1) >= frames.size())

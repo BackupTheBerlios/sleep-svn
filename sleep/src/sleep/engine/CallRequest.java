@@ -8,9 +8,15 @@ import sleep.interfaces.*;
 import sleep.engine.types.*;
 import sleep.bridges.SleepClosure;
 
-/** this class encapsulates a function call request. sleep has so many reasons, places, and ways to call functions.
-    this class helps to avoid duplicate code and manage the complexity of Sleep's myriad of profiling, tracing, and error reporting
-    options. */
+/** This class encapsulates a function call request.  Sleep has too many reasons, places, and ways to call functions.
+ *  This class helps to avoid duplicate code and manage the complexity of Sleep's myriad of profiling, tracing, and error reporting
+ *  options. 
+ * 
+ *  This functionality is encapsulated (along with necessary setup/teardown that you don't want to touch) within 
+ *  {@linkplain sleep.runtime.SleepUtils#runCode(sleep.engine.Block, sleep.runtime.ScriptEnvironment) SleepUtils.runCode()}.
+ *
+ *  @see sleep.runtime.SleepUtils
+ */
 public abstract class CallRequest
 {
    protected ScriptEnvironment environment;

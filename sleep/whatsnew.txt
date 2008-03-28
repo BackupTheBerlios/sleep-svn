@@ -1,4 +1,4 @@
-2.1-beta 21  (21 Mar 08)
+2.1-beta 21  (28 Mar 08)
 ===========
 - assignment loops now record proper line number information for
   error reporting purposes.
@@ -38,6 +38,8 @@
   and eventually return a value (retrievable via &wait)
 - fixed a callcc corner case that could lead to an infinite loop
   in the interpreter
+- refactored the SleepUtils.runCode(...) methods to use the
+  standard Sleep mechanism for evaluating functions.
 
 2.1-beta 20  (12 Nov 07)
 ===========

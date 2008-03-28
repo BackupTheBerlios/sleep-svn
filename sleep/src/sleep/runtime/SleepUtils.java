@@ -26,7 +26,7 @@ import sleep.bridges.*;
 public class SleepUtils
 {
    /** A date stamp of this Sleep release in YYYYMMDD format */
-   public static final int    SLEEP_RELEASE = 20071112;
+   public static final int    SLEEP_RELEASE = 20080328;
 
    /** A string description of this Sleep release */
    public static final String SLEEP_VERSION = "Sleep 2.1";
@@ -62,28 +62,59 @@ public class SleepUtils
         }
      }
 
-   /** "safely" run a snippet of code.  The main thing this function does is clear the return value 
-    *  before returning the value to the caller.  This is important because the return value (if there 
-    *  is one) would not get cleared otherwise.  Kind of important.
+   /** utility function to handle the setup/teardown for a call request */
+   private static Scalar runCode(CallRequest request, ScriptInstance script, Stack locals)
+   {
+       ScriptEnvironment environment = script.getScriptEnvironment();
+
+       synchronized (environment.getScriptVariables())
+       {
+          environment.pushSource(script.getName());
+
+          environment.CreateFrame(); /* this frame holds the result */
+          environment.CreateFrame(locals); /* dump the local vars here plz */
+
+          request.CallFunction();
+
+          /* get the return value */   
+          Scalar rv = environment.getCurrentFrame().isEmpty() ? SleepUtils.getEmptyScalar() : (Scalar)environment.getCurrentFrame().pop();
+
+          /* handle the cleanup */
+          environment.KillFrame();
+          environment.popSource();
+ 
+          /* necessary since we're doing this from a toplevel */
+          environment.resetEnvironment();
+
+          return rv;
+       }
+   }
+
+   /** "safely" run a snippet of code.  The snippet is executed as if it was an inline function.
     *  @param code the block of code we want to execute
     *  @param env the environment to run the code in
     *  @return the scalar returned by the executed code (if their is a return value), null otherwise.
     */
    public static Scalar runCode(Block code, ScriptEnvironment env)
    {
-       synchronized (env.getScriptVariables())
-       {
-          Scalar temp = code.evaluate(env);
-          env.resetEnvironment();             /* if we're going to call a function that returns
-                                                 something then we are obligated to clear its return
-                                                 value when its done running... */
-          return temp;
-       }
+       CallRequest request = new CallRequest.InlineCallRequest(env, Integer.MIN_VALUE, "eval", code);
+       return runCode(request, env.getScriptInstance(), null);
    }
 
-   /** "safely" runs a "Function" of code.  The main thing this method does is clear the return value 
-    *  before returning the value to the caller.  This is important because the return value (if there 
-    *  is one) would not get cleared otherwise.  Kind of important.
+   /** "safely" runs a closure.  
+    *  @param closure the SleepClosure object we want to execute
+    *  @param message the <var>$0</var> parameter (aka the message) to pass to this closure object
+    *  @param script the script we want to execute the function within
+    *  @param locals a stack of scalars representing the arguments to this Function (first arg on top)
+    *  @return the scalar returned by the executed code or the sleep empty scalar if there is no return value (never returns null)
+    */
+   public static Scalar runCode(SleepClosure closure, String message, ScriptInstance script, Stack locals)
+   {
+       CallRequest request = new CallRequest.ClosureCallRequest(script.getScriptEnvironment(), Integer.MIN_VALUE, SleepUtils.getScalar(closure), message);
+       return runCode(request, script, locals);
+   }
+
+   /** "safely" runs a "Function" of code.  
     *  @param func the Function object we want to execute
     *  @param name the name of the function we are executing (can be anything, depending on the function object)
     *  @param script the script we want to execute the function within
@@ -92,53 +123,36 @@ public class SleepUtils
     */
    public static Scalar runCode(Function func, String name, ScriptInstance script, Stack locals)
    {
-       Scalar temp = func.evaluate(name, script, locals);
-       script.getScriptEnvironment().resetEnvironment(); /* if we're going to call a function that returns
-                                                            something then we are obligated to clear its return
-                                                            value when its done running... */
-       if (temp == null)
-          return SleepUtils.getEmptyScalar();
-
-       return temp;
+       CallRequest request = new CallRequest.FunctionCallRequest(script.getScriptEnvironment(), Integer.MIN_VALUE, name, func);
+       return runCode(request, script, locals);
    }
  
    /** "safely" run a snippet of code.  The main thing this function does is clear the return value 
     *  before returning the value to the caller.  This is important because the return value (if there 
     *  is one) would not get cleared otherwise.  Kind of important.
-    *  @param owner the owning script instance of this block of code
+    *  @param script the owning script instance of this block of code
     *  @param code the block of code we want to execute
-    *  @param locals a hashmap containing Scalar objects that should be installed into the local scope.  The keys should be Strings representing the $names for each of the Scalar variables.
+    *  @param vars a hashmap containing Scalar objects that should be installed into the local scope.  The keys should be Strings representing the $names for each of the Scalar variables. This value can be null.
     *  @return the scalar returned by the executed code (if their is a return value), null otherwise.
     */
-   public static Scalar runCode(ScriptInstance owner, Block code, HashMap locals)
+   public static Scalar runCode(ScriptInstance script, Block code, HashMap vars)
    {
-       synchronized (owner.getScriptVariables())
+       Stack locals = new Stack();
+
+       /* turn our hashmap into some acceptable local variables */
+       if (vars != null)
        {
-          ScriptVariables vars = owner.getScriptVariables();
-
-          vars.pushLocalLevel();
-
-          Variable localLevel = vars.getLocalVariables();
-
-          if (locals != null)
+          Iterator i = vars.entrySet().iterator();
+          while (i.hasNext())
           {
-             Iterator i = locals.entrySet().iterator();
-             while (i.hasNext())
-             {
-                Map.Entry value = (Map.Entry)i.next();
-                localLevel.putScalar(value.getKey().toString(), (Scalar)value.getValue());
-             }
+             Map.Entry value = (Map.Entry)i.next();
+             locals.push(new KeyValuePair(SleepUtils.getScalar(value.getKey().toString()), (Scalar)value.getValue()));
           }
-
-          //
-          // execute the block of code
-          //
-          Scalar value = SleepUtils.runCode(code, owner.getScriptEnvironment());
-
-          vars.popLocalLevel();
-         
-          return value;
        }
+    
+       /* do the actual call yo */
+       CallRequest request = new CallRequest.InlineCallRequest(script.getScriptEnvironment(), Integer.MIN_VALUE, "eval", code);
+       return runCode(request, script, locals);
    }
 
    /** "safely" run a snippet of code.  The main thing this function does is clear the return value 
