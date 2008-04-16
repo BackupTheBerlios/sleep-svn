@@ -1130,6 +1130,11 @@ public class CodeGenerator implements ParserConstants
               return;
            }
 
+           if (Boolean.parseBoolean(System.getProperty("sleep.assert", "true")) == false)
+           {
+              return;
+           }
+
            Token assert_terms[] = ParserUtilities.groupByMessageTerm(parser, tokens[1]).getTokens();
            
            backup();

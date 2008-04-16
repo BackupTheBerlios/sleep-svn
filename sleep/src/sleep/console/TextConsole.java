@@ -36,8 +36,9 @@ public class TextConsole implements ConsoleProxy
              System.out.println(SleepUtils.SLEEP_VERSION + " (" + SleepUtils.SLEEP_RELEASE + ")");
              System.out.println("Usage: java [properties] -jar sleep.jar [options] [-|file|expression]");
              System.out.println("       properties:");
-             System.out.println("         -Dsleep.debug=<debug level>");
+             System.out.println("         -Dsleep.assert=<true|false>");
              System.out.println("         -Dsleep.classpath=<path to locate 3rd party jars from>");
+             System.out.println("         -Dsleep.debug=<debug level>");
              System.out.println("       options:");
              System.out.println("         -a --ast       display the abstract syntax tree of the specified script");
              System.out.println("         -c --check     check the syntax of the specified file");

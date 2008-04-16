@@ -1,3 +1,16 @@
+2.1-beta 22  (16 Apr 08)
+===========
+- added a new API to SleepUtils to generate a variable stack 
+  from a java.util.Map.
+- I/O bridge now reports a better error when a I/O handle is 
+  expected as an argument but not received.
+- added -Dsleep.assert property to enable/disable assertion
+  statements.  
+- updated SleepClosure#callClosure to use the current preferred
+  function calling methods.  This enables closure calls from
+  map, reduce, search, etc. to be traced and to count against
+  the profiler statistics
+
 2.1-beta 21  (28 Mar 08)
 ===========
 - assignment loops now record proper line number information for

@@ -175,10 +175,22 @@ public class SleepClosure implements Function
        if (locals == null)
            locals = new Stack();
 
-       Scalar temp = evaluate(message, si, locals);
-       si.getScriptEnvironment().clearReturn();
+       si.getScriptEnvironment().pushSource("<internal>");
+       si.getScriptEnvironment().CreateFrame();
+       si.getScriptEnvironment().CreateFrame(locals); /* dump the local vars here plz */
 
-       return temp;
+       CallRequest request = new CallRequest.ClosureCallRequest(si.getScriptEnvironment(), -1, SleepUtils.getScalar(this), message);
+       request.CallFunction();
+
+       /* get the return value */    
+       Scalar rv = si.getScriptEnvironment().getCurrentFrame().isEmpty() ? SleepUtils.getEmptyScalar() : (Scalar)si.getScriptEnvironment().getCurrentFrame().pop();
+
+       /* handle the cleanup */
+       si.getScriptEnvironment().KillFrame();
+       si.getScriptEnvironment().clearReturn();
+       si.getScriptEnvironment().popSource();
+
+       return rv;
     }
 
     /** Evaluates the closure, use callClosure instead. */

@@ -137,22 +137,8 @@ public class SleepUtils
     */
    public static Scalar runCode(ScriptInstance script, Block code, HashMap vars)
    {
-       Stack locals = new Stack();
-
-       /* turn our hashmap into some acceptable local variables */
-       if (vars != null)
-       {
-          Iterator i = vars.entrySet().iterator();
-          while (i.hasNext())
-          {
-             Map.Entry value = (Map.Entry)i.next();
-             locals.push(new KeyValuePair(SleepUtils.getScalar(value.getKey().toString()), (Scalar)value.getValue()));
-          }
-       }
-    
-       /* do the actual call yo */
        CallRequest request = new CallRequest.InlineCallRequest(script.getScriptEnvironment(), Integer.MIN_VALUE, "eval", code);
-       return runCode(request, script, locals);
+       return runCode(request, script, getArgumentStack(vars));
    }
 
    /** "safely" run a snippet of code.  The main thing this function does is clear the return value 
@@ -257,6 +243,25 @@ public class SleepUtils
       }
 
       return dict;
+   }
+
+   /** Generate a java.util.Stack of sleep.bridges.KeyValuePair arguments from a Map.  Assumes the keys are Strings and the values are already Scalar values. */
+   public static Stack getArgumentStack(Map pairs)
+   {
+       Stack locals = new Stack();
+
+       /* turn our hashmap into some acceptable local variables */
+       if (pairs != null)
+       {
+          Iterator i = pairs.entrySet().iterator();
+          while (i.hasNext())
+          {
+             Map.Entry value = (Map.Entry)i.next();
+             locals.push(new KeyValuePair(SleepUtils.getScalar(value.getKey().toString()), (Scalar)value.getValue()));
+          }
+       }
+
+       return locals;
    }
 
    /** Generate a java.util.List from a scalar array.  Values will be the Java object 

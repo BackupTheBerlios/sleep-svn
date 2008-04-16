@@ -655,7 +655,14 @@ public class BasicIO implements Loadable, Function, Evaluation
 
        if (l.size() >= args)
        {
-          a = (IOObject)BridgeUtilities.getObject(l);
+          Scalar b = (Scalar)l.pop();
+
+          if (!(b.objectValue() instanceof IOObject))
+          {
+             throw new IllegalArgumentException("expected I/O handle argument, received: " + SleepUtils.describe(b));
+          }
+
+          a = (IOObject)b.objectValue();
        }
        else
        {
