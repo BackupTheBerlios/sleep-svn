@@ -10,6 +10,10 @@
   function calling methods.  This enables closure calls from
   map, reduce, search, etc. to be traced and to count against
   the profiler statistics
+- SleepUtils.runCode(Block, ...) now creates (and assumes the 
+  responsibility for destroying) a local scope if none currently
+  exists.
+- 
 
 2.1-beta 21  (28 Mar 08)
 ===========

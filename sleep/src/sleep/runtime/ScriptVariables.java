@@ -180,6 +180,9 @@ public class ScriptVariables implements Serializable
     /** returns the current local variable scope */
     public Variable getLocalVariables()
     {
+       if (locals.size() == 0)
+          return null;
+
        return (Variable)locals.getFirst();
     }
 

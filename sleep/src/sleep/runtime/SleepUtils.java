@@ -97,8 +97,22 @@ public class SleepUtils
     */
    public static Scalar runCode(Block code, ScriptEnvironment env)
    {
-       CallRequest request = new CallRequest.InlineCallRequest(env, Integer.MIN_VALUE, "eval", code);
-       return runCode(request, env.getScriptInstance(), null);
+       if (env.getScriptVariables().getLocalVariables() == null)
+       {
+          env.getScriptVariables().pushLocalLevel();
+
+          CallRequest request = new CallRequest.InlineCallRequest(env, Integer.MIN_VALUE, "eval", code);
+          Scalar value = runCode(request, env.getScriptInstance(), null);
+
+          env.getScriptVariables().popLocalLevel();
+
+          return value;
+       }
+       else
+       {
+          CallRequest request = new CallRequest.InlineCallRequest(env, Integer.MIN_VALUE, "eval", code);
+          return runCode(request, env.getScriptInstance(), null);
+       }
    }
 
    /** "safely" runs a closure.  
