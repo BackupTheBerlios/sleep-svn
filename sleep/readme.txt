@@ -1,5 +1,5 @@
  ------- -------------------- ---------   ---------------  ------- ---------
-Sleep - 2.1 beta 21 - README   
+Sleep - 2.1 beta 22 - README   
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 "You got the language, all you need now is the O'Reilly book".  That is
@@ -20,7 +20,8 @@ writing.  Specifically I wanted something I could integrate the way *I
 wanted* to integrate it.  Since then, Sleep has been revised, expanded, 
 and stabilized.  
 
-Sleep Project Homepage: http://sleep.hick.org/
+Sleep Project Homepage: http://sleep.dashnine.org/
+                        http://sleep.hick.org/      (mirror)
 
  ------- -------------------- ---------   ---------------  ------- ---------
 Documentation

@@ -1127,7 +1127,7 @@ foo();</pre>
 scope of <code>&amp;bar</code> you would have to use <code>$name => $name</code>.  The scalar reference <code>\$name</code>
 is equivalent to that expression.</p>
 
-<h3>Ordered Hashes</h3>
+<a name="marty"></a><h3>Ordered Hashes</h3>
 
 <p>Sleep has a special class of hashes that keep their keys in a certain order.  These are ordered hashes.  Ordered hashes created
 with <code>&amp;ohash</code> keep track of insertion order.  The oldest key is at the beginning of the list while the newest key is
@@ -1141,18 +1141,115 @@ the hash.  Likewise the miss policy is used to respond when a key with no associ
 <p>The following example shows a hash acting as a cache for data stored on the file system.  As the cache gets big, the least
 recently used data is flushed to the disk.  When the data is requested later it is loaded again.</p>
 
-<pre></pre>
+<pre>debug(7);
+
+# if a miss occurs, check if the key is cached
+# in the current directory and load it.
+sub missPolicy
+{
+   local('$handle $data');
+
+   if (-exists $2)
+   {
+      $handle = openf($2);
+      $data = readObject($handle);
+      closef($handle);
+
+      println("--- Loaded $2");
+      return $data;
+   }
+
+   return $null;
+}
+
+# if the size of the data structure is over 3
+# elements then save it to the disk.
+sub removalPolicy
+{
+   local('$handle');
+
+   if (size($1) >= 3)
+   {
+      $handle = openf("> $+ $2");
+      writeObject($handle, $3);
+      closef($handle);
+
+      println("+++ Saved $2");
+      return 1;
+   }
+
+   return 0;
+}
+
+# lets test it out...
+global('%data');
+
+%data = ohasha();
+setMissPolicy(%data, &missPolicy);
+setRemovalPolicy(%data, &removalPolicy);
+
+add(%data, a => "apple", b => "batz", c => "cats");
+println(%data);
+
+println("Access 'a': " . %data["a"]);
+println(%data);
+
+add(%data, d => "dog");
+println(%data);
+
+println("Access 'b': " . %data["b"]);
+println(%data);</pre>
+
+<p>The output of this program is:</p>
+
+<pre><i>$ <b>java -jar sleep.jar cache.sl</b>
+%(a => 'apple', b => 'batz', c => 'cats')
+Access 'a': apple
+%(b => 'batz', c => 'cats', a => 'apple')
++++ Saved b
+%(c => 'cats', a => 'apple', d => 'dog')
+--- Loaded b
++++ Saved c
+Access 'b': batz
+%(a => 'apple', d => 'dog', b => 'batz')</i></pre>
 
 <p>Ordered hashes and their policies are not used just as caches.  They also enable the dynamic programming method for solving certain
 classes of problems.  The following program calculates the Fibonnaci numbers in a very fast way:</p>
 
-<pre></pre>
+<pre>sub fib
+{
+   local('%fhash');
+   %fhash = ohash(0 => 0, 1 => 1);  
+   setMissPolicy(%fhash,
+   {
+      return $1[$2 - 1] + $1[$2 - 2];            
+   });
+   return %fhash[$1];
+}
 
-<p>This program takes ... on my computer.  For comparison, the following program calculates Fibonnaci numbers in a naive way.</p>
+println("Fib no. " . fib(25));</pre>
 
-<pre></pre>
+<p>This program takes 0.028 seconds on my computer.  For comparison, the following program calculates Fibonnaci numbers in a naive way.</p>
 
-<p>Same result, except this program takes ...</p>
+<pre>sub fib
+{
+   if ($1 == 0)
+   {
+      return 0;
+   }
+   else if ($1 == 1)
+   {
+      return 1;
+   }
+   else
+   {
+      return fib($1 - 1) + fib($1 - 2);
+   }
+}
+
+println("Fib no. " . fib(25));</pre>
+
+<p>Same result, except this program takes 6.61 seconds.</p>
 
 <h3>Multidimensional Hashes/Arrays</h3>
 
