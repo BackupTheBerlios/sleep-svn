@@ -400,6 +400,34 @@ public class SleepUtils
       return values.toString();
    }
 
+   /** describe the entries in a Sleep hash */
+   public static String describeEntries(String sigil, Set entries)
+   {
+      StringBuffer buffer = new StringBuffer(sigil + "(");
+
+      Iterator i = entries.iterator();
+      while (i.hasNext())
+      {
+         Map.Entry next = (Map.Entry)i.next();
+
+         if (!SleepUtils.isEmptyScalar((Scalar)next.getValue()))
+         {
+            if (buffer.length() > 2)
+            {
+               buffer.append(", ");
+            }
+
+            buffer.append(next.getKey());
+            buffer.append(" => ");
+  
+            buffer.append(describe((Scalar)next.getValue()));
+         }
+      }
+      buffer.append(")");
+
+      return buffer.toString();
+   }
+
    /** returns a string description of the specified scalar. Used by debugging mechanism to
        format scalars based on their value type, i.e. strings are enclosed in single quotes,
        objects in brackets, $null is displayed as $null, etc. */
@@ -425,27 +453,7 @@ public class SleepUtils
       }
       if (scalar.getHash() != null)
       {
-         StringBuffer buffer = new StringBuffer("%(");
-         Iterator i = scalar.getHash().keys().scalarIterator();
-         while (i.hasNext())
-         {
-            Scalar next = (Scalar)i.next();
-            buffer.append(next.toString());
-
-            buffer.append(" => ");
-
-            Scalar nval = scalar.getHash().getAt(next);
-
-            buffer.append(describe(nval));
-
-            if (i.hasNext())
-            {
-               buffer.append(", ");
-            }
-         }
-        
-         buffer.append(")");
-         return buffer.toString();
+         return scalar.getHash().toString();
       }
       else
       {
@@ -490,11 +498,20 @@ public class SleepUtils
       return temp;
    }
 
-   /** returns an empty ordered hashmap scalar */
+   /** returns an empty insertion ordered hashmap scalar */
    public static Scalar getOrderedHashScalar()
    {
       Scalar temp = new Scalar();
-      temp.setValue(new HashContainer(new LinkedHashMap()));
+      temp.setValue(new OrderedHashContainer(16, 0.75f, false));
+
+      return temp;
+   }
+
+   /** returns an empty access ordered hashmap scalar */
+   public static Scalar getAccessOrderedHashScalar()
+   {
+      Scalar temp = new Scalar();
+      temp.setValue(new OrderedHashContainer(16, 0.75f, true));
 
       return temp;
    }
@@ -615,5 +632,11 @@ public class SleepUtils
       }
 
       return SleepUtils.getEmptyScalar();
+   }
+
+   /** check if the scalar is true using Sleep's definition of truth.  A scalar is considered true if it is not $null and it is not equal to a representation of 0 */
+   public static boolean isTrueScalar(Scalar value)
+   {
+      return (value.getArray() != null || value.getHash() != null) || (value.getActualValue().toString().length() != 0 && !("0".equals(value.getActualValue().toString())));
    }
 }

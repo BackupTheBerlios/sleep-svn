@@ -32,6 +32,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import sleep.engine.types.*;
 import java.lang.reflect.*; // for array casting stuff
 
 import sleep.parser.*;
@@ -65,6 +66,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&array", f_array); 
         temp.put("&hash", f_hash);
         temp.put("&ohash", f_hash);
+        temp.put("&ohasha", f_hash);
         temp.put("&@", f_array);
         temp.put("&%", f_hash);  
 
@@ -79,6 +81,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&splice", this);
         temp.put("&subarray", this);
         temp.put("&copy",  new copy());
+        temp.put("&setRemovalPolicy", this);
+        temp.put("&setMissPolicy", this);
  
         map map_f = new map();
 
@@ -246,8 +250,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
        //   
        if (predName.equals("-istrue"))
        {
-          return (value.getArray() != null || value.getHash() != null) || (
-                  value.getActualValue().toString().length() != 0 && !("0".equals(value.getActualValue().toString())));
+          return SleepUtils.isTrueScalar(value);
        }
 
        if (predName.equals("-isfunction"))
@@ -531,7 +534,19 @@ public class BasicUtilities implements Function, Loadable, Predicate
     {
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
-          Scalar value = n.equals("&ohash") ? SleepUtils.getOrderedHashScalar() : SleepUtils.getHashScalar();
+          Scalar value = null; 
+          if (n.equals("&ohash"))
+          {
+              value = SleepUtils.getOrderedHashScalar();
+          }
+          else if (n.equals("&ohasha"))
+          {
+              value = SleepUtils.getAccessOrderedHashScalar();
+          }
+          else
+          {
+              value = SleepUtils.getHashScalar();
+          }
            
           while (!l.isEmpty())
           {
@@ -1210,6 +1225,24 @@ public class BasicUtilities implements Function, Loadable, Predicate
              temp.setValue(value.getHash().keys());
              return temp;
           }
+       }
+       else if (n.equals("&setRemovalPolicy") || n.equals("&setMissPolicy"))
+       { 
+          if (value.getHash() == null || !(value.getHash() instanceof OrderedHashContainer))
+          {
+             throw new IllegalArgumentException(n + ": expected an ordered hash, received: " + SleepUtils.describe(value));
+          }
+          
+          SleepClosure function  = BridgeUtilities.getFunction(l, i);           
+          OrderedHashContainer blah = (OrderedHashContainer)(value.getHash());
+          if (n.equals("&setMissPolicy"))
+          {
+             blah.setMissPolicy(function);
+          }
+          else
+          {
+             blah.setRemovalPolicy(function);
+          }       
        }
        else if (n.equals("&putAll"))
        {

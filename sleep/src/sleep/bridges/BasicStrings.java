@@ -523,13 +523,13 @@ public class BasicStrings implements Loadable
 
     private static class CompareFunction implements Comparator
     {
-        protected Function       func;
+        protected SleepClosure   func;
         protected ScriptInstance script;
         protected Stack          locals;
 
         public CompareFunction(Function _func, ScriptInstance _script)
         {
-           func     = _func;
+           func     = (SleepClosure)_func;
            script   = _script;
            locals   = new Stack();
         }
@@ -539,9 +539,7 @@ public class BasicStrings implements Loadable
            locals.push(b);
            locals.push(a);
 
-           Scalar temp = func.evaluate("&sort", script, locals);
-           script.getScriptEnvironment().clearReturn();
-
+           Scalar temp = func.callClosure("&sort", script, locals);
            return temp.intValue();
         }
     }

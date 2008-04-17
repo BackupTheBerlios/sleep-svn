@@ -33,6 +33,28 @@ public class MapWrapper implements ScalarHash
 
    public String toString()
    {
-      return "(read-only hash " + values.toString() + ")";
+      StringBuffer buffer = new StringBuffer("%(");
+
+      Iterator i = values.entrySet().iterator();
+      while (i.hasNext())
+      {
+         Map.Entry next = (Map.Entry)i.next();
+
+         if (next.getValue() != null && next.getKey() != null)
+         {
+            if (buffer.length() > 2)
+            {
+               buffer.append(", ");      
+            }
+
+            buffer.append(next.getKey());
+            buffer.append(" => ");
+  
+            buffer.append(SleepUtils.describe(ObjectUtilities.BuildScalar(true, next.getValue()))); 
+         }
+      }
+      buffer.append(")");
+
+      return buffer.toString();
    }
 }

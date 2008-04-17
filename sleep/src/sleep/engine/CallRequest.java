@@ -72,9 +72,10 @@ public abstract class CallRequest
          {
              try
              {
-                long stat = System.currentTimeMillis();
-                temp = execute();
-                stat = System.currentTimeMillis() - stat;
+                long total = e.getScriptInstance().total();
+                long stat  = System.currentTimeMillis();
+                temp       = execute();
+                stat       = (System.currentTimeMillis() - stat) - (e.getScriptInstance().total() - total);
                 e.getScriptInstance().collect(getFunctionName(), getLineNumber(), stat);
              }
              catch (RuntimeException rex)
@@ -95,9 +96,10 @@ public abstract class CallRequest
 
              try
              {
+                long total = e.getScriptInstance().total();
                 long stat = System.currentTimeMillis();
                 temp = execute();
-                stat = System.currentTimeMillis() - stat;
+                stat       = (System.currentTimeMillis() - stat) - (e.getScriptInstance().total() - total);
                 e.getScriptInstance().collect(getFunctionName(), getLineNumber(), stat);
 
                 if (e.isThrownValue())

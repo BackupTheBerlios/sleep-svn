@@ -16,8 +16,8 @@ sub executeScript
    }
  
    $buffer = allocate();
-   [[[$script getScriptEnvironment] getEnvironment] 
-                                    put: "%console%", $buffer];
+   [sleep.bridges.io.IOObject setConsole: [$script getScriptEnvironment], $buffer];
+
    [$script runScript];
 
    closef($buffer);

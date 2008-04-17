@@ -61,6 +61,6 @@ public class HashContainer implements ScalarHash
 
    public String toString()
    {
-      return values.toString();
+      return SleepUtils.describeEntries("%", values.entrySet());
    }
 }

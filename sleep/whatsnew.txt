@@ -1,4 +1,4 @@
-2.1-beta 22  (16 Apr 08)
+2.1-beta 22  (17 Apr 08)
 ===========
 - added a new API to SleepUtils to generate a variable stack 
   from a java.util.Map.
@@ -13,7 +13,44 @@
 - SleepUtils.runCode(Block, ...) now creates (and assumes the 
   responsibility for destroying) a local scope if none currently
   exists.
-- 
+- extended the ordered hash (&ohash) concept to allow the
+  implementation of a cache with a Sleep hash interface:
+
+  -- &ohash orders keys in insertion order (no surprise here)
+  -- added &ohasha to create a hash with keys kept in access order
+  -- added setRemovalPolicy(%hash, &closure) to set a closure that
+     determines wether the last element of the specified hash
+     should be removed or not.  Arguments to the closure are:
+     $1 = the hash, $2 = the key, and $3 = the value.
+  -- added setMissPolicy(%hash, &closure) to a set closure that
+     determines what value to use when a hash access misses.
+     The closure is called with $1 = the hash and $2 = the key
+
+  These features should enable better management of massive data 
+  structures within Sleep.  Someone *cough*Marty*cough* will
+  benefit greatly from this.
+- sleep.runtime.ScalarHash implementations are now responsible 
+  for creating their own toString representation.  This is 
+  necessary as some hash implementations (i.e. &ohasha) are
+  sensitive to access order.  Added a helper function to assist
+  with creating a String representation from a java.util.Set of
+  java.util.Map$Entry.  SleepUtils.describeEntries(String, Set)
+- profiler now reflects time spent in current function sans
+  child function calls.  avoids numbers getting out of whack
+  due to recursion.
+- created a new means for storing script metadata information.
+  the java.util.Map obtained by ScriptInstance.getMetadata()
+  is stored in the global variables for a script and it is 
+  passed on to child forks.   The script "environment" where
+  functions and such are stored should not be used for 
+  keeping state.
+
+  This breaks backwards compatability if you install a new
+  Sleep console as %console% or if you manipulate script
+  statistics directly by accessing %statistics%
+
+  To set the Sleep console use the static method in
+  sleep.bridges.io.IOObject#setConsole(ScriptEnvironment, IOObject)
 
 2.1-beta 21  (28 Mar 08)
 ===========

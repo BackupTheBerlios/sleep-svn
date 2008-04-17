@@ -278,16 +278,27 @@ public class ScriptInstance implements Serializable, Runnable
         }
     }
 
+    /** return the total number of ticks this script has spent processing */
+    public long total()
+    {
+        Long total = (Long)getMetadata().get("%total%");
+        return total == null ? 0L : total.longValue();
+    }
+
     /** this function is used internally by the sleep interpreter to collect profiler statistics
         when DEBUG_TRACE_CALLS or DEBUG_TRACE_PROFILE_ONLY is enabled */
     public void collect(String function, int lineNo, long ticks)
     {
-       Map statistics = (Map)getScriptEnvironment().getEnvironment().get("%statistics%");
+       Map    statistics = (Map)getMetadata().get("%statistics%");
+       Long   total      = (Long)getMetadata().get("%total%");
 
        if (statistics == null) 
        {
           statistics = new HashMap();
-          getScriptEnvironment().getEnvironment().put("%statistics%", statistics);
+          total      = new Long(0L);
+
+          getMetadata().put("%statistics%", statistics);
+          getMetadata().put("%total%", total);
        }
 
        ProfilerStatistic stats = (ProfilerStatistic)statistics.get(function);
@@ -300,8 +311,12 @@ public class ScriptInstance implements Serializable, Runnable
           statistics.put(function, stats);
        }
 
+       /** updated individual statistics */
        stats.ticks += ticks;
        stats.calls ++;
+
+       /** update global statistic */
+       getMetadata().put("%total%", new Long(total.longValue() + ticks));
     }
 
     /** a quick way to check if we are profiling and not tracing the script steps */
@@ -315,7 +330,7 @@ public class ScriptInstance implements Serializable, Runnable
         Note!!! For Sleep to provide profiler statistics, DEBUG_TRACE_CALLS or DEBUG_TRACE_PROFILE_ONLY must be enabled! */
     public List getProfilerStatistics()
     {
-        Map statistics = (Map)getScriptEnvironment().getEnvironment().get("%statistics%");
+        Map statistics = (Map)getMetadata().get("%statistics%");
 
         if (statistics != null)
         {
@@ -328,6 +343,25 @@ public class ScriptInstance implements Serializable, Runnable
         {
            return new LinkedList();
         }
+    }
+
+    /** retrieves script meta data for you to update */
+    public Map getMetadata()
+    {
+       Scalar container = getScriptVariables().getGlobalVariables().getScalar("__meta__");
+       Map    meta      = null;
+
+       if (container == null)
+       {
+          meta = Collections.synchronizedMap(new HashMap()); /* we do this because this metadata may be shared between multiple threads */
+          getScriptVariables().getGlobalVariables().putScalar("__meta__", SleepUtils.getScalar((Object)meta));
+       }
+       else
+       {
+          meta = (Map)container.objectValue();
+       }
+
+       return meta;
     }
 
     /** Dumps the profiler statistics to the specified stream */
@@ -351,6 +385,9 @@ public class ScriptInstance implements Serializable, Runnable
         si.setName(getName());
         si.setDebugFlags(getDebugFlags());
         si.watchers = watchers;
+
+        /* make sure things like profiler statistics and metadata are shared between threads. */
+        si.getScriptVariables().getGlobalVariables().putScalar("__meta__", SleepUtils.getScalar((Object)getMetadata()));
  
         return si;
     }

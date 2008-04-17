@@ -1127,6 +1127,33 @@ foo();</pre>
 scope of <code>&amp;bar</code> you would have to use <code>$name => $name</code>.  The scalar reference <code>\$name</code>
 is equivalent to that expression.</p>
 
+<h3>Ordered Hashes</h3>
+
+<p>Sleep has a special class of hashes that keep their keys in a certain order.  These are ordered hashes.  Ordered hashes created
+with <code>&amp;ohash</code> keep track of insertion order.  The oldest key is at the beginning of the list while the newest key is
+kept at the end.  The <code>&amp;ohasha</code> keeps track of access order.  As keys are accessed they are moved to the end of the
+key list.  This type of hash keeps the least recently used key at the beginning.</p>
+
+<p>Ordered hashes may have hit and/or removal policies associated with them.  The removal policy is called every time a new key is
+about to be added.  The purpose of the removal policy is to decide if the key at the beginning of the list should be removed from
+the hash.  Likewise the miss policy is used to respond when a key with no associated value is accessed.</p>
+
+<p>The following example shows a hash acting as a cache for data stored on the file system.  As the cache gets big, the least
+recently used data is flushed to the disk.  When the data is requested later it is loaded again.</p>
+
+<pre></pre>
+
+<p>Ordered hashes and their policies are not used just as caches.  They also enable the dynamic programming method for solving certain
+classes of problems.  The following program calculates the Fibonnaci numbers in a very fast way:</p>
+
+<pre></pre>
+
+<p>This program takes ... on my computer.  For comparison, the following program calculates Fibonnaci numbers in a naive way.</p>
+
+<pre></pre>
+
+<p>Same result, except this program takes ...</p>
+
 <h3>Multidimensional Hashes/Arrays</h3>
 
 <p>Multidimensional hashes work exactly the same as Sleep arrays.  It is also possible to have an array of hashes, or a hash of 
@@ -2395,8 +2422,13 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
  <tr>
   <td>%</td>
   <td>ohash(blah => "value", ...)</td>
-  <td>instantiates an ordered hash with the specified values.  ordered hashes mantain key insertion order.  keys can be updated without changing order.</td>
+  <td>instantiates an ordered hash with the specified values.  ordered hashes mantain key insertion order.</td>
  </tr>
+ <tr>
+  <td>%</td>
+  <td>ohasha(blah => "value", ...)</td>
+  <td>instantiates an access-time ordered hash with the specified values.  these ordered hashes mantain order based on element access.</td>
+ </tr>  
  <tr>
   <td>%</td>
   <td>putAll(%hash, @|&amp;, [@|&amp;])</td>
@@ -2413,6 +2445,19 @@ specify the format parameter see <a href="#15">Appendix D - Date/Time Formatting
   <td></td>
   <td>removeAt(%hash, "key", ...)</td>
   <td>removes the specified keys from the hash.</td>
+ </tr>
+ <tr>
+  <td></td>
+  <td>setMissPolicy(%ohash, &amp;closure)</td>
+  <td>sets the specified function as the miss policy for the specified ordered hash.  The miss policy is called when the hash encounters a key request
+  with no associated value.  The function is called with $1 = the hash scalar and $2 = the key.  The return value is used as the new value for the key.</td>
+ </tr>
+ <tr>
+  <td></td>
+  <td>setRemovalPolicy(%ohash, &amp;closure)</td>
+  <td>sets the specified function as the removal policy for the specified ordered hash.  The removal policy is called when a new value is added to the hash.
+  The function is called with $1 = the hash scalar and $2 = the key and $3 = the value of the last item in the ordered hash.  A non-$null return value 
+  with no associated value.  The function is called with $1 = the hash scalar and $2 = the key.  The return value is used as the new value for the key.</td>
  </tr>
  <tr>
   <td>$</td>
