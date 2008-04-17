@@ -1130,7 +1130,7 @@ public class CodeGenerator implements ParserConstants
               return;
            }
 
-           if (Boolean.parseBoolean(System.getProperty("sleep.assert", "true")) == false)
+           if (Boolean.valueOf(System.getProperty("sleep.assert", "true")) == Boolean.FALSE)
            {
               return;
            }

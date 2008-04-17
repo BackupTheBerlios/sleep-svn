@@ -1,3 +1,8 @@
+2.1-beta 23
+===========
+- removed a Java 1.5 API call in CodeGenerator (thanks to 
+  Ralph Becker for catching this one).
+
 2.1-beta 22  (17 Apr 08)
 ===========
 - added a new API to SleepUtils to generate a variable stack 
