@@ -5,6 +5,14 @@
 - API CHANGE: Loadable interface methods now have a return 
   type of void instead of boolean.  This is an API wart I
   couldn't live with any longer.  
+- added command line option -p/--profile to collect and print
+  profiler statistics for the specified script.  
+- added command line option -t/--time to print out the total
+  running time of the specified script
+- ordered hash miss policy now receives the passed in key
+  as-is prior to the string conversion.
+- Sleep now parses command line arguments in a more flexible
+  manner allowing different orders/combinations of switches.
 
 2.1-beta 22  (17 Apr 08)
 ===========

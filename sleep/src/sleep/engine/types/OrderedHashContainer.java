@@ -113,7 +113,7 @@ public class OrderedHashContainer extends HashContainer
          cleanup();
 
          Stack locals = new Stack();
-         locals.push(SleepUtils.getScalar(key.toString()));
+         locals.push(key);
          locals.push(SleepUtils.getHashScalar(this));
 
          value = missPolicy.callClosure("miss", null, locals);
