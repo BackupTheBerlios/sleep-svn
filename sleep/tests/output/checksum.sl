@@ -1,3 +1,3 @@
-(1) Checksum value of test.jar is: 453947233 good? yes
-(2) Checksum value of test.jar is: 453947233 good? yes
-Checksum of written data is: 453947233
+(1) Checksum value of test.jar is: 2203902212 good? no
+(2) Checksum value of test.jar is: 2203902212 good? no
+Checksum of written data is: 2203902212

@@ -34,12 +34,11 @@ import java.math.*;
 /** provides some of the basic number crunching functionality */
 public class BasicNumbers implements Predicate, Operator, Loadable, Function
 {
-    public boolean scriptUnloaded(ScriptInstance aScript)
+    public void scriptUnloaded(ScriptInstance aScript)
     {
-       return true;
     }
 
-    public boolean scriptLoaded(ScriptInstance aScript)
+    public void scriptLoaded(ScriptInstance aScript)
     {
        Hashtable temp = aScript.getScriptEnvironment().getEnvironment();
 
@@ -94,8 +93,6 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        // functions
        temp.put("&rand", this);
        temp.put("&srand", this);
-
-       return true;
     }
 
     public Scalar evaluate(String name, ScriptInstance si, Stack args)

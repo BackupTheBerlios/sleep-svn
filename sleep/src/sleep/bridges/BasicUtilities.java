@@ -48,12 +48,11 @@ public class BasicUtilities implements Function, Loadable, Predicate
        ParserConfig.addKeyword("=~");
     }
 
-    public boolean scriptUnloaded (ScriptInstance i)
+    public void scriptUnloaded (ScriptInstance i)
     {
-        return true;
     }
 
-    public boolean scriptLoaded (ScriptInstance i)
+    public void scriptLoaded (ScriptInstance i)
     {
         Hashtable temp = i.getScriptEnvironment().getEnvironment();
         //
@@ -162,8 +161,6 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&invoke",    this);
 
         temp.put("=>",       new HashKeyValueOp());
-
-        return true;
     }
 
     private static class SyncPrimitives implements Function 

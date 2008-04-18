@@ -556,19 +556,17 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
       getProxy().consolePrintln(warning.toString());
    }     
 
-   public boolean scriptLoaded(ScriptInstance script)
+   public void scriptLoaded(ScriptInstance script)
    {
       if (! script.getName().equals("<interact mode>") && !interact)
          getProxy().consolePrintln(script.getName() + " loaded successfully.");
 
       script.addWarningWatcher(this);
       script.setScriptVariables(new ScriptVariables(sharedVariables));
-      return true;
    }
 
-   public boolean scriptUnloaded(ScriptInstance script)
+   public void scriptUnloaded(ScriptInstance script)
    {
       getProxy().consolePrintln(script.getName() + " has been unloaded");
-      return true;
    }
 }

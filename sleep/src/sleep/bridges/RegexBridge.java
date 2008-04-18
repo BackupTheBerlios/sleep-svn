@@ -62,12 +62,11 @@ public class RegexBridge implements Loadable
        return temp;
     }
 
-    public boolean scriptUnloaded(ScriptInstance aScript)
+    public void scriptUnloaded(ScriptInstance aScript)
     {
-        return true;
     }
 
-    public boolean scriptLoaded (ScriptInstance aScript)
+    public void scriptLoaded (ScriptInstance aScript)
     {
         Hashtable temp = aScript.getScriptEnvironment().getEnvironment();
 
@@ -83,8 +82,6 @@ public class RegexBridge implements Loadable
         temp.put("&join",  new join());
         temp.put("&matches", new getMatches());
         temp.put("&replace", new rreplace());
-
-        return true;
     }
 
     private static class isMatch implements Predicate, Function

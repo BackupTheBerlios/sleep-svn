@@ -47,12 +47,11 @@ public class BasicStrings implements Loadable
         ParserConfig.addKeyword("cmp");
     }
 
-    public boolean scriptUnloaded(ScriptInstance aScript)
+    public void scriptUnloaded(ScriptInstance aScript)
     {
-        return true;
     }
 
-    public boolean scriptLoaded (ScriptInstance aScript)
+    public void scriptLoaded (ScriptInstance aScript)
     {
         Hashtable temp = aScript.getScriptEnvironment().getEnvironment();
 
@@ -104,8 +103,6 @@ public class BasicStrings implements Loadable
         temp.put("x", new oper_multiply());
         temp.put("cmp", new oper_compare());
         temp.put("<=>", new oper_spaceship());
-
-        return true;
     }
 
     private static class pred_eq implements Predicate

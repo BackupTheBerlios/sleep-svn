@@ -11,7 +11,7 @@ public class DefaultEnvironment implements Loadable, Environment
 {
     public HashMap   func; // table to store the actual block associated with the function.
 
-    public boolean scriptUnloaded (ScriptInstance si)
+    public void scriptUnloaded (ScriptInstance si)
     {
         // My apoligies in advance.  It appears this code for unloading scripts is really ugly.
         // Indeed it is.  However it accomplishes my goals of reverting to a previously defined version of a
@@ -51,8 +51,6 @@ public class DefaultEnvironment implements Loadable, Environment
               }
            }
         }
-
-        return true;
     }
 
     // It's a remote possibility that a script might have the following:
@@ -85,7 +83,7 @@ public class DefaultEnvironment implements Loadable, Environment
         return null;
     }
 
-    public boolean scriptLoaded (ScriptInstance si)
+    public void scriptLoaded (ScriptInstance si)
     {
         Hashtable env = si.getScriptEnvironment().getEnvironment(); // assuming the environment is shared. hah right
 
@@ -94,8 +92,6 @@ public class DefaultEnvironment implements Loadable, Environment
         //
         env.put("sub",    this);
         env.put("inline", this);
-
-        return true;
     }
 
     public void bindFunction(ScriptInstance si, String type, String name, Block code)

@@ -14,5 +14,5 @@ $sumfork = fork({
 writeb($sumfork, readb(openf("data/test.jar"), lof("data/test.jar")));
 closef($sumfork);
 
-println("Checksum of written data is: " . wait($sumfork));
+println("Checksum of written data is: " . formatNumber(wait($sumfork), 10, 16));
 

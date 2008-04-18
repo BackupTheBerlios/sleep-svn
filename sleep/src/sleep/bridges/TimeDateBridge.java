@@ -10,19 +10,16 @@ import java.util.*;
 
 public class TimeDateBridge implements Loadable
 {
-   public boolean scriptLoaded(ScriptInstance script)
+   public void scriptLoaded(ScriptInstance script)
    {
       // time date functions 
       script.getScriptEnvironment().getEnvironment().put("&ticks",          new ticks());
       script.getScriptEnvironment().getEnvironment().put("&formatDate",     new formatDate());
       script.getScriptEnvironment().getEnvironment().put("&parseDate",      new parseDate());
-
-      return true;
    }
 
-   public boolean scriptUnloaded(ScriptInstance script)
+   public void scriptUnloaded(ScriptInstance script)
    {
-      return true;
    }
 
    private static class formatDate implements Function

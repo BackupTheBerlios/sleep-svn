@@ -2,6 +2,9 @@
 ===========
 - removed a Java 1.5 API call in CodeGenerator (thanks to 
   Ralph Becker for catching this one).
+- API CHANGE: Loadable interface methods now have a return 
+  type of void instead of boolean.  This is an API wart I
+  couldn't live with any longer.  
 
 2.1-beta 22  (17 Apr 08)
 ===========

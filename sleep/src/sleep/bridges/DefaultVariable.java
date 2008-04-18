@@ -59,14 +59,12 @@ public class DefaultVariable implements Variable, Loadable
         return new DefaultVariable();
     }
 
-    public boolean scriptLoaded (ScriptInstance script)
+    public void scriptLoaded (ScriptInstance script)
     {
-        return true;
     }
 
-    public boolean scriptUnloaded (ScriptInstance script)
+    public void scriptUnloaded (ScriptInstance script)
     {
-        return true;
     }
 
     public DefaultVariable()

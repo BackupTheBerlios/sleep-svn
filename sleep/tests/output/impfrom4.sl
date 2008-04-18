@@ -8,4 +8,4 @@ Test: 40
 Test: 41
 Test: 42
 Test: 43
-Test? 1
+Warning: no field/method named scriptUnloaded in class org.hick.tests.TestLoadable at impfrom4.sl:16

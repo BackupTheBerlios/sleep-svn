@@ -36,16 +36,15 @@ import sleep.runtime.ScriptInstance;
  * <pre>
  * public class MyBridge implements Loadable
  * {
- *    public boolean scriptLoaded(ScriptInstance script)
+ *    public void scriptLoaded(ScriptInstance script)
  *    {
  *       Hashtable environment = script.getScriptEnvironment().getEnvironment();
  *       environment.put("&function",  new MyFunction());
  *       environment.put("-predicate", new MyPredicate());
  *    }
  * 
- *    public boolean scriptUnloaded(ScriptInstance script)
+ *    public void scriptUnloaded(ScriptInstance script)
  *    {
- *       return true;
  *    }
  * 
  *    private static class MyFunction implements Function
@@ -82,8 +81,8 @@ import sleep.runtime.ScriptInstance;
 public interface Loadable
 {
     /** called when a script is loaded */
-    public boolean scriptLoaded (ScriptInstance script);
+    public void scriptLoaded (ScriptInstance script);
 
     /** called when a script is unloaded */
-    public boolean scriptUnloaded (ScriptInstance script);
+    public void scriptUnloaded (ScriptInstance script);
 }

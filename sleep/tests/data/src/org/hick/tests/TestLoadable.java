@@ -5,14 +5,12 @@ import sleep.runtime.*;
 
 public class TestLoadable implements Loadable
 {
-   public boolean scriptLoaded(ScriptInstance si)
+   public void scriptLoaded(ScriptInstance si)
    {
       si.getScriptEnvironment().getEnvironment().put("&foo", new FooFunction());
-      return true;
    }
 
-   public boolean scriptUnloaded(ScriptInstance si)
+   public void scriptUnloaded(ScriptInstance si)
    {
-      return true;
    }
 }

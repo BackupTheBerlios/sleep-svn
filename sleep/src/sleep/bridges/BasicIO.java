@@ -41,9 +41,8 @@ import java.security.*;
 /** provides IO functions for the sleep language */
 public class BasicIO implements Loadable, Function, Evaluation
 {
-    public boolean scriptUnloaded(ScriptInstance aScript)
+    public void scriptUnloaded(ScriptInstance aScript)
     {
-        return true;
     }
 
     public Scalar evaluateString(ScriptInstance script, String value)
@@ -74,7 +73,7 @@ public class BasicIO implements Loadable, Function, Evaluation
        return rv;
     }
 
-    public boolean scriptLoaded (ScriptInstance aScript)
+    public void scriptLoaded (ScriptInstance aScript)
     {
         Hashtable temp = aScript.getScriptEnvironment().getEnvironment();
 
@@ -144,8 +143,6 @@ public class BasicIO implements Loadable, Function, Evaluation
         /* integrity functions */
         temp.put("&checksum", this);
         temp.put("&digest",   this);
-
-        return true;
     }
 
     private static Checksum getChecksum(String algorithm)

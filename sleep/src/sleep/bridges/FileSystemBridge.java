@@ -14,12 +14,11 @@ import java.io.*;
 /** provides a bridge for accessing the local file system */
 public class FileSystemBridge implements Loadable, Function
 {
-    public boolean scriptUnloaded(ScriptInstance aScript)
+    public void scriptUnloaded(ScriptInstance aScript)
     {
-        return true;
     }
 
-    public boolean scriptLoaded (ScriptInstance aScript)
+    public void scriptLoaded (ScriptInstance aScript)
     {
         Hashtable temp = aScript.getScriptEnvironment().getEnvironment();
 
@@ -46,8 +45,6 @@ public class FileSystemBridge implements Loadable, Function
         temp.put("&rename",          this);
         temp.put("&setLastModified", this);
         temp.put("&setReadOnly",     this);
-
-        return true;
     }
 
     public Scalar evaluate(String n, ScriptInstance i, Stack l)

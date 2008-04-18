@@ -13,6 +13,6 @@ for ($x = 0; $x < 10; $x++)
 }
 
 $ld = [new TestLoadable];
-println("Test? " . [$ld scriptUnloaded: $null]);
+[$ld scriptUnloaded];
 
 
