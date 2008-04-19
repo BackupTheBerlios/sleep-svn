@@ -63,7 +63,7 @@ public class ParserConfig
 
        if (cp.exists()) { return cp; }
 
-       String[] paths = System.getProperty("sleep.classpath", ".").split(";");
+       String[] paths = System.getProperty("sleep.classpath", ".").replace(':', ';').split(";");
 
        for (int x = 0; x < paths.length; x++)
        {
