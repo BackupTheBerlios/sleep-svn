@@ -185,15 +185,15 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        else if (name.equals("&srand"))
        {
           long seed = BridgeUtilities.getLong(args);
-          si.getScriptEnvironment().getEnvironment().put("%RANDOM%", new Random(seed));
+          si.getMetadata().put("__RANDOM__", new Random(seed));
        }
        else if (name.equals("&rand"))
        {
-          if (si.getScriptEnvironment().getEnvironment().get("%RANDOM%") == null) 
+          if (si.getMetadata().get("__RANDOM__") == null) 
           { 
-             si.getScriptEnvironment().getEnvironment().put("%RANDOM%", new Random()); 
+             si.getMetadata().put("__RANDOM__", new Random()); 
           }
-          Random r = (Random)si.getScriptEnvironment().getEnvironment().get("%RANDOM%");
+          Random r = (Random)si.getMetadata().get("__RANDOM__");
 
           if (! args.isEmpty())
           {

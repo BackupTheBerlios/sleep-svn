@@ -15,6 +15,8 @@
   manner allowing different orders/combinations of switches.
 - sleep.classpath value accepts either a ; or : as the path
   separator.
+- moved the %RANDOM% object to the ScriptInstance metadata 
+  with key __RANDOM__ (used to store random number seed)
 
 2.1-beta 22  (17 Apr 08)
 ===========
