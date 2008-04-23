@@ -1,4 +1,4 @@
-2.1-beta 23
+2.1-beta 23  (23 Apr 08)
 ===========
 - removed a Java 1.5 API call in CodeGenerator (thanks to 
   Ralph Becker for catching this one).
@@ -17,6 +17,10 @@
   separator.
 - moved the %RANDOM% object to the ScriptInstance metadata 
   with key __RANDOM__ (used to store random number seed)
+- SleepUtils.describe(...) makes some attempt to detect
+  cycles (i.e. data structures that reference themselves)
+  when printing out the data.  An ellipse is used to indicate
+  the data structure references itself.
 
 2.1-beta 22  (17 Apr 08)
 ===========

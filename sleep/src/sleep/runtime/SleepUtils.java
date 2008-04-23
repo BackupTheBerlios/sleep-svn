@@ -26,7 +26,7 @@ import sleep.bridges.*;
 public class SleepUtils
 {
    /** A date stamp of this Sleep release in YYYYMMDD format */
-   public static final int    SLEEP_RELEASE = 20080417;
+   public static final int    SLEEP_RELEASE = 20080423;
 
    /** A string description of this Sleep release */
    public static final String SLEEP_VERSION = "Sleep 2.1";
@@ -401,7 +401,7 @@ public class SleepUtils
    }
 
    /** describe the entries in a Sleep hash */
-   public static String describeEntries(String sigil, Set entries)
+   public static String describeEntries(ScalarHash hash, String sigil, Set entries)
    {
       StringBuffer buffer = new StringBuffer(sigil + "(");
 
@@ -420,7 +420,14 @@ public class SleepUtils
             buffer.append(next.getKey());
             buffer.append(" => ");
   
-            buffer.append(describe((Scalar)next.getValue()));
+            if (((Scalar)next.getValue()).getHash() == hash)
+            {
+               buffer.append("...");
+            } 
+            else
+            {
+               buffer.append(describe((Scalar)next.getValue()));
+            }
          }
       }
       buffer.append(")");
@@ -440,7 +447,16 @@ public class SleepUtils
          while (i.hasNext())
          {
             Scalar next = (Scalar)i.next();
-            buffer.append(describe(next));
+
+
+            if (scalar.getArray() == next.getArray())
+            { 
+               buffer.append("...");
+            }
+            else
+            {
+               buffer.append(describe(next));
+            }
 
             if (i.hasNext())
             {
