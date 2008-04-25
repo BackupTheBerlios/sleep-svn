@@ -513,6 +513,15 @@ public class CodeGenerator implements ParserConstants
            parseIdea(ParserUtilities.extract(tokens[0]));
            break;
          case EXPR_EVAL_STRING:
+           atom = factory.CreateFrame();
+           add(atom, tokens[0]);
+
+           datum.setType(IDEA_STRING);
+           parse(datum);
+
+           atom = factory.Call("__EXEC__");
+           add(atom, tokens[0]);
+           break;
          case IDEA_STRING: // implemented -- parsed literals, one of my favorite features in sleep
 
            /** create a frame, we assume the PLiteral machine will destroy it */
@@ -526,7 +535,7 @@ public class CodeGenerator implements ParserConstants
            StringBuffer d = new StringBuffer(); // the string buffer where we will dump our results.
 
            PLiteral  machine;
-           machine = (PLiteral)(datum.getType() == EXPR_EVAL_STRING ? factory.PLiteral("%BACKQUOTE%") : factory.PLiteral(null));
+           machine = (PLiteral)factory.PLiteral();
  
            StringIterator si = new StringIterator(ParserUtilities.extract(strings[0]), tokens[0].getHint());
    

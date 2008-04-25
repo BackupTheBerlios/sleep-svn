@@ -39,45 +39,17 @@ import javax.crypto.*;
 import java.security.*;
 
 /** provides IO functions for the sleep language */
-public class BasicIO implements Loadable, Function, Evaluation
+public class BasicIO implements Loadable, Function
 {
     public void scriptUnloaded(ScriptInstance aScript)
     {
-    }
-
-    public Scalar evaluateString(ScriptInstance script, String value)
-    {
-       Scalar rv = SleepUtils.getArrayScalar();
-
-       try
-       { 
-          Process proc  = Runtime.getRuntime().exec(value);
-          BufferedReader reader    = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-
-          String text = null;
-          while ((text = reader.readLine()) != null)
-          {
-             rv.getArray().push(SleepUtils.getScalar(text));
-          }
-
-          if (proc.waitFor() != 0)
-          {
-             script.getScriptEnvironment().flagError("abnormal termination: " + proc.exitValue());
-          }
-       }
-       catch (Exception ex)
-       {
-          script.getScriptEnvironment().flagError(ex);
-       }
-
-       return rv;
     }
 
     public void scriptLoaded (ScriptInstance aScript)
     {
         Hashtable temp = aScript.getScriptEnvironment().getEnvironment();
 
-        temp.put("%BACKQUOTE%", this);
+        temp.put("__EXEC__", this);
 
         // predicates
         temp.put("-eof",     new iseof());
@@ -160,6 +132,33 @@ public class BasicIO implements Loadable, Function, Evaluation
           long    to = BridgeUtilities.getLong(l, 0);
 
           return a.wait(i.getScriptEnvironment(), to);
+       }
+       else if (n.equals("__EXEC__"))
+       {
+          Scalar rv = SleepUtils.getArrayScalar();
+
+          try
+          { 
+             Process proc  = Runtime.getRuntime().exec(BridgeUtilities.getString(l, ""));
+             BufferedReader reader    = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+             String text = null;
+             while ((text = reader.readLine()) != null)
+             {
+                rv.getArray().push(SleepUtils.getScalar(text));
+             }
+
+             if (proc.waitFor() != 0)
+             {
+                i.getScriptEnvironment().flagError("abnormal termination: " + proc.exitValue());
+             }
+          }
+          catch (Exception ex)
+          {
+             i.getScriptEnvironment().flagError(ex);
+          }
+
+          return rv;
        }
        else if (n.equals("&writeObject") || n.equals("&writeAsObject"))
        {

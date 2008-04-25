@@ -76,9 +76,9 @@ public class GeneratedSteps
        return temp;
     }
  
-    public Step PLiteral(String evaluator)
+    public Step PLiteral()
     {
-       Step temp = new PLiteral(evaluator);
+       Step temp = new PLiteral();
        return temp;
     }
 
