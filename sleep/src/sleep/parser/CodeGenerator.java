@@ -514,6 +514,11 @@ public class CodeGenerator implements ParserConstants
            break;
          case EXPR_EVAL_STRING:
          case IDEA_STRING: // implemented -- parsed literals, one of my favorite features in sleep
+
+           /** create a frame, we assume the PLiteral machine will destroy it */
+           atom = factory.CreateFrame();
+           add(atom, tokens[0]);
+           
            boolean isVar = false; // is the current buffer d a varname or not?
 
            String varname, align; // some temp vars we'll use later...
@@ -599,7 +604,7 @@ public class CodeGenerator implements ParserConstants
                   d.append(current);
 
                   String[] ops = LexicalAnalyzer.CreateTerms(parser, new StringIterator(d.toString(), si.getLineNumber())).getStrings();
-                  
+
                   if (ops.length == 3)
                   {
                      // ^--- check if our varref has the form $[whatever]varname
@@ -611,9 +616,8 @@ public class CodeGenerator implements ParserConstants
 
                      if (align.length() > 0)
                      {
-                        backup();
                         parseIdea(new Token(align, si.getLineNumber()));
-                        machine.addFragment(PLiteral.ALIGN_FRAGMENT, restore());
+                        machine.addFragment(PLiteral.ALIGN_FRAGMENT, null);
                      }
                      else
                      {
@@ -625,9 +629,8 @@ public class CodeGenerator implements ParserConstants
                      varname = d.toString();
                   }
 
-                  backup();
                   parseIdea(new Token(varname, si.getLineNumber()));
-                  machine.addFragment(PLiteral.VAR_FRAGMENT, restore());
+                  machine.addFragment(PLiteral.VAR_FRAGMENT, null);
 
                   isVar   = false;
                   d       = new StringBuffer();

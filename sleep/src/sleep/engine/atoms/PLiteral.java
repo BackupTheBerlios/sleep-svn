@@ -30,11 +30,9 @@ public class PLiteral extends Step
               break;
             case ALIGN_FRAGMENT:
               temp.append(prefix + "   [Align Next Value]\n");
-              temp.append(((Block)f.element).toString(prefix+"      ")); 
               break;
             case VAR_FRAGMENT:
               temp.append(prefix + "   [Access Variable]\n");
-              temp.append(((Block)f.element).toString(prefix+"      ")); 
               break;
          }
       }
@@ -88,8 +86,6 @@ public class PLiteral extends Step
 
    private String buildString(ScriptEnvironment e)
    {
-      e.CreateFrame();
-
       StringBuffer result = new StringBuffer();
       int          align  = 0;
 
@@ -106,12 +102,10 @@ public class PLiteral extends Step
               result.append(f.element);
               break;
             case ALIGN_FRAGMENT:
-              ((Block)f.element).evaluate(e);
-              align = ((Scalar)e.getCurrentFrame().pop()).getValue().intValue();
+              align = ((Scalar)e.getCurrentFrame().remove(0)).getValue().intValue();
               break;
             case VAR_FRAGMENT:
-              ((Block)f.element).evaluate(e);
-              temp  = ((Scalar)e.getCurrentFrame().pop()).getValue().toString();
+              temp  = ((Scalar)e.getCurrentFrame().remove(0)).getValue().toString();
 
               for (int z = 0 - temp.length(); z > align; z--)
               {
