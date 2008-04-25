@@ -55,7 +55,8 @@ public class CodeGenerator implements ParserConstants
    protected Block CURRENT_BLOCK;
    protected Stack BACKUP_BLOCKS;
 
-   protected Parser parser;
+   protected GeneratedSteps factory; /* allow specification of a factory for generating steps */
+   protected Parser         parser;
 
    protected static HashMap escape_constants = new HashMap();
 
@@ -96,12 +97,18 @@ public class CodeGenerator implements ParserConstants
       return temp;
    }
 
-   public CodeGenerator(Parser _parser)
+   public CodeGenerator(Parser _parser, GeneratedSteps _factory)
    {
       parser = _parser;
+      factory = _factory != null ? _factory : new GeneratedSteps();
 
       CURRENT_BLOCK = new Block(parser.getName());
       BACKUP_BLOCKS = new Stack();
+   }
+
+   public CodeGenerator(Parser _parser)
+   {
+       this(_parser, null);
    }
 
    public Check parsePredicate(Token data)
@@ -142,7 +149,7 @@ public class CodeGenerator implements ParserConstants
            parseIdea(tokens[0]);
            parseIdea(tokens[2]);
 
-           tempc = GeneratedSteps.Check(strings[1], restore()); // a KillFrame is implied here
+           tempc = factory.Check(strings[1], restore()); // a KillFrame is implied here
            tempc.setInfo(tokens[1].getHint());
 
            return tempc;
@@ -151,7 +158,7 @@ public class CodeGenerator implements ParserConstants
 
            parseIdea(tokens[1]);
              
-           tempc = GeneratedSteps.Check(strings[0], restore());
+           tempc = factory.Check(strings[0], restore());
            tempc.setInfo(tokens[0].getHint());
 
            return tempc;
@@ -232,7 +239,7 @@ public class CodeGenerator implements ParserConstants
        switch (datum.getType())
        {
          case OBJECT_NEW:
-           atom = GeneratedSteps.CreateFrame();
+           atom = factory.CreateFrame();
            add(atom, tokens[0]);
 
            if (tokens.length > 1)
@@ -245,11 +252,11 @@ public class CodeGenerator implements ParserConstants
            if (aClass == null)
               parser.reportError("Class " + strings[0] + " was not found", tokens[0]);
 
-           atom    = GeneratedSteps.ObjectNew(aClass);
+           atom    = factory.ObjectNew(aClass);
            add(atom, tokens[0]);
            break;
         case OBJECT_CL_CALL: 
-           atom = GeneratedSteps.CreateFrame();
+           atom = factory.CreateFrame();
            add(atom, tokens[0]);
 
            if (tokens.length > 1)
@@ -259,11 +266,11 @@ public class CodeGenerator implements ParserConstants
 
            parseIdea(tokens[0]);
 
-           atom    = GeneratedSteps.ObjectAccess(null);
+           atom    = factory.ObjectAccess(null);
            add(atom, tokens[0]);
            break;
         case OBJECT_ACCESS:
-           atom = GeneratedSteps.CreateFrame();
+           atom = factory.CreateFrame();
            add(atom, tokens[0]);
 
            if (tokens.length > 2)
@@ -273,11 +280,11 @@ public class CodeGenerator implements ParserConstants
 
            parseIdea(tokens[0]);
 
-           atom    = GeneratedSteps.ObjectAccess(strings[1]);
+           atom    = factory.ObjectAccess(strings[1]);
            add(atom, tokens[0]);
            break;
          case OBJECT_ACCESS_S:
-           atom = GeneratedSteps.CreateFrame();
+           atom = factory.CreateFrame();
            add(atom, tokens[0]);
 
            if (tokens.length > 2)
@@ -290,7 +297,7 @@ public class CodeGenerator implements ParserConstants
            if (aClass == null)
               parser.reportError("Class " + strings[0] + " was not found", tokens[0]);
            
-           atom = GeneratedSteps.ObjectAccessStatic(aClass, strings[1]);
+           atom = factory.ObjectAccessStatic(aClass, strings[1]);
            add(atom, tokens[0]);
            break;
        }
@@ -353,24 +360,24 @@ public class CodeGenerator implements ParserConstants
        switch (datum.getType())
        {
          case VALUE_SCALAR_REFERENCE:
-           atom = GeneratedSteps.CreateFrame();
+           atom = factory.CreateFrame();
            add(atom, tokens[0]);
 
-           atom = GeneratedSteps.Get(strings[0].substring(1)); /* generate rhs with scalar value */
+           atom = factory.Get(strings[0].substring(1)); /* generate rhs with scalar value */
            add(atom, tokens[0]);
 
            ascalar = SleepUtils.getScalar(strings[0].substring(1)); /* generate lhs string scalar with var name */
-           atom    = GeneratedSteps.SValue(ascalar);
+           atom    = factory.SValue(ascalar);
            add(atom, tokens[0]);
 
-           atom = GeneratedSteps.Operate("=>");
+           atom = factory.Operate("=>");
            add(atom, tokens[0]);
            break;
          case IDEA_HASH_PAIR:
            //
            // parsing A => B
            //
-           atom = GeneratedSteps.CreateFrame();
+           atom = factory.CreateFrame();
            add(atom, tokens[2]);
 
            //
@@ -382,20 +389,20 @@ public class CodeGenerator implements ParserConstants
            // parse A - or just push it onto the stack as a literal token :)
            //
            ascalar = SleepUtils.getScalar(strings[0]);
-           atom    = GeneratedSteps.SValue(ascalar);
+           atom    = factory.SValue(ascalar);
            add(atom, tokens[0]);
 
            //
            // parse operator
            //
-           atom = GeneratedSteps.Operate(strings[1]);
+           atom = factory.Operate(strings[1]);
            add(atom, tokens[1]);
            break;
          case IDEA_OPER:
            //
            // parsing A operator B
            //
-           atom = GeneratedSteps.CreateFrame();
+           atom = factory.CreateFrame();
            add(atom, tokens[2]);
 
            //
@@ -411,7 +418,7 @@ public class CodeGenerator implements ParserConstants
            //
            // parse operator
            //
-           atom = GeneratedSteps.Operate(strings[1]);
+           atom = factory.Operate(strings[1]);
            add(atom, tokens[1]);
            break;
          case IDEA_EXPR_I:
@@ -434,7 +441,7 @@ public class CodeGenerator implements ParserConstants
            }
 
            ascalar = SleepUtils.getScalar(sb.toString());
-           atom    = GeneratedSteps.SValue(ascalar);
+           atom    = factory.SValue(ascalar);
            add(atom, tokens[0]);
            break;
          case IDEA_NUMBER:                         // implemented
@@ -447,17 +454,17 @@ public class CodeGenerator implements ParserConstants
               ascalar = SleepUtils.getScalar(Integer.decode(strings[0]).intValue());
            }
 
-           atom    = GeneratedSteps.SValue(ascalar);
+           atom    = factory.SValue(ascalar);
            add(atom, tokens[0]);
            break;
          case IDEA_DOUBLE:                         // implemented
            ascalar = SleepUtils.getScalar(Double.parseDouble(strings[0]));
-           atom    = GeneratedSteps.SValue(ascalar);
+           atom    = factory.SValue(ascalar);
            add(atom, tokens[0]);
            break;
          case IDEA_BOOLEAN:                         // implemented
            ascalar = SleepUtils.getScalar(Boolean.valueOf(strings[0]).booleanValue());
-           atom    = GeneratedSteps.SValue(ascalar);
+           atom    = factory.SValue(ascalar);
            add(atom, tokens[0]);
            break;
          case IDEA_CLASS:
@@ -470,7 +477,7 @@ public class CodeGenerator implements ParserConstants
            else
            {          
               ascalar = SleepUtils.getScalar(parser.findImportedClass(strings[0].substring(1)));
-              atom    = GeneratedSteps.SValue(ascalar);
+              atom    = factory.SValue(ascalar);
               add(atom, tokens[0]);
            }
            break;
@@ -478,12 +485,12 @@ public class CodeGenerator implements ParserConstants
            if (strings[0].equals("$null"))
            {
               ascalar = SleepUtils.getEmptyScalar();
-              atom    = GeneratedSteps.SValue(ascalar);
+              atom    = factory.SValue(ascalar);
               add(atom, tokens[0]);
            }
            else
            {
-              atom = GeneratedSteps.Get(strings[0]);
+              atom = factory.Get(strings[0]);
               add(atom, tokens[0]);
            }
            break;
@@ -494,11 +501,11 @@ public class CodeGenerator implements ParserConstants
            {         
               backup();
 
-              atom = GeneratedSteps.CreateFrame();
+              atom = factory.CreateFrame();
               add(atom, tokens[0]);
               parseIdea(ParserUtilities.extract(tokens[z]));
 
-              atom = GeneratedSteps.Index(strings[0], restore());
+              atom = factory.Index(strings[0], restore());
               add(atom, tokens[0]);
            }
            break;
@@ -514,7 +521,7 @@ public class CodeGenerator implements ParserConstants
            StringBuffer d = new StringBuffer(); // the string buffer where we will dump our results.
 
            PLiteral  machine;
-           machine = (PLiteral)(datum.getType() == EXPR_EVAL_STRING ? GeneratedSteps.PLiteral("%BACKQUOTE%") : GeneratedSteps.PLiteral(null));
+           machine = (PLiteral)(datum.getType() == EXPR_EVAL_STRING ? factory.PLiteral("%BACKQUOTE%") : factory.PLiteral(null));
  
            StringIterator si = new StringIterator(ParserUtilities.extract(strings[0]), tokens[0].getHint());
    
@@ -688,7 +695,7 @@ public class CodeGenerator implements ParserConstants
            //
            backup();
            parseBlock(tokens[2]);
-           atom = GeneratedSteps.BindPredicate(strings[0], parsePredicate(ParserUtilities.extract(tokens[1])), restore());
+           atom = factory.BindPredicate(strings[0], parsePredicate(ParserUtilities.extract(tokens[1])), restore());
            add(atom, tokens[0]);
            break; 
          case EXPR_BIND_FILTER:
@@ -700,7 +707,7 @@ public class CodeGenerator implements ParserConstants
            parseBlock(tokens[3]);
            b = restore();
 
-           atom = GeneratedSteps.BindFilter(strings[0], strings[1], b, strings[2]);
+           atom = factory.BindFilter(strings[0], strings[1], b, strings[2]);
            add(atom, tokens[0]);
            break; 
          case EXPR_BIND: // implemented
@@ -722,7 +729,7 @@ public class CodeGenerator implements ParserConstants
  
            backup();
            parseBlock(tokens[2]);
-           atom = GeneratedSteps.Bind(strings[0], nameBlock, restore());
+           atom = factory.Bind(strings[0], nameBlock, restore());
            add(atom, tokens[0]);
            break; 
          case EXPR_TRYCATCH: 
@@ -737,7 +744,7 @@ public class CodeGenerator implements ParserConstants
            parseBlock(ParserUtilities.extract(tokens[1]));
 
               /* pop the handler */
-           atom = GeneratedSteps.PopTry();
+           atom = factory.PopTry();
            add(atom, tokens[4]);
 
            a = restore();
@@ -746,7 +753,7 @@ public class CodeGenerator implements ParserConstants
            backup();
 
               /* pop the handler [ensure this happens first thing in our handler block] */
-           atom = GeneratedSteps.PopTry();
+           atom = factory.PopTry();
            add(atom, tokens[4]);
 
               /* parse the handler */
@@ -755,7 +762,7 @@ public class CodeGenerator implements ParserConstants
            b = restore();
 
            // add this try/catch bits to the current block
-           atom = GeneratedSteps.Try(a, b, strings[3]);
+           atom = factory.Try(a, b, strings[3]);
            add(atom, tokens[0]);
            break;
          case EXPR_BLOCK:  // implemented
@@ -766,7 +773,7 @@ public class CodeGenerator implements ParserConstants
 
            parseBlock(ParserUtilities.extract(tokens[0]));
 
-           atom    = GeneratedSteps.CreateClosure(restore());
+           atom    = factory.CreateClosure(restore());
            add(atom, tokens[0]);
            break;
          case IDEA_FUNC: // implemented 
@@ -807,38 +814,38 @@ public class CodeGenerator implements ParserConstants
               }
               b = restore();
 
-              atom = GeneratedSteps.Decide(parsePredicate(termsAr[0]), a, b);
+              atom = factory.Decide(parsePredicate(termsAr[0]), a, b);
               add(atom, tokens[0]); 
            }
            else if (tokens.length > 1)
            {
-              atom = GeneratedSteps.CreateFrame();
+              atom = factory.CreateFrame();
               add(atom, tokens[0]);
 
               /* if we're dealing with the warn function, sneak the current line number in as an argument. */
               if (strings[0].equals("&warn"))
               {
-                 atom    = GeneratedSteps.SValue(SleepUtils.getScalar(tokens[0].getHint()));
+                 atom    = factory.SValue(SleepUtils.getScalar(tokens[0].getHint()));
                  add(atom, tokens[0]);
               }
 
               parseParameters(ParserUtilities.extract(tokens[1]));
 
-              atom = GeneratedSteps.Call(strings[0]);
+              atom = factory.Call(strings[0]);
               add(atom, tokens[0]);
            }
            else
            {
               // retrieve a function literal... 
 
-              atom = GeneratedSteps.Get(strings[0]);
+              atom = factory.Get(strings[0]);
               add(atom, tokens[0]);
            }
            break;
          case EXPR_WHILE:                                        // done
            backup();
            parseBlock(tokens[2]);    
-           atom = GeneratedSteps.Goto(parsePredicate(ParserUtilities.extract(tokens[1])), restore(), null);
+           atom = factory.Goto(parsePredicate(ParserUtilities.extract(tokens[1])), restore(), null);
            add(atom, tokens[1]);
            break;
          case EXPR_WHILE_SPECIAL:                                        // done
@@ -859,7 +866,7 @@ public class CodeGenerator implements ParserConstants
            // 1 = $var
            // 2 = (expression) to assign, you know?!?
 
-           atom = GeneratedSteps.CreateFrame();
+           atom = factory.CreateFrame();
            add(atom, tokens[2]);
 
            parseIdea(tokens[2]);
@@ -867,27 +874,27 @@ public class CodeGenerator implements ParserConstants
            backup();
            parseIdea(tokens[1]);
 
-           atom = GeneratedSteps.Assign(restore());
+           atom = factory.Assign(restore());
            add(atom, tokens[2]);
 
            // end assign...
            
            // push $null onto the current frame as well...
-           add(GeneratedSteps.SValue(SleepUtils.getEmptyScalar()), tokens[2]); // for comparisons sake
+           add(factory.SValue(SleepUtils.getEmptyScalar()), tokens[2]); // for comparisons sake
 
            a = restore();
 
            // dew the lewp while the assigned value is not $null
-           tempp = GeneratedSteps.Check("!is", a);
+           tempp = factory.Check("!is", a);
            tempp.setInfo(tokens[1].getHint());
 
-           atom = GeneratedSteps.Goto(tempp, b, null);
+           atom = factory.Goto(tempp, b, null);
            add(atom, tokens[1]);
 
            break;
          case EXPR_ASSIGNMENT_T:                                  // implemented
          case EXPR_ASSIGNMENT_T_OP:
-           atom = GeneratedSteps.CreateFrame();
+           atom = factory.CreateFrame();
            add(atom, tokens[0]);
 
            TokenList terms2 = ParserUtilities.groupByParameterTerm(parser, ParserUtilities.extract(tokens[0]));
@@ -902,17 +909,17 @@ public class CodeGenerator implements ParserConstants
 
            if (datum.getType() == EXPR_ASSIGNMENT_T_OP)
            {
-              atom = GeneratedSteps.AssignTupleAndOperate(strings[1].substring(0, strings[1].length() - 1));
+              atom = factory.AssignTupleAndOperate(strings[1].substring(0, strings[1].length() - 1));
            }
            else
            {
-              atom = GeneratedSteps.AssignT();
+              atom = factory.AssignT();
            }
            add(atom, tokens[0]);
            break;
          case EXPR_ASSIGNMENT:                                  // implemented
          case EXPR_ASSIGNMENT_OP:                                  // implemented
-           atom = GeneratedSteps.CreateFrame();
+           atom = factory.CreateFrame();
            add(atom, tokens[2]);
 
            parseIdea(tokens[2]);
@@ -922,11 +929,11 @@ public class CodeGenerator implements ParserConstants
 
            if (datum.getType() == EXPR_ASSIGNMENT_OP)
            {
-              atom = GeneratedSteps.AssignAndOperate(restore(), strings[1].substring(0, strings[1].length() - 1));
+              atom = factory.AssignAndOperate(restore(), strings[1].substring(0, strings[1].length() - 1));
            }
            else
            {
-              atom = GeneratedSteps.Assign(restore());
+              atom = factory.Assign(restore());
            }
            add(atom, tokens[2]);
            break;
@@ -955,7 +962,7 @@ public class CodeGenerator implements ParserConstants
            }
            b = restore();
 
-           atom = GeneratedSteps.Decide(parsePredicate(ParserUtilities.extract(tokens[1])), a, b);
+           atom = factory.Decide(parsePredicate(ParserUtilities.extract(tokens[1])), a, b);
            add(atom, tokens[1]); 
            break;
          case EXPR_FOREACH_SPECIAL:
@@ -977,18 +984,18 @@ public class CodeGenerator implements ParserConstants
            //
            // setup our frame with the value, possibly the key,  and the source
            //
-           atom = GeneratedSteps.CreateFrame();
+           atom = factory.CreateFrame();
            add(atom, tokens[0]);
 
            if (datum.getType() == EXPR_FOREACH)
            {
               parseIdea(ParserUtilities.extract(tokens[2])); // parse the "source" of the foreach
-              atom = GeneratedSteps.IteratorCreate(null, strings[1]);
+              atom = factory.IteratorCreate(null, strings[1]);
            }
            else
            {
               parseIdea(ParserUtilities.extract(tokens[4])); // parse the "source" of the foreach
-              atom = GeneratedSteps.IteratorCreate(strings[1], strings[3]);
+              atom = factory.IteratorCreate(strings[1], strings[3]);
            }
            add(atom, tokens[0]);
 
@@ -1013,22 +1020,22 @@ public class CodeGenerator implements ParserConstants
            //
            backup();
 
-           atom = GeneratedSteps.IteratorNext();
+           atom = factory.IteratorNext();
            add(atom, tokens[0]);
              
-           tempp = GeneratedSteps.Check("-istrue", restore());
+           tempp = factory.Check("-istrue", restore());
            tempp.setInfo(tokens[0].getHint());
 
            //
            // add our looping mechanism (everyone loves this part, eh!?!)
            //
-           atom = GeneratedSteps.Goto(tempp, a, null);
+           atom = factory.Goto(tempp, a, null);
            add(atom, tokens[1]);
 
            //
            // add our mechanism for destroying the iterator...
            //
-           atom = GeneratedSteps.IteratorDestroy();
+           atom = factory.IteratorDestroy();
            add(atom, tokens[1]);
            break; 
          case EXPR_FOR:
@@ -1093,7 +1100,7 @@ public class CodeGenerator implements ParserConstants
            //
            // setup our goto object..
            // 
-           atom = GeneratedSteps.Goto(parsePredicate(extracted_terms[1]), b, a);
+           atom = factory.Goto(parsePredicate(extracted_terms[1]), b, a);
            add(atom, tokens[1]);
            break;
          case OBJECT_IMPORT:
@@ -1138,13 +1145,13 @@ public class CodeGenerator implements ParserConstants
            Token assert_terms[] = ParserUtilities.groupByMessageTerm(parser, tokens[1]).getTokens();
            
            backup();
-              atom = GeneratedSteps.CreateFrame();
+              atom = factory.CreateFrame();
               add(atom, tokens[0]);
 
               if (assert_terms.length == 1)
               {
                  ascalar = SleepUtils.getScalar("assertion failed");
-                 atom    = GeneratedSteps.SValue(ascalar);
+                 atom    = factory.SValue(ascalar);
                  add(atom, tokens[0]);
               }
               else
@@ -1152,15 +1159,15 @@ public class CodeGenerator implements ParserConstants
                  parseIdea(assert_terms[1]);
               }
 
-              atom = GeneratedSteps.Call("&exit");
+              atom = factory.Call("&exit");
               add(atom, tokens[0]);
            b = restore();
 
-           atom = GeneratedSteps.Decide(parsePredicate(assert_terms[0]), null, b);
+           atom = factory.Decide(parsePredicate(assert_terms[0]), null, b);
            add(atom, tokens[1]);
            break;
          case EXPR_RETURN:                     // implemented
-           atom = GeneratedSteps.CreateFrame();
+           atom = factory.CreateFrame();
            add(atom, tokens[0]);
 
            if (strings[0].equals("done"))
@@ -1182,22 +1189,22 @@ public class CodeGenerator implements ParserConstants
 
            if (strings[0].equals("break"))
            {
-              atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_BREAK);
+              atom = factory.Return(ScriptEnvironment.FLOW_CONTROL_BREAK);
               add(atom, tokens[0]);
            }
            else if (strings[0].equals("continue"))
            {
-              atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_CONTINUE);
+              atom = factory.Return(ScriptEnvironment.FLOW_CONTROL_CONTINUE);
               add(atom, tokens[0]);
            }
            else if (strings[0].equals("throw"))
            {
-              atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_THROW);
+              atom = factory.Return(ScriptEnvironment.FLOW_CONTROL_THROW);
               add(atom, tokens[0]);
            }
            else if (strings[0].equals("yield"))
            {
-              atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_YIELD);
+              atom = factory.Return(ScriptEnvironment.FLOW_CONTROL_YIELD);
               add(atom, tokens[0]);
 
               /* for some reason, yield breaks in certain cases if a yield happens
@@ -1206,7 +1213,7 @@ public class CodeGenerator implements ParserConstants
                  to combat the problem I've opted to introduce a null operation
                  after each yield, this fixes the problem.  hopefully it doesn't
                  show itself in some other way in the future.  :~( *cry* */
-//              atom = GeneratedSteps.NullOperation();
+//              atom = factory.NullOperation();
 //              add(atom, tokens[0]);
 
               /* I've modified the evaluateOldContext method of ScriptEnvironment
@@ -1220,12 +1227,12 @@ public class CodeGenerator implements ParserConstants
            }
            else if (strings[0].equals("callcc"))
            {
-              atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_CALLCC);
+              atom = factory.Return(ScriptEnvironment.FLOW_CONTROL_CALLCC);
               add(atom, tokens[0]);
            }
            else
            {
-              atom = GeneratedSteps.Return(ScriptEnvironment.FLOW_CONTROL_RETURN);
+              atom = factory.Return(ScriptEnvironment.FLOW_CONTROL_RETURN);
               add(atom, tokens[0]);
            }
            break;

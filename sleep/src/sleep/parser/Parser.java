@@ -68,7 +68,7 @@ public class Parser
    protected LinkedList statements = new LinkedList(); /** a list of all of the statements */
 
    protected Block      executeMe;  // runnable block   
-
+ 
    public    char       EndOfTerm  = ';';
 
    protected ImportManager imports;
