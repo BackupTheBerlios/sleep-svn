@@ -29,9 +29,9 @@ import sleep.runtime.*;
 
 public class AssignT extends Step
 {
-   protected Operate operator;
+   protected Step operator;
 
-   public AssignT(Operate op)
+   public AssignT(Step op)
    {
       operator = op;
    }

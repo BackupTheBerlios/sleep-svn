@@ -30,9 +30,9 @@ import sleep.runtime.*;
 public class Assign extends Step
 {
    Block   variable = null;
-   Operate operator = null;
+   Step    operator = null;
     
-   public Assign(Block var, Operate op)
+   public Assign(Block var, Step op)
    {
       operator = op;
       variable = var;
