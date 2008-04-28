@@ -183,7 +183,7 @@ public class Scalar implements Serializable
    {
       if (this.getArray() != null) { return array; }
       if (this.getHash() != null) { return hash; }
-      if (value.getClass() == sleep.engine.types.ObjectValue.class) { return this.objectValue(); }
+      if (value.getType() == sleep.engine.types.ObjectValue.class) { return this.objectValue(); }
       return this.toString();
    }
  
@@ -201,7 +201,7 @@ public class Scalar implements Serializable
       }
       else if (this.getActualValue() != null && other.getActualValue() != null)
       {
-         if (this.getActualValue().getClass() == sleep.engine.types.ObjectValue.class || other.getActualValue().getClass() == sleep.engine.types.ObjectValue.class)
+         if (this.getActualValue().getType() == sleep.engine.types.ObjectValue.class || other.getActualValue().getType() == sleep.engine.types.ObjectValue.class)
          {
             return (this.objectValue() == other.objectValue());
          }

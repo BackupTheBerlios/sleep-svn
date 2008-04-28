@@ -9,13 +9,11 @@ import java.io.Serializable;
 
 public class PLiteral extends Step
 {
-   String evaluator;
-
    public String toString(String prefix)
    {
       StringBuffer temp = new StringBuffer();
       temp.append(prefix);
-      temp.append("[Parsed Literal]  "+evaluator+"\n");
+      temp.append("[Parsed Literal] ");
 
       Iterator i = fragments.iterator();
 
@@ -26,42 +24,27 @@ public class PLiteral extends Step
          switch (f.type)
          {
             case STRING_FRAGMENT:
-              temp.append(prefix + "   [String]: " + f.element + "\n");
+              temp.append(f.element);
               break;
             case ALIGN_FRAGMENT:
-              temp.append(prefix + "   [Align Next Value]\n");
+              temp.append("[:align:]");
               break;
             case VAR_FRAGMENT:
-              temp.append(prefix + "   [Access Variable]\n");
+              temp.append("[:var:]");
               break;
          }
       }
 
-      return temp.toString();
-   }
+      temp.append("\n");
 
-   public PLiteral(String _evaluator)
-   {
-       evaluator = _evaluator;
+      return temp.toString();
    }
 
    public Scalar evaluate(ScriptEnvironment e)
    {
-      String value = buildString(e);
-      Scalar rv;
-
-      if (evaluator != null && e.getEnvironment().get(evaluator) != null)
-      {
-         Evaluation temp = (Evaluation)e.getEnvironment().get(evaluator);
-         rv = temp.evaluateString(e.getScriptInstance(), value);
-      }
-      else
-      {
-         rv = SleepUtils.getScalar(value);
-      }
-
-      e.getCurrentFrame().push(rv);
-      return rv;
+      Scalar value = SleepUtils.getScalar(buildString(e));
+      e.getCurrentFrame().push(value);
+      return value;
    }
 
    public static final int STRING_FRAGMENT = 1;
@@ -74,14 +57,22 @@ public class PLiteral extends Step
       public int    type;
    }
 
-   private List fragments = new LinkedList();
+   private List fragments;
 
-   public void addFragment(int type, Object element)
+   /** requires a list of parsed literal fragments to use when constructing the final string at runtime */
+   public PLiteral(List f)
+   {
+      fragments = f;
+   }
+
+   /** create a fragment for interpretation by this parsed literal step */
+   public static Fragment fragment(int type, Object element)
    {
       Fragment f = new Fragment();
       f.element  = element;
       f.type     = type;
-      fragments.add(f);
+
+      return f;
    }
 
    private String buildString(ScriptEnvironment e)

@@ -37,6 +37,8 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
 import java.util.*;
 
+import sleep.taint.*;
+
 /**
  * <p>The ScriptLoader is a convienence container for instantiating and managing ScriptInstances.</p>
  *
@@ -367,6 +369,12 @@ public class ScriptLoader
         else 
         {
             Parser temp = new Parser(name, code);
+ 
+            if (TaintUtils.isTaintMode())
+            {
+               temp.setCodeFactory(new TaintModeGeneratedSteps());
+            }
+
             temp.parse();
 
             if (BLOCK_CACHE != null)

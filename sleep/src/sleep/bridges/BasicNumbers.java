@@ -42,6 +42,8 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
     {
        Hashtable temp = aScript.getScriptEnvironment().getEnvironment();
 
+       Object sanitized = sleep.taint.TaintUtils.Sanitizer(this);
+
        // math ops..
 
        String funcs[] = new String[] { "&abs", "&acos", "&asin", "&atan", "&atan2", "&ceil", "&cos", "&log", "&round", 
@@ -49,37 +51,37 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
 
        for (int x = 0; x < funcs.length; x++)
        {
-          temp.put(funcs[x], this);
+          temp.put(funcs[x], sanitized);
        }
 
        // functions
-       temp.put("&double", this);
-       temp.put("&int", this);
-       temp.put("&uint", this);
-       temp.put("&long", this);
+       temp.put("&double", sanitized);
+       temp.put("&int", sanitized);
+       temp.put("&uint", sanitized);
+       temp.put("&long", sanitized);
 
-       temp.put("&parseNumber",  this);
-       temp.put("&formatNumber", this);
+       temp.put("&parseNumber",  sanitized);
+       temp.put("&formatNumber", sanitized);
 
        // basic operators
-       temp.put("+", this);
-       temp.put("-", this);
-       temp.put("/", this);
-       temp.put("*", this);
-       temp.put("**", this); // exponentation
+       temp.put("+", sanitized);
+       temp.put("-", sanitized);
+       temp.put("/", sanitized);
+       temp.put("*", sanitized);
+       temp.put("**", sanitized); // exponentation
 
        /* why "% "?  we had an amibiguity with %() to initialize hash literals and n % (expr) 
           for normal math ops.  the initial parser in the case of mod will preserve one bit of
           whitespace to try to prevent mass hysteria and confusion to the parser for determining
           wether an op is being used or a hash literal is being initialized */
-       temp.put("% ", this);
+       temp.put("% ", sanitized);
 
-       temp.put("<<", this);
-       temp.put(">>", this);
-       temp.put("&", this);
-       temp.put("|", this);
-       temp.put("^", this);
-       temp.put("&not", this);
+       temp.put("<<", sanitized);
+       temp.put(">>", sanitized);
+       temp.put("&", sanitized);
+       temp.put("|", sanitized);
+       temp.put("^", sanitized);
+       temp.put("&not", sanitized);
  
        // predicates
        temp.put("==", this);
@@ -91,8 +93,8 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        temp.put("is", this);
 
        // functions
-       temp.put("&rand", this);
-       temp.put("&srand", this);
+       temp.put("&rand", sanitized);
+       temp.put("&srand", sanitized);
     }
 
     public Scalar evaluate(String name, ScriptInstance si, Stack args)
@@ -132,7 +134,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        else if (name.equals("&not")) {
            ScalarType sa = ((Scalar)args.pop()).getActualValue(); /* we already assume this is a number */
 
-           if (sa.getClass() == IntValue.class)
+           if (sa.getType() == IntValue.class)
                return SleepUtils.getScalar(~ sa.intValue());
 
            return SleepUtils.getScalar(~ sa.longValue());
@@ -228,7 +230,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        ScalarType sb = vb.getActualValue();
        ScalarType sa = va.getActualValue();
 
-       if (sa.getClass() == DoubleValue.class || sb.getClass() == DoubleValue.class)
+       if (sa.getType() == DoubleValue.class || sb.getType() == DoubleValue.class)
        {
           double a = sa.doubleValue();
           double b = sb.doubleValue();
@@ -240,7 +242,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
           if (n.equals("<"))  { return a <  b; }
           if (n.equals(">"))  { return a >  b; }
        }
-       else if (sa.getClass() == LongValue.class || sb.getClass() == LongValue.class)
+       else if (sa.getType() == LongValue.class || sb.getType() == LongValue.class)
        {
           long a = sa.longValue();
           long b = sb.longValue();
@@ -273,7 +275,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        ScalarType left  = ((Scalar)locals.pop()).getActualValue();
        ScalarType right = ((Scalar)locals.pop()).getActualValue();
 
-       if ((right.getClass() == DoubleValue.class || left.getClass() == DoubleValue.class) && !(o.equals(">>") || o.equals("<<") || o.equals("&") || o.equals("|") || o.equals("^")))
+       if ((right.getType() == DoubleValue.class || left.getType() == DoubleValue.class) && !(o.equals(">>") || o.equals("<<") || o.equals("&") || o.equals("|") || o.equals("^")))
        {
           double a = left.doubleValue();
           double b = right.doubleValue();
@@ -285,7 +287,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
           if (o.equals("% ")) { return SleepUtils.getScalar(a % b); }
           if (o.equals("**")) { return SleepUtils.getScalar(Math.pow((double)a, (double)b)); }
        }
-       else if (right.getClass() == LongValue.class || left.getClass() == LongValue.class)
+       else if (right.getType() == LongValue.class || left.getType() == LongValue.class)
        {
           long a = left.longValue();
           long b = right.longValue();

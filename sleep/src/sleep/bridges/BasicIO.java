@@ -38,6 +38,8 @@ import java.util.zip.*;
 import javax.crypto.*;
 import java.security.*;
 
+import sleep.taint.*;
+
 /** provides IO functions for the sleep language */
 public class BasicIO implements Loadable, Function
 {
@@ -49,19 +51,19 @@ public class BasicIO implements Loadable, Function
     {
         Hashtable temp = aScript.getScriptEnvironment().getEnvironment();
 
-        temp.put("__EXEC__", this);
+        temp.put("__EXEC__", TaintUtils.Tainter(TaintUtils.Sensitive(this)));
 
         // predicates
         temp.put("-eof",     new iseof());
 
         // functions
-        temp.put("&openf",      new openf());
+        temp.put("&openf",      TaintUtils.Sensitive(new openf()));
 
         SocketFuncs f = new SocketFuncs();
 
-        temp.put("&connect",    f);
+        temp.put("&connect",    TaintUtils.Sensitive(f));
         temp.put("&listen",     f);
-        temp.put("&exec",       new exec());
+        temp.put("&exec",       TaintUtils.Sensitive(new exec()));
         temp.put("&fork",       new fork());
         temp.put("&allocate",   this);
 
@@ -71,22 +73,22 @@ public class BasicIO implements Loadable, Function
 
         // ascii'sh read functions
         temp.put("&read",       new read());
-        temp.put("&readln",     new readln());
-        temp.put("&readAll",    new readAll());
-        temp.put("&readc",      this);
+        temp.put("&readln",     TaintUtils.Tainter(new readln()));
+        temp.put("&readAll",    TaintUtils.Tainter(new readAll()));
+        temp.put("&readc",      TaintUtils.Tainter(this));
 
         // binary i/o functions :)
-        temp.put("&readb",      new readb());
+        temp.put("&readb",      TaintUtils.Tainter(new readb()));
         temp.put("&consume",    new consume());
         temp.put("&writeb",     new writeb());
 
-        temp.put("&bread",      new bread());
+        temp.put("&bread",      TaintUtils.Tainter(new bread()));
         temp.put("&bwrite",     new bwrite());
 
         // object io functions
-        temp.put("&readObject",      this);
+        temp.put("&readObject",      TaintUtils.Tainter(this));
         temp.put("&writeObject",     this);
-        temp.put("&readAsObject",      this);
+        temp.put("&readAsObject",      TaintUtils.Tainter(this));
         temp.put("&writeAsObject",     this);
         temp.put("&sizeof", this);
 

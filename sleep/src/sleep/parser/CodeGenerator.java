@@ -351,6 +351,7 @@ public class CodeGenerator implements ParserConstants
        Check    tempp;
 
        Iterator i;
+       List     ll;
        String   mutilate; // mutilate this string as I see fit...
        StringBuffer sb;  
 
@@ -534,9 +535,7 @@ public class CodeGenerator implements ParserConstants
            
            StringBuffer d = new StringBuffer(); // the string buffer where we will dump our results.
 
-           PLiteral  machine;
-           machine = (PLiteral)factory.PLiteral();
- 
+           ll = new LinkedList();
            StringIterator si = new StringIterator(ParserUtilities.extract(strings[0]), tokens[0].getHint());
    
            while (si.hasNext())
@@ -626,7 +625,7 @@ public class CodeGenerator implements ParserConstants
                      if (align.length() > 0)
                      {
                         parseIdea(new Token(align, si.getLineNumber()));
-                        machine.addFragment(PLiteral.ALIGN_FRAGMENT, null);
+                        ll.add(PLiteral.fragment(PLiteral.ALIGN_FRAGMENT, null));
                      }
                      else
                      {
@@ -639,14 +638,14 @@ public class CodeGenerator implements ParserConstants
                   }
 
                   parseIdea(new Token(varname, si.getLineNumber()));
-                  machine.addFragment(PLiteral.VAR_FRAGMENT, null);
+                  ll.add(PLiteral.fragment(PLiteral.VAR_FRAGMENT, null));
 
                   isVar   = false;
                   d       = new StringBuffer();
               }
               else if (current == '$' && !Checkers.isEndOfVar(si.peek()) && si.hasNext())
               {
-                  machine.addFragment(PLiteral.STRING_FRAGMENT, d.toString());
+                  ll.add(PLiteral.fragment(PLiteral.STRING_FRAGMENT, d.toString()));
                   d = new StringBuffer();
                   d.append('$');
 
@@ -685,10 +684,11 @@ public class CodeGenerator implements ParserConstants
               }
 
               if (!si.hasNext() && d.length() > 0)
-                 machine.addFragment(PLiteral.STRING_FRAGMENT, d.toString());
+                 ll.add(PLiteral.fragment(PLiteral.STRING_FRAGMENT, d.toString()));
            }
 
-           add(machine, tokens[0]);
+           atom = factory.PLiteral(ll);
+           add(atom, tokens[0]);
            break;
          case HACK_INC: // implemented
            mutilate = strings[0].substring(0, strings[0].length() - 2);

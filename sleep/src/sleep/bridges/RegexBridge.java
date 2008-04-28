@@ -31,6 +31,8 @@ import sleep.engine.types.*;
 import sleep.interfaces.*;
 import sleep.runtime.*;
 
+import sleep.taint.*;
+
 import sleep.parser.ParserConfig;
 
 /** Provides a bridge between Java's regex API and sleep.  Rock on */
@@ -88,10 +90,25 @@ public class RegexBridge implements Loadable
     {
        public boolean decide(String n, ScriptInstance i, Stack l)
        {
-          String b = ((Scalar)l.pop()).toString(); // PATTERN
-          String a = ((Scalar)l.pop()).toString(); // TEXT TO MATCH AGAINST
-
           ScriptEnvironment env = i.getScriptEnvironment();
+
+          /* do some tainter checking plz */
+          Scalar bb = (Scalar)l.pop();
+          Scalar aa = (Scalar)l.pop();
+
+          if (TaintUtils.isTainted(bb) || TaintUtils.isTainted(aa))
+          {
+             env.setContextMetadata("retaint", Boolean.TRUE);
+          }
+          else
+          {
+             env.setContextMetadata("retaint", null);
+          }
+  
+          /* continue with normal ops */
+          String b = bb.toString(); // PATTERN
+          String a = aa.toString(); // TEXT TO MATCH AGAINST
+
           Matcher matcher;
 
           Pattern pattern = RegexBridge.getPattern(b);
@@ -147,7 +164,14 @@ public class RegexBridge implements Loadable
              }
           }
 
-          return value;
+          if (env.getContextMetadata("retaint") == Boolean.TRUE)
+          {
+             return TaintUtils.taintAll(value);
+          }
+          else
+          {
+             return value;
+          }
        }
     }
 

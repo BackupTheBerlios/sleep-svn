@@ -2,6 +2,8 @@ package sleep.runtime;
 
 import java.io.*;
 
+import sleep.taint.*;
+
 public class WatchScalar extends Scalar
 {
    protected ScriptEnvironment owner;
@@ -24,9 +26,13 @@ public class WatchScalar extends Scalar
    /** set the value of this scalar container to a scalar value of some type */
    public void setValue(ScalarType _value)
    {
-      Scalar blah = new Scalar();
-      blah.setValue(_value);
-      flagChange(blah);
+      /** check if we're merely tainting this scalar... if we are then we can ignore it. */
+      if (! (_value.getClass() == TaintedValue.class && ((TaintedValue)_value).untaint() == value) )
+      {
+         Scalar blah = new Scalar();
+         blah.setValue(_value);
+         flagChange(blah);
+      }
       
       super.setValue(_value);
    }

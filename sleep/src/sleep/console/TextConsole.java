@@ -8,6 +8,8 @@ import sleep.parser.*;
 import sleep.runtime.*;
 import sleep.error.*;
 
+import sleep.taint.TaintUtils;
+
 /** Default implementation of the console proxy class.  Provides a STDIN/STDOUT implementation of the sleep console. */
 public class TextConsole implements ConsoleProxy
 {
@@ -43,6 +45,7 @@ public class TextConsole implements ConsoleProxy
                 System.out.println("         -Dsleep.assert=<true|false>");
                 System.out.println("         -Dsleep.classpath=<path to locate 3rd party jars from>");
                 System.out.println("         -Dsleep.debug=<debug level>");
+                System.out.println("         -Dsleep.taint=<true|false>");
                 System.out.println("       options:");
                 System.out.println("         -a --ast       display the abstract syntax tree of the specified script");
                 System.out.println("         -c --check     check the syntax of the specified file");
@@ -95,7 +98,7 @@ public class TextConsole implements ConsoleProxy
          Scalar array = SleepUtils.getArrayScalar();
          for (int x = start + 1; x < args.length; x++)
          {
-            array.getArray().push(SleepUtils.getScalar(args[x]));
+            array.getArray().push(TaintUtils.taint(SleepUtils.getScalar(args[x])));
          }
 
          try

@@ -37,4 +37,6 @@ public class NullValue implements ScalarType
    {
       return null;
    }
+
+   public Class getType() { return this.getClass(); }
 }

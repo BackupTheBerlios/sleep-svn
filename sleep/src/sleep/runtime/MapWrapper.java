@@ -31,10 +31,9 @@ public class MapWrapper implements ScalarHash
       throw new RuntimeException("hash is read-only");
    }
 
-   public String toString()
+   public Map getData()
    {
-      StringBuffer buffer = new StringBuffer("%(");
-
+      Map temp = new HashMap();
       Iterator i = values.entrySet().iterator();
       while (i.hasNext())
       {
@@ -42,19 +41,15 @@ public class MapWrapper implements ScalarHash
 
          if (next.getValue() != null && next.getKey() != null)
          {
-            if (buffer.length() > 2)
-            {
-               buffer.append(", ");      
-            }
-
-            buffer.append(next.getKey());
-            buffer.append(" => ");
-  
-            buffer.append(SleepUtils.describe(ObjectUtilities.BuildScalar(true, next.getValue()))); 
+            temp.put(next.getKey().toString(), ObjectUtilities.BuildScalar(true, next.getValue()));
          }
-      }
-      buffer.append(")");
+      } 
 
-      return buffer.toString();
+      return temp;
+   }
+
+   public String toString()
+   {
+      return values.toString();
    }
 }

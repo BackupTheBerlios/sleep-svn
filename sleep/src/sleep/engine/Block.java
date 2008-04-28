@@ -245,6 +245,7 @@ public class Block implements Serializable
               else if (ex instanceof NullPointerException)
               {
                  environment.getScriptInstance().fireWarning("null value error", temp.getLineNumber());
+                 ex.printStackTrace();
               }
               else if (ex instanceof RuntimeException)
               {

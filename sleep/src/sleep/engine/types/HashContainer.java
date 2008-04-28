@@ -36,6 +36,11 @@ public class HashContainer implements ScalarHash
       return value;
    }
 
+   public Map getData()
+   {
+      return values;
+   }
+
    public ScalarArray keys()
    {
       ScalarType ntype = SleepUtils.getEmptyScalar().getValue();
@@ -61,6 +66,6 @@ public class HashContainer implements ScalarHash
 
    public String toString()
    {
-      return SleepUtils.describeEntries(this, "%", values.entrySet());
+      return values.toString();
    }
 }

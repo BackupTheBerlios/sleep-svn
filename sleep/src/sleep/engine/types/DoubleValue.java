@@ -40,4 +40,6 @@ public class DoubleValue implements ScalarType
    {
       return new Double(value);
    }
+
+   public Class getType() { return this.getClass(); }
 }

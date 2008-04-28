@@ -3245,6 +3245,11 @@ together.</td>
   <td>returns a hash of the available system properties.   See <a href="#12">Appendix A</a> for a list of some of the system properties</td>
  </tr>
  <tr>
+  <td>$</td>
+  <td>taint($scalar)</td>
+  <td>taints and returns the specified scalar.  taint is a means of marking data as having come from a user.  When in taint mode Sleep will prevent tainted data from being passed to sensitive functions such as eval, expr, compile_closure, include, exec, etc.</td>
+ </tr>
+ <tr>
   <td></td>
   <td>this('$x $y')</td>
   <td>parses the specified string and declares all variables in the string as variables specific to the current closure.</td>
@@ -3253,6 +3258,11 @@ together.</td>
   <td>$</td>
   <td>typeOf($scalar)</td>
   <td>returns the Java ^Class backing the specified scalar.</td>
+ </tr>
+ <tr>
+  <td>$</td>
+  <td>untaint($scalar)</td>
+  <td>untaints and returns the specified scalar.  taint is a means of marking data as having come from a user.  When in taint mode Sleep will prevent tainted data from being passed to sensitive functions such as eval, expr, compile_closure, include, exec, etc.</td>
  </tr>
  <tr>
   <td></td>

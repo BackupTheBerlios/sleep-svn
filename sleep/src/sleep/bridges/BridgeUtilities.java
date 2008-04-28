@@ -321,7 +321,7 @@ public class BridgeUtilities
       {
          Scalar lvar = (Scalar)locals.pop();
 
-         if (lvar.getActualValue() != null && lvar.getActualValue().getClass() == ObjectValue.class && lvar.getActualValue().objectValue() != null && lvar.getActualValue().objectValue().getClass() == KeyValuePair.class)
+         if (lvar.getActualValue() != null && lvar.getActualValue().getType() == ObjectValue.class && lvar.getActualValue().objectValue() != null && lvar.getActualValue().objectValue().getClass() == KeyValuePair.class)
          {
             KeyValuePair kvp = (KeyValuePair)lvar.getActualValue().objectValue();
 

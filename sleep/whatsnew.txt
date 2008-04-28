@@ -1,3 +1,45 @@
+2.1-beta 24
+===========
+- refactored Parser/CodeGenerator to use a factory pattern for
+  generating atomic steps. 
+- changed implementation of PLiteral to precalculate all values
+  onto the current frame... the atomic step itself joins the
+  frame values together.  No change from scripter perspective.
+- removed the %BACKQUOTE% and Evaluation bridge.  The backquote
+  behavior can still be overriden using a Function object
+  keyed to __EXEC__.
+- added taint mode similar to Perl.  taint mode allows bridges
+  to flag scalars as having come from an external source.  All
+  scalars touching said scalar are considered tainted until
+  &detaint is called on the tainted scalar.  Certain functions
+  will check for the presence of tainted variables and refuse
+  to process if a tainted value is present.  Examples include:
+  exec, `...`, eval, expr, compile_closure, and any HOES call.
+  Bridges may optionally check for this taint mode on their
+  inputs.  i.e. Slumber is a good candidate for this.
+
+  This mechanism can help you build a more secure app by
+  forcing you to sanitize external values before using them
+  in dangerous contexts.
+
+  This property is enabled with -Dsleep.debug=true on the 
+  command line.
+
+  Bridge writers--see sleep.taint.TaintUtils for information on
+  how to add taint checking to your app.  The mechanism is
+  very easy and just involves calling a function on your
+  Function, Operator object that will wrap it based on where 
+  it falls.
+
+  Scripters use &taint($scalar) to explicitly taint a value and
+  &untaint($scalar) to untaint a value.  And -istainted to 
+  check if a scalar is tainted or not.
+- added debug level 128 for tracing the spread of tainted values
+- SleepUtils.describe does better cycle detection allowing Sleep
+  to better print circular data structures.  %n and @n refer to 
+  the n'th data structure starting from the outermost working
+  in to the inner most.
+
 2.1-beta 23  (23 Apr 08)
 ===========
 - removed a Java 1.5 API call in CodeGenerator (thanks to 

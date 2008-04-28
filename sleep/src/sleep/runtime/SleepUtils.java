@@ -400,84 +400,79 @@ public class SleepUtils
       return values.toString();
    }
 
-   /** describe the entries in a Sleep hash */
-   public static String describeEntries(ScalarHash hash, String sigil, Set entries)
-   {
-      StringBuffer buffer = new StringBuffer(sigil + "(");
-
-      Iterator i = entries.iterator();
-      while (i.hasNext())
-      {
-         Map.Entry next = (Map.Entry)i.next();
-
-         if (!SleepUtils.isEmptyScalar((Scalar)next.getValue()))
-         {
-            if (buffer.length() > 2)
-            {
-               buffer.append(", ");
-            }
-
-            buffer.append(next.getKey());
-            buffer.append(" => ");
-  
-            if (((Scalar)next.getValue()).getHash() == hash)
-            {
-               buffer.append("...");
-            } 
-            else
-            {
-               buffer.append(describe((Scalar)next.getValue()));
-            }
-         }
-      }
-      buffer.append(")");
-
-      return buffer.toString();
-   }
-
-   /** returns a string description of the specified scalar. Used by debugging mechanism to
-       format scalars based on their value type, i.e. strings are enclosed in single quotes,
-       objects in brackets, $null is displayed as $null, etc. */
-   public static String describe(Scalar scalar)
+   private static String describeEntries(List seen, Scalar scalar)
    {
       if (scalar.getArray() != null)
       {
-         StringBuffer buffer = new StringBuffer("@(");
-         Iterator i = scalar.getArray().scalarIterator();
-         while (i.hasNext())
+         if (seen.contains(scalar.getArray()))
          {
-            Scalar next = (Scalar)i.next();
-
-
-            if (scalar.getArray() == next.getArray())
-            { 
-               buffer.append("...");
-            }
-            else
-            {
-               buffer.append(describe(next));
-            }
-
-            if (i.hasNext())
-            {
-               buffer.append(", ");
-            }
+            return "@" + seen.indexOf(scalar.getArray());
          }
-        
-         buffer.append(")");
-         return buffer.toString();
+         else
+         {
+            seen.add(scalar.getArray());
+
+            StringBuffer buffer = new StringBuffer("@(");
+
+            Iterator i = scalar.getArray().scalarIterator();
+            while (i.hasNext())
+            {
+               Scalar next = (Scalar)i.next();
+               buffer.append(describeEntries(seen, next));
+
+               if (i.hasNext())
+               {
+                  buffer.append(", ");
+               }
+            }
+
+            buffer.append(")");
+            return buffer.toString();
+         }
       }
-      if (scalar.getHash() != null)
+      else if (scalar.getHash() != null)
       {
-         return scalar.getHash().toString();
+         if (seen.contains(scalar.getHash()))
+         {
+            return "%" + seen.indexOf(scalar.getHash());
+         }
+         else
+         {
+            seen.add(scalar.getHash());
+
+            StringBuffer buffer = new StringBuffer("%(");
+
+            Iterator i = scalar.getHash().getData().entrySet().iterator();
+            while (i.hasNext())
+            {
+               Map.Entry next = (Map.Entry)i.next();
+               Scalar value   = (Scalar)next.getValue();
+
+               if (!SleepUtils.isEmptyScalar((Scalar)next.getValue()))
+               {
+                  if (buffer.length() > 2)
+                  {
+                     buffer.append(", ");
+                  }
+
+                  buffer.append(next.getKey());
+                  buffer.append(" => ");
+  
+                  buffer.append(describeEntries(seen, value));
+               } 
+            }
+
+            buffer.append(")");
+            return buffer.toString();
+         }
       }
       else
       {
-         if (scalar.getActualValue() instanceof NullValue)
+         if (scalar.getActualValue().getType() == NullValue.class)
          {
             return "$null";
          }
-         else if (scalar.getActualValue() instanceof StringValue)
+         else if (scalar.getActualValue().getType() == StringValue.class)
          {
             return "'" + scalar.toString() + "'";
          }
@@ -490,11 +485,11 @@ public class SleepUtils
             KeyValuePair kvp = (KeyValuePair)scalar.objectValue();
             return kvp.getKey().toString() + " => " + describe(kvp.getValue());
          }
-         else if (scalar.getActualValue() instanceof ObjectValue)
+         else if (scalar.getActualValue().getType() == ObjectValue.class)
          {
             return scalar.toString();
          }
-         else if (scalar.getActualValue() instanceof LongValue)
+         else if (scalar.getActualValue().getType() == LongValue.class)
          {
             return scalar.toString() + "L";
          }
@@ -503,6 +498,14 @@ public class SleepUtils
             return scalar.toString();
          }
       }
+   }
+
+   /** returns a string description of the specified scalar. Used by debugging mechanism to
+       format scalars based on their value type, i.e. strings are enclosed in single quotes,
+       objects in brackets, $null is displayed as $null, etc. */
+   public static String describe(Scalar scalar)
+   {
+      return describeEntries(new LinkedList(), scalar);
    }
 
    /** returns an empty hashmap scalar */

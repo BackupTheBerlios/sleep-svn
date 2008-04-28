@@ -40,4 +40,9 @@ public class IntValue implements ScalarType
    {
       return new Integer(value);
    }
+
+   public Class getType()
+   {
+      return this.getClass();
+   }
 }

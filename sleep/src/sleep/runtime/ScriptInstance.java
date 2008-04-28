@@ -98,6 +98,9 @@ public class ScriptInstance implements Serializable, Runnable
     /** fire a runtime warning describing each predicate decision made */
     public static final int DEBUG_TRACE_LOGIC = 64;
 
+    /** trace the passage of tainted data */
+    public static final int DEBUG_TRACE_TAINT = 128;
+
     /** track all of the flagged debug options for this script (set to DEBUG_SHOW_ERRORS by default) */
     protected int debug = DEBUG_SHOW_ERRORS;
 

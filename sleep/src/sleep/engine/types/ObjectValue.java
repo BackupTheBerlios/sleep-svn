@@ -79,4 +79,9 @@ public class ObjectValue implements ScalarType
    {
       return value;
    }
+
+   public Class getType()
+   {
+      return this.getClass();
+   }
 }

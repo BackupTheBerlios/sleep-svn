@@ -30,4 +30,7 @@ public interface ScalarHash extends java.io.Serializable
 
    /** Removes the specified scalar from the hashmap. :) */
    public void remove(Scalar key);
+
+   /** Return the data structure backing this hash please */
+   public Map getData();
 }

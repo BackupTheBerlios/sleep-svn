@@ -36,4 +36,8 @@ public interface ScalarType extends java.io.Serializable
 
    /** convert the scalar to an object value *shrug* */
    public Object     objectValue();
+
+   /** returns the Class type of this ScalarType.  Use this instead of getClass to allow other functions to wrap ScalarType's without breaking
+       functionality */
+   public Class      getType();
 }

@@ -47,6 +47,8 @@ import java.util.*;
 import sleep.error.*;
 import sleep.engine.Block;
 
+import sleep.engine.GeneratedSteps;
+
 import java.io.*;
 import java.net.*;
 
@@ -77,6 +79,15 @@ public class Parser
    public ImportManager getImportManager()
    {
       return imports;
+   }
+
+   /** the factory to use when generating Sleep code */
+   protected GeneratedSteps factory = null;
+
+   /** set the code factory to be used to generated Sleep code */
+   public void setCodeFactory(GeneratedSteps s)
+   {
+      factory = s;
    }
 
    /** Used by Sleep to import statement to save an imported package name. */
@@ -184,7 +195,7 @@ public class Parser
          throw new YourCodeSucksException(errors);      
       }
 
-      CodeGenerator codegen = new CodeGenerator(this);
+      CodeGenerator codegen = new CodeGenerator(this, factory);
       codegen.parseBlock(statements);
 
       if (hasErrors())

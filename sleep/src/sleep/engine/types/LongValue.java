@@ -40,4 +40,6 @@ public class LongValue implements ScalarType
    {
       return new Long(value);
    }
+
+   public Class getType() { return this.getClass(); }
 }

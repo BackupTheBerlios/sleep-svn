@@ -35,6 +35,8 @@ import java.net.URLClassLoader;
 import sleep.engine.types.*;
 import java.lang.reflect.*; // for array casting stuff
 
+import sleep.taint.*;
+
 import sleep.parser.*;
 import sleep.error.YourCodeSucksException;
 
@@ -82,6 +84,9 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&copy",  new copy());
         temp.put("&setRemovalPolicy", this);
         temp.put("&setMissPolicy", this);
+
+        temp.put("&untaint", TaintUtils.Sanitizer(this));
+        temp.put("&taint", TaintUtils.Tainter(this));
  
         map map_f = new map();
 
@@ -109,6 +114,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("-isarray", this);   
         temp.put("-ishash",  this); 
         temp.put("-isfunction", this);
+        temp.put("-istainted", this);
         temp.put("isa", this);
         temp.put("in", this);
         temp.put("=~", this);
@@ -137,20 +143,20 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&shift",    new shift());   // not safe within foreach loops yada yada yada...
 
         temp.put("&systemProperties",    new systemProperties());
-        temp.put("&use",     new f_use());
-        temp.put("&include", temp.get("&use"));
+        temp.put("&use",     TaintUtils.Sensitive(new f_use()));
+        temp.put("&include", TaintUtils.Sensitive((Function)temp.get("&use")));
         temp.put("&checkError", this);
 
         // closure / function handle type stuff
         temp.put("&lambda",    new lambda());
-        temp.put("&compile_closure", temp.get("&lambda"));
+        temp.put("&compile_closure", TaintUtils.Sensitive((Function)temp.get("&lambda")));
         temp.put("&let",    temp.get("&lambda"));
 
         function funcs = new function();
-        temp.put("&function",  funcs);
+        temp.put("&function",  TaintUtils.Sensitive(funcs));
         temp.put("&setf",      funcs);
-        temp.put("&eval",     new eval());
-        temp.put("&expr",     temp.get("&eval"));
+        temp.put("&eval",      TaintUtils.Sensitive(new eval()));
+        temp.put("&expr",      TaintUtils.Sensitive((Function)temp.get("&eval")));
 
         // synchronization primitives...
         SyncPrimitives sync = new SyncPrimitives();
@@ -252,6 +258,9 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
        if (predName.equals("-isfunction"))
           return SleepUtils.isFunctionScalar(value);
+
+       if (predName.equals("-istainted"))
+          return TaintUtils.isTainted(value);
 
        if (predName.equals("-isarray"))
           return value.getArray() != null;
@@ -846,6 +855,11 @@ public class BasicUtilities implements Function, Loadable, Predicate
        {
           return ObjectUtilities.BuildScalar(true, BridgeUtilities.getObject(l));
        }
+       else if (n.equals("&untaint") || n.equals("&taint"))
+       {
+          /* the actual tainting / untaing of this value takes place in the wrapper specified in the bridge itself */
+          return !l.isEmpty() ? (Scalar)l.pop() : SleepUtils.getEmptyScalar();
+       }
        else if (n.equals("&newInstance"))
        {
           Scalar top = BridgeUtilities.getScalar(l);
@@ -870,7 +884,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
           Scalar s = BridgeUtilities.getScalar(l);
           if (s.getArray() != null) { return SleepUtils.getScalar(s.getArray().getClass()); }
           if (s.getHash() != null) { return SleepUtils.getScalar(s.getHash().getClass()); }
-          return SleepUtils.getScalar(s.getActualValue().getClass());
+          return SleepUtils.getScalar(s.getActualValue().getType());
        }
        else if (n.equals("&invoke")) 
        {
@@ -986,6 +1000,11 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
        if (n.equals("&push"))
        {
+          if (value.getArray() == null)
+          {
+             throw new IllegalArgumentException("&push: expected array. received " + SleepUtils.describe(value));
+          }
+
           Scalar pushed = null;
           while (!l.isEmpty())
           {
@@ -1270,11 +1289,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
           {
              Scalar temp = SleepUtils.getArrayScalar();
 
-             Iterator ih = value.getHash().keys().scalarIterator();
-
-             while (ih.hasNext())
+             Iterator iter = value.getHash().getData().values().iterator();
+             while (iter.hasNext())
              {
-                  temp.getArray().push(SleepUtils.getScalar(value.getHash().getAt((Scalar)ih.next())));
+                temp.getArray().push((Scalar)iter.next());
              }
 
              return temp;

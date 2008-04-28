@@ -25,19 +25,21 @@ if (!-e "output")
 
 foreach $var (@files)
 {
+   $ARGS = "";
    $PROPS = "";
    if ($var eq "debugce.sl") { $PROPS = "-Dsleep.debug=3"; }
+   if (substr($var, 0, 5) eq "taint") { $PROPS = "-Dsleep.taint=true"; $ARGS = "\"2 + 2\""; }
 
    if (!-e "./output/$var")
    {
-      `java $PROPS -jar ../sleep.jar ./$var >./output/$var`;
+      `java $PROPS -jar ../sleep.jar ./$var >./output/$var $ARGS`;
       push @errors, "$var output does not exist, creating it";
    }
    else
    {
       $expected_value = join("", `cat ./output/$var`);
 
-      $script_value   = join("", `java $PROPS -jar ../sleep.jar ./$var`);
+      $script_value   = join("", `java $PROPS -jar ../sleep.jar ./$var $ARGS`);
 
       if ($expected_value ne $script_value)
       {

@@ -166,7 +166,7 @@ public class ObjectUtilities
       }
       else if (check.isPrimitive())
       {
-         Class stemp = scalar.getActualValue().getClass(); /* at this point we know scalar is not null, not a hash, and not an array */
+         Class stemp = scalar.getActualValue().getType(); /* at this point we know scalar is not null, not a hash, and not an array */
 
          if (stemp == INT_SCALAR && check == Integer.TYPE)
          {
@@ -209,7 +209,7 @@ public class ObjectUtilities
       }
       else if (check == String.class)
       {
-         Class stemp = scalar.getActualValue().getClass();
+         Class stemp = scalar.getActualValue().getType();
          return (stemp == STRING_SCALAR) ? ARG_MATCH_YES : ARG_MATCH_MAYBE;
       }
       else if (check == Object.class)
@@ -218,12 +218,12 @@ public class ObjectUtilities
       }
       else if (check.isInstance(scalar.objectValue()))
       {
-         Class stemp = scalar.getActualValue().getClass();
+         Class stemp = scalar.getActualValue().getType();
          return (stemp == OBJECT_SCALAR) ? ARG_MATCH_YES : ARG_MATCH_MAYBE;
       }
       else if (check.isArray())
       {
-         Class stemp = scalar.getActualValue().getClass();
+         Class stemp = scalar.getActualValue().getType();
          if (stemp == STRING_SCALAR && (check.getComponentType() == Character.TYPE || check.getComponentType() == Byte.TYPE))
          {
             return ARG_MATCH_MAYBE;
@@ -448,7 +448,7 @@ public class ObjectUtilities
       {
          return null;
       }
-      else if (type.isArray() && value.getActualValue().getClass() == sleep.engine.types.StringValue.class)
+      else if (type.isArray() && value.getActualValue().getType() == sleep.engine.types.StringValue.class)
       {
          if (type.getComponentType() == Byte.TYPE || type.getComponentType() == Byte.class)
          {
