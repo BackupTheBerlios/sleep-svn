@@ -1,4 +1,4 @@
-2.1-beta 24
+2.1-beta 24  (30 Apr 08)
 ===========
 - refactored Parser/CodeGenerator to use a factory pattern for
   generating atomic steps. 
