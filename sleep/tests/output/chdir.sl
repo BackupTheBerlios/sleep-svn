@@ -1,4 +1,3 @@
-/Users/raffi/sleepdev/sleep/tests/data/.svn
 /Users/raffi/sleepdev/sleep/tests/data/build.xml
 /Users/raffi/sleepdev/sleep/tests/data/readme.txt
 /Users/raffi/sleepdev/sleep/tests/data/scripts.jar
