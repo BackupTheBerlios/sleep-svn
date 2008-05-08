@@ -26,22 +26,32 @@ public class ParserUtilities
 
    public static Token join(Token [] temp)
    {
-      String rv = "";
-      for (int x = 0; x < temp.length; x++)
-      {
-         rv = rv+temp[x].toString()+" ";
-      }
-      return new Token(rv, temp[0].getHint());
+      return join(temp, " ");
    }
 
-   public static String join(String [] temp, String with)
+   public static Token join(Token [] temp, String with)
    {
-      String rv = temp[0];
-      for (int x = 1; x < temp.length; x++)
+      StringBuffer rv = new StringBuffer();
+
+      for (int x = 0; x < temp.length; x++)
       {
-         rv = rv+with+temp[x];
+	 if ((x > 0 && temp[x].getHint() == temp[x-1].getTopHint()) || x == 0)
+         {
+            rv.append(with);
+         }
+         else
+         {
+            int difference = temp[x].getHint() - temp[x-1].getTopHint();
+            for (int z = 0; z < difference; z++)
+            {
+               rv.append("\n");
+            }
+         }
+
+         rv.append(temp[x].toString());
       }
-      return rv;
+
+      return new Token(rv.toString(), temp[0].getHint());
    }
 
    public static Token extract (Token temp)

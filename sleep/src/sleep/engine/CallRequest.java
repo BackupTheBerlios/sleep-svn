@@ -283,7 +283,7 @@ public abstract class CallRequest
 
       public boolean isDebug()
       {
-         return super.isDebug() && !function.equals("&@") && !function.equals("&%");
+         return super.isDebug() && !function.equals("&@") && !function.equals("&%") && !function.equals("&warn");
       }
 
       protected Scalar execute()

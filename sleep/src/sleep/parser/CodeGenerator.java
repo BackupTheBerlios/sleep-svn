@@ -960,7 +960,6 @@ public class CodeGenerator implements ParserConstants
            a = restore();
 
            backup();
-           String moveon = "";
            if (tokens.length >= 4)
            {
               if (strings[4].equals("if"))

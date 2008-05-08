@@ -27,6 +27,7 @@ public class Token
    protected String term;
    protected int    hint;
    protected int    marker;
+   protected int    tophint;
  
    public Token(String term, int hint)
    {
@@ -38,6 +39,7 @@ public class Token
       term   = _term;
       hint   = _hint;
       marker = _marker;
+      tophint = -1;
    }
 
    public String toString()
@@ -75,6 +77,22 @@ public class Token
       }
 
       return null;
+   }
+
+   public int getTopHint()
+   {
+      if (tophint >= 0) {
+           return tophint;
+      }
+
+      tophint = hint;
+      int endAt = -1;
+      while ((endAt = term.indexOf('\n', endAt + 1)) > -1)
+      {
+         tophint++;
+      }
+
+      return tophint;
    }
 
    public int getHint()

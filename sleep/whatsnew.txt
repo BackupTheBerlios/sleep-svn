@@ -17,6 +17,12 @@
   data structures when necessary.
 - changed implementation of foreach to more efficiently iterate
   over hashes.  remove() w/i a foreach loop now works with hashes.
+- removed sleeplang.html from the repository and added a .url
+  file pointing to the Sleep Manual.  When the manual is complete
+  I will create a .pdf and distribute it with the Sleep source.
+- &warn no longer shows as a function call in debug traces
+- fixed line number skew with the else if and else blocks of 
+  if statements.
 
 2.1-beta 24  (30 Apr 08)
 ===========
