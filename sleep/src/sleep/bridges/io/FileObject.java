@@ -21,17 +21,17 @@ public class FileObject extends IOObject
       {
          if (descriptor.charAt(0) == '>' && descriptor.charAt(1) == '>')
          {
-            file = new File(descriptor.substring(2, descriptor.length()).trim().replace('/', File.separatorChar));
+            file = BridgeUtilities.toSleepFile(descriptor.substring(2, descriptor.length()).trim(), env.getScriptInstance());
             openWrite(new FileOutputStream(file, true));
          }
          else if (descriptor.charAt(0) == '>')
          {
-            file = new File(descriptor.substring(1, descriptor.length()).trim().replace('/', File.separatorChar));
+            file = BridgeUtilities.toSleepFile(descriptor.substring(1, descriptor.length()).trim(), env.getScriptInstance());
             openWrite(new FileOutputStream(file, false));
          }
          else
          {
-            file = new File(descriptor.replace('/', File.separatorChar));
+            file = BridgeUtilities.toSleepFile(descriptor, env.getScriptInstance());
             openRead(new FileInputStream(file));
          }
       }

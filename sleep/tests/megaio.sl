@@ -37,7 +37,7 @@ $src = fork({
 
 sleep(2000);
 
-fork({
+wait(fork({
   local('$data $z');
 
   while $data (readb($handle, 603))
@@ -49,4 +49,4 @@ fork({
   println("Read in $z bytes");
 
   closef($handle);
-}, $handle => $src);
+}, $handle => $src), 5000);

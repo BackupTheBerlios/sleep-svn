@@ -351,7 +351,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
                 }
                 else
                 {
-                   istream = new FileInputStream(new File(className));
+                   istream = new FileInputStream(BridgeUtilities.toSleepFile(className, si));
                 }
 
                 if (istream != null)

@@ -141,7 +141,7 @@ public class BasicIO implements Loadable, Function
 
           try
           { 
-             Process proc  = Runtime.getRuntime().exec(BridgeUtilities.getString(l, ""));
+             Process proc  = Runtime.getRuntime().exec(BridgeUtilities.getString(l, ""), null, i.cwd());
              BufferedReader reader    = new BufferedReader(new InputStreamReader(proc.getInputStream()));
 
              String text = null;
@@ -415,7 +415,7 @@ public class BasicIO implements Loadable, Function
              }
              else
              {
-                start = BridgeUtilities.getFile(l); 
+                start = BridgeUtilities.getFile(l, i); 
              }
           }
 
@@ -649,9 +649,17 @@ public class BasicIO implements Loadable, Function
 
     private static IOObject chooseSource(Stack l, int args, ScriptInstance i)
     {
-       IOObject a;
+       if (l.size() < args && !l.isEmpty())
+       {
+          Scalar temp = (Scalar)l.peek();
 
-       if (l.size() >= args)
+          if (temp.getActualValue() != null && temp.getActualValue().getType() == ObjectValue.class && temp.objectValue() instanceof IOObject)
+          {
+             l.pop();
+             return (IOObject)temp.objectValue();
+          }
+       }
+       else if (l.size() >= args)
        {
           Scalar b = (Scalar)l.pop();
 
@@ -660,14 +668,10 @@ public class BasicIO implements Loadable, Function
              throw new IllegalArgumentException("expected I/O handle argument, received: " + SleepUtils.describe(b));
           }
 
-          a = (IOObject)b.objectValue();
+          return (IOObject)b.objectValue();
        }
-       else
-       {
-          a = IOObject.getConsole(i.getScriptEnvironment());
-       }  
 
-       return a;
+       return IOObject.getConsole(i.getScriptEnvironment());
     }
 
     private static class getConsoleObject implements Function
@@ -1152,6 +1156,12 @@ public class BasicIO implements Loadable, Function
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
           IOObject        a = chooseSource(l, 2, i);
+
+          if (a.getInputBuffer() == null)
+          {
+             throw new RuntimeException("&mark: input buffer for " + SleepUtils.describe(SleepUtils.getScalar(a)) + " is closed");
+          }
+
           a.getInputBuffer().mark(BridgeUtilities.getInt(l, 1024 * 10 * 10));
 
           return SleepUtils.getEmptyScalar();
@@ -1280,12 +1290,18 @@ public class BasicIO implements Loadable, Function
 
           if (a.getReader() != null)
           {
-             byte[] temp = a.getBuffer(to);
+             byte[] temp = to > -1 ? a.getBuffer(to) : new byte[0];
    
              int read = 0;
 
              try
              {
+                if (to == -1)
+                {
+                   to = a.getInputStream().available();
+                   temp = a.getBuffer(to);
+                }
+
                 while (read < to)
                 {
                    last = a.getReader().read(temp, read, to - read);

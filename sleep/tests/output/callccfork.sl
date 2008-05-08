@@ -4,7 +4,7 @@ Trace: &println('Begin!') at callccfork.sl:9
 Inside of callcc function
 Trace: &println('Inside of callcc function') at callccfork.sl:12
 Trace: [&closure[callccfork.sl:12-13]#3 CALLCC: &closure[callccfork.sl:9-15]#2] = 'pHEAR' at callccfork.sl:10
-Trace: &fork(&closure[callccfork.sl:9-15]#1) = sleep.bridges.io.IOObject@7a4489 at callccfork.sl:20
-Trace: &wait(sleep.bridges.io.IOObject@7a4489) = 'pHEAR' at callccfork.sl:21
+Trace: &fork(&closure[callccfork.sl:9-15]#1) = sleep.bridges.io.IOObject@dec8b3 at callccfork.sl:20
+Trace: &wait(sleep.bridges.io.IOObject@dec8b3, 5000) = 'pHEAR' at callccfork.sl:21
 pHEAR
 Trace: &println('pHEAR') at callccfork.sl:22

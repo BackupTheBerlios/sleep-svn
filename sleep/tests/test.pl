@@ -50,6 +50,8 @@ foreach $var (@files)
             print "\njava $PROPS -jar ../sleep.jar ./$var\n";
             print "\n".$script_value."\n";
          }
+
+         print "$var -- broken!\n";
       }  
       else
       {

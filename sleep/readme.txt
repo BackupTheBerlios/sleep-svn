@@ -73,10 +73,12 @@ To compile sleep:
 [raffi@beardsley ~/sleep]$ rm -rf bin
 [raffi@beardsley ~/sleep]$ ant all
 
-If you made any changes or just want to make sure nothing got broken you can
+If you made any changes or just want to make sure nothing is broken you can
 run a series of regression tests on sleep.
 
-[raffi@beardsley ~/sleep/tests]$ perl test.pl
+[raffi@beardsley ~/sleep]$ java -jar sleep.jar runtests.sl
+
+If the runtests.so script won't run then you're really in trouble.
 
 To Build JavaDoc for Sleep (dumped to the docs/api/ directory):
 

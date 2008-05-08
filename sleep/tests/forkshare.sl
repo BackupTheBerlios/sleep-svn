@@ -4,7 +4,7 @@
 
 $counter = 90;
 
-fork({
+$a = fork({
   while ($counter < 100)
   {
      $counter++;
@@ -14,7 +14,7 @@ fork({
 
 }, \$counter);
 
-fork({
+$b = fork({
   sleep(500); # I hate time kludges...
 
   while ($counter < 100)
@@ -24,3 +24,6 @@ fork({
      [Thread yield];
   }
 }, \$counter);
+
+wait($a);
+wait($b);

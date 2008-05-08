@@ -240,22 +240,36 @@ public class BridgeUtilities
 
    private static final boolean doReplace = File.separatorChar != '/';
 
+   /** adjusts the file argument to accomodate for the current working directory */
+   public static File toSleepFile(String text, ScriptInstance i)
+   {
+      if (text == null)
+      {
+         return i.cwd();
+      }
+      else if (doReplace)
+      {
+         text = text.replace('/', File.separatorChar); 
+      }
+
+      File f = new File(text);
+
+      if (!f.isAbsolute())
+      {
+         return new File(i.cwd(), text);
+      }
+      else
+      {
+         return f;
+      }
+   }
+
    /** returns a File object from a string argument, the path in the string argument is transformed such 
        that the character / will refer to the correct path separator for the current OS.  Returns null if
        no file is specified as an argument. */
-   public static File getFile(Stack arguments)
+   public static File getFile(Stack arguments, ScriptInstance i)
    {
-      if (arguments.isEmpty())
-         return null;
-
-      String temp = arguments.pop().toString();
-
-      if (doReplace)
-      {
-         temp = temp.replace('/', File.separatorChar); 
-      }
-
-      return new File(temp);
+      return toSleepFile(arguments.isEmpty() ? null : arguments.pop().toString(), i);
    }
  
    /** Pops a Key/Value pair object off of the argument stack.  A Key/Value pair is created using

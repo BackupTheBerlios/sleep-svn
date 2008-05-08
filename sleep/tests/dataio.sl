@@ -31,7 +31,7 @@ $src = fork({
 
 sleep(2000);
 
-fork({
+wait(fork({
   local('$data $z');
 
 #  $handle = connect("127.0.0.1", 8888);
@@ -46,4 +46,4 @@ fork({
   println("Read in $z bytes");
 
   closef($handle);
-}, $handle => $src);
+}, $handle => $src), 5000);

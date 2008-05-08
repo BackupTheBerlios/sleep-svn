@@ -229,6 +229,28 @@ public class ScriptInstance implements Serializable, Runnable
        strace.add(0, stat);
     }
 
+    /** return the current working directory value associated with this script. */
+    public File cwd()
+    {
+       if (!getMetadata().containsKey("__CWD__"))
+       {
+          chdir(null);
+       }
+
+       return (File)getMetadata().get("__CWD__");
+    }
+
+    /** sets the current working directory value for this script */
+    public void chdir(File f)
+    {
+       if (f == null)
+       {
+           f = new File("");
+       }
+
+       getMetadata().put("__CWD__", f.getAbsoluteFile());
+    }
+
     /** Records a stack frame into this environments stack trace tracker thingie. */
     public void recordStackFrame(String description, int lineNumber)
     {

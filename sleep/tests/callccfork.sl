@@ -18,5 +18,5 @@ sub func
 global('$handle $value');
 
 $handle = fork(&func);
-$value  = wait($handle);
+$value  = wait($handle, 5000);
 println($value);
