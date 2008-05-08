@@ -1,14 +1,12 @@
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========
 - added &chdir() to change the current working directory of the
-  active script instance.  This value is inherited by (but not
-  shared) fork().  All I/O and File System bridge functions that
-  manipulate files (including exec) utilize the current working
-  directory.  Use &cwd() to obtain the current working 
-  directory value.
-- -1 specified to &readb will attempt to read in all of the 
-  bytes currently available for reading.  This is most useful
-  for grabbing the contents of a file easily.
+  active script instance.  This value is inherited by fork().  
+  All I/O and File System bridge functions that manipulate files 
+  (including exec) utilize the current working directory.  Use 
+  &cwd() to obtain the current working directory value.
+- &readb($handle, -1) will attempt to read all bytes from the 
+  specified handle.  
 - I/O functions are now smarter about checking their arguments.
 - replaced test.pl regression tester with a Sleep version.
   The Sleep version is much faster and it is forgiving of 

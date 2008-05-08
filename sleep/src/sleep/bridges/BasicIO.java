@@ -1284,43 +1284,63 @@ public class BasicIO implements Loadable, Function
     {
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
-          IOObject         a = chooseSource(l, 2, i);
-          int             to = BridgeUtilities.getInt(l, 1);
-          int           last = 0;
+          IOObject           a = chooseSource(l, 2, i);
+          int               to = BridgeUtilities.getInt(l, 1);
+          int             last = 0;
+          byte[]          temp = null;
+          StringBuffer  buffer = null;
 
           if (a.getReader() != null)
           {
-             byte[] temp = to > -1 ? a.getBuffer(to) : new byte[0];
-   
              int read = 0;
 
              try
              {
                 if (to == -1)
                 {
-                   to = a.getInputStream().available();
-                   temp = a.getBuffer(to);
+                   buffer = new StringBuffer(BridgeUtilities.getInt(l, 2048));
+
+                   while (true)
+                   { 
+                      last = a.getReader().read();
+
+                      if (last == -1)
+                         break;
+
+                      char append = (char)(last & 0xFF);
+                      buffer.append(append);      
+       
+                      read++; 
+                   }
                 }
-
-                while (read < to)
+                else
                 {
-                   last = a.getReader().read(temp, read, to - read);
+                   temp = new byte[to];
 
-                   if (last == -1) { break; }
-                   read += last;
-                } 
+                   while (read < to)
+                   {
+                      last = a.getReader().read(temp, read, to - read);
+
+                      if (last == -1) { break; }
+                      read += last;
+                   } 
+                }
              }
              catch (Exception ex)
              {
                 a.close();
-                i.getScriptEnvironment().flagError(ex);
 
-                ex.printStackTrace();
+                if (to != -1)
+                   i.getScriptEnvironment().flagError(ex);
              }
 
              if (read > 0)
              {
-                return SleepUtils.getScalar(temp, read);
+                if (temp != null)
+                   return SleepUtils.getScalar(temp, read);
+
+                if (buffer != null)
+                   return SleepUtils.getScalar(buffer.toString());
              }
           }
           return SleepUtils.getEmptyScalar();
@@ -1338,7 +1358,7 @@ public class BasicIO implements Loadable, Function
 
           if (a.getReader() != null)
           {
-             byte[] temp = a.getBuffer(size);
+             byte[] temp = new byte[size];
   
              int read = 0;
  

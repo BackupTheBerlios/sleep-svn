@@ -40,18 +40,6 @@ public class IOObject
    protected Thread           thread  = null;
    protected Scalar           token   = null;
 
-   protected byte[]           buffer  = null;
-
-   public byte[] getBuffer(int size)
-   {
-      if (buffer == null || size > buffer.length)
-      {
-         buffer = new byte[size];
-      }
-
-      return buffer;
-   }
-
    /** return the actual source of this IO for scripters to query using HOES */
    public Object getSource()
    {
@@ -164,7 +152,7 @@ public class IOObject
       
       if (in != null)
       {
-         reader  = new BufferedInputStream(in);
+         reader  = new BufferedInputStream(in, 8192);
          readerb = new DataInputStream(reader);
          readeru = new InputStreamReader(readerb);
       }
@@ -214,8 +202,6 @@ public class IOObject
 
          if (out != null)
            out.close();
-
-         buffer = null;
       }
       catch (Exception ex)
       {

@@ -31,17 +31,21 @@ import sleep.parser.ParserConfig;
 
 sub runScript
 {
-   local('@args $value $handle $read');
+   local('@args $value $handle $read $exception');
    @args = split(' ', $1);
    push(@args, "2 + 2");
 
-   $handle = exec(@args, $null, cwd());
-   while $read (readb($handle, 1))
+   try
    {
-      $value .= $read;
-   }
+      $handle = exec(@args, $null, cwd());
+      $value = readb($handle, -1);
 
-   closef($handle);
+      closef($handle);
+   }
+   catch $exception
+   {
+      println("&runScript: " . @_ . " - $exception");
+   }
 
    return $value;
 }
@@ -137,7 +141,7 @@ sub runTests
       else
       {
          print("  X ");
-         $value = runScript(%special[$script]);
+         $value = runScript(iff(%special[$script] is $null, $script, %special[$script]));
       }
 
       if (!-exists "output/ $+ $script")
