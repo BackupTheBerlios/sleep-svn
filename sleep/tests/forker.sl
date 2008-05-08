@@ -5,10 +5,9 @@ sub check
 
 debug(15);
 
-fork({
+wait(fork({
+   sleep(1000);
    check("within fork");
-});
-
-sleep(1000);
+}), 5000);
 
 check("outside of fork");

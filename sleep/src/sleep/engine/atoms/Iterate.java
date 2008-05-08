@@ -115,7 +115,7 @@ public class Iterate extends Step
       //
       if (data.source.getHash() != null)
       {
-         data.iterator = data.source.getHash().keys().scalarIterator();
+         data.iterator = data.source.getHash().getData().entrySet().iterator();
       }
       else if (data.source.getArray() != null)
       {
@@ -150,11 +150,8 @@ public class Iterate extends Step
       Stack iterators   = (Stack)(e.getContextMetadata("iterators"));
       IteratorData data = (IteratorData)(iterators.peek());
 
-      Scalar next       = null;
-
       if (data.iterator != null && data.iterator.hasNext())
       {
-         next = (Scalar)(data.iterator.next());
          e.getCurrentFrame().push(SleepUtils.getScalar(true));
       }
       else
@@ -163,22 +160,31 @@ public class Iterate extends Step
          return;
       }
 
-      if (data.key != null)
+      Object next = data.iterator.next();
+
+      if (data.source.getHash() != null)
       {
-         if (data.source.getHash() != null)
-         {
-            data.kenv.putScalar(data.key, next);
-            data.venv.putScalar(data.value, data.source.getHash().getAt(next));
+         if (data.key != null)
+         {  
+            data.kenv.putScalar(data.key, SleepUtils.getScalar(((Map.Entry)next).getKey()));
+            data.venv.putScalar(data.value, (Scalar)((Map.Entry)next).getValue());
          }
          else
          {
-            data.kenv.putScalar(data.key, SleepUtils.getScalar(data.count));
-            data.venv.putScalar(data.value, next);
+            data.venv.putScalar(data.value, SleepUtils.getScalar(((Map.Entry)next).getKey()));
          }
       }
       else
       {
-         data.venv.putScalar(data.value, next);
+         if (data.key != null)
+         {
+            data.kenv.putScalar(data.key, SleepUtils.getScalar(data.count));
+            data.venv.putScalar(data.value, (Scalar)next);
+         }
+         else
+         {
+            data.venv.putScalar(data.value, (Scalar)next);
+         }
       }
 
       data.count++;

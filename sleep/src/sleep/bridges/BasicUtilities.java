@@ -825,7 +825,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
           else
           {
-             sleep.engine.atoms.Iterate.IteratorData d = (sleep.engine.atoms.Iterate.IteratorData)iterators.peek();
+             sleep.engine.atoms.Iterate.IteratorData d = (sleep.engine.atoms.Iterate.IteratorData)iterators.peek();  
              d.iterator.remove();
              d.count = d.count - 1;
              return d.source;

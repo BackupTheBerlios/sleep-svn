@@ -71,16 +71,24 @@ public class TaintUtils
        return value;
     }
 
-    /** taints the specified scalar.  recurses on hashes and arrays.  returns the original container.  If tainting is disabled the original bridge is returned. */
+    /** taints the specified scalar (bridge writers should call this on their scalars).  recurses on hashes and arrays.  returns the original container.  If tainting is disabled the original bridge is returned. not safe for circular data structures. */
     public static Scalar taintAll(Scalar value)
     {
-       if (value.getArray() != null)
+       if (value.getArray() != null && value.getArray().getClass() == CollectionWrapper.class)
+       {
+          value.setValue(new TaintArray(value.getArray()));
+       }
+       else if (value.getArray() != null)
        {
           Iterator i = value.getArray().scalarIterator();
           while (i.hasNext())
           {
              taintAll((Scalar)i.next());
           }
+       }
+       else if (value.getHash() != null && value.getHash().getClass() == MapWrapper.class)
+       {
+          value.setValue(new TaintHash(value.getHash()));
        }
        else if (value.getHash() != null)
        {

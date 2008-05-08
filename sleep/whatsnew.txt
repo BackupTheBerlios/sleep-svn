@@ -11,6 +11,12 @@
 - replaced test.pl regression tester with a Sleep version.
   The Sleep version is much faster and it is forgiving of 
   address and installation path differences.  
+- implemented taint wrappers for the Map->Hash and Collection to
+  Array wrappers obtain with SleepUtils.  The TaintUtils.taintAll
+  method is intelligent enough to employ these against wrapped
+  data structures when necessary.
+- changed implementation of foreach to more efficiently iterate
+  over hashes.  remove() w/i a foreach loop now works with hashes.
 
 2.1-beta 24  (30 Apr 08)
 ===========

@@ -108,7 +108,7 @@ sub runTests
    chdir("tests");
 
    # some special scripts that require command line execution to test out some stuff...
-   for ($x = 0; $x < 10; $x++)
+   for ($x = 0; $x < 11; $x++)
    {
       %special["taint $+ $x $+ .sl"]  = "java -Dsleep.taint=true -jar ../sleep.jar taint $+ $x $+ .sl";
    }
@@ -141,7 +141,7 @@ sub runTests
       else
       {
          print("  X ");
-         $value = runScript(iff(%special[$script] is $null, $script, %special[$script]));
+         $value = runScript(iff(%special[$script] is $null, "java -jar ../sleep.jar $script", %special[$script]));
       }
 
       if (!-exists "output/ $+ $script")
