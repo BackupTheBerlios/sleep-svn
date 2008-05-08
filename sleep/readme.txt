@@ -1,5 +1,5 @@
  ------- -------------------- ---------   ---------------  ------- ---------
-Sleep - 2.1 beta 24 - README   
+Sleep - 2.1 beta 25 - README   
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 "You got the language, all you need now is the O'Reilly book".  That is
@@ -21,7 +21,6 @@ wanted* to integrate it.  Since then, Sleep has been revised, expanded,
 and stabilized.  
 
 Sleep Project Homepage: http://sleep.dashnine.org/
-                        http://sleep.hick.org/      (mirror)
 
  ------- -------------------- ---------   ---------------  ------- ---------
 Documentation
@@ -32,11 +31,9 @@ a documentation deficiency.  Sleep is no different.
 
 Contained in the docs/ directory:
 
-sleeplang.htm
-   A tutorial on the sleep language from an end-users perspective.  Covers
-   the basic language constructs, built in functions, and relevant 
-   background information.  Fun for the whole family.  Now in its 6th 
-   revision. 
+sleepmanual.url
+   The Sleep 2.1 Manual is both a tutorial and reference for the Sleep language.
+   The manual is available at http://sleep.dashnine.org/manual/
 
 sleepguide.htm
    This document is a guide to integrating the sleep language into your
