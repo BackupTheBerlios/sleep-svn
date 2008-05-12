@@ -1,5 +1,5 @@
 <project name="sleep" default="all" basedir=".">
-  <property name="project.src"   location="src" />
+  <property name="project.src"   location="src/sleep" />
   <property name="project.build" location="bin" />
 
   <property name="project.path"  value="sleep" />
@@ -65,6 +65,7 @@
      <jar destfile="sleep.jar"
           basedir="bin"
           includes="**/*.class">
+<!--         <service type="javax.script.ScriptEngineFactory" provider="org.dashnine.sleep.SleepFactory" /> -->
          <manifest>
            <attribute name="Main-Class" value="sleep.console.TextConsole" />
          </manifest>

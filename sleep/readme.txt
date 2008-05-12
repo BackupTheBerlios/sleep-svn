@@ -62,7 +62,7 @@ the sleep website.  Javadoc is your friend when working with this project.
 Build Instructions
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
-You will need Apache Ant to compile this source code. I use version 1.6.0. 
+You will need Apache Ant to compile this source code. I use version 1.7.0. 
 Ant is easy to install and is available at http://ant.apache.org 
 
 To compile sleep:

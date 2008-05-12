@@ -48,6 +48,11 @@ public class MapWrapper implements ScalarHash
       return temp;
    }
 
+   public void rehash(int capacity, float load)
+   {
+      throw new RuntimeException("hash is read-only");
+   }
+
    public String toString()
    {
       return values.toString();

@@ -1,3 +1,13 @@
+2.1-beta 26
+===========
+- added rehash(%hash, capacity, load factor) to request a hash
+  to recreate itself with the specified parameters.  This
+  functionality allows you to tune hashes for better performance
+  when working with many keys.  &rehash will not affect miss
+  and removal policies of ordered hashes.
+- removed extra key string conversion within ordered hashes.  
+  may offer a performance speedup in some cases.
+
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========
 - added &chdir() to change the current working directory of the

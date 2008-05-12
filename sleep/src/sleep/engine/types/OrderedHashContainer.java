@@ -15,15 +15,31 @@ public class OrderedHashContainer extends HashContainer
 
    private class OrderedHash extends LinkedHashMap
    {
+      protected boolean ordered;
+
       public OrderedHash(int c, float l, boolean b)
       {
          super(c, l, b);
+         ordered = b;
+      }
+
+      public OrderedHash recreate(int capacity, float load)
+      {
+         OrderedHash temp = new OrderedHash(capacity, load, ordered);
+         temp.putAll(this);
+
+         return temp;
       }
 
       protected boolean removeEldestEntry(Map.Entry eldest)
       {
          return removeEldestEntryCheck(eldest); 
       }
+   }
+
+   public void rehash(int capacity, float load)
+   {
+       values = ((OrderedHash)values).recreate(capacity, load);
    }
 
    /** constructs an ordered hash container based on the specified items */
@@ -106,7 +122,8 @@ public class OrderedHashContainer extends HashContainer
 
    public Scalar getAt(Scalar key)
    {
-      Scalar value = (Scalar)values.get(key.getValue().toString());
+      String temp = key.getValue().toString();
+      Scalar value = (Scalar)values.get(temp);
 
       if (missPolicy != null && SleepUtils.isEmptyScalar(value))
       {
@@ -117,14 +134,14 @@ public class OrderedHashContainer extends HashContainer
          locals.push(SleepUtils.getHashScalar(this));
 
          value = missPolicy.callClosure("miss", null, locals);
-         values.put(key.getValue().toString(), value);
+         values.put(temp, value);
       }
       else if (value == null)
       {
          cleanup();
 
          value = SleepUtils.getEmptyScalar();
-         values.put(key.getValue().toString(), value);
+         values.put(temp, value);
       }
 
       return value;

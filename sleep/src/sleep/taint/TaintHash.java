@@ -9,6 +9,11 @@ public class TaintHash implements ScalarHash
 {
    protected ScalarHash source;
 
+   public void rehash(int capacity, float load)
+   {
+      source.rehash(capacity, load);
+   }
+
    public TaintHash(ScalarHash src)
    {
       source = src;
