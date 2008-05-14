@@ -27,7 +27,7 @@
   <target name="docs" description="build java documentation">
      <javadoc packagenames="sleep.*"
               destdir="docs/api"
-              windowtitle="Sleep API" 
+              windowtitle="Sleep 2.1 API" 
               overview="src/overview.html">
         <fileset dir="src" defaultexcludes="yes">
            <include name="sleep/bridges/BridgeUtilities.java" />
@@ -62,14 +62,17 @@
   </target>
 
   <target name="jar" depends="compile">
+     <!-- copy the JSR223 stuff into the Sleep directory -->
+     <unzip src="jsr223/sleep-engine.jar" dest="bin" />
      <jar destfile="sleep.jar"
           basedir="bin"
-          includes="**/*.class">
-<!--         <service type="javax.script.ScriptEngineFactory" provider="org.dashnine.sleep.SleepFactory" /> -->
-         <manifest>
-           <attribute name="Main-Class" value="sleep.console.TextConsole" />
-         </manifest>
-      </jar>
+          includes="**/*" filesetmanifest="mergewithoutmain">
+
+        <!-- wow talk about jumping through hoops, whatever happened to Make? -->
+        <metainf dir="jsr223/src">
+           <include name="services/**" />
+        </metainf>
+     </jar>
   </target>
 
   <target name="clean" description="clean up" >
