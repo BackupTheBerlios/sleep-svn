@@ -367,4 +367,18 @@ public class BridgeUtilities
    {
       return value < 0 ? value + length : value;
    }
+
+   /** returns true if value is an array or throws an appropriate exception if value is not an array.
+    *  @param n the name of the &amp;function
+    *  @param value the scalar to check
+    */
+   public static boolean expectArray(String n, Scalar value)
+   {
+      if (value.getArray() == null)
+      {
+         throw new IllegalArgumentException(n + ": expected array. received " + SleepUtils.describe(value));
+      }
+
+      return true;
+   }
 }

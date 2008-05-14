@@ -72,6 +72,9 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&%", f_hash);  
 
         // array & hashtable related
+        temp.put("&concat", this);
+        temp.put("&rest", this);
+
         temp.put("&keys",  this);      // &keys(%hash) = @array
         temp.put("&size",  this);      // &size(@array) = <int>
         temp.put("&push",  this);      // &push(@array, $value) = $scalar
@@ -994,18 +997,37 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           return SleepUtils.getEmptyScalar();
        }
+       else if (n.equals("&concat"))
+       {
+          Scalar value = SleepUtils.getArrayScalar();
+
+          while (!l.isEmpty())
+          {
+             Scalar temp = (Scalar)l.pop();
+
+             if (temp.getArray() != null)
+             {
+                Iterator iter = temp.getArray().scalarIterator();
+                while (iter.hasNext())
+                {
+                   value.getArray().push(SleepUtils.getScalar((Scalar)iter.next()));
+                }
+             }
+             else
+             {
+                value.getArray().push(SleepUtils.getScalar(temp));
+             }
+          }
+
+          return value;
+       }
 
        /** Start of many array functions */
 
        Scalar value = BridgeUtilities.getScalar(l);
 
-       if (n.equals("&push"))
+       if (n.equals("&push") && BridgeUtilities.expectArray(n, value))
        {
-          if (value.getArray() == null)
-          {
-             throw new IllegalArgumentException("&push: expected array. received " + SleepUtils.describe(value));
-          }
-
           Scalar pushed = null;
           while (!l.isEmpty())
           {
@@ -1015,7 +1037,11 @@ public class BasicUtilities implements Function, Loadable, Predicate
  
           return pushed == null ? SleepUtils.getEmptyScalar() : pushed;
        }
-       else if ((n.equals("&retainAll") || n.equals("&removeAll")) && value.getArray() != null)
+       else if (n.equals("&rest") && BridgeUtilities.expectArray(n, value))
+       {
+          return SleepUtils.getArrayScalar(value.getArray().sublist(1, value.getArray().size()));
+       }
+       else if ((n.equals("&retainAll") || n.equals("&removeAll")) && BridgeUtilities.expectArray(n, value))
        {
           ScalarArray a = value.getArray();
           ScalarArray b = BridgeUtilities.getArray(l);
@@ -1052,7 +1078,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           return SleepUtils.getArrayScalar(a);
        }
-       else if (n.equals("&addAll") && value.getArray() != null)
+       else if (n.equals("&addAll") && BridgeUtilities.expectArray(n, value))
        {
           ScalarArray a = value.getArray();
           ScalarArray b = BridgeUtilities.getArray(l);
@@ -1099,30 +1125,39 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           return value;
        }
-       else if (n.equals("&splice") && value.getArray() != null)
+       else if (n.equals("&splice") && BridgeUtilities.expectArray(n, value))
        {
           // splice(@old, @stuff, start, n to remove)
+          /* normalize all of the parameters please */
+       
           ScalarArray insert = BridgeUtilities.getArray(l);
           int         start  = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.getArray().size());
           int         torem  = BridgeUtilities.getInt(l, insert.size()) + start;
 
-          for (int z = start; z < torem; z++)
+          /* remove the specified elements please */
+
+          ScalarArray toRemove = value.getArray().sublist(start, torem);
+          Iterator iter = toRemove.scalarIterator();
+          while (iter.hasNext())
           {
-             value.getArray().remove(start);
+             iter.next();
+             iter.remove();
           }
- 
-          int count = 0;
+
+          /* insert some elements */
+
+          ScalarArray addToMe = value.getArray().sublist(0, start); 
+
           Iterator j = insert.scalarIterator();
           while (j.hasNext())
           {
              Scalar ins = (Scalar)j.next();
-             value.getArray().add(SleepUtils.getScalar(ins), start + count);
-             count++;
+             addToMe.push(SleepUtils.getScalar(ins));
           }
 
           return value;
        }
-       else if (n.equals("&pop"))
+       else if (n.equals("&pop")  && BridgeUtilities.expectArray(n, value))
        {
           return value.getArray().pop();
        }
@@ -1154,7 +1189,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
              value.setValue(SleepUtils.getEmptyScalar());
           }
        }
-       else if (n.equals("&search") && value.getArray() != null)
+       else if (n.equals("&search") && BridgeUtilities.expectArray(n, value))
        {
           SleepClosure f = BridgeUtilities.getFunction(l, i); 
           int start      = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.getArray().size());
@@ -1217,11 +1252,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           return a;
        }
-       else if (n.equals("&subarray") || n.equals("&sublist"))
+       else if ((n.equals("&subarray") || n.equals("&sublist")) && BridgeUtilities.expectArray(n, value))
        {
-          if (value.getArray() == null)
-             throw new IllegalArgumentException(n + ": expected @array, received: " + SleepUtils.describe(value));
-
           return sublist(value, BridgeUtilities.getInt(l, 0), BridgeUtilities.getInt(l, value.getArray().size()));
        }
        else if (n.equals("&remove"))

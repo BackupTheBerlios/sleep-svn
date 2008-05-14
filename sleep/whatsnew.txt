@@ -34,6 +34,11 @@
   to returning control to the parent function.
 - renamed &subarray to &sublist(@array, n, m).  Updates to the
   returned &sublist will affect the parent list.
+- updated &splice to use new ScalarArray sublist API... this
+  new implementation scales better
+- &clear now clears each element from the array rather than
+  creating a new array and returning it.
+- added list operations: &rest(@array) and &concat(@a, @b, ...) 
   
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========

@@ -14,4 +14,4 @@ sub foo
 
 println(flatten(&foo));
 
-println(search(&foo, { if ($1 == 3) { return 3; } }));
+println(search(flatten(&foo), { if ($1 == 3) { return 3; } }));
