@@ -38,7 +38,7 @@
   new implementation scales better
 - &clear now clears each element from the array rather than
   creating a new array and returning it.
-- added list operations: &rest(@array) and &concat(@a, @b, ...) 
+- added &concat(@a, @b, ...) to concatenate multiple arrays
   
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========

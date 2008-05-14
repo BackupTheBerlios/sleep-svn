@@ -73,7 +73,6 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
         // array & hashtable related
         temp.put("&concat", this);
-        temp.put("&rest", this);
 
         temp.put("&keys",  this);      // &keys(%hash) = @array
         temp.put("&size",  this);      // &size(@array) = <int>
@@ -1036,10 +1035,6 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
  
           return pushed == null ? SleepUtils.getEmptyScalar() : pushed;
-       }
-       else if (n.equals("&rest") && BridgeUtilities.expectArray(n, value))
-       {
-          return SleepUtils.getArrayScalar(value.getArray().sublist(1, value.getArray().size()));
        }
        else if ((n.equals("&retainAll") || n.equals("&removeAll")) && BridgeUtilities.expectArray(n, value))
        {

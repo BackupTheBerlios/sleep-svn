@@ -18,7 +18,7 @@ println(@a);
 #
 @b[0] = "blah";
 
-println(@b[0] . " and " . rest(@b));
+println(@b[0] . " and " . sublist(@b, 1));
 
 println(@b[0] . " and " . @b);
 
