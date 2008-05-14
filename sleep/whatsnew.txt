@@ -18,6 +18,12 @@
      # ...
   }
   # do something with substr($string, $start + 1) 
+- added &find("string", "regex", n) which returns the index of
+  the substring matching the specified regex beginning at n.
+  &matched() works to retrieve the matched groups from the
+  substring.
+- conducted a 3am cleanup of the RegexBridge--you know what 
+  that means.
 
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========

@@ -48,20 +48,24 @@ public class RegexBridge implements Loadable
 
     private static Pattern getPattern(String pattern)
     {
-       if (patternCache.containsKey(pattern))
-       {
-          return (Pattern)patternCache.get(pattern);  
-       }
+       Pattern temp = (Pattern)patternCache.get(pattern);
 
-       if (patternCache.size() > 1024)
+       if (temp != null)
        {
-          patternCache.clear(); /* ensure the pattern cache is flushed once in awhile */
+          return temp;
        }
+       else
+       {
+          if (patternCache.size() > 1024)
+          {
+             patternCache.clear(); /* ensure the pattern cache is flushed once in awhile */
+          }
      
-       Pattern temp = Pattern.compile(pattern);
-       patternCache.put(pattern, temp);
+          temp = Pattern.compile(pattern);
+          patternCache.put(pattern, temp);
 
-       return temp;
+          return temp;
+       }
     }
 
     public void scriptUnloaded(ScriptInstance aScript)
@@ -84,64 +88,90 @@ public class RegexBridge implements Loadable
         temp.put("&join",  new join());
         temp.put("&matches", new getMatches());
         temp.put("&replace", new rreplace());
+        temp.put("&find", new ffind());
+    }
+
+    private static class ffind implements Function
+    {
+       public Scalar evaluate(String n, ScriptInstance i, Stack l)
+       {
+          String string = BridgeUtilities.getString(l, "");
+          String patterns = BridgeUtilities.getString(l, "");
+
+          Pattern pattern  = RegexBridge.getPattern(patterns);
+          Matcher matchit  = pattern.matcher(string);
+          int     start    = BridgeUtilities.getInt(l, 0);
+          
+          boolean check    = matchit.find(start);
+
+          if (check)
+          {
+             i.getScriptEnvironment().setContextMetadata("matcher", SleepUtils.getScalar(matchit));
+          }
+          else
+          {
+             i.getScriptEnvironment().setContextMetadata("matcher", null);
+          }
+
+          return check ? SleepUtils.getScalar(matchit.start()) : SleepUtils.getEmptyScalar();
+       }
+    }
+
+    /** a helper utility to get the matcher out of the script environment */
+    private static Scalar getMatcher(ScriptEnvironment env, String text, Pattern p)
+    {
+       Scalar temp = (Scalar)env.getContextMetadata("matcher");
+
+       if (temp == null && text == null && p == null)
+       {
+          return SleepUtils.getEmptyScalar();
+       }
+       else if (temp == null || (p != null && ((Matcher)temp.objectValue()).pattern() != p))
+       {
+          temp = SleepUtils.getScalar(p.matcher(text));
+          env.setContextMetadata("matcher", temp);
+          return temp;
+       }
+       else
+       {
+          return temp;
+       }
     }
 
     private static class isMatch implements Predicate, Function
     {
        public boolean decide(String n, ScriptInstance i, Stack l)
        {
-          ScriptEnvironment env = i.getScriptEnvironment();
+          boolean rv;
 
           /* do some tainter checking plz */
-          Scalar bb = (Scalar)l.pop();
-          Scalar aa = (Scalar)l.pop();
+          Scalar bb = (Scalar)l.pop(); // PATTERN
+          Scalar aa = (Scalar)l.pop(); // TEXT TO MATCH AGAINST
 
-          if (TaintUtils.isTainted(bb) || TaintUtils.isTainted(aa))
+          Pattern pattern = RegexBridge.getPattern(bb.toString());
+
+          Scalar container = getMatcher(i.getScriptEnvironment(), aa.toString(), pattern);
+          Matcher matcher  = (Matcher)container.objectValue();
+
+          /* check our taint value please */ 
+          if (TaintUtils.isTainted(aa) || TaintUtils.isTainted(bb))
           {
-             env.setContextMetadata("retaint", Boolean.TRUE);
+             TaintUtils.taintAll(container);
           }
-          else
-          {
-             env.setContextMetadata("retaint", null);
-          }
-  
-          /* continue with normal ops */
-          String b = bb.toString(); // PATTERN
-          String a = aa.toString(); // TEXT TO MATCH AGAINST
-
-          Matcher matcher;
-
-          Pattern pattern = RegexBridge.getPattern(b);
-          boolean rv;
 
           if (n.equals("hasmatch"))
           {
-              matcher = (Matcher)env.getContextMetadata(a + b);
-
-              if (matcher != null)
-              {
-                 env.setContextMetadata("matcher", matcher);
-              }
-              else
-              {
-                 matcher = pattern.matcher(a);
-                 env.setContextMetadata(a + b, matcher);
-                 env.setContextMetadata("matcher", matcher);
-              }
               rv = matcher.find();
           }
           else
           {
-              matcher = pattern.matcher(a);
-              env.setContextMetadata("matcher", matcher);
-              rv =  matcher.matches();
+              matcher.reset(aa.toString());
+              rv = matcher.matches();
           }
 
           if (!rv) 
           {
-             matcher  = null;           
-             env.setContextMetadata("matcher", null);
-             env.setContextMetadata(a + b, null);
+             i.getScriptEnvironment().setContextMetadata("matcher", null);
           }
 
           return rv;
@@ -151,11 +181,12 @@ public class RegexBridge implements Loadable
        {
           Scalar value = SleepUtils.getArrayScalar();            
 
-          ScriptEnvironment env = i.getScriptEnvironment();
-          Matcher matcher = (Matcher)env.getContextMetadata("matcher");
+          Scalar container = getMatcher(i.getScriptEnvironment(), null, null);
 
-          if (matcher != null)
+          if (!SleepUtils.isEmptyScalar(container))
           {
+             Matcher matcher = (Matcher)container.objectValue();
+
              int count = matcher.groupCount();  
 
              for (int x = 1; x <= count; x++)
@@ -164,14 +195,7 @@ public class RegexBridge implements Loadable
              }
           }
 
-          if (env.getContextMetadata("retaint") == Boolean.TRUE)
-          {
-             return TaintUtils.taintAll(value);
-          }
-          else
-          {
-             return value;
-          }
+          return TaintUtils.isTainted(container) ? TaintUtils.taintAll(value) : value;
        }
     }
 
@@ -240,7 +264,6 @@ public class RegexBridge implements Loadable
           Iterator    i = BridgeUtilities.getIterator(l, script);
 
           StringBuffer result = new StringBuffer();
-
 
           if (i.hasNext())
           {
