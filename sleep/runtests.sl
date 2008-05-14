@@ -1,5 +1,5 @@
 #
-# Regression test perl script.  A quick way to make sure my crazy changes aren't
+# Regression test Sleep script.  A quick way to make sure my crazy changes aren't
 # breaking my precious language.
 #
 # Runs each sleep script in the tests/ directory, compares the results to the file with the
