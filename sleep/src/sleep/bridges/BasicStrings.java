@@ -442,16 +442,21 @@ public class BasicStrings implements Loadable
            String value = l.pop().toString();
            String item  = l.pop().toString();
                   
+           int rv;
+           
            if (n.equals("&lindexOf"))
            {
               int start = BridgeUtilities.normalize(BridgeUtilities.getInt(l, value.length()), value.length());
-              return SleepUtils.getScalar(value.lastIndexOf(item, start));
+              rv = value.lastIndexOf(item, start);
            }
            else
            {
               int start = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), value.length());
-              return SleepUtils.getScalar(value.indexOf(item, start));
+              rv = value.indexOf(item, start);
            }
+
+           if (rv == -1) { return SleepUtils.getEmptyScalar(); }
+           return SleepUtils.getScalar(rv);
         }
     }
 

@@ -7,6 +7,17 @@
 - TaintUtils.taintAll now handles KeyValuePair objects
 - added TaintUtils.taint(Stack) as another shortcut for bridge
   writers / integrators.
+- BACKWARDS COMPAT WARNING: updated &indexOf and &lindexOf to
+  return $null when no match is found.  This is a change from
+  their original return value of -1.  $null is == to 0.  However
+  this does enable a cleaner means for iterating with indexOf.
+
+  $index = -1;
+  while $index (indexOf($string, "token", $index + 1))
+  {
+     # ...
+  }
+  # do something with substr($string, $start + 1) 
 
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========
