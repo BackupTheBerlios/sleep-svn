@@ -17,14 +17,6 @@ public class HashContainer implements ScalarHash
       values = container;
    }
 
-   public void rehash(int capacity, float load)
-   {
-      HashMap temp = new HashMap(capacity, load);
-      temp.putAll(values);
-
-      values = temp;
-   }
-
    /* constructs this hash container backed by a HashMap data structure */
    public HashContainer()
    {
@@ -33,12 +25,13 @@ public class HashContainer implements ScalarHash
 
    public Scalar getAt(Scalar key)
    {
-      Scalar value = (Scalar)values.get(key.getValue().toString());
+      String temp = key.getValue().toString();
+      Scalar value = (Scalar)values.get(temp);
 
       if (value == null)
       {
          value = SleepUtils.getEmptyScalar();
-         values.put(key.getValue().toString(), value);
+         values.put(temp, value);
       }
 
       return value;

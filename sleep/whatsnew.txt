@@ -1,12 +1,12 @@
 2.1-beta 26
 ===========
-- added rehash(%hash, capacity, load factor) to request a hash
-  to recreate itself with the specified parameters.  This
-  functionality allows you to tune hashes for better performance
-  when working with many keys.  &rehash will not affect miss
-  and removal policies of ordered hashes.
 - removed extra key string conversion within ordered hashes.  
   may offer a performance speedup in some cases.
+- changed default capacity of ordered hashes to 11 (previous
+  value was 16 which is bad for random distribution of values)
+- TaintUtils.taintAll now handles KeyValuePair objects
+- added TaintUtils.taint(Stack) as another shortcut for bridge
+  writers / integrators.
 
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========

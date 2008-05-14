@@ -33,8 +33,4 @@ public interface ScalarHash extends java.io.Serializable
 
    /** Return the data structure backing this hash please */
    public Map getData();
-
-   /** request a rehash of the underlying data structure to the specified capacity and loadFactor parameters.  This functionality
-       allows scripters to tune the performance of their Hash scalars.  This can make a difference with large data sets */
-   public void rehash(int capacity, float loadFactor);
 }

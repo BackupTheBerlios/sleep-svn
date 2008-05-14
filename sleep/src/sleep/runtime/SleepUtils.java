@@ -521,7 +521,7 @@ public class SleepUtils
    public static Scalar getOrderedHashScalar()
    {
       Scalar temp = new Scalar();
-      temp.setValue(new OrderedHashContainer(16, 0.75f, false));
+      temp.setValue(new OrderedHashContainer(11, 0.75f, false));
 
       return temp;
    }
@@ -530,7 +530,7 @@ public class SleepUtils
    public static Scalar getAccessOrderedHashScalar()
    {
       Scalar temp = new Scalar();
-      temp.setValue(new OrderedHashContainer(16, 0.75f, true));
+      temp.setValue(new OrderedHashContainer(11, 0.75f, true));
 
       return temp;
    }

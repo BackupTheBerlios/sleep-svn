@@ -72,7 +72,6 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&%", f_hash);  
 
         // array & hashtable related
-        temp.put("&rehash", this);
         temp.put("&keys",  this);      // &keys(%hash) = @array
         temp.put("&size",  this);      // &size(@array) = <int>
         temp.put("&push",  this);      // &push(@array, $value) = $scalar
@@ -1233,14 +1232,6 @@ public class BasicUtilities implements Function, Loadable, Predicate
           }
 
           return value;
-       }
-       else if (n.equals("&rehash"))
-       {
-          if (value.getHash() != null)
-          {
-             value.getHash().rehash(BridgeUtilities.getInt(l, 32), (float)BridgeUtilities.getDouble(l, 0.50));
-             return value;
-          }
        }
        else if (n.equals("&keys")) // &keys(%hash)
        {

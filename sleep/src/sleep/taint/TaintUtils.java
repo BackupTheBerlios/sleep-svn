@@ -4,6 +4,9 @@ import sleep.engine.*;
 import sleep.interfaces.*;
 import sleep.runtime.*;
 
+import sleep.bridges.*;
+import sleep.engine.types.*;
+
 import java.util.*;
 
 /** <p>Sleep supports a mode where variables received from external sources are considered tainted.  This is a security mechanism to help educate
@@ -71,6 +74,16 @@ public class TaintUtils
        return value;
     }
 
+    /** taints all of the Scalar values in the specified stack.  More fun that a barrel full of monkeys */
+    public static void taint(Stack values)
+    {
+       Iterator i = values.iterator();
+       while (i.hasNext())
+       {
+          taintAll((Scalar)i.next());
+       }
+    }
+
     /** taints the specified scalar (bridge writers should call this on their scalars).  recurses on hashes and arrays.  returns the original container.  If tainting is disabled the original bridge is returned. not safe for circular data structures. */
     public static Scalar taintAll(Scalar value)
     {
@@ -97,6 +110,11 @@ public class TaintUtils
           {
              taintAll((Scalar)i.next());
           }
+       }
+       else if (value.getActualValue().getType() == ObjectValue.class && value.objectValue().getClass() == KeyValuePair.class)
+       {
+          KeyValuePair kvp = (KeyValuePair)value.objectValue();
+          value.setValue(SleepUtils.getScalar(new KeyValuePair(kvp.getKey(), TaintUtils.taintAll(kvp.getValue()))));
        }
        else if (value.getActualValue() != null)
        {
