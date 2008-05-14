@@ -10,6 +10,24 @@ public class CollectionWrapper implements ScalarArray
    protected Collection values;
    protected Object[]   array  = null;
 
+   public ScalarArray sublist(int begin, int end)
+   {
+      List temp = new LinkedList();
+      Iterator i = values.iterator();
+
+      int count = 0;
+      while (i.hasNext() && count < end)
+      {
+         if (count >= begin)
+         {
+            temp.add(i.next());
+         }
+         count++;
+      }
+
+      return new CollectionWrapper(temp);
+   }  
+ 
    public CollectionWrapper(Collection _values)
    {
       values = _values;

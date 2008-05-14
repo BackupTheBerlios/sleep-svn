@@ -215,7 +215,7 @@ public class SleepUtils
    public static Scalar getArrayScalar()
    {
       Scalar temp = new Scalar();
-      temp.setValue(new ArrayContainer());
+      temp.setValue(new ListContainer());
 
       return temp;
    }

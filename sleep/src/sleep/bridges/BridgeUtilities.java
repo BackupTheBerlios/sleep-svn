@@ -331,6 +331,8 @@ public class BridgeUtilities
    {
       int name = 1;
 
+      Scalar args = SleepUtils.getArrayScalar();
+
       while (!locals.isEmpty())
       {
          Scalar lvar = (Scalar)locals.pop();
@@ -350,12 +352,13 @@ public class BridgeUtilities
          }
          else
          {
+            args.getArray().push(lvar);
             vars.setScalarLevel("$"+name, lvar, localLevel);
             name++;
          }
       }
 
-//      vars.setScalarLevel("@_", SleepUtils.getArrayScalar(new ArgumentArray(name, localLevel)), localLevel);
+      vars.setScalarLevel("@_", args, localLevel);
       return name;
    }
 

@@ -23,8 +23,16 @@
   &matched() works to retrieve the matched groups from the
   substring.
 - conducted a 3am cleanup of the RegexBridge--you know what 
-  that means.
-
+  that means.  consequently, nesting of loops that iterate
+  hasmatch no longer works.  This is to prevent a memory leak
+  from unremoved regex state.
+- updated array implementation to use a LinkedList in lieu of
+  a Stack.  This offers better performance characteristics for
+  most array operations.  The only real losing operation is
+  random access which now has a worst case of O(n)
+- inline functions now restore anonymous arguments and @_ prior
+  to returning control to the parent function.
+  
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========
 - added &chdir() to change the current working directory of the

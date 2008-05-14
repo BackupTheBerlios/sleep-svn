@@ -9,9 +9,14 @@ public class TaintArray implements ScalarArray
 {
    protected ScalarArray source;
 
+   public ScalarArray sublist(int begin, int end)
+   {
+      return new TaintArray(source.sublist(begin, end));
+   }
+
    public TaintArray(ScalarArray src)
    {
-      source = src;;
+      source = src;
    }
 
    public String toString()

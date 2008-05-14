@@ -100,7 +100,7 @@ public class RegexBridge implements Loadable
 
           Pattern pattern  = RegexBridge.getPattern(patterns);
           Matcher matchit  = pattern.matcher(string);
-          int     start    = BridgeUtilities.getInt(l, 0);
+          int     start    = BridgeUtilities.normalize(BridgeUtilities.getInt(l, 0), string.length());
           
           boolean check    = matchit.find(start);
 
@@ -246,13 +246,14 @@ public class RegexBridge implements Loadable
 
           String results[] = pattern.split(b);
           
-          ArrayContainer value = new ArrayContainer();
+          Scalar array = SleepUtils.getArrayScalar();
+
           for (int x = 0; x < results.length; x++)
           {
-             value.push(SleepUtils.getScalar(results[x]));
+             array.getArray().push(SleepUtils.getScalar(results[x]));
           }
 
-          return SleepUtils.getArrayScalar(value);
+          return array;
        }
     }
 

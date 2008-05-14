@@ -18,14 +18,14 @@ $temp[1][1][0] = 10
 $temp[1][1][1] = 11
 $temp[1][1][2] = 12
 <--------------------------------------------------->
-We have @(1, 2, 3, 4, 5, 6) and class sleep.engine.types.ArrayContainer
+We have @(1, 2, 3, 4, 5, 6) and class sleep.engine.types.ListContainer
 $temp[0][0] = 1
 $temp[0][1] = 2
 $temp[0][2] = 3
 $temp[0][3] = 4
 $temp[0][4] = 5
 $temp[0][5] = 6
-We have @(7, 8, 9, 10, 11, 12) and class sleep.engine.types.ArrayContainer
+We have @(7, 8, 9, 10, 11, 12) and class sleep.engine.types.ListContainer
 $temp[1][0] = 7
 $temp[1][1] = 8
 $temp[1][2] = 9

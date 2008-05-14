@@ -3,30 +3,41 @@ package sleep.engine.types;
 import sleep.runtime.*;
 import java.util.*;
 
-public class ArrayContainer implements ScalarArray
+/** A linked list backing for Sleep Arrays. Most array ops are better off with this type of backing */
+public class ListContainer implements ScalarArray
 {
-   protected Stack values;
+   protected List values;
 
-   public ArrayContainer()
+   public ListContainer()
    {
-      values = new Stack();
+      values = new LinkedList();
+   }
+
+   public ListContainer(List list)
+   {
+      values = list;
+   }
+
+   public ScalarArray sublist(int from, int to)
+   {
+      return new ListContainer((List)values.subList(from, to));
    }
 
    /** initial values must be a collection of Scalar's */
-   public ArrayContainer(Collection initialValues)
+   public ListContainer(Collection initialValues)
    {
-      values = new Stack();
+      this();
       values.addAll(initialValues);
    }
 
    public Scalar pop()
    {
-      return (Scalar)values.pop();
+      return (Scalar)values.remove(values.size() - 1);
    }
 
    public Scalar push(Scalar value)
    {
-      values.push(value);
+      values.add(value);
       return value;
    }
 

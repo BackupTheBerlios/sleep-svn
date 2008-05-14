@@ -234,7 +234,7 @@ public class Block implements Serializable
               {
                  environment.getScriptInstance().fireWarning(ex.getMessage(), temp.getLineNumber());
               }
-              else if (ex instanceof ArrayIndexOutOfBoundsException)
+              else if (ex instanceof IndexOutOfBoundsException)
               {
                  environment.getScriptInstance().fireWarning("attempted an invalid index", temp.getLineNumber());
               }
