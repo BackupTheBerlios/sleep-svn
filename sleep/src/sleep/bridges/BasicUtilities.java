@@ -168,6 +168,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&release",   sync);
 
         temp.put("&invoke",    this);
+        temp.put("&inline",    this);
 
         temp.put("=>",       new HashKeyValueOp());
     }
@@ -888,6 +889,12 @@ public class BasicUtilities implements Function, Loadable, Predicate
           if (s.getArray() != null) { return SleepUtils.getScalar(s.getArray().getClass()); }
           if (s.getHash() != null) { return SleepUtils.getScalar(s.getHash().getClass()); }
           return SleepUtils.getScalar(s.getActualValue().getType());
+       }
+       else if (n.equals("&inline"))
+       {
+          SleepClosure c = BridgeUtilities.getFunction(l, i);
+          c.getRunnableCode().evaluate(i.getScriptEnvironment());
+          return SleepUtils.getEmptyScalar();
        }
        else if (n.equals("&invoke")) 
        {

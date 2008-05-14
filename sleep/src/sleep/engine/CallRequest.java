@@ -334,19 +334,21 @@ public abstract class CallRequest
             Scalar eval = inline.evaluate(getScriptEnvironment());
     
             /* restore the argument variables */
-            localLevel.putScalar("@_", oldargs);
-            if (targs > 0 && oldargs != null)
+            if (oldargs != null)
             {
-               Iterator i = oldargs.getArray().scalarIterator();
-               int      count = 1;
-               while (i.hasNext() && count <= targs)
+               localLevel.putScalar("@_", oldargs);
+               if (targs > 0)
                {
-                  Scalar temp = (Scalar)i.next();
-                  localLevel.putScalar("$" + count, temp);
-                  count++;
+                  Iterator i = oldargs.getArray().scalarIterator();
+                  int      count = 1;
+                  while (i.hasNext() && count <= targs)
+                  {
+                     Scalar temp = (Scalar)i.next();
+                     localLevel.putScalar("$" + count, temp);
+                     count++;
+                  }
                }
             }
-
             return eval;
          }
       }

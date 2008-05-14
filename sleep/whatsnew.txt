@@ -41,6 +41,8 @@
 - added &concat(@a, @b, ...) to concatenate multiple arrays
 - split('pattern', 'text', [limit]) now accepts a limit 
   parameter to allow partial splits of text.
+- added function inline({ .. }) to invoke the specified block
+  inline
   
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========
