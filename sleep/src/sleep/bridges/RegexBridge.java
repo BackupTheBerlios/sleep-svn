@@ -244,7 +244,7 @@ public class RegexBridge implements Loadable
 
           Pattern pattern  = RegexBridge.getPattern(a);
 
-          String results[] = pattern.split(b);
+          String results[] = l.isEmpty() ? pattern.split(b) : pattern.split(b, BridgeUtilities.getInt(l, 0));
           
           Scalar array = SleepUtils.getArrayScalar();
 
