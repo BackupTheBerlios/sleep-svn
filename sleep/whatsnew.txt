@@ -32,6 +32,8 @@
   random access which now has a worst case of O(n)
 - inline functions now restore anonymous arguments and @_ prior
   to returning control to the parent function.
+- renamed &subarray to &sublist(@array, n, m).  Updates to the
+  returned &sublist will affect the parent list.
   
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========

@@ -81,6 +81,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
         temp.put("&clear", this);
         temp.put("&splice", this);
         temp.put("&subarray", this);
+        temp.put("&sublist", this);
         temp.put("&copy",  new copy());
         temp.put("&setRemovalPolicy", this);
         temp.put("&setMissPolicy", this);
@@ -1137,7 +1138,12 @@ public class BasicUtilities implements Function, Loadable, Predicate
        {
           if (value.getArray() != null)
           {
-             value.setValue(SleepUtils.getArrayScalar());
+             Iterator iter = value.getArray().scalarIterator();
+             while (iter.hasNext())
+             {
+                iter.next();
+                iter.remove();
+             }
           }
           else if (value.getHash() != null)
           {
@@ -1211,9 +1217,12 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           return a;
        }
-       else if (n.equals("&subarray"))
+       else if (n.equals("&subarray") || n.equals("&sublist"))
        {
-          return subarray(value, BridgeUtilities.getInt(l, 0), BridgeUtilities.getInt(l, value.getArray().size()));
+          if (value.getArray() == null)
+             throw new IllegalArgumentException(n + ": expected @array, received: " + SleepUtils.describe(value));
+
+          return sublist(value, BridgeUtilities.getInt(l, 0), BridgeUtilities.getInt(l, value.getArray().size()));
        }
        else if (n.equals("&remove"))
        {
@@ -1365,31 +1374,20 @@ public class BasicUtilities implements Function, Loadable, Predicate
        return SleepUtils.getEmptyScalar();
     }
 
-    private static final Scalar subarray(Scalar value, int _start, int _end)
+    private static Scalar sublist(Scalar value, int _start, int _end)
     { 
-       Scalar rv = SleepUtils.getArrayScalar();
+       int length = value.getArray().size();
+       int start, end;
 
-       if (value.getArray() != null)
+       start = BridgeUtilities.normalize(_start, length);
+       end   = (_end < 0 ? _end + length : _end);
+       end   = end <= length ? end : length;
+
+       if (start > end)
        {
-          int length = value.getArray().size();
-          int start, end;
-
-          start = BridgeUtilities.normalize(_start, length);
-          end   = (_end < 0 ? _end + length : _end);
-          end   = end <= length ? end : length;
-
-          if (start > end)
-          {
-             throw new IllegalArgumentException("illegal subarray(" + SleepUtils.describe(value) + ", " + _start + " -> " + start + ", " + _end + " -> " + end + ")");
-          }
-  
-          while (start < end)
-          {
-             rv.getArray().push(SleepUtils.getScalar(value.getArray().getAt(start)));
-             start++;
-          }
+          throw new IllegalArgumentException("illegal subarray(" + SleepUtils.describe(value) + ", " + _start + " -> " + start + ", " + _end + " -> " + end + ")");
        }
-
-       return rv;
+  
+       return SleepUtils.getArrayScalar(value.getArray().sublist(start, end));
     }
 }
