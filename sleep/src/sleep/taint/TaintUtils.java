@@ -74,14 +74,18 @@ public class TaintUtils
        return value;
     }
 
-    /** taints all of the Scalar values in the specified stack.  More fun that a barrel full of monkeys */
-    public static void taint(Stack values)
+    /** taints all of the Scalar values in the specified stack.  More fun that a barrel full of monkeys.  this function acts on the passed in stack */
+    public static Stack taint(Stack values)
     {
-       Iterator i = values.iterator();
-       while (i.hasNext())
+       if (isTaintMode())
        {
-          taintAll((Scalar)i.next());
+          Iterator i = values.iterator();
+          while (i.hasNext())
+          {
+             taintAll((Scalar)i.next());
+          }
        }
+       return values;
     }
 
     /** taints the specified scalar (bridge writers should call this on their scalars).  recurses on hashes and arrays.  returns the original container.  If tainting is disabled the original bridge is returned. not safe for circular data structures. */

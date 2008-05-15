@@ -50,6 +50,7 @@
   entire cache.  This was put in place to account for &include'd
   scripts.  Now &include validates its last modified timestamp
   with the ScriptLoader prior to (re)loading.  
+- fixed bug in SleepUtils.getArgumentStack(Map)
    
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========

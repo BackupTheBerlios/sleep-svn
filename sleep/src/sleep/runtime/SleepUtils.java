@@ -271,7 +271,7 @@ public class SleepUtils
           while (i.hasNext())
           {
              Map.Entry value = (Map.Entry)i.next();
-             locals.push(new KeyValuePair(SleepUtils.getScalar(value.getKey().toString()), (Scalar)value.getValue()));
+             locals.push(SleepUtils.getScalar(new KeyValuePair(SleepUtils.getScalar(value.getKey().toString()), (Scalar)value.getValue())));
           }
        }
 
