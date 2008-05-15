@@ -117,19 +117,30 @@ public class RegexBridge implements Loadable
        }
     }
 
-    /** a helper utility to get the matcher out of the script environment */
-    private static Scalar getMatcher(ScriptEnvironment env, String text, Pattern p)
+    private static String key(String text, Pattern p)
+    {
+       StringBuffer buffer = new StringBuffer();
+       buffer.append(text);
+       buffer.append(p.pattern());
+
+       return buffer.toString();
+    }
+
+    private static Scalar getLastMatcher(ScriptEnvironment env)
     {
        Scalar temp = (Scalar)env.getContextMetadata("matcher");
+       return temp == null ? SleepUtils.getEmptyScalar() : temp;    
+    }
 
-       if (temp == null && text == null && p == null)
-       {
-          return SleepUtils.getEmptyScalar();
-       }
-       else if (temp == null || (p != null && ((Matcher)temp.objectValue()).pattern() != p))
+    /** a helper utility to get the matcher out of the script environment */
+    private static Scalar getMatcher(ScriptEnvironment env, String key, String text, Pattern p)
+    {
+       Scalar temp = (Scalar)env.getContextMetadata(key);
+
+       if (temp == null)
        {
           temp = SleepUtils.getScalar(p.matcher(text));
-          env.setContextMetadata("matcher", temp);
+          env.setContextMetadata(key, temp);
           return temp;
        }
        else
@@ -150,8 +161,31 @@ public class RegexBridge implements Loadable
 
           Pattern pattern = RegexBridge.getPattern(bb.toString());
 
-          Scalar container = getMatcher(i.getScriptEnvironment(), aa.toString(), pattern);
-          Matcher matcher  = (Matcher)container.objectValue();
+          Scalar  container = null;
+          Matcher matcher   = null;
+
+          if (n.equals("hasmatch"))
+          {
+              String key = key(aa.toString(), pattern);
+
+              container = getMatcher(i.getScriptEnvironment(), key, aa.toString(), pattern);
+              matcher  = (Matcher)container.objectValue();
+
+              rv = matcher.find();
+
+              if (!rv)
+              {
+                 i.getScriptEnvironment().setContextMetadata(key, null);
+              }
+          }
+          else
+          {
+              matcher = pattern.matcher(aa.toString());
+              container = SleepUtils.getScalar(matcher);
+
+              rv = matcher.matches();
+          }
+
 
           /* check our taint value please */ 
           if (TaintUtils.isTainted(aa) || TaintUtils.isTainted(bb))
@@ -159,20 +193,8 @@ public class RegexBridge implements Loadable
              TaintUtils.taintAll(container);
           }
 
-          if (n.equals("hasmatch"))
-          {
-              rv = matcher.find();
-          }
-          else
-          {
-              matcher.reset(aa.toString());
-              rv = matcher.matches();
-          }
-
-          if (!rv) 
-          {
-             i.getScriptEnvironment().setContextMetadata("matcher", null);
-          }
+          /* set our matcher for retrieval by matched() later */
+          i.getScriptEnvironment().setContextMetadata("matcher", rv ? container : null);
 
           return rv;
        }
@@ -181,7 +203,7 @@ public class RegexBridge implements Loadable
        {
           Scalar value = SleepUtils.getArrayScalar();            
 
-          Scalar container = getMatcher(i.getScriptEnvironment(), null, null);
+          Scalar container = getLastMatcher(i.getScriptEnvironment());
 
           if (!SleepUtils.isEmptyScalar(container))
           {

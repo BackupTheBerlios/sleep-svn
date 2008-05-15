@@ -24,9 +24,7 @@
   &matched() works to retrieve the matched groups from the
   substring.
 - conducted a 3am cleanup of the RegexBridge--you know what 
-  that means.  consequently, nesting of loops that iterate
-  hasmatch no longer works.  This is to prevent a memory leak
-  from unremoved regex state.
+  that means.
 - updated array implementation to use a LinkedList in lieu of
   a Stack.  This offers better performance characteristics for
   most array operations.  The only real losing operation is
