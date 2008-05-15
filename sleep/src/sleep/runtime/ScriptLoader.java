@@ -92,7 +92,38 @@ public class ScriptLoader
     /**
      * cache for parsed scripts mantained (optionally) by the script loader.
      */
-    protected static HashMap BLOCK_CACHE = null;
+    protected static Map BLOCK_CACHE = null;
+
+    private Block retrieveCacheEntry(String name)
+    {
+       if (BLOCK_CACHE != null && BLOCK_CACHE.containsKey(name))
+       {
+          Object[] temp = (Object[])BLOCK_CACHE.get(name);
+          return (Block)temp[0];
+       }
+
+       return null;
+    }
+
+    private static boolean isCacheHit(String name)
+    {
+       return BLOCK_CACHE != null && BLOCK_CACHE.containsKey(name);
+    }
+
+    /** nudge the cache with the last modified time of the specified script.  this call will delete the script from the cache if the lastModifiedTime > lastLoadTime */
+    public void touch(String name, long lastModifiedTime)
+    {
+       if (BLOCK_CACHE != null && BLOCK_CACHE.containsKey(name))
+       {
+          Object[] temp   = (Object[])BLOCK_CACHE.get(name);
+          long     loaded = ((Long)temp[1]).longValue();
+
+          if (lastModifiedTime > loaded)
+          {
+             BLOCK_CACHE.remove(name);
+          }
+       }
+    }
 
     /**
      * loaded scripts
@@ -102,7 +133,7 @@ public class ScriptLoader
     /**
      * loaded scripts except referable by key
      */
-    protected HashMap scripts;
+    protected Map scripts;
 
     /**
      * global bridges
@@ -136,10 +167,10 @@ public class ScriptLoader
      * The Sleep script loader can optionally cache parsed script files once they are loaded.  This is useful if you will have
      * several script loader instances loading the same script files in isolated objects.
      */
-    public HashMap setGlobalCache(boolean setting)
+    public Map setGlobalCache(boolean setting)
     {
         if (setting && BLOCK_CACHE == null)
-            BLOCK_CACHE = new HashMap();
+            BLOCK_CACHE = Collections.synchronizedMap(new HashMap());
 
         if (!setting)
             BLOCK_CACHE = null;
@@ -187,7 +218,7 @@ public class ScriptLoader
      * Returns a HashMap with all loaded scripts, the key is a string which is just the filename, the value is a ScriptInstance
      * object
      */
-    public HashMap getScriptsByKey()
+    public Map getScriptsByKey()
     {
         return scripts;
     }
@@ -205,7 +236,8 @@ public class ScriptLoader
      */
     public ScriptEnvironment getFirstScriptEnvironment()
     {
-        if (loadedScripts.size() > 0) {
+        if (loadedScripts.size() > 0) 
+        {
             ScriptInstance si = (ScriptInstance) loadedScripts.getFirst();
             return si.getScriptEnvironment();
         }
@@ -230,14 +262,17 @@ public class ScriptLoader
         si.setName(name);
 
         Iterator i = bridgess.iterator();
-        while (i.hasNext()) {
+        while (i.hasNext()) 
+        {
             ((Loadable) i.next()).scriptLoaded(si);
         }
 
         // load the "global" bridges iff they need to be loaded again...
-        if (si.getScriptEnvironment().getEnvironment().get("(isloaded)") != this) {
+        if (si.getScriptEnvironment().getEnvironment().get("(isloaded)") != this) 
+        {
             i = bridgesg.iterator();
-            while (i.hasNext()) {
+            while (i.hasNext()) 
+            {
                 ((Loadable) i.next()).scriptLoaded(si);
             }
             si.getScriptEnvironment().getEnvironment().put("(isloaded)", this);
@@ -263,7 +298,8 @@ public class ScriptLoader
     {
         File bin = new File(script.getAbsolutePath() + ".bin");
 
-        if (bin.exists() && (!script.exists() || script.lastModified() < bin.lastModified())) {
+        if (bin.exists() && (!script.exists() || script.lastModified() < bin.lastModified())) 
+        {
             return loadSerialized(script.getName(), new FileInputStream(bin), env);
         }
 
@@ -307,11 +343,6 @@ public class ScriptLoader
         return si;
     }
 
-    private static boolean isCacheHit(String name)
-    {
-        return BLOCK_CACHE != null && BLOCK_CACHE.containsKey(name);
-    }
-
     /** loads the specified script */
     public ScriptInstance loadScript(String name, String code, Hashtable env) throws YourCodeSucksException
     {
@@ -321,16 +352,18 @@ public class ScriptLoader
     /** compiles a script using the specified stream as a source */
     public Block compileScript(String name, InputStream stream) throws YourCodeSucksException, IOException
     {
-        if (isCacheHit(name)) {
+        if (isCacheHit(name)) 
+        {
             stream.close();
-            return compileScript(name, "");
+            return retrieveCacheEntry(name);
         }
 
-        StringBuffer code = new StringBuffer("");
+        StringBuffer code = new StringBuffer();
 
         BufferedReader in = new BufferedReader(getInputStreamReader(stream));
         String s = in.readLine();
-        while (s != null) {
+        while (s != null) 
+        {
             code.append("\n");
             code.append(s);
             s = in.readLine();
@@ -347,6 +380,7 @@ public class ScriptLoader
      */
     public Block compileScript(File file) throws IOException, YourCodeSucksException
     {
+        touch(file.getAbsolutePath(), file.lastModified());
         return compileScript(file.getAbsolutePath(), new FileInputStream(file));
     }
 
@@ -363,8 +397,7 @@ public class ScriptLoader
     {
         if (isCacheHit(name)) 
         {
-            //System.out.println("BLOCK CACHE HIT FOR: " + name);
-            return (Block) BLOCK_CACHE.get(name);
+            return retrieveCacheEntry(name);
         } 
         else 
         {
@@ -378,7 +411,9 @@ public class ScriptLoader
             temp.parse();
 
             if (BLOCK_CACHE != null)
-                BLOCK_CACHE.put(name, temp.getRunnableBlock());
+            {
+                BLOCK_CACHE.put(name, new Object[] { temp.getRunnableBlock(), new Long(System.currentTimeMillis()) });
+            }
 
             return temp.getRunnableBlock();
         }
@@ -442,10 +477,9 @@ public class ScriptLoader
     public void unloadScript(ScriptInstance script)
     {
         // clear the block cache of this script...
-        if (BLOCK_CACHE != null) {
-            //System.out.println("Removing: " + script.getName() + " from BLOCK_CACHE");
-            //BLOCK_CACHE.remove(script.getName());
-            BLOCK_CACHE.clear();
+        if (BLOCK_CACHE != null) 
+        {
+            BLOCK_CACHE.remove(script.getName());
         }
 
         //

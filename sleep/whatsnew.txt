@@ -47,7 +47,12 @@
 - added JSR223/javax.script API support.  sleep.jar is now a 
   service provider for this API.  See jsr223/readme-jsr223.txt
   for more information.
-  
+- Reworked the ScriptLoader compiled code cache.  It works mostly
+  as before except now an unloaded script will not delete the 
+  entire cache.  This was put in place to account for &include'd
+  scripts.  Now &include validates its last modified timestamp
+  with the ScriptLoader prior to (re)loading.  
+   
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========
 - added &chdir() to change the current working directory of the

@@ -351,11 +351,16 @@ public class BasicUtilities implements Function, Loadable, Predicate
                 if (parent != null)
                 {
                    URLClassLoader loader = new URLClassLoader(new URL[] { parent.toURL() });
+                   sloader.touch(className, parent.isDirectory() ? new File(parent, className).lastModified() : parent.lastModified());
+
                    istream = loader.getResourceAsStream(className);
                 }
                 else
                 {
-                   istream = new FileInputStream(BridgeUtilities.toSleepFile(className, si));
+                   File tempf = BridgeUtilities.toSleepFile(className, si);
+                   sloader.touch(className, tempf.lastModified());
+
+                   istream = new FileInputStream(tempf);
                 }
 
                 if (istream != null)

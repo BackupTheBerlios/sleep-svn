@@ -471,7 +471,7 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        }
        else
        {
-          HashMap temp = loader.getScriptsByKey();
+          Map temp = loader.getScriptsByKey();
 
           if (temp.get(getFullScript(item)) != null)
           {
@@ -493,7 +493,7 @@ public class ConsoleImplementation implements RuntimeWarningWatcher, Loadable, C
        }
        else
        {
-          HashMap temp = loader.getScriptsByKey();
+          Map temp = loader.getScriptsByKey();
 
           if (temp.get(getFullScript(item)) != null)
           {
