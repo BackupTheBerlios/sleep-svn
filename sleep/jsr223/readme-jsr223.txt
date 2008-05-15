@@ -13,13 +13,13 @@ That's it.  This will produce a sleep-engine.jar file.  Go ahead and execute the
 of Sleep in the toplevel directory.  The contents of jsr223/sleep-engine.jar will automatically
 be included in the sleep.jar file.
 
-**** Make sure sleep.jar is in the classpath ****
-
 To run a script (.sl is recognized as a sleep script):
 
-[raffi@beardsley ~/sleep] jrunscript -f file.sl
+[raffi@beardsley ~/sleep] jrunscript -cp sleep.jar -l sleep -f file.sl
 
 To evaluate Sleep code within Java:
+
+  **** Make sure sleep.jar is in the classpath ****
 
   ScriptEngineManager manager = new ScriptEngineManager();
   ScriptEngine sleepEngine = manager.getEngineByName("sleep");
