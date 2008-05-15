@@ -32,6 +32,8 @@ package org.dashnine.sleep;
 import javax.script.*;
 import java.util.*;
 
+import sleep.runtime.*;
+
 public class SleepScriptEngineFactory implements ScriptEngineFactory 
 {
     public String getEngineName() 
@@ -41,7 +43,7 @@ public class SleepScriptEngineFactory implements ScriptEngineFactory
 
     public String getEngineVersion() 
     {
-        return "2.1";
+        return SleepUtils.SLEEP_RELEASE + "";
     }
 
     public List<String> getExtensions() 
@@ -51,7 +53,7 @@ public class SleepScriptEngineFactory implements ScriptEngineFactory
 
     public String getLanguageName() 
     {
-        return "sleep";
+        return "Sleep";
     }
 
     public String getLanguageVersion() 
@@ -151,11 +153,13 @@ public class SleepScriptEngineFactory implements ScriptEngineFactory
     private static List<String> extensions;
     private static List<String> mimeTypes;
     static {
-        names = new ArrayList<String>(1);
+        names = new ArrayList<String>(2);
         names.add("sleep");
+        names.add("Sleep");
         names = Collections.unmodifiableList(names);
-        extensions = new ArrayList<String>(1);
+        extensions = new ArrayList<String>(2);
         extensions.add("sl");
+        extensions.add(".sl");
         extensions = Collections.unmodifiableList(extensions);
         mimeTypes = new ArrayList<String>(0);
         mimeTypes = Collections.unmodifiableList(mimeTypes);
