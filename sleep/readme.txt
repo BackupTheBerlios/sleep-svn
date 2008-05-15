@@ -1,5 +1,5 @@
  ------- -------------------- ---------   ---------------  ------- ---------
-Sleep - 2.1 beta 25 - README   
+Sleep - 2.1 beta 26 - README   
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 "You got the language, all you need now is the O'Reilly book".  That is
@@ -169,4 +169,3 @@ Java or sleep subroutines supplied by you and linked into this library
 shall not be considered part of this library.
 
 See license.txt for more information.
-

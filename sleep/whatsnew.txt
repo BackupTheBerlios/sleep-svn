@@ -1,4 +1,4 @@
-2.1-beta 26
+2.1-beta 26  (15 May 08)
 ===========
 - removed extra key string conversion within ordered hashes.  
   may offer a performance speedup in some cases.
