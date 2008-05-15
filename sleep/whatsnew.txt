@@ -44,6 +44,9 @@
   parameter to allow partial splits of text.
 - added function inline({ .. }) to invoke the specified block
   inline
+- added JSR223/javax.script API support.  sleep.jar is now a 
+  service provider for this API.  See jsr223/readme-jsr223.txt
+  for more information.
   
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========
