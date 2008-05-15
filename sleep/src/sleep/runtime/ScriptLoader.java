@@ -78,14 +78,27 @@ import sleep.taint.*;
  * the script.</p>
  *
  * <p>To compile a script means to produce a runnable Block of code.  On its own a Block is not really runnable as a script 
- * environment is needed.  For functions like eval(), include(), etc.. it makes sense to compile a script as one may want to run
+ * environment is needed.  For functions eval(), include(), etc.. it makes sense to compile a script as you may want to run
  * the block of code within the environment of the calling script.  Using the compile method saves on the overhead of unnecessary
  * script environment creation and bridge registration.</p>
  *
- * <p>Hopefully this helped to clarify things. :)</p>
+ * <h3>Management of Script Reloading</h3>
  *
- * @see sleep.interfaces.Loadable
- * @see ScriptInstance
+ * <p>The ScriptInstance class has a an associateFile method to associate a source File object with a script.  The &amp;include function 
+ * calls this method when a file is included into the current script context.  To check if any of the associated files has changed call 
+ * hasChanged on the appropriate ScriptInstance.</P>
+ *
+ * <p>The ScriptLoader will automatically associate a source file with a ScriptInstance when a File object is passed to loadScript.  If
+ * you choose to do some voodoo compiling scripts and managing your own cache (not necessary btw) then you will have to call associateFile
+ * against any ScriptInstance you construct</p>
+ *
+ * <h3>Script Cache</h3>
+ *
+ * <p>The ScriptLoader mantains a cache of Blocks.  These are indexed by name and a timestamp of when they were created.  You may call the
+ * touch method with the name and a timestamp to allow the ScriptLoader to invalidate the cache entry.  If you just load scripts from files
+ * then the script cache will just work.  To disable the cache use <code>loader.setGlobalCache(false)</code>.</p>
+ *
+ * <p>Hopefully this helped to clarify things. :)</p>
  */
 public class ScriptLoader
 {
@@ -99,6 +112,7 @@ public class ScriptLoader
        if (BLOCK_CACHE != null && BLOCK_CACHE.containsKey(name))
        {
           Object[] temp = (Object[])BLOCK_CACHE.get(name);
+
           return (Block)temp[0];
        }
 
@@ -452,7 +466,9 @@ public class ScriptLoader
      */
     public ScriptInstance loadScript(File file, Hashtable env) throws IOException, YourCodeSucksException
     {
-        return loadScript(file.getAbsolutePath(), new FileInputStream(file), env);
+        ScriptInstance script = loadScript(file.getAbsolutePath(), new FileInputStream(file), env);
+        script.associateFile(file);
+        return script;
     }
 
     /**
@@ -460,7 +476,7 @@ public class ScriptLoader
      */
     public ScriptInstance loadScript(File file) throws IOException, YourCodeSucksException
     {
-        return loadScript(file.getAbsolutePath(), new FileInputStream(file), null);
+        return loadScript(file, null);
     }
 
     /**

@@ -51,6 +51,9 @@
   scripts.  Now &include validates its last modified timestamp
   with the ScriptLoader prior to (re)loading.  
 - fixed bug in SleepUtils.getArgumentStack(Map)
+- added a hasChanged() method to ScriptInstance to help apps
+  determine if a script (or any script it has included) has
+  changed.
    
 2.1-beta 25  (8 May 08) [will this beta process ever end?]
 ===========

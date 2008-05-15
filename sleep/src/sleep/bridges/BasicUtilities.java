@@ -350,8 +350,11 @@ public class BasicUtilities implements Function, Loadable, Predicate
          
                 if (parent != null)
                 {
+                   File theFile = parent.isDirectory() ? new File(parent, className) : parent;
+
                    URLClassLoader loader = new URLClassLoader(new URL[] { parent.toURL() });
-                   sloader.touch(className, parent.isDirectory() ? new File(parent, className).lastModified() : parent.lastModified());
+                   sloader.touch(className, theFile.lastModified());
+                   si.associateFile(theFile); /* associate this included script with the current script instance */
 
                    istream = loader.getResourceAsStream(className);
                 }
@@ -359,6 +362,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
                 {
                    File tempf = BridgeUtilities.toSleepFile(className, si);
                    sloader.touch(className, tempf.lastModified());
+                   si.associateFile(tempf); /* associate this included script with the current script instance */
 
                    istream = new FileInputStream(tempf);
                 }

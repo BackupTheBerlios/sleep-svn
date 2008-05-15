@@ -17,4 +17,4 @@ while($ii < 10)
   fork($my_th, $iter => "$ii");
 }
 
-
+sleep(3000);

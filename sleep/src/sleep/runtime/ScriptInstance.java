@@ -104,6 +104,36 @@ public class ScriptInstance implements Serializable, Runnable
     /** track all of the flagged debug options for this script (set to DEBUG_SHOW_ERRORS by default) */
     protected int debug = DEBUG_SHOW_ERRORS;
 
+    /** track the time this script was loaded */
+    protected long loadTime = System.currentTimeMillis();
+
+    /** list of source files associated with this script (to account for &include) */
+    protected List sourceFiles = new LinkedList();
+
+    /** associates the specified source file with this script */
+    public void associateFile(File f)
+    {
+       if (f.exists())
+       {
+          sourceFiles.add(f);
+       }
+    }
+
+    /** this script instance checks if (to the best of its knowledge) any of its source files have changed */
+    public boolean hasChanged()
+    {
+       Iterator i = sourceFiles.iterator();
+       while (i.hasNext())
+       {
+          File temp = (File)i.next();
+          if (temp.lastModified() > loadTime)
+          {
+             return true;
+          }
+       }
+   
+       return false;
+    }
 
     /** set the debug flags for this script */
     public void setDebugFlags(int options)
