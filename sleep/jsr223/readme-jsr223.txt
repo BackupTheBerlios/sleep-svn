@@ -11,15 +11,28 @@ To (re)compile this code use:
 
 That's it.  This will produce a sleep-engine.jar file.  Go ahead and execute the normal compilation
 of Sleep in the toplevel directory.  The contents of jsr223/sleep-engine.jar will automatically
-be included in the Sleep distribution.
+be included in the sleep.jar file.
 
-I'm not a consumer of the JSR223 API so there may be unintentional bugs in this factory.  Even
-though I am not a consumer I still want to deliver the best product I can to you.  If you find
-something that seems broken do not hesitate to contact me and I will work with you to resolve it.
+Running a script doesn't get any easier than this:
+
+[raffi@beardsley ~/sleep] jrunscript -cp sleep.jar -l sleep -f file.sl
+
+Some notes about the integration:
+
+- The GLOBAL_SCOPE Bindings of the ScriptContext are treated as Sleep globals.  The Binding values
+  are dumped into an object scalar with no conversion.
+
+- The getErrorWriter(), getReader(), and getWriter() values of ScriptContext are virtually ignored.
+  1) Sleep doesn't speak Reader/Writer language and 2) they seem to act as blackholes when 
+  scripts are executed with JRunScript.  
+
+- All scripts share variables and environment.  This was as much a necessity as a convienence.
+
+That's about it.  The integration is minimal but it seems to work.  If you encounter any bugs
+don't hesitate to contact me.
 
 -- Raphael (rsmudge@gmail.com)
 
 
 Special thanks to A. Sundararajan (sundararajana@dev.java.net) at Sun for the development of the
-Sleep 2.0 script engine.  This code is mostly his.  I've modified it a little to support Sleep 2.1.
-
+Sleep 2.0 script engine.  

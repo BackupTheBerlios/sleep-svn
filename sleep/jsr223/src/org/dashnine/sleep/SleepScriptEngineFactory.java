@@ -27,42 +27,51 @@
  * @author A. Sundararajan
  */
 
-package com.sun.script.sleep;
+package org.dashnine.sleep;
 
 import javax.script.*;
 import java.util.*;
 
-public class SleepScriptEngineFactory implements ScriptEngineFactory {
-    public String getEngineName() { 
+public class SleepScriptEngineFactory implements ScriptEngineFactory 
+{
+    public String getEngineName() 
+    { 
         return "sleep";
     }
 
-    public String getEngineVersion() {
-        return "2.0";
+    public String getEngineVersion() 
+    {
+        return "2.1";
     }
 
-    public List<String> getExtensions() {
+    public List<String> getExtensions() 
+    {
         return extensions;
     }
 
-    public String getLanguageName() {
+    public String getLanguageName() 
+    {
         return "sleep";
     }
 
-    public String getLanguageVersion() {
-        return "2.0";
+    public String getLanguageVersion() 
+    {
+        return "2.1";
     }
 
-    public String getMethodCallSyntax(String obj, String m, String... args) {
+    public String getMethodCallSyntax(String obj, String m, String... args) 
+    {
         StringBuilder buf = new StringBuilder();
         buf.append('[');
         buf.append(obj);
         buf.append(' ');
         buf.append(m);
         buf.append(':');
-        if (args.length != 0) {
+        if (args.length != 0) 
+        {
             int i = 0;
-            for (; i < args.length - 1; i++) {
+            for (; i < args.length - 1; i++) 
+            {
                 buf.append(args[i] + ", ");
             }
             buf.append(args[i]);
@@ -72,37 +81,39 @@ public class SleepScriptEngineFactory implements ScriptEngineFactory {
         return buf.toString();
     }
 
-    public List<String> getMimeTypes() {
+    public List<String> getMimeTypes() 
+    {
         return mimeTypes;
     }
 
-    public List<String> getNames() {
+    public List<String> getNames() 
+    {
         return names;
     }
 
-    public String getOutputStatement(String toDisplay) {
+    public String getOutputStatement(String toDisplay) 
+    {
         StringBuilder buf = new StringBuilder();
-        buf.append("print(\"");
+        buf.append("print('");
         int len = toDisplay.length();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; i++) 
+        {
             char ch = toDisplay.charAt(i);
             switch (ch) {
-            case '"':
-                buf.append("\\\"");
-                break;
-            case '\\':
-                buf.append("\\\\");
+            case '\'':
+                buf.append("\'");
                 break;
             default:
                 buf.append(ch);
                 break;
             }
         }
-        buf.append("\")");
+        buf.append("')");
         return buf.toString();
     }
 
-    public String getParameter(String key) {
+    public String getParameter(String key) 
+    {
         if (key.equals(ScriptEngine.ENGINE)) {
             return getEngineName();
         } else if (key.equals(ScriptEngine.ENGINE_VERSION)) {
@@ -120,7 +131,8 @@ public class SleepScriptEngineFactory implements ScriptEngineFactory {
         }
     } 
 
-    public String getProgram(String... statements) {
+    public String getProgram(String... statements) 
+    {
         StringBuilder buf = new StringBuilder();
         for (int i = 0; i < statements.length; i++) {
             buf.append(statements[i]);
