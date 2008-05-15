@@ -13,10 +13,19 @@ That's it.  This will produce a sleep-engine.jar file.  Go ahead and execute the
 of Sleep in the toplevel directory.  The contents of jsr223/sleep-engine.jar will automatically
 be included in the sleep.jar file.
 
-Running a script doesn't get any easier than this:
+**** Make sure sleep.jar is in the classpath ****
 
-[raffi@beardsley ~/sleep] jrunscript -cp sleep.jar -l sleep -f file.sl
+To run a script (.sl is recognized as a sleep script):
 
+[raffi@beardsley ~/sleep] jrunscript -f file.sl
+
+To evaluate Sleep code within Java:
+
+  ScriptEngineManager manager = new ScriptEngineManager();
+  ScriptEngine sleepEngine = manager.getEngineByName("sleep");
+
+  @see http://java.sun.com/javase/6/docs/api/javax/script/ScriptEngine.html
+  
 Some notes about the integration:
 
 - The GLOBAL_SCOPE Bindings of the ScriptContext are treated as Sleep globals.  The Binding values
