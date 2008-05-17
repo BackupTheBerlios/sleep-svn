@@ -1,3 +1,9 @@
+2.1-beta 27 
+===========
+- Virtual machine errors (stack overflow, out of memory) etc.
+  are now caught within the interpreter and used to coerce
+  a printout of the location of each Sleep stack frame.
+
 2.1-beta 26  (15 May 08)
 ===========
 - removed extra key string conversion within ordered hashes.  

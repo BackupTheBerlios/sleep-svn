@@ -268,6 +268,11 @@ public class Block implements Serializable
               cleanupEnvironment(environment);
               return SleepUtils.getEmptyScalar();
            } 
+           catch (Error th)
+           {
+              environment.getScriptInstance().fireWarning("critical internal error - " + th.toString(), temp.getLineNumber());
+              throw th;
+           }
 
            while (environment.isReturn())
            {
