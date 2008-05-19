@@ -9,7 +9,7 @@ import sleep.interfaces.*;
 import sleep.runtime.*;
 
 /** The Sleep Closure class.  This class represents a Function object that is also a self contained closure */
-public class SleepClosure implements Function
+public class SleepClosure implements Function, Runnable
 {
     private static int ccount = -1;
     private int id;
@@ -157,6 +157,12 @@ public class SleepClosure implements Function
     public void setVariables(Variable _variables)
     {
        variables = _variables; 
+    }
+
+    /** "Safely" calls this closure. */
+    public void run()
+    {
+       callClosure("run", null, null);
     }
 
     /** "Safely" calls this closure.  Use this if you are evaluating this closure from your own code. 

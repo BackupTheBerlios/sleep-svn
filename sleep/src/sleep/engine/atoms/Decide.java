@@ -66,6 +66,14 @@ public class Decide extends Step
 
    public int getHighLineNumber()
    {
+      if (iftrue == null)
+      {
+         return iffalse.getHighLineNumber();
+      }
+      else if (iffalse == null)
+      {
+         return iftrue.getHighLineNumber();
+      }
       int x = iftrue.getHighLineNumber(); 
       int y = iffalse.getHighLineNumber();
       return x > y ? x : y;

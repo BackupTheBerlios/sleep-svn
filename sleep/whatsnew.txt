@@ -3,6 +3,9 @@
 - Virtual machine errors (stack overflow, out of memory) etc.
   are now caught within the interpreter and used to coerce
   a printout of the location of each Sleep stack frame.
+- SleepClosure now implements the Runnable interface.
+- fixed a null pointer exception for assertions triggered
+  with no preceeding statements.
 
 2.1-beta 26  (15 May 08)
 ===========
