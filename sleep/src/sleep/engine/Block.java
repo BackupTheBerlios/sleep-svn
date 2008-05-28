@@ -271,6 +271,7 @@ public class Block implements Serializable
            catch (Error th)
            {
               environment.getScriptInstance().fireWarning("critical internal error - " + th.toString(), temp.getLineNumber());
+              cleanupEnvironment(environment);
               throw th;
            }
 
