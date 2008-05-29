@@ -245,8 +245,18 @@ public class Block implements Serializable
               else if (ex instanceof NullPointerException)
               {
                  environment.getScriptInstance().fireWarning("null value error", temp.getLineNumber());
-                 ex.printStackTrace();
               }
+              else if (ex instanceof ConcurrentModificationException)
+              {
+                 if (ex.getMessage()  != null)
+                 {
+                    environment.getScriptInstance().fireWarning("unsafe data modification: " + ex.getMessage(), temp.getLineNumber());
+                 }
+                 else
+                 {
+                    environment.getScriptInstance().fireWarning("detected unsafe data modification", temp.getLineNumber());
+                 }
+              }    
               else if (ex instanceof RuntimeException)
               {
                  if (ex.getMessage() == null)

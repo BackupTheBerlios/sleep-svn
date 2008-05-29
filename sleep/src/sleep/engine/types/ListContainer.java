@@ -10,7 +10,7 @@ public class ListContainer implements ScalarArray
 
    public ListContainer()
    {
-      values = new LinkedList();
+      values = new MyLinkedList();
    }
 
    public ListContainer(List list)

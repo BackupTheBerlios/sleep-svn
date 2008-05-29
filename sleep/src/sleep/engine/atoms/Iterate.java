@@ -159,8 +159,17 @@ public class Iterate extends Step
          e.getCurrentFrame().push(SleepUtils.getScalar(false));
          return;
       }
-
-      Object next = data.iterator.next();
+     
+      Object next = null;
+      try
+      {
+         next = data.iterator.next();
+      }
+      catch (ConcurrentModificationException cmex)
+      {
+         data.iterator = null; /* force a break out of the loop */
+         throw (cmex);
+      }
 
       if (data.source.getHash() != null)
       {

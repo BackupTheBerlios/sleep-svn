@@ -6,6 +6,15 @@
 - SleepClosure now implements the Runnable interface.
 - fixed a null pointer exception for assertions triggered
   with no preceeding statements.
+- created a java.util.List compatible data structure to back
+  Sleep arrays.  this data structure is similar to LinkedList
+  except it creates sublists with more desired performance
+  characteristics--sublists of java.util.LinkedList traverse
+  the entire parent list for each requested element.
+- added better error messages for ConcurrentModificationException's
+  thrown by Java
+- foreach loops now break if a ConcurrentModificationException
+  is thrown.
 
 2.1-beta 26  (15 May 08)
 ===========

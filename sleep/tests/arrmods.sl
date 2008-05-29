@@ -6,7 +6,9 @@
 @b = @(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14);
 @c = copy(@b);
 
-println(splice(@c, subarray(@a, -4), 3));
+$a = subarray(@a, -4);
+$b = splice(@c, $a, 3);
+println($b);
 
 @c = copy(@b);
 println(splice(@c, subarray(@a, -4), 3, 0));
