@@ -157,35 +157,13 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
    { 
       checkSafety();
 
-      ListEntry begin;
-      ListEntry end;
+      ListEntry begin = getAt(beginAt).next();  /* included */
+      ListEntry end = getAt(endAt); /* not included */
 
-      begin = header.next();
-
-      int x = 0;
-      while (x < beginAt)
-      {
-         begin = begin.next();
-         x++;
-      }
-
-      if (endAt == size)
-      {
-         end = header.previous();
-      }
-      else
-      {
-         end = begin;
-
-         while (x < endAt)
-         {
-            end = end.next();
-           x++;
-         } 
- 
-         end = end.previous();
-      }
-
+      /* we want each sublist to consist of a direct view into the parent... operations on other
+         sublists will fail if the parent is changed through some other sublist, this makes things
+         efficient and safe */
+        
       while (begin instanceof ListEntryWrapper)
       {
          begin = ((ListEntryWrapper)begin).parent;
@@ -199,14 +177,28 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       return new MyLinkedList(parentList == null ? this : parentList, begin, end, (endAt - beginAt));
    }
 
-   public ListIterator listIterator(int index)
+   /** get an object from the linked list */
+   public Object get(int index)
    {
+      if (size == 0)
+         throw new IndexOutOfBoundsException("list is empty");
+
+      return getAt(index).next().element();
+   }
+
+   /** returns the entry at the specified index */
+   private ListEntry getAt(int index)
+   {
+      if (index < 0 || index > size)
+        throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+
       ListEntry entry = header;
 
-      if (index < 0 || index > size)
-         throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
-
-      if (index < (size / 2))
+      if (index == size)
+      {
+         return header.previous();
+      }
+      else if (index < (size / 2))
       {
          for (int x = 0; x < index; x++)
          {
@@ -222,7 +214,12 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
          }
       }
 
-      return new MyListIterator(entry, index); 
+      return entry;
+   }
+
+   public ListIterator listIterator(int index)
+   {
+      return new MyListIterator(getAt(index), index);
    }
 
    // code for the ListEntry //
