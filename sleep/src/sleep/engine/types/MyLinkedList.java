@@ -127,6 +127,14 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
 
       boundaryPrevious = begin;
       boundaryNext     = end;
+      
+/*      if (begin instanceof ListEntryWrapper || end instanceof ListEntryWrapper)
+      {
+         System.out.println("This is a problem!");
+         Thread.dumpStack();
+         System.exit(0);
+      } */
+
 
       ListEntryWrapper head = new ListEntryWrapper(begin);
       ListEntryWrapper tail = new ListEntryWrapper(end);
@@ -163,7 +171,7 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
 
       if (endAt == size)
       {
-         end = header;
+         end = header.previous();
       }
       else
       {
@@ -172,21 +180,22 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
          while (x < endAt)
          {
             end = end.next();
-            x++;
-         }
+           x++;
+         } 
+ 
+         end = end.previous();
       }
 
-      if (begin instanceof ListEntryWrapper)
+      while (begin instanceof ListEntryWrapper)
       {
          begin = ((ListEntryWrapper)begin).parent;
       }
 
-      if (end instanceof ListEntryWrapper)
+      while (end instanceof ListEntryWrapper)
       {
          end = ((ListEntryWrapper)end).parent;
       }
 
-      end = end.previous();
       return new MyLinkedList(parentList == null ? this : parentList, begin, end, (endAt - beginAt));
    }
 
@@ -197,12 +206,22 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       if (index < 0 || index > size)
          throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
 
-      for (int x = 0; x < index; x++)
+      if (index < (size / 2))
       {
-         entry = entry.next();
+         for (int x = 0; x < index; x++)
+         {
+            entry = entry.next();
+         }
+      }
+      else
+      {
+         entry = entry.previous();
+         for (int x = size; x > index; x--)
+         {
+            entry = entry.previous();
+         }
       }
 
-//      System.out.println("listIterator(" + index + "): " + entry.toString());
       return new MyListIterator(entry, index); 
    }
 
@@ -254,6 +273,20 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       public ListEntryWrapper(ListEntry _parent)
       {
          parent = _parent;
+
+       /*  if (parent instanceof ListEntryWrapper)
+         {
+             System.out.println("Parent is a wrapper");
+             Thread.dumpStack();
+             System.exit(0);
+         }
+
+         if (parent == header)
+         {
+             System.out.println("Parent is the header!!!");
+             Thread.dumpStack();
+             System.exit(0);
+         } */
       }
 
       public ListEntry remove()
@@ -342,6 +375,11 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
             return header;
          }
 
+/*         if (parent instanceof ListEntryWrapper)
+         {
+             System.err.println("next() ARGH!!!!!!!!!!! " + parent);
+         } */
+
          ListEntryWrapper r = new ListEntryWrapper(parent.next());
          return r;
       }
@@ -354,6 +392,16 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
          {
             return header;
          }
+
+/*         if (parent instanceof ListEntryWrapper)
+         {
+             System.err.println("previous() ARGH!!!!!!!!!!! " + parent);
+         }
+         
+         if (parent.previous() instanceof ListEntryWrapper)
+         {
+             System.err.println(".. " + header.element() + " and whatever");
+         } */
 
          ListEntryWrapper r = new ListEntryWrapper(parent.previous());
          return r;
