@@ -38,7 +38,23 @@ import sleep.parser.ParserConfig;
 /** Provides a bridge between Java's regex API and sleep.  Rock on */
 public class RegexBridge implements Loadable
 {
-    private static Map patternCache = Collections.synchronizedMap(new HashMap());
+    private static Map patternCache = Collections.synchronizedMap(new Cache(128));
+
+    private static class Cache extends LinkedHashMap
+    {
+       protected int count;
+
+       public Cache(int count)
+       {
+          super(11, 0.75f, true);
+          this.count = count;
+       }
+
+       protected boolean removeEldestEntry(Map.Entry eldest)
+       {
+          return (size() >= count);
+       }
+    }
  
     static
     {
@@ -56,11 +72,6 @@ public class RegexBridge implements Loadable
        }
        else
        {
-          if (patternCache.size() > 1024)
-          {
-             patternCache.clear(); /* ensure the pattern cache is flushed once in awhile */
-          }
-     
           temp = Pattern.compile(pattern);
           patternCache.put(pattern, temp);
 
@@ -135,12 +146,22 @@ public class RegexBridge implements Loadable
     /** a helper utility to get the matcher out of the script environment */
     private static Scalar getMatcher(ScriptEnvironment env, String key, String text, Pattern p)
     {
-       Scalar temp = (Scalar)env.getContextMetadata(key);
+       Map matchers = (Map)env.getContextMetadata("matchers");
+
+       if (matchers == null)
+       {
+          matchers = new Cache(16);
+          env.setContextMetadata("matchers", matchers);
+       }       
+
+       /* get our value */
+
+       Scalar temp = (Scalar)matchers.get(key);
 
        if (temp == null)
        {
           temp = SleepUtils.getScalar(p.matcher(text));
-          env.setContextMetadata(key, temp);
+          matchers.put(key, temp);
           return temp;
        }
        else
@@ -175,7 +196,8 @@ public class RegexBridge implements Loadable
 
               if (!rv)
               {
-                 i.getScriptEnvironment().setContextMetadata(key, null);
+                 Map matchers = (Map)i.getScriptEnvironment().getContextMetadata("matchers");
+                 if (matchers != null) { matchers.remove(key); }
               }
           }
           else

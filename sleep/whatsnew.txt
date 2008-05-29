@@ -15,6 +15,12 @@
   thrown by Java
 - foreach loops now break if a ConcurrentModificationException
   is thrown.
+- reimplemented regex pattern and hasmatch state cacheing to 
+  prevent memory leaks.  Sleep will cache 128 patterns globally 
+  and up to 16 hasmatch contexts per closure.  Remember that 
+  hasmatch will remove its state after returning false.  These
+  measures are in place to help prevent runaway uses of 
+  hasmatch from eating all of the memory.
 
 2.1-beta 26  (15 May 08)
 ===========
