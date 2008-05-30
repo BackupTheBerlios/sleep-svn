@@ -217,7 +217,14 @@ public class BridgeUtilities
    public static SleepClosure getFunction(Stack arguments, ScriptInstance script)
    {
       Scalar temp = getScalar(arguments);
-      return SleepUtils.getFunctionFromScalar(temp, script);
+      SleepClosure func = SleepUtils.getFunctionFromScalar(temp, script);
+
+      if (func == null)
+      {
+         throw new IllegalArgumentException("expected &closure--received: " + SleepUtils.describe(temp));
+      }
+
+      return func;
    }
 
    /** grab a scalar, if the stack is empty the empty/null scalar will be returned. */

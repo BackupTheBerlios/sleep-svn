@@ -35,6 +35,8 @@
   a parameter.
 - BridgeUtilities.getIterator() throws an exception if the 
   value on the stack is not an iterator.
+- BridgeUtilities.getFunction() throws an exception if the  
+  value on the stack is not a closure.
 
 2.1-beta 26  (15 May 08)
 ===========
