@@ -130,7 +130,7 @@ public class RegexBridge implements Loadable
 
     private static String key(String text, Pattern p)
     {
-       StringBuffer buffer = new StringBuffer();
+       StringBuffer buffer = new StringBuffer(text.length() + p.pattern().length() + 1);
        buffer.append(text);
        buffer.append(p.pattern());
 
