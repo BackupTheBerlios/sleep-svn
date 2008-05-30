@@ -43,7 +43,8 @@
      as local variables
   -- $__SCRIPT__ and @ARGV are now available to Sleep scripts
      executed with jrunscript.
-- sleep parser now ignores "\r" inside of script files.
+  -- better handling of \r, \n, and \r\n in eval()
+- sleep lexer now ignores "\r" as whitespace
 
 2.1-beta 26  (15 May 08)
 ===========
