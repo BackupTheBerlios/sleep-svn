@@ -157,6 +157,7 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       return new MyLinkedList(parentList == null ? this : parentList, begin, end, (endAt - beginAt));
    }
 
+   /** add an object to the list */
    public boolean add(Object o)
    {
       ListEntry entry = header;
@@ -167,10 +168,23 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
    /** get an object from the linked list */
    public Object get(int index)
    {
-      if (size == 0)
-         throw new IndexOutOfBoundsException("list is empty");
+      if (index >= size)
+         throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
 
       return getAt(index).next().element();
+   }
+
+   /** remove an object at the specified index */
+   public Object remove(int index)
+   {
+      if (index >= size)
+         throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+
+      ListEntry entry = getAt(index).next();
+      Object value = entry.element();
+      entry.remove();
+
+      return value;
    }
 
    /** returns the entry at the specified index */

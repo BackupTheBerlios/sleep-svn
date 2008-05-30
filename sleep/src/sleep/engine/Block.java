@@ -236,7 +236,14 @@ public class Block implements Serializable
               }
               else if (ex instanceof IndexOutOfBoundsException)
               {
-                 environment.getScriptInstance().fireWarning("attempted an invalid index", temp.getLineNumber());
+                 if (ex.getMessage() != null)
+                 {
+                    environment.getScriptInstance().fireWarning("attempted an invalid index: " + ex.getMessage(), temp.getLineNumber());
+                 }
+                 else
+                 {
+                    environment.getScriptInstance().fireWarning("attempted an invalid index", temp.getLineNumber());
+                 }
               }
               else if (ex instanceof ClassCastException)
               {

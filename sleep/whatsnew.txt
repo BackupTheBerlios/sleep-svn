@@ -21,6 +21,8 @@
   hasmatch will remove its state after returning false.  These
   measures are in place to help prevent runaway uses of 
   hasmatch from eating all of the memory.
+- bad index errors (IndexOutOfBoundsException) are now more
+  descriptive in some cases.
 
 2.1-beta 26  (15 May 08)
 ===========
