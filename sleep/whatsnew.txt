@@ -39,6 +39,11 @@
   value on the stack is not a closure.
 - Backtick expressions now use an IOObject to read in process
   output. 
+- improved JSR223 support:
+  -- ENGINE_SCOPE bindings are now supported and marshalled in
+     as local variables
+  -- $__SCRIPT__ and @ARGV are now available to Sleep scripts
+     executed with jrunscript.
 
 2.1-beta 26  (15 May 08)
 ===========
