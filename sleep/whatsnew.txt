@@ -1,4 +1,4 @@
-2.1-beta 27 
+2.1-beta 27  (30 May 08)
 ===========
 - Virtual machine errors (stack overflow, out of memory) etc.
   are now caught within the interpreter and used to coerce
@@ -22,8 +22,7 @@
   hasmatch from eating all of the memory.
 - bad index errors (IndexOutOfBoundsException) are now more
   descriptive in some cases.
-- sublists are now serializable--when serialized only the 
-  sublist contents is serialized.
+- sublists are now serializable
 - function("blah") will now throw an error if argument does not
   begin with &
 - empty functions now retain proper line number information 
@@ -44,6 +43,7 @@
      as local variables
   -- $__SCRIPT__ and @ARGV are now available to Sleep scripts
      executed with jrunscript.
+- sleep parser now ignores "\r" inside of script files.
 
 2.1-beta 26  (15 May 08)
 ===========

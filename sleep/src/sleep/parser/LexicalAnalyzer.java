@@ -77,7 +77,7 @@ public class LexicalAnalyzer
 
    private static boolean isEndOfLine(char f)
    {
-      return (f == '\n');
+      return (f == '\n' || f == '\r');
    }
 
    /** a general pass over the list of tokens, we create terms and then pass over them creating combined terms */
