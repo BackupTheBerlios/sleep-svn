@@ -28,6 +28,13 @@
   begin with &
 - empty functions now retain proper line number information 
   (compiler introduces a NOP into the body of an empty function)
+- reworked how Sleep handles &function literals--the compiler
+  transforms these into a call against function('&function')--
+  this has the benefit of providing more debug info in a trace
+  and simplifying bridges that expect to receive a function as
+  a parameter.
+- BridgeUtilities.getIterator() throws an exception if the 
+  value on the stack is not an iterator.
 
 2.1-beta 26  (15 May 08)
 ===========

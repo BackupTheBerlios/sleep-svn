@@ -341,13 +341,23 @@ public class SleepUtils
       return (value.objectValue() != null && value.objectValue() instanceof SleepClosure);
    }
 
-   /** extracts a callable Function from the passed in Scalar.  The passed in Scalar can be either a SleepClosure scalar or a string scalar specifying a function name */
+   /** extracts a callable Function from the passed in Scalar.  Returns null if value does not contain a function.  Calling isFunctionScalar before this method is highly recommended. */
+   public static SleepClosure getFunctionFromScalar(Scalar value)
+   {
+       if (value.objectValue() != null && value.objectValue() instanceof SleepClosure)
+           return (SleepClosure)value.objectValue();
+
+       return null;
+   }
+
+   /** extracts a callable Function from the passed in Scalar.  The passed in Scalar can be either a SleepClosure scalar or a string scalar specifying a function name.
+       This method exists for backwards compatability of old jIRCii scripts. */
    public static SleepClosure getFunctionFromScalar(Scalar value, ScriptInstance script)
    {
-     if (value.objectValue() != null && value.objectValue() instanceof SleepClosure)
-         return (SleepClosure)value.objectValue();
+      if (value.objectValue() != null && value.objectValue() instanceof SleepClosure)
+          return (SleepClosure)value.objectValue();
 
-     return (SleepClosure)script.getScriptEnvironment().getFunction(value.toString());
+      return (SleepClosure)script.getScriptEnvironment().getFunction(value.toString());
    }
 
    /** creates an IO handle scalar suitable for use with the sleep IO API.  The passed in

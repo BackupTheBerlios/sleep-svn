@@ -856,9 +856,14 @@ public class CodeGenerator implements ParserConstants
            }
            else
            {
-              // retrieve a function literal... 
+              // transform a function literal into call on &function('&literal') 
+              atom = factory.CreateFrame();
+              add(atom, tokens[0]);
 
-              atom = factory.Get(strings[0]);
+              atom = factory.SValue(SleepUtils.getScalar(strings[0]));
+              add(atom, tokens[0]);
+
+              atom = factory.Call("function");
               add(atom, tokens[0]);
            }
            break;

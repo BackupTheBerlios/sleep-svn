@@ -157,6 +157,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
         function funcs = new function();
         temp.put("&function",  TaintUtils.Sensitive(funcs));
+        temp.put("function",   temp.get("&function")); /* special form used by the compiler */
         temp.put("&setf",      funcs);
         temp.put("&eval",      TaintUtils.Sensitive(new eval()));
         temp.put("&expr",      TaintUtils.Sensitive((Function)temp.get("&eval")));
@@ -514,7 +515,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
     {
        public Scalar evaluate(String n, ScriptInstance si, Stack l)
        {
-          if (n.equals("&function"))
+          if (n.equals("&function") || n.equals("function"))
           {
              String temp = BridgeUtilities.getString(l, "");
 
