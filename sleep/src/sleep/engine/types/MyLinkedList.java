@@ -33,19 +33,12 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       {
          checkSafety();
 
-         if (size == 0)
-         {
-            current = current.addBefore(o);
-         }
-         else
-         {
-            /* add the new element after the current element */
-            current = current.addAfter(o);
+         /* add the new element after the current element */
+         current = current.addAfter(o);
  
-            /* increment the list so that the next element returned is
-               unaffected by this call */
-            index++;
-         }
+         /* increment the list so that the next element returned is
+            unaffected by this call */
+         index++;
         
          modCountCheck++;
       }
@@ -117,8 +110,6 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
    private ListEntry header;
 
    /* fields used by sublists */
-   private ListEntry    boundaryLeft;
-   private ListEntry    boundaryRight;
    private MyLinkedList parentList;
 
    public int size()
@@ -131,12 +122,7 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       parentList = plist;
       modCount = parentList.modCount;
 
-      /* setup the header */
-      header = new SublistHeaderEntry();
-
-      boundaryLeft = begin;
-      boundaryRight = end;
-      
+      header = new SublistHeaderEntry(begin, end);
       size = _size;
    }
 
@@ -251,7 +237,14 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
 
    private class SublistHeaderEntry implements ListEntry
    {
-      public SublistHeaderEntry() { }
+      private ListEntry anchorLeft;
+      private ListEntry anchorRight;
+
+      public SublistHeaderEntry(ListEntry a, ListEntry b) 
+      {
+         anchorLeft  = a.previous();
+         anchorRight = b.next();
+      }
 
       public ListEntry remove() 
       {
@@ -260,22 +253,24 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
 
       public ListEntry previous() 
       {
-         return new ListEntryWrapper(boundaryRight);
+         return new ListEntryWrapper(anchorRight.previous());
       }
 
       public ListEntry next() 
       {
-         return new ListEntryWrapper(boundaryLeft);
+         return new ListEntryWrapper(anchorLeft.next());
       }
 
       public void setNext(ListEntry e)
       {
-         throw new UnsupportedOperationException("setNext");
+         anchorRight.setPrevious(e);
+         e.setNext(anchorRight);
       }
 
       public void setPrevious(ListEntry e)
       {
-         throw new UnsupportedOperationException("setPrevious");
+         anchorLeft.setNext(e);
+         e.setPrevious(anchorLeft);
       }
 
       public ListEntry addBefore(Object o)
@@ -319,23 +314,18 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
 
          if (size == 0)
          {
-            boundaryLeft = boundaryLeft.previous();
-            boundaryRight = boundaryRight.next();
-
-//            System.out.println("Did the remove() magic: " + boundaryLeft.element() + " and " + boundaryRight.element());
-
             return header;
          }
          else
          {
-            if (parent == boundaryLeft)
+            if (parent == header.next())
             {
-                boundaryLeft = temp;
+                header.setNext(temp);
             } 
 
-            if (parent == boundaryRight)
+            if (parent == header.previous())
             {
-                boundaryRight = temp;
+                header.setPrevious(temp);
             }
          }
 
@@ -353,12 +343,12 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
 
          if (size == 1)
          {
-            boundaryLeft = temp;
-            boundaryRight = temp;
+            header.setNext(temp);
+            header.setPrevious(temp);
          }
-         else if (parent == boundaryLeft)
+         else if (parent == header.next())
          {
-            boundaryLeft = temp;
+            header.setPrevious(temp);
          }
 
          return new ListEntryWrapper(temp);
@@ -375,12 +365,12 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
 
          if (size == 1)
          {
-            boundaryLeft = temp;
-            boundaryRight = temp;
+            header.setNext(temp);
+            header.setPrevious(temp);
          }
-         else if (parent == boundaryRight)
+         else if (parent == header.previous())
          {
-            boundaryRight = temp;
+            header.setNext(temp);
          }
 	
          return new ListEntryWrapper(temp);
@@ -410,9 +400,9 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       {
          checkSafety();
 
-         if (parent == boundaryRight)
+         if (parent == header.next())
          {
-            return new ListEntryWrapper(boundaryLeft);
+            return new ListEntryWrapper(header);
          }
 
          ListEntryWrapper r = new ListEntryWrapper(parent.next());
@@ -423,9 +413,9 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       {
          checkSafety();
 
-         if (parent == boundaryLeft)
+         if (parent == header.previous())
          {
-            return new ListEntryWrapper(boundaryRight);
+            return new ListEntryWrapper(header);
          }
 
          ListEntryWrapper r = new ListEntryWrapper(parent.previous());
