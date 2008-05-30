@@ -23,6 +23,8 @@
   hasmatch from eating all of the memory.
 - bad index errors (IndexOutOfBoundsException) are now more
   descriptive in some cases.
+- sublists are now serializable--when serialized only the 
+  sublist itself is serialized.
 
 2.1-beta 26  (15 May 08)
 ===========

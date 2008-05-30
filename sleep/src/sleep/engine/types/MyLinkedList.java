@@ -106,11 +106,11 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       }
    }
 
-   int size = 0;
-   private ListEntry header;
+   private transient int size = 0;
+   private transient ListEntry header;
 
    /* fields used by sublists */
-   private MyLinkedList parentList;
+   private transient MyLinkedList parentList;
 
    public int size()
    {
@@ -163,6 +163,13 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       ListEntry entry = header;
       header.previous().addAfter(o);
       return true;
+   }
+
+   /** add an object to the list at the specified index */
+   public void add(int index, Object element)
+   {
+      ListEntry entry = getAt(index);
+      entry.addAfter(element); 
    }
 
    /** get an object from the linked list */
@@ -549,4 +556,42 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
          return buffer.toString();
       }
    }
+
+    /* save this list to the stream */
+    private synchronized void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException 
+    {
+        /* grab any fields I missed */
+	out.defaultWriteObject();
+      
+        /* write out the size */
+        out.writeInt(size);
+
+        /* blah blah blah */
+        Iterator i = iterator();
+        while (i.hasNext())
+        {
+           out.writeObject(i.next());
+        }
+    }
+
+    /* reconstitute this list from the stream */
+    private synchronized void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException 
+    {
+        /* read any fields I missed */
+	in.defaultReadObject();
+      
+        /* read in the size */
+        int size = in.readInt();
+
+        /* create the header */
+        header = new NormalListEntry(SleepUtils.getScalar("[:HEADER:]"), null, null);
+        header.setNext(header);
+        header.setPrevious(header);
+
+        /* populate the list */
+        for (int x = 0; x < size; x++)
+        {
+           add(in.readObject());
+        }
+    }
 }
