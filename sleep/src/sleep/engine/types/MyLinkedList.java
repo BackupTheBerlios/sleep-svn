@@ -378,12 +378,12 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
 
       public void setNext(ListEntry entry)
       {
-         System.err.println("setNext");
+         throw new UnsupportedOperationException("ListEntryWrapper::setNext");
       }
 
       public void setPrevious(ListEntry entry)
       {
-         System.err.println("setPrevious");
+         throw new UnsupportedOperationException("ListEntryWrapper::setPrevious");
       }
 
       public Object element()
