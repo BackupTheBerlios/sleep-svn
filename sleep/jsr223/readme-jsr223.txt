@@ -17,6 +17,8 @@ To run a script (.sl is recognized as a sleep script):
 
 [raffi@beardsley ~/sleep] jrunscript -cp sleep.jar -l sleep -f file.sl
 
+  @ARGV and $__SCRIPT__ are available for scripts run this way. 
+
 To evaluate Sleep code within Java:
 
   **** Make sure sleep.jar is in the classpath ****
@@ -24,12 +26,19 @@ To evaluate Sleep code within Java:
   ScriptEngineManager manager = new ScriptEngineManager();
   ScriptEngine sleepEngine = manager.getEngineByName("sleep");
 
+  Object value = sleepEngine.eval("return 'hello world';");
+
   @see http://java.sun.com/javase/6/docs/api/javax/script/ScriptEngine.html
   
 Some notes about the integration:
 
-- The GLOBAL_SCOPE Bindings of the ScriptContext are treated as Sleep globals.  The Binding values
-  are dumped into an object scalar with no conversion.
+- The GLOBAL_SCOPE Bindings of the ScriptContext are treated as Sleep globals.  The ENGINE_SCOPE 
+  Bindings of the ScriptContext are treated as script locals.  
+
+  The binding keys are all prefixed with a $ sigil.  i.e the key javax.script.engine is available
+  as $javax.script.engine.
+
+  Sleep will marshall the bound values into Sleep scalars. 
 
 - The getErrorWriter(), getReader(), and getWriter() values of ScriptContext are virtually ignored.
   1) Sleep doesn't speak Reader/Writer language and 2) they seem to act as blackholes when 

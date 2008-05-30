@@ -153,13 +153,13 @@ public class SleepScriptEngineFactory implements ScriptEngineFactory
     private static List<String> extensions;
     private static List<String> mimeTypes;
     static {
-        names = new ArrayList<String>(2);
+        names = new ArrayList<String>(3);
         names.add("sleep");
         names.add("Sleep");
+        names.add("sl");
         names = Collections.unmodifiableList(names);
-        extensions = new ArrayList<String>(2);
+        extensions = new ArrayList<String>(1);
         extensions.add("sl");
-        extensions.add(".sl");
         extensions = Collections.unmodifiableList(extensions);
         mimeTypes = new ArrayList<String>(0);
         mimeTypes = Collections.unmodifiableList(mimeTypes);

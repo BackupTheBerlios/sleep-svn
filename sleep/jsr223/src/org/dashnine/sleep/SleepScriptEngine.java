@@ -53,47 +53,6 @@ public class SleepScriptEngine extends AbstractScriptEngine
     private Hashtable       sharedEnvironment;
     private ScriptVariables variables;
 
-    private static class BindingVariables extends sleep.bridges.DefaultVariable
-    {
-        protected Bindings vars;
-
-        public BindingVariables(Bindings b)
-        {
-           vars = b;
-        }        
-
-        public Scalar putScalar(String key, Scalar value)
-        {
-           if (vars != null && vars.containsKey(key.substring(1)))
-           {
-              vars.put(key.substring(1), value.objectValue());
-           }
-
-           return super.putScalar(key, value);
-        }
-
-        public Scalar getScalar(String key)
-        {
-           if (vars != null && vars.containsKey(key.substring(1)))
-           {
-              return SleepUtils.getScalar(vars.get(key.substring(1)));
-           }
-
-           return super.getScalar(key);
-        }
-
-        public boolean scalarExists(String key)
-        {
-           if (vars != null && vars.containsKey(key.substring(1)))
-           {
-              return true;
-           }
-
-           return super.scalarExists(key);
-        }
-    }
-
-    // ..
     public SleepScriptEngine()
     {
         loader = new ScriptLoader();
@@ -116,7 +75,44 @@ public class SleepScriptEngine extends AbstractScriptEngine
 
     private Object evalScript(ScriptInstance script, ScriptContext context)
     {
-        return script.runScript().objectValue();
+        /* install global bindings */
+        Bindings global = context.getBindings(ScriptContext.GLOBAL_SCOPE);
+
+        if (global != null)
+        {
+           Iterator i = global.entrySet().iterator();
+           while (i.hasNext())
+           {
+              Map.Entry value = (Map.Entry)i.next();
+              script.getScriptVariables().putScalar("$" + value.getKey().toString(), ObjectUtilities.BuildScalar(true, value.getValue()));
+           }
+        }
+
+        /* install local bindings */
+        Bindings local = context.getBindings(ScriptContext.ENGINE_SCOPE);
+        Map locals = new HashMap();
+
+        if (local != null)
+        {
+           Iterator i = local.entrySet().iterator();
+           while (i.hasNext())
+           {
+              Map.Entry value = (Map.Entry)i.next();
+              locals.put("$" + value.getKey().toString(), ObjectUtilities.BuildScalar(true, value.getValue())  );
+           }
+        }
+
+        if (locals.get("$" + ScriptEngine.FILENAME) != null)
+        {
+           script.getScriptVariables().putScalar("$__SCRIPT__", (Scalar)locals.get("$" + ScriptEngine.FILENAME));
+        }        
+
+        if (locals.get("$" + ScriptEngine.ARGV) != null)
+        {
+           script.getScriptVariables().putScalar("@ARGV", (Scalar)locals.get("$" + ScriptEngine.ARGV));
+        }
+
+        return SleepUtils.runCode(script.getRunnableScript(), "eval", script, SleepUtils.getArgumentStack(locals)).objectValue();
     }
 
     private static class WarningWatcher implements RuntimeWarningWatcher
@@ -139,14 +135,6 @@ public class SleepScriptEngine extends AbstractScriptEngine
         try
         {
            ScriptInstance script = loader.loadScript("eval", text, sharedEnvironment);
-
-           if (variables == null)
-           {
-              variables = new ScriptVariables(new BindingVariables(context.getBindings(ScriptContext.GLOBAL_SCOPE)));
-           }
-
-           script.setScriptVariables(variables);
-
            script.addWarningWatcher(new WarningWatcher(context));
            return script;
         }
