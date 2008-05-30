@@ -33,13 +33,20 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       {
          checkSafety();
 
-         /* add the new element after the current element */
-         current = current.addAfter(o);
-
-         /* increment the list so that the next element returned is
-            unaffected by this call */
-         index++;
-
+         if (size == 0)
+         {
+            current = current.addBefore(o);
+         }
+         else
+         {
+            /* add the new element after the current element */
+            current = current.addAfter(o);
+ 
+            /* increment the list so that the next element returned is
+               unaffected by this call */
+            index++;
+         }
+        
          modCountCheck++;
       }
 
@@ -110,8 +117,8 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
    private ListEntry header;
 
    /* fields used by sublists */
-   private ListEntry    boundaryPrevious;
-   private ListEntry    boundaryNext;
+   private ListEntry    boundaryLeft;
+   private ListEntry    boundaryRight;
    private MyLinkedList parentList;
 
    public int size()
@@ -123,26 +130,13 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
    {
       parentList = plist;
       modCount = parentList.modCount;
-      header = new NormalListEntry(SleepUtils.getScalar("[:header:]"), null, null);
 
-      boundaryPrevious = begin;
-      boundaryNext     = end;
+      /* setup the header */
+      header = new SublistHeaderEntry();
+
+      boundaryLeft = begin;
+      boundaryRight = end;
       
-/*      if (begin instanceof ListEntryWrapper || end instanceof ListEntryWrapper)
-      {
-         System.out.println("This is a problem!");
-         Thread.dumpStack();
-         System.exit(0);
-      } */
-
-
-      ListEntryWrapper head = new ListEntryWrapper(begin);
-      ListEntryWrapper tail = new ListEntryWrapper(end);
-
-      /* set the entries into the header */
-      head.check();
-      tail.check();
-
       size = _size;
    }
 
@@ -176,6 +170,13 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
 
       return new MyLinkedList(parentList == null ? this : parentList, begin, end, (endAt - beginAt));
    }
+
+/*   public boolean add(Object o)
+   {
+      ListEntry entry = header;
+      header.previous().addAfter(o);
+      return true;
+   } */
 
    /** get an object from the linked list */
    public Object get(int index)
@@ -248,42 +249,63 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       }
    }
 
+   private class SublistHeaderEntry implements ListEntry
+   {
+      public SublistHeaderEntry() { }
+
+      public ListEntry remove() 
+      {
+         throw new UnsupportedOperationException("remove");
+      }
+
+      public ListEntry previous() 
+      {
+         return new ListEntryWrapper(boundaryRight);
+      }
+
+      public ListEntry next() 
+      {
+         return new ListEntryWrapper(boundaryLeft);
+      }
+
+      public void setNext(ListEntry e)
+      {
+         throw new UnsupportedOperationException("setNext");
+      }
+
+      public void setPrevious(ListEntry e)
+      {
+         throw new UnsupportedOperationException("setPrevious");
+      }
+
+      public ListEntry addBefore(Object o)
+      {
+         return previous().addAfter(o);
+      }
+
+      public ListEntry addAfter(Object o)
+      {
+         return next().addBefore(o);
+      }
+
+      public Object element()
+      {
+         return SleepUtils.getScalar("[:header:]");
+      }
+
+      public void setElement(Object o)
+      {
+         throw new UnsupportedOperationException("setElement");
+      }
+   }
+
    private class ListEntryWrapper implements ListEntry
    {
       public ListEntry parent;
 
-      public ListEntryWrapper check()
-      {
-         if (parent == boundaryPrevious)
-         {
-            header.setNext(this);
-         }
-
-         if (parent == boundaryNext)
-         {
-            header.setPrevious(this);
-         }
-
-         return this;
-      }
-
       public ListEntryWrapper(ListEntry _parent)
       {
          parent = _parent;
-
-       /*  if (parent instanceof ListEntryWrapper)
-         {
-             System.out.println("Parent is a wrapper");
-             Thread.dumpStack();
-             System.exit(0);
-         }
-
-         if (parent == header)
-         {
-             System.out.println("Parent is the header!!!");
-             Thread.dumpStack();
-             System.exit(0);
-         } */
       }
 
       public ListEntry remove()
@@ -295,18 +317,29 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
          size--;
          modCount++;
 
-         if (parent == boundaryPrevious)
+         if (size == 0)
          {
-            boundaryPrevious = temp;
+            boundaryLeft = boundaryLeft.previous();
+            boundaryRight = boundaryRight.next();
+
+//            System.out.println("Did the remove() magic: " + boundaryLeft.element() + " and " + boundaryRight.element());
+
+            return header;
+         }
+         else
+         {
+            if (parent == boundaryLeft)
+            {
+                boundaryLeft = temp;
+            } 
+
+            if (parent == boundaryRight)
+            {
+                boundaryRight = temp;
+            }
          }
 
-         if (parent == boundaryNext)
-         {
-            boundaryNext = temp;
-         }
-
-         ListEntryWrapper r = new ListEntryWrapper(temp);
-         return r.check();
+         return new ListEntryWrapper(temp);
       }
 
       public ListEntry addBefore(Object o)
@@ -318,13 +351,17 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
          size++;
          modCount++;
 
-         if (parent == boundaryPrevious)
+         if (size == 1)
          {
-            boundaryPrevious = temp;
+            boundaryLeft = temp;
+            boundaryRight = temp;
+         }
+         else if (parent == boundaryLeft)
+         {
+            boundaryLeft = temp;
          }
 
-         ListEntryWrapper r = new ListEntryWrapper(temp);
-         return r.check();
+         return new ListEntryWrapper(temp);
       }
 
       public ListEntry addAfter(Object o)
@@ -336,21 +373,27 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
          size++;
          modCount++;
 
-         if (parent == boundaryNext)
+         if (size == 1)
          {
-            boundaryNext = temp;
+            boundaryLeft = temp;
+            boundaryRight = temp;
          }
-
-         ListEntryWrapper r = new ListEntryWrapper(temp);
-         return r.check();
+         else if (parent == boundaryRight)
+         {
+            boundaryRight = temp;
+         }
+	
+         return new ListEntryWrapper(temp);
       }
 
       public void setNext(ListEntry entry)
       {
+         System.err.println("setNext");
       }
 
       public void setPrevious(ListEntry entry)
       {
+         System.err.println("setPrevious");
       }
 
       public Object element()
@@ -367,15 +410,10 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       {
          checkSafety();
 
-         if (parent == boundaryNext)
+         if (parent == boundaryRight)
          {
-            return header;
+            return new ListEntryWrapper(boundaryLeft);
          }
-
-/*         if (parent instanceof ListEntryWrapper)
-         {
-             System.err.println("next() ARGH!!!!!!!!!!! " + parent);
-         } */
 
          ListEntryWrapper r = new ListEntryWrapper(parent.next());
          return r;
@@ -385,20 +423,10 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       {
          checkSafety();
 
-         if (parent == boundaryPrevious)
+         if (parent == boundaryLeft)
          {
-            return header;
+            return new ListEntryWrapper(boundaryRight);
          }
-
-/*         if (parent instanceof ListEntryWrapper)
-         {
-             System.err.println("previous() ARGH!!!!!!!!!!! " + parent);
-         }
-         
-         if (parent.previous() instanceof ListEntryWrapper)
-         {
-             System.err.println(".. " + header.element() + " and whatever");
-         } */
 
          ListEntryWrapper r = new ListEntryWrapper(parent.previous());
          return r;
