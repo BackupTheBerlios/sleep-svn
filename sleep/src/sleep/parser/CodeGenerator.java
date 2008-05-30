@@ -313,7 +313,15 @@ public class CodeGenerator implements ParserConstants
          return;
       }
 
-      parseBlock(allData);
+      if (allData.size() == 0)
+      {
+         Step temp = new Step();
+         add(temp, data);
+      }
+      else
+      {
+         parseBlock(allData);
+      }
    }
 
    public void parseBlock(LinkedList data)

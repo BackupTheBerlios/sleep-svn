@@ -9,8 +9,7 @@
 - created a java.util.List compatible data structure to back
   Sleep arrays.  this data structure is similar to LinkedList
   except it creates sublists with more desired performance
-  characteristics--sublists of java.util.LinkedList traverse
-  the entire parent list for each requested element.
+  characteristics
 - added better error messages for ConcurrentModificationException's
   thrown by Java
 - foreach loops now break if a ConcurrentModificationException
@@ -24,7 +23,11 @@
 - bad index errors (IndexOutOfBoundsException) are now more
   descriptive in some cases.
 - sublists are now serializable--when serialized only the 
-  sublist itself is serialized.
+  sublist contents is serialized.
+- function("blah") will now throw an error if argument does not
+  begin with &
+- empty functions now retain proper line number information 
+  (compiler introduces a NOP into the body of an empty function)
 
 2.1-beta 26  (15 May 08)
 ===========

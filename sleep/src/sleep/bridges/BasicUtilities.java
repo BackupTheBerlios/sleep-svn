@@ -517,6 +517,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
           if (n.equals("&function"))
           {
              String temp = BridgeUtilities.getString(l, "");
+
+             if (temp.length() == 0 || temp.charAt(0) != '&')
+                throw new IllegalArgumentException(n + ": requested function name must begin with '&'");
+
              return SleepUtils.getScalar(si.getScriptEnvironment().getFunction(temp));
           }
           else if (n.equals("&setf"))
