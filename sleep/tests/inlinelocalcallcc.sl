@@ -12,14 +12,14 @@ inline foo
       [$1: "c", "d"];
    };
 
-   println("What fun fruit rollups will callcc roll out with next? " . @_);
+   println("What fun fruit rollups will callcc roll out with next? " . @_ . " $1 and $2");
 }
 
 sub bar
 {
    println("In the bar: " . @_);
    foo("a", "b");
-   println("Out of the bar: " . @_);
+   println("Out of the bar: " . @_ . " $1 and $2");
 }
 
 bar("toplevel", "argument");
