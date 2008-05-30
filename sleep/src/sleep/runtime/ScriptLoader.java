@@ -372,7 +372,7 @@ public class ScriptLoader
             return retrieveCacheEntry(name);
         }
 
-        StringBuffer code = new StringBuffer();
+        StringBuffer code = new StringBuffer(8192);
 
         BufferedReader in = new BufferedReader(getInputStreamReader(stream));
         String s = in.readLine();
