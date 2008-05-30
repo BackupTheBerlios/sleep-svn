@@ -37,6 +37,8 @@
   value on the stack is not an iterator.
 - BridgeUtilities.getFunction() throws an exception if the  
   value on the stack is not a closure.
+- Backtick expressions now use an IOObject to read in process
+  output. 
 
 2.1-beta 26  (15 May 08)
 ===========

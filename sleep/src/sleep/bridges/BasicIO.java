@@ -142,7 +142,8 @@ public class BasicIO implements Loadable, Function
           try
           { 
              Process proc  = Runtime.getRuntime().exec(BridgeUtilities.getString(l, ""), null, i.cwd());
-             BufferedReader reader    = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+
+             IOObject reader = SleepUtils.getIOHandle(proc.getInputStream(), null);
 
              String text = null;
              while ((text = reader.readLine()) != null)
