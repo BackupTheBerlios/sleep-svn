@@ -157,12 +157,12 @@ public class MyLinkedList extends AbstractSequentialList implements Cloneable, S
       return new MyLinkedList(parentList == null ? this : parentList, begin, end, (endAt - beginAt));
    }
 
-/*   public boolean add(Object o)
+   public boolean add(Object o)
    {
       ListEntry entry = header;
       header.previous().addAfter(o);
       return true;
-   } */
+   }
 
    /** get an object from the linked list */
    public Object get(int index)
