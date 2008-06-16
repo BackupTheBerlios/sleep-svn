@@ -111,13 +111,13 @@ public class IOObject
       token = t;
    }
 
+   /** sets the stdin/stdout for this script environment. This value is placed into the script metadata with the %console% key */
    public static void setConsole(ScriptEnvironment environment, IOObject object)
    {
       environment.getScriptInstance().getMetadata().put("%console%", object);
    }
 
-   /** returns an IOObject that represents stdin/stdout to Sleep's I/O API.  To set a script's console
-       object install an IOObject into a script environment under the variable name %console% */
+   /** returns an IOObject that represents stdin/stdout to Sleep's I/O API. */
    public static IOObject getConsole(ScriptEnvironment environment)
    {
       IOObject console = (IOObject)environment.getScriptInstance().getMetadata().get("%console%");

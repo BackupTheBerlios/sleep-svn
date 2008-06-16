@@ -6,19 +6,28 @@ Sleep 2.1 - README
 what my friend Luke said to me upon closing out a weekend of possessed
 coding.
 
-A weekend of possessed coding that yielded a scripting language.  Sleep is
-the Scripting Language for Easily Enhancing Programs.  It is a small 
-scripting language with perl inspired syntax implemented in Java.
+A weekend of possessed coding that yielded a scripting language.  Sleep is a 
+Java-based scripting language heavily inspired by Perl. Sleep provides advanced 
+programming features including:
 
-The core of sleep was produced in one weekend in early April of 2002.  
-I just wanted something I could integrate into an application I was 
-writing.  Sometime in 2004 (or 2005?) I was possessed to expand the language
-to include closures and access to the Java class library. 
+   - continuations
+   - first-class functions
+   - a built-in debugger 
+   - taint mode security
+   - access to the Java class library
+   - ... and cryptic Perl syntax.
+
+The core of sleep was produced in one weekend in early April of 2002.  I just 
+wanted something I could integrate into an application I was writing.  
+Sometime in 2004 (or 2005?) I was possessed to expand the language to include 
+closures and access to the Java class library. 
 
 After Sleep 2.0 I let the project sit and collect bug reports for about a 
-year.   At some point I added coroutines into Sleep 2.0 and thus Sleep 2.1 was
-born.  This release is the result of a 2 year polishing effort on the Sleep 
-2.0 codebase.  I hope you enjoy it.
+year.   At some point I added coroutines into Sleep 2.0 and thus Sleep 2.1 
+was born.  This release is the result of a 2 year polishing effort on the Sleep 
+2.0 codebase. 
+
+Sleep is compatible with Java 1.4.2+
 
 Sleep Project Homepage: http://sleep.dashnine.org/
 

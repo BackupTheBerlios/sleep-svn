@@ -239,6 +239,7 @@ public class ObjectUtilities
       }
    }
 
+   /** attempts to find the method that is the closest match to the specified arguments */
    public static Method findMethod(Class theClass, String method, Stack arguments)
    {
       int      size    = arguments.size();
@@ -265,6 +266,7 @@ public class ObjectUtilities
       return temp;
    }
 
+   /** attempts to find the constructor that is the closest match to the arguments */
    public static Constructor findConstructor(Class theClass, Stack arguments)
    {
       int      size    = arguments.size();
@@ -349,6 +351,7 @@ public class ObjectUtilities
       return atype;
    }
 
+   /** marshalls the Sleep value into a Java value of the specified type. */
    public static Object buildArgument(Class type, Scalar value, ScriptInstance script)
    {
       if (type == String.class)
@@ -467,6 +470,7 @@ public class ObjectUtilities
       return value.objectValue();
    }
 
+   /** utility to create a string representation of an incompatible argument choice */
    public static String buildArgumentErrorMessage(Class theClass, String method, Class[] expected, Object[] parameters)
    {
       StringBuffer tempa = new StringBuffer(method + "(");
@@ -496,6 +500,7 @@ public class ObjectUtilities
       return "bad arguments " + tempb.toString() + " for " + tempa.toString() + " in " + theClass;
    } 
 
+   /** populates a Java array with Sleep values marshalled into values of the specified types. */
    public static Object[] buildArgumentArray(Class[] types, Stack arguments, ScriptInstance script)
    {
       Object[] parameters = new Object[types.length];
@@ -509,6 +514,8 @@ public class ObjectUtilities
       return parameters;
    }
 
+   /** marshalls a Java type into the appropriate Sleep scalar.  The primitives value will force this method to also check
+       if the Java type could map to an int, long, double, etc.  Use true when in doubt. */
    public static Scalar BuildScalar(boolean primitives, Object value)
    {
       if (value == null)
