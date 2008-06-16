@@ -41,16 +41,17 @@ a documentation deficiency.  Sleep is no different.
 Contained in the docs/ directory:
 
 sleepmanual.url
-   The Sleep 2.1 Manual is both a tutorial and reference for the Sleep language.
-   The manual is available at http://sleep.dashnine.org/manual/
+   The Sleep 2.1 Manual includes a tutorial on Sleep, a chapter on how to
+   embed and extend Sleep from Java, and a reference of all built-in 
+   functionality.  
 
-   You can also support this project and purchase the Manual online at:
+   The manual is available both online and in print under a creative 
+   commons license.
+
+   Find the manual online at: http://sleep.dashnine.org/manual/
+
+   Optionally you can purchase the Manual at:
    http://www.amazon.com/dp/143822723X/
-
-sleepguide.htm
-   This document is a guide to integrating the sleep language into your
-   application.  Part 1 of this document is an absolute must read if you plan 
-   to integrate sleep into your application.
 
 common.htm
    Common embedding techniques cheat sheet.  A very short example oriented 
