@@ -1,3 +1,11 @@
+2.1-release  (16 Jun 08)
+===========
+- SleepUtils#runCode(SleepClosure, ...) now accepts a null value
+  for the ScriptInstance parameter.
+- eliminated unnecessary frame creation within the Index operator
+- added a check to cleanup the current frame when a bad index 
+  error occurs.
+
 2.1-beta 27  (30 May 08)
 ===========
 - Virtual machine errors (stack overflow, out of memory) etc.

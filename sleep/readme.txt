@@ -1,5 +1,5 @@
  ------- -------------------- ---------   ---------------  ------- ---------
-Sleep - 2.1 beta 27 - README   
+Sleep 2.1 - README   
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 "You got the language, all you need now is the O'Reilly book".  That is
@@ -10,15 +10,15 @@ A weekend of possessed coding that yielded a scripting language.  Sleep is
 the Scripting Language for Easily Enhancing Programs.  It is a small 
 scripting language with perl inspired syntax implemented in Java.
 
-Sleep is primarily a glue language.  Included with Sleep is everything 
-required to embed and extend the language to fit into new applications and
-problem domains.  
-
 The core of sleep was produced in one weekend in early April of 2002.  
 I just wanted something I could integrate into an application I was 
-writing.  Specifically I wanted something I could integrate the way *I 
-wanted* to integrate it.  Since then, Sleep has been revised, expanded, 
-and stabilized.  
+writing.  Sometime in 2004 (or 2005?) I was possessed to expand the language
+to include closures and access to the Java class library. 
+
+After Sleep 2.0 I let the project sit and collect bug reports for about a 
+year.   At some point I added coroutines into Sleep 2.0 and thus Sleep 2.1 was
+born.  This release is the result of a 2 year polishing effort on the Sleep 
+2.0 codebase.  I hope you enjoy it.
 
 Sleep Project Homepage: http://sleep.dashnine.org/
 
@@ -34,6 +34,9 @@ Contained in the docs/ directory:
 sleepmanual.url
    The Sleep 2.1 Manual is both a tutorial and reference for the Sleep language.
    The manual is available at http://sleep.dashnine.org/manual/
+
+   You can also support this project and purchase the Manual online at:
+   http://www.amazon.com/dp/143822723X/
 
 sleepguide.htm
    This document is a guide to integrating the sleep language into your
@@ -110,7 +113,7 @@ Feedback
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 Feedback is always welcome.  Suggestions/comments/questions can directed to
-me via email: raffi@hick.org
+me via email: rsmudge@gmail.com
 
 I do respond to most feedback.  For example, this message posted to a public
 forum:

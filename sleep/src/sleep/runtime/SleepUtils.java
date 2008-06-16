@@ -26,7 +26,7 @@ import sleep.bridges.*;
 public class SleepUtils
 {
    /** A date stamp of this Sleep release in YYYYMMDD format */
-   public static final int    SLEEP_RELEASE = 20080530;
+   public static final int    SLEEP_RELEASE = 20080616;
 
    /** A string description of this Sleep release */
    public static final String SLEEP_VERSION = "Sleep 2.1";
@@ -124,6 +124,11 @@ public class SleepUtils
     */
    public static Scalar runCode(SleepClosure closure, String message, ScriptInstance script, Stack locals)
    {
+       if (script == null)
+       {
+          script = closure.getOwner();
+       }
+
        CallRequest request = new CallRequest.ClosureCallRequest(script.getScriptEnvironment(), Integer.MIN_VALUE, SleepUtils.getScalar(closure), message);
        return runCode(request, script, locals);
    }

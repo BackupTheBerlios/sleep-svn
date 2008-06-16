@@ -80,10 +80,10 @@ public class Index extends Step
           }
       }
 
-      e.CreateFrame();
+//      e.CreateFrame();
          index.evaluate(e);
          pos = (Scalar)(e.getCurrentFrame().pop());
-      e.KillFrame();
+//      e.KillFrame();
 
       if (structure.getArray() != null) 
       { 
@@ -113,6 +113,7 @@ public class Index extends Step
       }
       else 
       { 
+         e.KillFrame();
          throw new IllegalArgumentException("invalid use of index operator: " + SleepUtils.describe(structure) + "[" + SleepUtils.describe(pos) + "]");
       } 
 
