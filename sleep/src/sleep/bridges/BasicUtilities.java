@@ -1155,13 +1155,17 @@ public class BasicUtilities implements Function, Loadable, Predicate
           int y = start;
 
           Iterator iter = value.getArray().scalarIterator();
-          for (int x = 0; x <= start && iter.hasNext(); x++) { iter.next(); }
+          for (int x = 0; x < start && iter.hasNext(); x++) { iter.next(); }
 
-          while (y < torem && iter.hasNext())
+          while (y < torem)
           {
-             iter.remove();
+             if (iter.hasNext())
+             {
+                iter.next();
+                iter.remove();
+             }
+
              y++;
-             iter.next();
           }
 
           /* insert some elements */
