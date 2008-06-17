@@ -1152,23 +1152,28 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           /* remove the specified elements please */
 
-          ScalarArray toRemove = value.getArray().sublist(start, torem);
-          Iterator iter = toRemove.scalarIterator();
-          while (iter.hasNext())
+          int y = start;
+
+          Iterator iter = value.getArray().scalarIterator();
+          for (int x = 0; x <= start && iter.hasNext(); x++) { iter.next(); }
+
+          while (y < torem && iter.hasNext())
           {
-             iter.next();
              iter.remove();
+             y++;
+             iter.next();
           }
 
           /* insert some elements */
 
-          ScalarArray addToMe = value.getArray().sublist(0, start); 
-
+          ListIterator liter = (ListIterator)value.getArray().scalarIterator();
+          for (int x = 0; x < start && liter.hasNext(); x++) { liter.next(); }
+          
           Iterator j = insert.scalarIterator();
           while (j.hasNext())
           {
              Scalar ins = (Scalar)j.next();
-             addToMe.push(SleepUtils.getScalar(ins));
+             liter.add(ins);
           }
 
           return value;

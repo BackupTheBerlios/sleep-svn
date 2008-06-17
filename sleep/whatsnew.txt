@@ -1,3 +1,7 @@
+2.1-release  (...)
+===========
+- splice() no longer corrupts sublists.
+
 2.1-release  (16 Jun 08)
 ===========
 - SleepUtils#runCode(SleepClosure, ...) now accepts a null value
