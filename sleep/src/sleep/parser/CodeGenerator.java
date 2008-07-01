@@ -333,13 +333,13 @@ public class CodeGenerator implements ParserConstants
       }
    }
   
-   public void parseIdea(Token data) 
+   public List parseIdea(Token data) 
    {
       LinkedList allData = TokenParser.ParseIdea(parser, LexicalAnalyzer.GroupBlockTokens(parser, new StringIterator(data.toString(), data.getHint())));
       
       if (parser.hasErrors())
       {
-         return;
+         return null;
       }
 
       Iterator i = allData.iterator();
@@ -347,6 +347,8 @@ public class CodeGenerator implements ParserConstants
       {
          parse((Statement)i.next());
       }
+
+      return allData;
    }
 
    public void parse(Statement datum)
@@ -392,7 +394,18 @@ public class CodeGenerator implements ParserConstants
            //
            // parse B
            //
-           parseIdea(tokens[2]);
+           List valuez = parseIdea(tokens[2]);
+
+           /* a bit of error checking to guard against a common error */
+           Iterator iz = valuez.iterator();
+           while (iz.hasNext())
+           {
+              Statement t = (Statement)iz.next();
+              if (t.getType() == IDEA_HASH_PAIR)
+              {
+                 parser.reportError("key/value pair specified for '"+tokens[0]+"', did you forget a comma?", tokens[2]);
+              }
+           }
 
            //
            // parse A - or just push it onto the stack as a literal token :)

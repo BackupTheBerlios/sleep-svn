@@ -2,8 +2,9 @@
 ===========
 - splice() no longer corrupts sublists.
 - values(%hash) now omits $null values.  
-- sped up local, global, and this by cacheing the regex pattern
-  used to split up the var names
+- sped up scope functions: &local, &global, and &this by cacheing 
+  the regex pattern used to split up the var names
+- added a compile time check for %(a => ... b => ...) errors
 
 2.1-release  (16 Jun 08)
 ===========
