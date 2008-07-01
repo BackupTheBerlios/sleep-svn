@@ -23,7 +23,7 @@ Sometime in 2004 (or 2005?) I was possessed to expand the language to include
 closures and access to the Java class library. 
 
 After Sleep 2.0 I let the project sit and collect bug reports for about a 
-year.   At some point I added coroutines into Sleep 2.0 and thus Sleep 2.1 
+year.  At some point I added coroutines into Sleep 2.0 and thus Sleep 2.1 
 was born.  This release is the result of a 2 year polishing effort on the Sleep 
 2.0 codebase. 
 
@@ -170,8 +170,8 @@ Legal Garbage
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
 Sleep is (c) 2002, 2003, 2004, 2005, 2006, 2007, and 2008 (wow, been at this
-awhile) Raphael Mudge (rsmudge@gmail.com).  All of the source and somehow the 
-documentation are released under the GNU Lesser Public License.  
+awhile) Raphael Mudge (rsmudge@gmail.com).  All of the source is released under
+the GNU Lesser Public License.
 
 The scripts and library files supplied as input to or produced as output 
 from the Sleep library do not automatically fall under the copyright of the
