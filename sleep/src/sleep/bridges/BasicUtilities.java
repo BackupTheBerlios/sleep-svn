@@ -758,6 +758,8 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
     private static class SetScope implements Function
     {
+       private java.util.regex.Pattern splitter = java.util.regex.Pattern.compile(" ");
+
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
           Variable level = null;
@@ -771,7 +773,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
           if (level == null)
               return SleepUtils.getEmptyScalar(); 
 
-          String vars[] = temp.split(" "); 
+          String vars[] = splitter.split(temp); 
           for (int x = 0; x < vars.length; x++)
           {
              if (level.scalarExists(vars[x]))
