@@ -5,6 +5,7 @@
 - sped up scope functions: &local, &global, and &this by cacheing 
   the regex pattern used to split up the var names
 - added a compile time check for %(a => ... b => ...) errors
+  [notice the missing comma between the key/value pairs]
 
 2.1-release  (16 Jun 08)
 ===========
