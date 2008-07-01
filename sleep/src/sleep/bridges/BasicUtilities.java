@@ -1358,7 +1358,12 @@ public class BasicUtilities implements Function, Loadable, Predicate
              Iterator iter = value.getHash().getData().values().iterator();
              while (iter.hasNext())
              {
-                temp.getArray().push((Scalar)iter.next());
+                Scalar next = (Scalar)iter.next();
+
+                if (!SleepUtils.isEmptyScalar(next))
+                {
+                   temp.getArray().push(next);
+                }
              }
 
              return temp;

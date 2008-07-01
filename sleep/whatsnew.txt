@@ -1,6 +1,7 @@
 2.1-release  (...)
 ===========
 - splice() no longer corrupts sublists.
+- values(%hash) now omits $null values.  
 
 2.1-release  (16 Jun 08)
 ===========
