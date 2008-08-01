@@ -634,10 +634,17 @@ public class BasicStrings implements Loadable
     {
         public Scalar operate(String o, ScriptInstance i, Stack l)
         {
-           double left  = BridgeUtilities.getDouble(l, 0); 
-           double right = BridgeUtilities.getDouble(l, 0); 
-        
-           return SleepUtils.getScalar(left - right);
+           ScalarType left  = BridgeUtilities.getScalar(l).getActualValue();
+           ScalarType right = BridgeUtilities.getScalar(l).getActualValue();
+
+           if (left.getType() == sleep.engine.types.DoubleValue.class || right.getType() == sleep.engine.types.DoubleValue.class)
+           {        
+              return SleepUtils.getScalar(new java.math.BigDecimal(left.doubleValue()).compareTo(new java.math.BigDecimal(right.doubleValue())));
+           }
+           else
+           {
+              return SleepUtils.getScalar(left.longValue() - right.longValue());
+           }
         }
     }
 

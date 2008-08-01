@@ -15,6 +15,8 @@
 - include(...) now sets $__INCLUDE__ to the file included.  
   use this to allow modules to find resources that are located
   relative to themselves.
+- hacked <=> to compare doubles with a BigDecimal, gets around
+  processor floating point issues when comparing doubles
 
 2.1-release  (1 Jul 08)
 ===========
