@@ -1,3 +1,12 @@
+2.1-release  (???)
+===========
+- modified import from to add jar file to system classpath.  This
+  uses a reflection hack but it now means you can add multiple jars
+  and they can find resources from eachother, all at runtime.
+
+  This hack came from Ralph Becker's Classpath extension for Sleep.  
+- 
+
 2.1-release  (1 Jul 08)
 ===========
 - splice() no longer corrupts sublists.

@@ -11,9 +11,8 @@ import java.io.*;
     information. */
 public class ImportManager
 {
-   protected Map        imports   = new LinkedHashMap();
+   protected List       imports   = new LinkedList();
    protected HashMap    classes   = new HashMap();
-   protected HashMap    jars      = new HashMap(); /* resolved jar files, key=jar name value=ClassLoader */  
 
    /** Used by Sleep to import statement to save an imported package name. */
    public void importPackage(String packagez, String from)
@@ -40,27 +39,19 @@ public class ImportManager
 
           if (returnValue == null || !returnValue.exists()) { throw new RuntimeException("jar file to import package from was not found!"); }
 
-          try
-          {
-             if (!jars.containsKey(from))
-             {
-                URLClassLoader loader = new URLClassLoader(new URL[] { returnValue.toURL() }, Thread.currentThread().getContextClassLoader());
-                jars.put(from, loader);
-             }
-          }
-          catch (Exception ex) { ex.printStackTrace(); }
+          addFile(returnValue);
        }
 
        /* handle importing our package */
 
        if (clas.equals("*"))
        {
-          imports.put(pack, from);
+          imports.add(pack);
        }
        else if (pack == null)
        {
-          imports.put(packagez, from);
-          Class found = resolveClass(null, packagez, (String)imports.get(packagez)); /* try with no package to see if we have an anonymous class */
+          imports.add(packagez);
+          Class found = resolveClass(null, packagez); /* try with no package to see if we have an anonymous class */
           classes.put(packagez, found);
 
           if (found == null)
@@ -68,7 +59,7 @@ public class ImportManager
        }
        else
        {
-          imports.put(packagez, from);
+          imports.add(packagez);
          
           Class found = findImportedClass(packagez);
           classes.put(clas, found);
@@ -79,7 +70,7 @@ public class ImportManager
    }
 
    /** This method is used by Sleep to resolve a specific class (or at least try) */
-   private Class resolveClass(String pack, String clas, String jar)
+   private Class resolveClass(String pack, String clas)
    {
        StringBuffer name = new StringBuffer();
        if (pack != null) { name.append(pack); name.append("."); }
@@ -87,19 +78,32 @@ public class ImportManager
 
        try
        {
-          if (jar != null)
-          {
-             ClassLoader cl = (ClassLoader)jars.get(jar);
-             return Class.forName(name.toString(), true, cl);
-          }
-          else
-          {
-             return Class.forName(name.toString());
-          }
+          return Class.forName(name.toString());
        }
        catch (Exception ex) { }
 
        return null;
+   }
+
+   /** A hack to add a jar to the system classpath courtesy of Ralph Becker. */
+   private void addFile(File f)
+   {
+        try
+        {
+            URL url = f.toURL();
+
+            URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
+            Class sysclass = java.net.URLClassLoader.class;
+
+            Method method = sysclass.getDeclaredMethod( "addURL", new Class[] { URL.class } );
+            method.setAccessible( true );
+            method.invoke( sysloader, new Object[] { url } );
+        }    
+        catch(Throwable t)
+        {    
+            t.printStackTrace();
+            throw new RuntimeException("Error, could not add "+f+" to system classloader - " + t.getMessage());
+        }
    }
 
    /** Attempts to find a class, starts out with the passed in string itself, if that doesn't resolve then the string is 
@@ -116,17 +120,16 @@ public class ImportManager
              clas = name.substring(name.lastIndexOf(".") + 1, name.length());
              pack = name.substring(0, name.lastIndexOf("."));
 
-	     rv   = resolveClass(pack, clas, (String)imports.get(name));
+	     rv   = resolveClass(pack, clas);
           }
           else
           {
-             rv = resolveClass(null, name, (String)imports.get(name)); /* try with no package to see if we have an anonymous class */
+             rv = resolveClass(null, name); /* try with no package to see if we have an anonymous class */
 
-             Iterator i = imports.entrySet().iterator();
+             Iterator i = imports.iterator();
              while (i.hasNext() && rv == null)
              {
-                Map.Entry en = (Map.Entry)i.next();
-                rv = resolveClass((String)en.getKey(), name, (String)en.getValue());
+                rv = resolveClass((String)i.next(), name);
              }
           }
 
