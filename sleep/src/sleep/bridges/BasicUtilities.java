@@ -300,10 +300,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
              }
              else
              {
-                File a     = sleep.parser.ParserConfig.findJarFile(obj.toString());
+                File a      = sleep.parser.ParserConfig.findJarFile(obj.toString());
 
-                parent     = a.getParentFile();
-                className  = a.getName();
+                parent      = a.getParentFile();
+                className   = a.getName();
              }
           }
 
@@ -349,6 +349,13 @@ public class BasicUtilities implements Function, Loadable, Predicate
                 ScriptLoader   sloader = (ScriptLoader)si.getScriptEnvironment().getEnvironment().get("(isloaded)");
                 InputStream    istream;
          
+                Scalar incz = si.getScriptVariables().getScalar("$__INCLUDE__");
+                if (incz == null)
+                {
+                   incz = SleepUtils.getEmptyScalar();
+                   si.getScriptVariables().getGlobalVariables().putScalar("$__INCLUDE__", incz);
+                }
+
                 if (parent != null)
                 {
                    File theFile = parent.isDirectory() ? new File(parent, className) : parent;
@@ -358,6 +365,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
                    si.associateFile(theFile); /* associate this included script with the current script instance */
 
                    istream = loader.getResourceAsStream(className);
+                   incz.setValue( SleepUtils.getScalar(theFile) );
                 }
                 else
                 {
@@ -366,6 +374,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
                    si.associateFile(tempf); /* associate this included script with the current script instance */
 
                    istream = new FileInputStream(tempf);
+                   incz.setValue( SleepUtils.getScalar(tempf) );
                 }
 
                 if (istream != null)

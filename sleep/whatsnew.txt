@@ -12,6 +12,9 @@
   depends on this behavior and so I am moving the code for this
   to the jIRCii source tree (where it manages similar cleanup
   for events, aliases, and other things).
+- include(...) now sets $__INCLUDE__ to the file included.  
+  use this to allow modules to find resources that are located
+  relative to themselves.
 
 2.1-release  (1 Jul 08)
 ===========
