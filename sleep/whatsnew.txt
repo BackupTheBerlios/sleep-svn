@@ -5,7 +5,13 @@
   and they can find resources from eachother, all at runtime.
 
   This hack came from Ralph Becker's Classpath extension for Sleep.  
-- 
+- Sleep 2.1 default implementation no longer manages cleanup of
+  subroutines from unloaded scripts.  The old mechanism for this
+  was complex and resulted in an unnecessary memory leak in 
+  shared environments with no awareness of this feature.  jIRCii
+  depends on this behavior and so I am moving the code for this
+  to the jIRCii source tree (where it manages similar cleanup
+  for events, aliases, and other things).
 
 2.1-release  (1 Jul 08)
 ===========
