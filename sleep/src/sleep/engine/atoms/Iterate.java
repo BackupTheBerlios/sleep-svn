@@ -173,6 +173,13 @@ public class Iterate extends Step
 
       if (data.source.getHash() != null)
       {
+         if (SleepUtils.isEmptyScalar((Scalar)((Map.Entry)next).getValue()))
+         {
+            e.getCurrentFrame().pop(); /* consume the old value true/false value */
+            iterator_next(e);
+            return;
+         }
+
          if (data.key != null)
          {  
             data.kenv.putScalar(data.key, SleepUtils.getScalar(((Map.Entry)next).getKey()));

@@ -17,6 +17,9 @@
   relative to themselves.
 - hacked <=> to compare doubles with a BigDecimal, gets around
   processor floating point issues when comparing doubles
+- foreach on a hash now skips over keys with $null values
+  (a $null value is removed at the first convienence from a
+  Sleep hash--usually by keys() or values() functions)
 
 2.1-release  (1 Jul 08)
 ===========
