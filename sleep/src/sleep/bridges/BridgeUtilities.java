@@ -266,7 +266,7 @@ public class BridgeUtilities
 
       File f = new File(text);
 
-      if (!f.isAbsolute())
+      if (!f.isAbsolute() && text.length() > 0)
       {
          return new File(i.cwd(), text);
       }

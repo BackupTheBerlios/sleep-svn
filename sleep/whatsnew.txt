@@ -20,6 +20,8 @@
 - foreach on a hash now skips over keys with $null values
   (a $null value is removed at the first convienence from a
   Sleep hash--usually by keys() or values() functions)
+- Fixed bug causing -exists "" to return true..  turns out
+  toSleepFile evaluated "" to the current working directory
 
 2.1-release  (1 Jul 08)
 ===========
