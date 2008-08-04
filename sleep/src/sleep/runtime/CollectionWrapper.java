@@ -75,7 +75,7 @@ public class CollectionWrapper implements ScalarArray
 
    public Iterator scalarIterator()
    {
-      return new ProxyIterator();
+      return new ProxyIterator(values.iterator(), false);
    }
 
    public Scalar add(Scalar value, int index)
@@ -87,32 +87,5 @@ public class CollectionWrapper implements ScalarArray
    {
       throw new RuntimeException("array is read-only");
       // do nothing
-   }
-
-   protected class ProxyIterator implements Iterator
-   {
-      protected Iterator realIterator;
-
-      public ProxyIterator()
-      {
-         realIterator = values.iterator();
-      }
-
-      public boolean hasNext()
-      {
-         return realIterator.hasNext(); 
-      }
-
-      public Object next()
-      {
-         Object temp = realIterator.next();
-         return ObjectUtilities.BuildScalar(true, temp);
-      }
-
-      public void remove()
-      {
-          throw new RuntimeException("array is read-only");
-          // no dice
-      }
    }
 }

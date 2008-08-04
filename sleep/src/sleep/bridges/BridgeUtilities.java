@@ -151,10 +151,13 @@ public class BridgeUtilities
       {
          return temp.getArray().scalarIterator();
       }      
-
-      if (SleepUtils.isFunctionScalar(temp))
+      else if (SleepUtils.isFunctionScalar(temp))
       {
          return SleepUtils.getFunctionFromScalar(temp).scalarIterator();
+      }
+      else if (ProxyIterator.isIterator(temp))
+      {
+         return new ProxyIterator((Iterator)temp.objectValue(), true);
       }
 
       throw new IllegalArgumentException("expected iterator (@array or &closure)--received: " + SleepUtils.describe(temp));

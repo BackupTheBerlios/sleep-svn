@@ -22,6 +22,9 @@
   Sleep hash--usually by keys() or values() functions)
 - Fixed bug causing -exists "" to return true..  turns out
   toSleepFile evaluated "" to the current working directory
+- Sleep functions (map, reduce, filter, etc.) that support 
+  iterating over a closure or array and foreach loops can now
+  iterate over Java iterators.  
 
 2.1-release  (1 Jul 08)
 ===========

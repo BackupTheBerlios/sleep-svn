@@ -125,6 +125,10 @@ public class Iterate extends Step
       {
          data.iterator = SleepUtils.getFunctionFromScalar(data.source, e.getScriptInstance()).scalarIterator();
       }
+      else if (ProxyIterator.isIterator(data.source))
+      {
+         data.iterator = new ProxyIterator((Iterator)data.source.objectValue(), true);
+      }
       else
       {
          e.getScriptInstance().fireWarning("Attempted to use foreach on non-array: '" + data.source + "'", getLineNumber());
