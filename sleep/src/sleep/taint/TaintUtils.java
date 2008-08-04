@@ -112,7 +112,8 @@ public class TaintUtils
           Iterator i = value.getHash().getData().entrySet().iterator();
           while (i.hasNext())
           {
-             taintAll((Scalar)i.next());
+             Map.Entry tempe = (Map.Entry)i.next();
+             taintAll((Scalar)tempe.getValue());
           }
        }
        else if (value.getActualValue().getType() == ObjectValue.class && value.objectValue().getClass() == KeyValuePair.class)

@@ -25,6 +25,8 @@
 - Sleep functions (map, reduce, filter, etc.) that support 
   iterating over a closure or array and foreach loops can now
   iterate over Java iterators.  
+- fixed a bug with taintAll causing a class cast exception with
+  hash scalars
 
 2.1-release  (1 Jul 08)
 ===========

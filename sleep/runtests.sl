@@ -109,7 +109,7 @@ sub runTests
    chdir("tests");
 
    # some special scripts that require command line execution to test out some stuff...
-   for ($x = 0; $x < 11; $x++)
+   for ($x = 0; $x < 12; $x++)
    {
       %special["taint $+ $x $+ .sl"]  = "java -Dsleep.taint=true -jar ../sleep.jar taint $+ $x $+ .sl";
    }
