@@ -27,6 +27,8 @@
   iterate over Java iterators.  
 - fixed a bug with taintAll causing a class cast exception with
   hash scalars
+- foreach now reports undeclared key/value variables when strict
+  mode is enabled.
 
 2.1-release  (1 Jul 08)
 ===========

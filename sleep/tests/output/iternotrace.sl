@@ -1,4 +1,5 @@
 Trace: function('&generator') = &closure[iternotrace.sl:5-9]#X at iternotrace.sl:15
+Warning: variable '$data' not declared at iternotrace.sl:15
 Trace: &local('$x') at iternotrace.sl:5
 Trace: [&closure[iternotrace.sl:5-9]#X eval] = 0 at <internal>:-1
 Received 0

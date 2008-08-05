@@ -1,3 +1,4 @@
+Warning: variable '$index' not declared at fe_generatordb.sl:6
 Trace: &this('$x') at fe_generatordb.sl:6
 Trace: [&closure[fe_generatordb.sl:6]#X eval] = 'val: 0' at <internal>:-1
 0 => val: 0

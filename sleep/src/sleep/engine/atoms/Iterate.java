@@ -99,6 +99,11 @@ public class Iterate extends Step
       if (data.venv == null)
       {
          data.venv = e.getScriptVariables().getGlobalVariables();
+
+         if ((e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_REQUIRE_STRICT) == ScriptInstance.DEBUG_REQUIRE_STRICT)
+         {
+            e.showDebugMessage("variable '" + data.value + "' not declared");
+         }
       }
 
       if (key != null)
@@ -107,7 +112,14 @@ public class Iterate extends Step
          data.kenv = e.getScriptVariables().getScalarLevel(key, e.getScriptInstance());
 
          if (data.kenv == null)
+         {
             data.kenv = e.getScriptVariables().getGlobalVariables();
+
+            if ((e.getScriptInstance().getDebugFlags() & ScriptInstance.DEBUG_REQUIRE_STRICT) == ScriptInstance.DEBUG_REQUIRE_STRICT)
+            {
+               e.showDebugMessage("variable '" + data.key + "' not declared");
+            }
+         }
       }
       
       //
