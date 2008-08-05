@@ -268,10 +268,10 @@ public class ScriptLoader
     }
 
     /**
-     * Process the newly loaded script.  Setup its name, add it to the data structures, and load the bridges into the environment
-     * assuming this hasn't been done before.
+     * Process the newly loaded script.  Setup its name and load the bridges into the environment
+     * assuming this hasn't been done before.  
      */
-    private void inProcessScript(String name, ScriptInstance si)
+    protected void inProcessScript(String name, ScriptInstance si)
     {
         si.setName(name);
 
@@ -290,13 +290,6 @@ public class ScriptLoader
                 ((Loadable) i.next()).scriptLoaded(si);
             }
             si.getScriptEnvironment().getEnvironment().put("(isloaded)", this);
-        }
-
-        // add script to our loaded scripts data structure
-
-        if (! name.equals("<interact mode>")) {
-            loadedScripts.add(si);
-            scripts.put(name, si);
         }
     }
 
@@ -349,11 +342,33 @@ public class ScriptLoader
         o.writeObject(si.getRunnableBlock());
     }
 
-    public ScriptInstance loadScript(String name, Block code, Hashtable env)
+    /** creates a Sleep script instance using the precompiled code, name, and shared environment.  This function also
+        processes the script using the global and specific bridges registered with this script loader.  No reference
+        to the newly created script is kept by the script loader */
+    public ScriptInstance loadScriptNoReference(String name, Block code, Hashtable env)
     {
         ScriptInstance si = new ScriptInstance(env);
         si.installBlock(code);
         inProcessScript(name, si);
+
+        return si;
+    }
+
+    /** creates a Sleep script instance using the precompiled code, name, and shared environment.  This function also
+        processes the script using the global and specific bridges registered with this script loader.  The script is
+        also referened by this loader so it can be processed again (during the unload phase) when unloadScript is
+        called. */
+    public ScriptInstance loadScript(String name, Block code, Hashtable env)
+    {
+        ScriptInstance si = loadScriptNoReference(name, code, env);
+
+        // add script to our loaded scripts data structure
+
+        if (! name.equals("<interact mode>")) {
+            loadedScripts.add(si);
+            scripts.put(name, si);
+        }
+
         return si;
     }
 
