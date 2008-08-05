@@ -767,7 +767,7 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
     private static class SetScope implements Function
     {
-       private java.util.regex.Pattern splitter = java.util.regex.Pattern.compile(" ");
+       private java.util.regex.Pattern splitter = java.util.regex.Pattern.compile("\\s+");
 
        public Scalar evaluate(String n, ScriptInstance i, Stack l)
        {
@@ -800,6 +800,10 @@ public class BasicUtilities implements Function, Loadable, Predicate
              else if (vars[x].charAt(0) == '%')
              {
                 i.getScriptVariables().setScalarLevel(vars[x], SleepUtils.getHashScalar(), level);
+             }
+             else
+             {
+                throw new IllegalArgumentException(n + ": malformed variable name '" + vars[x] + "' from '" + temp + "'");
              }
           }
 

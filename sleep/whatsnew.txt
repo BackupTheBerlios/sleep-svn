@@ -1,4 +1,4 @@
-2.1-release  (???)
+2.1-release  (5 Aug 08) [update 2]
 ===========
 - modified import from to add jar file to system classpath.  This
   uses a reflection hack but it now means you can add multiple jars
@@ -29,8 +29,10 @@
   hash scalars
 - foreach now reports undeclared key/value variables when strict
   mode is enabled.
+- &local, &this, and &global now throw an exception if a malformed
+  variable name is passed to them.  
 
-2.1-release  (1 Jul 08)
+2.1-release  (1 Jul 08) [update 1]
 ===========
 - splice() no longer corrupts sublists.
 - values(%hash) now omits $null values.  
