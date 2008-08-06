@@ -1,3 +1,10 @@
+2.1-release  (6 Aug 08) [update 2]
+===========
+- made a sanity check with inline function execution to keep jIRCii
+  compatability
+- fixed &sublist only front elements of read-only arrays. (another
+  find from the jIRCii scripting community)
+
 2.1-release  (5 Aug 08) [update 2]
 ===========
 - modified import from to add jar file to system classpath.  This

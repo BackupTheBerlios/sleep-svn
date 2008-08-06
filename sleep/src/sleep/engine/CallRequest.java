@@ -334,7 +334,7 @@ public abstract class CallRequest
             Scalar eval = inline.evaluate(getScriptEnvironment());
     
             /* restore the argument variables */
-            if (oldargs != null)
+            if (oldargs != null && oldargs.getArray() != null)
             {
                localLevel.putScalar("@_", oldargs);
                if (targs > 0)

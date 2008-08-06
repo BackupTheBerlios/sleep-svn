@@ -18,9 +18,11 @@ public class CollectionWrapper implements ScalarArray
       int count = 0;
       while (i.hasNext() && count < end)
       {
+         Object tempo = i.next();
+
          if (count >= begin)
          {
-            temp.add(i.next());
+            temp.add(tempo);
          }
          count++;
       }
