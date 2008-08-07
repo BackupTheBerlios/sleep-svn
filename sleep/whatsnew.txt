@@ -1,4 +1,4 @@
-2.1-release  (6 Aug 08) [update 2]
+2.1-release  (7 Aug 08) [update 2.5]
 ===========
 - made a sanity check with inline function execution to keep jIRCii
   compatability
