@@ -126,7 +126,8 @@ sub runTests
    %special["convertds2.sl"] = "java -jar ../sleep.jar convertds2.sl"; # calls System.out
    %special["convertds3.sl"] = "java -jar ../sleep.jar convertds3.sl"; # calls System.out
    %special["convertds4.sl"] = "java -jar ../sleep.jar convertds4.sl"; # calls System.out
-   %special["setfield.sl"]   = "java -jar ../sleep.jar setfield.sl";   # calls System.out
+   %special["setfield.sl"]    = "java -jar ../sleep.jar setfield.sl";    # calls System.out
+   %special["setfield3.sl"]   = "java -jar ../sleep.jar setfield3.sl";   # calls System.out
    %special["process.sl"]    = "java -jar ../sleep.jar process.sl";    # instantiates ScriptLoader which is immune to current working directory.
 
    @scripts = filter({ return iff("*.sl" iswm $1, getFileName($1)); }, ls());

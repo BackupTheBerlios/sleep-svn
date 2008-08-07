@@ -1424,7 +1424,14 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
              try
              {
-                setMe = aClass.getDeclaredField(name);
+                try
+                {
+                   setMe = aClass.getDeclaredField(name);
+                }
+                catch (NoSuchFieldException nsfe)
+                {
+                   setMe = aClass.getField(name);
+                }
 
                 if (ObjectUtilities.isArgMatch(setMe.getType(), arg) != 0)
                 {

@@ -1,3 +1,8 @@
+2.1-release
+===========
+- fixed a problem with setField not accessing fields declared in a parent
+  class for an object.
+
 2.1-release  (7 Aug 08) [update 2.5]
 ===========
 - made a sanity check with inline function execution to keep jIRCii
