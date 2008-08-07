@@ -2,6 +2,9 @@
 ===========
 - fixed a problem with setField not accessing fields declared in a parent
   class for an object.
+- [$obj field] can now get protected members declared within the parent of
+  $obj.  This does not extend to protected members declared up the class 
+  hierarchy.
 
 2.1-release  (7 Aug 08) [update 2.5]
 ===========

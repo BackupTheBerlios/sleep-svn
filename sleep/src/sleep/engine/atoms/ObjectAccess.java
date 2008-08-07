@@ -211,7 +211,16 @@ public class ObjectAccess extends Step
       {
          try
          {
-            Field aField = theClass.getField(name);
+            Field aField;
+
+            try
+            {
+               aField = theClass.getDeclaredField(name);
+            }
+            catch (NoSuchFieldException nsfe)
+            {
+               aField = theClass.getField(name);
+            }
 
             if (aField != null)
             {
