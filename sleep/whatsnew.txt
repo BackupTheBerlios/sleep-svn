@@ -1,4 +1,4 @@
-2.1-release
+2.1-release (25 Sept 08) [update 3]
 ===========
 - fixed a problem with setField not accessing fields declared in a parent
   class for an object.
