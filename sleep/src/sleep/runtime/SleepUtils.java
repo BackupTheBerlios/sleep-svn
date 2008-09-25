@@ -502,6 +502,28 @@ public class SleepUtils
          }
          else if (scalar.getActualValue().getType() == ObjectValue.class)
          {
+            if (java.lang.reflect.Proxy.isProxyClass(scalar.objectValue().getClass()))
+            {
+               StringBuffer buffer = new StringBuffer();
+               buffer.append("[");
+               buffer.append(java.lang.reflect.Proxy.getInvocationHandler(scalar.objectValue()).toString());
+               buffer.append(" as ");
+
+               Class[] interfaces = scalar.objectValue().getClass().getInterfaces();
+
+               for (int x = 0; x < interfaces.length; x++)
+               {
+                  if (x > 0)
+                  {
+                     buffer.append(", "); 
+                  }
+                  buffer.append(interfaces[x].getName());
+               }
+
+               buffer.append("]");
+
+               return buffer.toString();
+            }
             return scalar.toString();
          }
          else if (scalar.getActualValue().getType() == LongValue.class)

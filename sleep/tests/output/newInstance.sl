@@ -10,7 +10,7 @@ Warning: variable '$n' not declared at newInstance.sl:14
   0 => foo
 Trace: &println('  0 => foo') at newInstance.sl:16
 Trace: [&closure[newInstance.sl:5-19]#X compareTo: 'foo'] = 3 at <Java>:-1
-Trace: [$Proxy# compareTo: 'foo'] = 3 at newInstance.sl:29
+Trace: [[&closure[newInstance.sl:5-19]#X as java.lang.Comparable] compareTo: 'foo'] = 3 at newInstance.sl:29
 3
 Trace: &println(3) at newInstance.sl:29
 Trace: &debug(7) = 7 at newInstance.sl:31

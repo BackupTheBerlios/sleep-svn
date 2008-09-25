@@ -29,6 +29,12 @@ public class ProxyInterface implements InvocationHandler
       return script;
    }
 
+   /** Returns a string description of this proxy interface */
+   public String toString()
+   {
+      return func.toString();
+   }
+
    /** Constructs a new instance of the specified class that uses the passed Sleep function to respond
        to all method calls on this instance. */
    public static Object BuildInterface(Class className, Function subroutine, ScriptInstance script)

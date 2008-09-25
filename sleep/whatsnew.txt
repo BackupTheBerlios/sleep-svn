@@ -16,6 +16,9 @@
   [previous behavior resulted in a null error and corrupted the Sleep
   stack, so if this affected you, you already knew and weren't happy with
   with it].
+- proxy instances now have a more detailed string representation.  also the
+  string description of a proxy instance no longer calls the underlying
+  closure requesting toString.
 
 2.1-release  (7 Aug 08) [update 2.5]
 ===========
