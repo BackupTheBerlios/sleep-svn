@@ -33,10 +33,10 @@ public class OrderedHashContainer extends HashContainer
    }
 
    /** policy function for what to do when a miss occurs */
-   protected SleepClosure missPolicy;
+   protected transient SleepClosure missPolicy;
 
    /** policy function for what to do when a hit occurs */
-   protected SleepClosure removalPolicy;
+   protected transient SleepClosure removalPolicy;
 
    /** set the removal policy for this hash (decides if an entry should be removed or not */
    public void setRemovalPolicy(SleepClosure policy)

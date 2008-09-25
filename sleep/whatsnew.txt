@@ -10,6 +10,12 @@
 - ordered hash now makes a copy of value returned by miss policy.  This
   prevents a situation where all members of a hash share reference to same
   default value (and are thus changeable in place).
+- ohash now longer serializes miss and removal policies.  be warned when
+  you deserialize these hashes you'll want to readd the policy functions
+
+  [previous behavior resulted in a null error and corrupted the Sleep
+  stack, so if this affected you, you already knew and weren't happy with
+  with it].
 
 2.1-release  (7 Aug 08) [update 2.5]
 ===========
