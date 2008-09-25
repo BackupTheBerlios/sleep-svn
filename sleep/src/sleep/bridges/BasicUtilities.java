@@ -482,6 +482,12 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
           int current[] = new int[dimensions.length]; // defaults at 0, 0, 0
 
+          /* special case, we're casting an empty array */
+          if (flat.getArray().size() == 0)
+          {
+             return SleepUtils.getScalar(rv);
+          }
+
           for (int x = 0; true; x++)
           {
              Object tempa = rv;

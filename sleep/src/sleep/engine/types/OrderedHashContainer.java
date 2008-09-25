@@ -117,7 +117,7 @@ public class OrderedHashContainer extends HashContainer
          locals.push(key);
          locals.push(SleepUtils.getHashScalar(this));
 
-         value = missPolicy.callClosure("miss", null, locals);
+         value = SleepUtils.getScalar(missPolicy.callClosure("miss", null, locals));
          values.put(temp, value);
       }
       else if (value == null)

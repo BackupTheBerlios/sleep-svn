@@ -5,6 +5,11 @@
 - [$obj field] can now get protected members declared within the parent of
   $obj.  This does not extend to protected members declared up the class 
   hierarchy.
+- added exponent operator as an assignment op i.e. $x **= 2; 
+- fixed a bug with cast preventing the creation of empty arrays.
+- ordered hash now makes a copy of value returned by miss policy.  This
+  prevents a situation where all members of a hash share reference to same
+  default value (and are thus changeable in place).
 
 2.1-release  (7 Aug 08) [update 2.5]
 ===========

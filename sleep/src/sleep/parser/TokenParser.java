@@ -735,7 +735,7 @@ public class TokenParser implements ParserConstants
             x += 3;
          }
          else if ((check = findPrecedentOperators(myToken, data, x, "+= -= *= .= /= %= |= &= ^=", 2)) != x ||
-                  (check = findPrecedentOperators(myToken, data, x, "<<= >>=", 3)) != x) // checking for a assignment :)
+                  (check = findPrecedentOperators(myToken, data, x, "<<= >>= **=", 3)) != x) // checking for a assignment :)
          {
             if (Checkers.isExpression(strings[x]))
             {
