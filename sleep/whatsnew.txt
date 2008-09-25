@@ -19,6 +19,9 @@
 - proxy instances now have a more detailed string representation.  also the
   string description of a proxy instance no longer calls the underlying
   closure requesting toString.
+- rewrote <=> to return solely 1, 0, or -1 depending on how values compare.
+  this replaces the old method which subtracted the left value from the right
+  one.  avoids issues with overflowed bits this way.
 
 2.1-release  (7 Aug 08) [update 2.5]
 ===========

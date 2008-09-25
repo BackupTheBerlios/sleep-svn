@@ -639,12 +639,27 @@ public class BasicStrings implements Loadable
 
            if (left.getType() == sleep.engine.types.DoubleValue.class || right.getType() == sleep.engine.types.DoubleValue.class)
            {        
-              return SleepUtils.getScalar(new java.math.BigDecimal(left.doubleValue()).compareTo(new java.math.BigDecimal(right.doubleValue())));
+              if (left.doubleValue() > right.doubleValue())
+              {
+                 return SleepUtils.getScalar(1);
+              }
+              else if (left.doubleValue() < right.doubleValue())
+              {
+                 return SleepUtils.getScalar(-1);
+              }
            }
            else
            {
-              return SleepUtils.getScalar(left.longValue() - right.longValue());
+              if (left.longValue() > right.longValue())
+              {
+                 return SleepUtils.getScalar(1);
+              }
+              else if (left.longValue() < right.longValue())
+              {
+                 return SleepUtils.getScalar(-1);
+              }
            }
+           return SleepUtils.getScalar(0);
         }
     }
 
