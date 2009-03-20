@@ -29,7 +29,7 @@ public class Semaphore
          catch (InterruptedException ex)
          { 
             ex.printStackTrace();
-            notify();
+            notifyAll();
          }
       }
    }
@@ -46,7 +46,7 @@ public class Semaphore
       synchronized (this)
       {
          count++;
-         notify();
+         notifyAll();
       }
    }
 
