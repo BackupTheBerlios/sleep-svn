@@ -6,6 +6,11 @@
 - fork() now copies script environment from parent env and creates fresh 
   copies of all named closures.  This prevents unsynchronized saved state and
   closure scope variables from leaking into the forked environment.  
+- overloaded in operator to check if a key is in a %hash in a read only way.
+  i.e. "x" in %hash.  Why does this matter?  Read-only operations on hashes
+  are thread safe.  %hash["unknownKey"] is a write operation when "unknownKey"
+  is not in the hash.  This is because Sleep adds "unknownKey" to the hash
+  with a value of $null.  In a multithreaded context this will corrupt you.
 
 2.1-release (25 Sept 08) [update 3]
 ===========

@@ -227,20 +227,30 @@ public class BasicUtilities implements Function, Loadable, Predicate
        }
        else if (predName.equals("in"))
        {
-          // $x in @(...)
-          Iterator iter = BridgeUtilities.getIterator(terms, anInstance);
-          Scalar   left = BridgeUtilities.getScalar(terms);
-
-          while (iter.hasNext())
+          Scalar temp = BridgeUtilities.getScalar(terms);
+ 
+          if (temp.getArray() != null)
           {
-             Scalar right = (Scalar)iter.next();
+             Iterator iter = temp.getArray().scalarIterator();
+             Scalar   left = BridgeUtilities.getScalar(terms);
 
-             if (left.sameAs(right))
+             while (iter.hasNext())
              {
-                return true;
-             }
-          }
+                Scalar right = (Scalar)iter.next();
 
+                if (left.sameAs(right))
+                {          
+                   return true;
+                }             
+             }
+
+             return false;
+          }
+          else if (temp.getHash() != null)
+          {
+             String key = BridgeUtilities.getString(terms, "");
+             return temp.getHash().getData().containsKey(key) && !SleepUtils.isEmptyScalar((Scalar)(temp.getHash().getData().get(key)));
+          }
           return false;
        }
  
