@@ -229,9 +229,14 @@ public class BasicUtilities implements Function, Loadable, Predicate
        {
           Scalar temp = BridgeUtilities.getScalar(terms);
  
-          if (temp.getArray() != null)
+          if (temp.getHash() != null)
           {
-             Iterator iter = temp.getArray().scalarIterator();
+             String key = BridgeUtilities.getString(terms, "");
+             return temp.getHash().getData().containsKey(key) && !SleepUtils.isEmptyScalar((Scalar)(temp.getHash().getData().get(key)));
+          }
+          else
+          {
+             Iterator iter = SleepUtils.getIterator(temp, anInstance);
              Scalar   left = BridgeUtilities.getScalar(terms);
 
              while (iter.hasNext())
@@ -246,12 +251,6 @@ public class BasicUtilities implements Function, Loadable, Predicate
 
              return false;
           }
-          else if (temp.getHash() != null)
-          {
-             String key = BridgeUtilities.getString(terms, "");
-             return temp.getHash().getData().containsKey(key) && !SleepUtils.isEmptyScalar((Scalar)(temp.getHash().getData().get(key)));
-          }
-          return false;
        }
  
        Scalar value = (Scalar)terms.pop();

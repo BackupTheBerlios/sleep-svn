@@ -146,21 +146,7 @@ public class BridgeUtilities
         return getArray(arguments).scalarIterator();
 
       Scalar temp = (Scalar)arguments.pop();
-
-      if (temp.getArray() != null)
-      {
-         return temp.getArray().scalarIterator();
-      }      
-      else if (SleepUtils.isFunctionScalar(temp))
-      {
-         return SleepUtils.getFunctionFromScalar(temp).scalarIterator();
-      }
-      else if (ProxyIterator.isIterator(temp))
-      {
-         return new ProxyIterator((Iterator)temp.objectValue(), true);
-      }
-
-      throw new IllegalArgumentException("expected iterator (@array or &closure)--received: " + SleepUtils.describe(temp));
+      return SleepUtils.getIterator(temp, script);
    }
 
    /** grab a sleep array, if the stack is empty a scalar array with no elements will be returned. */

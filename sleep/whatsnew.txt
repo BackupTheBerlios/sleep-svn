@@ -11,6 +11,9 @@
   are thread safe.  %hash["unknownKey"] is a write operation when "unknownKey"
   is not in the hash.  This is because Sleep adds "unknownKey" to the hash
   with a value of $null.  In a multithreaded context this will corrupt you.
+- added a sum(@a|&iter, ...) function to sum the products of all specified
+  arrays or iterators:  (@a[0] * @b[0] * ...) + (@a[1] * @b[1] * ...) + ...
+- added -isupper and -islower to check the case of a string. 
 
 2.1-release (25 Sept 08) [update 3]
 ===========

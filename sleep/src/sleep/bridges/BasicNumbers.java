@@ -47,7 +47,7 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        // math ops..
 
        String funcs[] = new String[] { "&abs", "&acos", "&asin", "&atan", "&atan2", "&ceil", "&cos", "&log", "&round", 
-                                       "&sin", "&sqrt", "&tan", "&radians", "&degrees", "&exp", "&floor" };
+                                       "&sin", "&sqrt", "&tan", "&radians", "&degrees", "&exp", "&floor", "&sum" };
 
        for (int x = 0; x < funcs.length; x++)
        {
@@ -131,7 +131,62 @@ public class BasicNumbers implements Predicate, Operator, Loadable, Function
        else if (name.equals("&radians")) { return SleepUtils.getScalar(Math.toRadians(BridgeUtilities.getDouble(args, 0.0))); }
        else if (name.equals("&degrees")) { return SleepUtils.getScalar(Math.toDegrees(BridgeUtilities.getDouble(args, 0.0))); }
        else if (name.equals("&exp")) { return SleepUtils.getScalar(Math.exp(BridgeUtilities.getDouble(args, 0.0))); }
-       else if (name.equals("&not")) {
+       else if (name.equals("&sum"))
+       {
+           Iterator i = BridgeUtilities.getIterator(args, si);
+
+           List iterators = null;
+           if (args.size() >= 1)
+           {
+              /* auxillary iterators */
+              iterators = new LinkedList();
+              while (!args.isEmpty())
+              {
+                 iterators.add(BridgeUtilities.getIterator(args, si));
+              }
+           }
+
+           double result = 0.0;
+           double temp;
+
+           /* this is a simple sum of an array or iterator */
+           if (iterators == null)
+           {
+              while (i.hasNext())
+              {
+                 result += ((Scalar)i.next()).doubleValue();
+              }
+           }
+           /* this is for summing the products of multiple arrays or iterators */
+           else
+           {
+              while (i.hasNext())
+              {
+                 temp = ((Scalar)i.next()).doubleValue();
+
+                 Iterator j = iterators.iterator();
+                 while (j.hasNext())
+                 {
+                    Iterator tempi = (Iterator)j.next();
+                    if (tempi.hasNext())
+                    {
+                       temp *= ((Scalar)tempi.next()).doubleValue();
+                    }
+                    else
+                    {
+                       temp = 0.0;
+                       break;
+                    }
+                 }
+
+                 result += temp;
+              }
+           }
+
+           return SleepUtils.getScalar(result);
+       }
+       else if (name.equals("&not")) 
+       {
            ScalarType sa = ((Scalar)args.pop()).getActualValue(); /* we already assume this is a number */
 
            if (sa.getType() == IntValue.class)

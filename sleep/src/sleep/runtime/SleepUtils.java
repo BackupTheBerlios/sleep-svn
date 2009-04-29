@@ -283,6 +283,25 @@ public class SleepUtils
        return locals;
    }
 
+   /** Returns a scalar iterator depending grabbed from the Scalar.  The scalar can contain an array, a function, or a java.util.Iterator object. */
+   public static Iterator getIterator(Scalar temp, ScriptInstance script)
+   {
+      if (temp.getArray() != null)
+      {
+         return temp.getArray().scalarIterator();
+      }
+      else if (SleepUtils.isFunctionScalar(temp))
+      {
+         return SleepUtils.getFunctionFromScalar(temp).scalarIterator();
+      }   
+      else if (ProxyIterator.isIterator(temp))
+      {
+         return new ProxyIterator((Iterator)temp.objectValue(), true);
+      }
+
+      throw new IllegalArgumentException("expected iterator (@array or &closure)--received: " + SleepUtils.describe(temp));
+   }
+
    /** Generate a java.util.List from a scalar array.  Values will be the Java object 
        equivalents of the data stored in the scalar array. */
    public static List getListFromArray(Scalar array)

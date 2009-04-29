@@ -46,4 +46,4 @@ wait(fork({
   println("Read in $z bytes");
 
   closef($handle);
-}, $handle => $src), 5000);
+}, $handle => $src), 30000);

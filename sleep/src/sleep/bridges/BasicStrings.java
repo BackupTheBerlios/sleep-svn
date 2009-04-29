@@ -30,7 +30,7 @@ import sleep.runtime.*;
 import sleep.parser.ParserConfig;
 
 /** provides basic string parsing facilities */
-public class BasicStrings implements Loadable
+public class BasicStrings implements Loadable, Predicate
 {
     static 
     {
@@ -87,15 +87,18 @@ public class BasicStrings implements Loadable
         temp.put("&sortd",   funky);
 
         // predicates
-        temp.put("eq", new pred_eq());
-        temp.put("ne", new pred_ne());
-        temp.put("lt", new pred_lt());
-        temp.put("gt", new pred_gt());
+        temp.put("eq", this);
+        temp.put("ne", this);
+        temp.put("lt", this);
+        temp.put("gt", this);
 
-        temp.put("-isletter", new pred_isletter());
-        temp.put("-isnumber", new pred_isnumber());
+        temp.put("-isletter", this);
+        temp.put("-isnumber", this);
 
-        temp.put("isin", new pred_isin());
+        temp.put("-isupper", this);
+        temp.put("-islower", this);
+
+        temp.put("isin", this);
         temp.put("iswm", new pred_iswm());  // I couldn't resist >)
 
         // operators
@@ -105,104 +108,82 @@ public class BasicStrings implements Loadable
         temp.put("<=>", new oper_spaceship());
     }
 
-    private static class pred_eq implements Predicate
+    public boolean decide(String n, ScriptInstance i, Stack l)
     {
-        public boolean decide(String n, ScriptInstance i, Stack l)
+        if (l.size() == 1)
         {
-           String b = BridgeUtilities.getString(l, "");
            String a = BridgeUtilities.getString(l, "");
 
-           return a.equals(b);
-        }
-    }
-
-    private static class pred_isin implements Predicate
-    {
-        public boolean decide(String n, ScriptInstance i, Stack l)
-        {
-           String b = BridgeUtilities.getString(l, "");
-           String a = BridgeUtilities.getString(l, "");
-
-           return b.indexOf(a) > -1;
-        }
-    }
-
-    private static class pred_isletter implements Predicate
-    {
-        public boolean decide(String n, ScriptInstance i, Stack l)
-        {
-           String check = l.pop().toString();
-
-           if (check.length() <= 0)
-              return false;
-
-           for (int x = 0; x < check.length(); x++)
+           if (n.equals("-isupper"))
            {
-              if (! Character.isLetter(check.charAt(x)) )
-              {
-                 return false;
-              }
+              return a.toUpperCase().equals(a);                   
            }
+           else if (n.equals("-islower"))
+           {
+              return a.toLowerCase().equals(a);
+           }
+           else if (n.equals("-isletter"))
+           {
+              if (a.length() <= 0)
+                 return false;
 
-           return true;
-        }
-    }
+              for (int x = 0; x < a.length(); x++)
+              {
+                 if (! Character.isLetter(a.charAt(x)) )
+                 {
+                    return false;
+                 }
+              }
 
-    private static class pred_isnumber implements Predicate
-    {
-        public boolean decide(String n, ScriptInstance i, Stack l)
-        {
-           String check = l.pop().toString();
+              return true;
+           }
+           else if (n.equals("-isnumber"))
+           {
+              if (a.length() <= 0)
+                 return false;
+
+              if (a.indexOf('.') > -1 && a.indexOf('.') != a.lastIndexOf('.'))
+                 return false;
+   
+              for (int x = 0; x < a.length(); x++)
+              {
+                 if (! Character.isDigit(a.charAt(x)) && (a.charAt(x) != '.' || (x+1) >= a.length()) )
+                 {
+                    return false;
+                 }
+              } 
  
-           if (check.length() <= 0)
-              return false;
-
-           if (check.indexOf('.') > -1 && check.indexOf('.') != check.lastIndexOf('.'))
-              return false;
-
-           for (int x = 0; x < check.length(); x++)
-           {
-              if (! Character.isDigit(check.charAt(x)) && (check.charAt(x) != '.' || (x+1) >= check.length()) )
-              {
-                 return false;
-              }
+              return true;
            }
-
-           return true;
         }
-    }
-
-    private static class pred_ne implements Predicate
-    {
-        public boolean decide(String n, ScriptInstance i, Stack l)
+        else
         {
            String b = BridgeUtilities.getString(l, "");
            String a = BridgeUtilities.getString(l, "");
 
-           return ! a.equals(b);
+           if (n.equals("eq"))
+           {
+              return a.equals(b);
+           }
+           else if (n.equals("ne"))
+           {
+              return ! a.equals(b);
+           }
+           else if (n.equals("isin"))
+           {
+              return b.indexOf(a) > -1;
+           }
+           else if (n.equals("gt"))
+           {
+              return a.compareTo(b) > 0;
+           }
+           else if (n.equals("lt"))
+           {
+              return a.compareTo(b) < 0;
+           }
         }
-    }
 
-    private static class pred_gt implements Predicate
-    {
-        public boolean decide(String n, ScriptInstance i, Stack l)
-        {
-           String b = BridgeUtilities.getString(l, "");
-           String a = BridgeUtilities.getString(l, "");
-
-           return a.compareTo(b) > 0;
-        }
-    }
-
-    private static class pred_lt implements Predicate
-    {
-        public boolean decide(String n, ScriptInstance i, Stack l)
-        {
-           String b = BridgeUtilities.getString(l, "");
-           String a = BridgeUtilities.getString(l, "");
-
-           return a.compareTo(b) < 0;
-        }
+        return false;
     }
 
     private static class pred_iswm implements Predicate
