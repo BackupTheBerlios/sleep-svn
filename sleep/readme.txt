@@ -80,7 +80,7 @@ Ant is easy to install and is available at http://ant.apache.org
 
 To compile sleep:
 
-[raffi@beardsley ~/sleep]$ rm -rf bin
+[raffi@beardsley ~/sleep]$ ant clean
 [raffi@beardsley ~/sleep]$ ant all
 
 If you made any changes or just want to make sure nothing is broken you can
@@ -169,9 +169,9 @@ forum:
 Legal Garbage
 -  ------------- -------- -   ---------------- --       -    -     -     - - -
 
-Sleep is (c) 2002, 2003, 2004, 2005, 2006, 2007, and 2008 (wow, been at this
-awhile) Raphael Mudge (rsmudge@gmail.com).  All of the source is released under
-the GNU Lesser Public License.
+Sleep is (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008, and 2009 (wow, been at 
+this awhile) Raphael Mudge (rsmudge@gmail.com).  All of the source is released 
+under the GNU Lesser Public License.
 
 The scripts and library files supplied as input to or produced as output 
 from the Sleep library do not automatically fall under the copyright of the

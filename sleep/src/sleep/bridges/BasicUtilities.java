@@ -1376,6 +1376,15 @@ public class BasicUtilities implements Function, Loadable, Predicate
                 }
              }
           }
+          else if (value.getArray() != null)
+          {
+             Iterator temp = BridgeUtilities.getIterator(l, i);
+             while (temp.hasNext())
+             {
+                Scalar next = (Scalar)temp.next();
+                value.getArray().push(SleepUtils.getScalar(next));
+             }
+          }
 
           return value;
        }
@@ -1385,17 +1394,28 @@ public class BasicUtilities implements Function, Loadable, Predicate
           {
              Scalar temp = SleepUtils.getArrayScalar();
 
-             Iterator iter = value.getHash().getData().values().iterator();
-             while (iter.hasNext())
+             if (l.isEmpty())
              {
-                Scalar next = (Scalar)iter.next();
-
-                if (!SleepUtils.isEmptyScalar(next))
+                Iterator iter = value.getHash().getData().values().iterator();
+                while (iter.hasNext())
                 {
-                   temp.getArray().push(next);
+                   Scalar next = (Scalar)iter.next();
+
+                   if (!SleepUtils.isEmptyScalar(next))
+                   {
+                      temp.getArray().push(SleepUtils.getScalar(next));
+                   }
                 }
              }
-
+             else
+             {
+                Iterator iter = BridgeUtilities.getIterator(l, i);
+                while (iter.hasNext())
+                {
+                   Scalar key = (Scalar)iter.next();
+                   temp.getArray().push(SleepUtils.getScalar(value.getHash().getAt(key)));
+                }
+             }
              return temp;
           }
        }

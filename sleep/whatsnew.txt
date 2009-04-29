@@ -1,4 +1,4 @@
-2.1-release (5 Nov 08)   [update 4]
+2.1-release (30 Apr 09) [update 4]
 ===========
 - Sleep semaphores use notifyAll() instead of notify() to wake up threads.
   Was experiencing deadlock on a multicore box due to the single woken 
@@ -14,6 +14,10 @@
 - added a sum(@a|&iter, ...) function to sum the products of all specified
   arrays or iterators:  (@a[0] * @b[0] * ...) + (@a[1] * @b[1] * ...) + ...
 - added -isupper and -islower to check the case of a string. 
+- putAll(@a, @b) now puts all elements of @b onto @a.
+- extended values(%hash, [@|&iter]) to accept an array or iterator of keys to
+  pull from the specified hash.  i.e. values(%hash, @("key1", "key2", ...))
+- values(...) makes copies of the scalar containers taken from the hash
 
 2.1-release (25 Sept 08) [update 3]
 ===========
