@@ -432,6 +432,34 @@ public class ScriptInstance implements Serializable, Runnable
         }
     }
 
+    /** Call this function if you're sharing a script environment with other script instances.  This will sanitize the current
+        script environment to avoid leakage between closure scopes, coroutines, and continuations.  Call this after script loading / bridge installation and
+        before you run any scripts. */
+    public void makeSafe()
+    {
+        Hashtable oldEnv = environment.getEnvironment();
+        Hashtable newEnv = new Hashtable(  (oldEnv.size() * 2) - 1  );
+
+        /* reset the environment please */
+        Iterator i = oldEnv.entrySet().iterator();
+        while (i.hasNext())
+        {
+            Map.Entry temp = (Map.Entry)i.next();
+            if (temp.getKey().toString().charAt(0) == '&' && temp.getValue() instanceof SleepClosure)
+            {
+               SleepClosure closure = new SleepClosure(this, ((SleepClosure)temp.getValue()).getRunnableCode());
+               newEnv.put(temp.getKey(), closure);
+            }
+            else
+            { 
+               newEnv.put(temp.getKey(), temp.getValue());
+            }
+        }
+
+        /* update the environment */
+        environment.setEnvironment(newEnv);
+    }
+
     /** Creates a forked script instance.  This does not work like fork in an operating system.  Variables are not copied, period.
         The idea is to create a fork that shares the same environment as this script instance. */
     public ScriptInstance fork()
