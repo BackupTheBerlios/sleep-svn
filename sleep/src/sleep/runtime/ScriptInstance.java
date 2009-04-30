@@ -464,26 +464,8 @@ public class ScriptInstance implements Serializable, Runnable
         The idea is to create a fork that shares the same environment as this script instance. */
     public ScriptInstance fork()
     {
-        Hashtable oldEnv = environment.getEnvironment();
-        Hashtable newEnv = new Hashtable(  (oldEnv.size() * 2) - 1  );
-
-        ScriptInstance si = new ScriptInstance(variables.getGlobalVariables().createInternalVariableContainer(), newEnv);
-
-        /* reset the environment please */
-        Iterator i = oldEnv.entrySet().iterator();
-        while (i.hasNext())
-        {
-            Map.Entry temp = (Map.Entry)i.next();
-            if (temp.getKey().toString().charAt(0) == '&' && temp.getValue() instanceof SleepClosure)
-            {
-               SleepClosure closure = new SleepClosure(si, ((SleepClosure)temp.getValue()).getRunnableCode());
-               newEnv.put(temp.getKey(), closure);
-            }
-            else
-            { 
-               newEnv.put(temp.getKey(), temp.getValue());
-            }
-        }
+        ScriptInstance si = new ScriptInstance(variables.getGlobalVariables().createInternalVariableContainer(), environment.getEnvironment());
+        si.makeSafe();
 
         /* set the other cool stuff pls */
         si.setName(getName());
