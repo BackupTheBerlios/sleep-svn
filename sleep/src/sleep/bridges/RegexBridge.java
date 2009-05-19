@@ -38,7 +38,7 @@ import sleep.parser.ParserConfig;
 /** Provides a bridge between Java's regex API and sleep.  Rock on */
 public class RegexBridge implements Loadable
 {
-    private static Map patternCache = Collections.synchronizedMap(new Cache(128));
+    private static Map patternCache = Collections.synchronizedMap(new Cache(Integer.parseInt(System.getProperty("sleep.pattern_cache_size", "256"))));
 
     private static class Cache extends LinkedHashMap
     {

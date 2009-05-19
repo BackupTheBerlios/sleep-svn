@@ -1,3 +1,10 @@
+2.1-release
+===========
+- added a -Dsleep.pattern_cache_size=N option to tweak the size of the regex
+  pattern cache.  If you have an application with a lot of regular expressions
+  you may want to raise this number to prevent your regular expression
+  patterns from being recompiled.
+
 2.1-release (30 Apr 09) [update 4]
 ===========
 - Sleep semaphores use notifyAll() instead of notify() to wake up threads.
